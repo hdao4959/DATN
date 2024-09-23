@@ -13,11 +13,24 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('user_code')->unique();
+            $table->string('full_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone_number');
+            $table->string('address');
+            $table->string('sex');
+            $table->date('birthday');
+            $table->string('id_identity')->comment('ID CCCD');
+            $table->string('issue_date')->comment('Ngày cấp');
+            $table->string('place_of_grant')->comment('Nơi cấp');
+            $table->string('nation')->comment('Quốc gia');
+            $table->text('avatar')->comment('Ảnh đại diện')->nullable();
+            $table->enum('role',['student', 'teacher', 'admin', 'sub_admin']);
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
