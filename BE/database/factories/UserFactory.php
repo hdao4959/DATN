@@ -27,14 +27,15 @@ class UserFactory extends Factory
             'address' => fake()->address(),
             'sex' => fake()->randomElement(['male', 'female']),
             'birthday' => fake()->dateTimeThisCentury(),
-            'id_identity' => fake()->numberBetween(100000000000,109999999999),
+            'citizen_card_number' => fake()->numberBetween(100000000000,109999999999),
             'issue_date' => fake()->dateTimeThisCentury(),
             'place_of_grant' => fake()->city(),
             'nation' => fake()->country(),
             'avatar' => fake()->imageUrl(),
+            'majors_id' => null, 
+            'class_id' => null,
             'role' => 'admin',
             'is_active' => true
-
         ];
     }
 
