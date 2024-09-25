@@ -2,6 +2,9 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from "./layouts/Admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
+import MajorList from "./pages/admin/Major/MajorList";
+import AddMajor from "./pages/admin/Major/AddMajor";
+import EditMajor from "./pages/admin/Major/EditMajor";
 
 function App() {
     const router = createBrowserRouter([
@@ -16,6 +19,18 @@ function App() {
                 {
                     path: "",
                     element: <Dashboard />,
+                },
+                {
+                    path: "major",
+                    element: <MajorList />,
+                },
+                {
+                    path: "major/add",
+                    element: <AddMajor />,
+                },
+                {
+                    path: "major/:id/edit",
+                    element: <EditMajor />,
                 },
             ],
         },
