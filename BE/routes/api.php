@@ -23,5 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
+Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
 Route::apiResource('major', MajorController::class);
-Route::get('/major/{type}', [MajorController::class, 'getAllMajor'])->name('majors');
