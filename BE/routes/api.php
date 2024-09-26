@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MajorController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +33,8 @@ Route::prefix('/admin')->as('admin.')->group(function() {
     Route::patch('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 });
+Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+Route::apiResource('major', MajorController::class);
+
+Route::apiResource('category', CategoryController::class);
+Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
