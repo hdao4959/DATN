@@ -59,10 +59,10 @@ class UserController extends Controller
         }
     }
 
-    public function show(string $id)
+    public function show(string $code)
     {
         try {
-            $user = User::find($id);
+            $user = User::query()->where('user_code',$code)->first();
             if (!$user) {
                 return response()->json([
                     'message' => "Tài khoản không tồn tại!"
