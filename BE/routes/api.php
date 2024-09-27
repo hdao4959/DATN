@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\SubjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,12 @@ Route::prefix('/admin')->as('admin.')->group(function() {
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::patch('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    Route::get('/subjects', [SubjectController::class, 'index']);
+    Route::get('/subjects/{id}', [SubjectController::class, 'show']);
+    Route::post('/subjects', [SubjectController::class, 'store']);
+    Route::put('/subjects/{id}', [SubjectController::class,'update']);
+    Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 });
 Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
 Route::apiResource('major', MajorController::class);
