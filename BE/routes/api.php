@@ -38,3 +38,4 @@ Route::apiResource('major', MajorController::class);
 
 Route::apiResource('category', CategoryController::class);
 Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+
