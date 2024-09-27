@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const Sidebar = () => {
     return (
         <div className="sidebar" data-background-color="dark">
@@ -70,6 +72,30 @@ const Sidebar = () => {
                             </span>
                             <h4 className="text-section">Components</h4>
                         </li>
+                        <li className="nav-item active submenu">
+                            <a data-bs-toggle="collapse" href="#subjects">
+                                <i className="fas fa-layer-group" />
+                                <p>Môn Học</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse show" id="subjects">
+                                <ul className="nav nav-collapse">
+                                    <li className="active">
+                                        <NavLink to={`subjects`} activeClassName="active">
+                                            <span className="sub-item">
+                                               Danh Sách Môn Học
+                                            </span>
+                                        </NavLink>
+                                        <NavLink to={`subjects/add`} activeClassName="active">
+                                            <span className="sub-item">
+                                               Thêm Môn Học
+                                            </span>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#base">
                                 <i className="fas fa-layer-group" />
