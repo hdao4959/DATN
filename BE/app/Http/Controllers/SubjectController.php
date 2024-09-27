@@ -3,63 +3,79 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreSubjectRequest;
+use App\Http\Requests\UpdateSubjectRequest;
 
 class SubjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        try {
+            $subject = Subject::paginate(10);
+            if($subject->isEmpty()){
+            return response()->json('Không tìm thấy môn học', 404);
+        }
+        return response()->json($subject);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>$th->getMessage()], 404);
+        }
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+
+    public function store(StoreSubjectRequest $request)
     {
-        //
+        try {
+            Subject::create($request->validated());
+            return response()->json(['message'=> 'thêm mới thành công'], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage(),500]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function show(string $id)
     {
-        //
+        try {
+
+            $getSubject = Subject::findOrFail($id);
+            return response()->json(['message' => 'Tìm thấy', 'data' => $getSubject], 200);
+
+        } catch (\Throwable $th) {
+
+            return response()->json(['message' => 'Đã xảy ra lỗi', 'error' => $th->getMessage()], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Subject $subject)
+
+    public function update(UpdateSubjectRequest $request, string $id)
     {
-        //
+        try {
+            $subject = Subject::findOrFail($id);
+
+        if(!$subject){
+            return response()->json(['message'=>'không tìm thấy môn học'], 404);
+        }
+
+        $subject->update($request->toArray());
+        return response()->json(['message' => 'cập nhật thành công' ]);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=> $th->getMessage()]);
+        }
+
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Subject $subject)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Subject $subject)
+    public function destroy(string $id)
     {
-        //
-    }
+        try {
+            $subject = Subject::findOrFail($id);
+            $subject->delete();
+            return response()->json(['message'=>'xóa thành công'],200);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Subject $subject)
-    {
-        //
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 500);
+        }
     }
 }
