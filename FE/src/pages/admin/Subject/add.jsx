@@ -7,22 +7,9 @@ const { Option } = Select
 const AddSubject = () => {
   const [form] = Form.useForm()
 
-  const formData = {
-    isActive: 1,
-    semesters: ['1', '2', '3', '4', '5', '6', '7'],
-    majors: [
-      { label: 'Lập trình web', value: 'ltweb' },
-      { label: 'Lập trình ứng dụng', value: 'ltapp' }
-    ],
-    narrowMajors: [
-      { label: 'Web Frontend', value: 'frontend' },
-      { label: 'Web Backend', value: 'backend' }
-    ]
-  }
-
   const onFinish = async (values) => {
     try {
-      // const response = await axios.post('/api/subjects', values)
+      const response = await axios.post('/http://localhost:8000/api/admin/subjects', values);
       message.success('Thêm môn học thành công!')
       form.resetFields()
     } catch (error) {
@@ -32,7 +19,9 @@ const AddSubject = () => {
 
   return (
     <>
-      <h2>Thêm Môn học mới</h2>
+      <h2>
+        <i className='fas fa-plus'>Thêm Môn học mới</i>
+      </h2>
       <Form
         layout="vertical"
         form={form}
@@ -169,7 +158,7 @@ const AddSubject = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Thêm Môn học <i className='fas fa-plus' style={{color: 'white'}}></i>
+            Thêm Môn học <i className='fas fa-plus' style={{ color: 'white' }}></i>
           </Button>
         </Form.Item>
       </Form>

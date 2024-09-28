@@ -1,64 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, message, InputNumber } from 'antd';
-import Radio from 'antd/es/radio/radio';
-// import { useParams } from 'react-router-dom';
+import { Form, Input, Button, Select, message, InputNumber, Radio, Spin } from 'antd';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const { Option } = Select;
-
-const EditSubject = ({ match }) => {
+const EditSubject = () => {
     const [form] = Form.useForm();
-    //   const { id } = useParams();
-
-    const mockData =
-    {
-        id: 1,
-        subjectCode: 'SUB001',
-        subjectName: 'Java',
-        creditNumber: 3,
-        reStudyFee: 600000,
-        examDay: 17,
-        isActive: 1,
-        description: 'Môn học về ngôn ngữ lập trình Java.',
-        semestersCode: 7,
-        majorCode: 'IT',
-        tuition: 1500000,
-    };
-
+    const { id } = useParams();
     const [subject, setSubject] = useState(null);
-    //   useEffect(() => {
-    //     const subjectId = match.params.id; 
-    //     const foundSubject = mockData.find(item => item.id === subjectId);
-    //     if (foundSubject) {
-    //       setSubject(foundSubject);
-    //       form.setFieldsValue(foundSubject); 
-    //     }
-    //   }, [form, match.params.id]);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        const foundSubject = mockData;
-        if (foundSubject) {
-            setSubject(foundSubject);
-            form.setFieldsValue(foundSubject);
+        const fetchSubject = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/admin/subjects/${id}`);
+                const data = response?.data?.data;
+                console.log(data);
+                
+                if (data) {
+                    setSubject(data);
+                    form.setFieldsValue(data);
+                }
+            } catch (error) {
+                message.error('Có lỗi xảy ra khi tải dữ liệu môn học!');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSubject();
+    }, [form, id]);
+
+    const handleSubmit = async (values) => {
+        try {
+            await axios.put(`http://localhost:8000/api/admin/subjects/${subject.id}`, values);
+            message.success('Cập nhật môn học thành công!');
+        } catch (error) {
+            message.error('Có lỗi xảy ra, vui lòng thử lại!');
         }
-    }, [form]);
-
-
-    const handleSubmit = (values) => {try {
-        // const response = await axios.put('/api/subjects', values)
-        console.log('Đã cập nhật môn học:', values);
-        message.success('Cập nhật môn học thành công!');
-      } catch (error) {
-        message.error('Có lỗi xảy ra, vui lòng thử lại!')
-      }
     };
+
+    if (loading) {
+        return <Spin tip="Loading..." />;
+    }
 
     if (!subject) {
-        return <div>Loading...</div>;
+        return <div>Không tìm thấy môn học.</div>;
     }
+
     return (
-        <div >
+        <div>
             <h2>Chỉnh sửa Môn học: {subject.subjectName}</h2>
-            <Form layout='vertical' form={form} onFinish={handleSubmit}
-                initialValues={{}}>
+            <Form layout='vertical' form={form} onFinish={handleSubmit}>
                 <div className="row">
                     <div className="col-md-6 col-lg-6">
                         <Form.Item
@@ -137,7 +129,7 @@ const EditSubject = ({ match }) => {
                             rules={[{ required: true, message: 'Vui lòng chọn học kì!' }]}
                         >
                             <Select placeholder="Chọn học kì">
-
+                                {/* Thêm các tùy chọn học kì tại đây */}
                             </Select>
                         </Form.Item>
 
@@ -147,7 +139,7 @@ const EditSubject = ({ match }) => {
                             rules={[{ required: true, message: 'Vui lòng chọn chuyên ngành!' }]}
                         >
                             <Select placeholder="Chọn chuyên ngành">
-
+                                {/* Thêm các tùy chọn chuyên ngành tại đây */}
                             </Select>
                         </Form.Item>
 
@@ -156,7 +148,7 @@ const EditSubject = ({ match }) => {
                             name="narrowMajorCode"
                         >
                             <Select placeholder="Chọn chuyên ngành hẹp">
-
+                                {/* Thêm các tùy chọn chuyên ngành hẹp tại đây */}
                             </Select>
                         </Form.Item>
 
