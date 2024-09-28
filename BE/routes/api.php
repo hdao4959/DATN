@@ -1,10 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
+
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\Admin\ClassRoomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MajorController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +43,14 @@ Route::prefix('/admin')->as('admin.')->group(function() {
     Route::post('/subjects', [SubjectController::class, 'store']);
     Route::put('/subjects/{id}', [SubjectController::class,'update']);
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
+
+    Route::apiResource('classrooms', ClassRoomController::class);
+    Route::apiResource('users', UserController::class);
+
+    Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+Route::apiResource('major', MajorController::class);
+
+Route::apiResource('category', CategoryController::class);
+Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
 });
-
-
 

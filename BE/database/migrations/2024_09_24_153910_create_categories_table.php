@@ -15,14 +15,15 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('cateCode',255)->unique();
-            $table->string('cateName',50);
-            $table->string('parrentCode',50)->nullable();
+            $table->string('cate_code',191)->unique();
+            $table->string('cate_name',50);
+            $table->string('parrent_code',50)->nullable();
             $table->text('value')->nullable();
             $table->string('image',1000)->nullable();
             $table->text('description')->nullable();
-            $table->boolean('isActive')->default(true);
-            $table->boolean('isDelete')->default(false);
+            $table->string('type')->default('Major');
+            $table->boolean('is_active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

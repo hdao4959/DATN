@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -48,5 +49,26 @@ class Handler extends ExceptionHandler
 
     public function shouldReturnJson($request, Throwable $e){
         return true;
+    }
+
+
+    public function render($request, Throwable $exception)
+    {
+        // Xử lí trả về cho validate form request
+        if ($exception instanceof ValidationException) {
+            // Trường hợp APP_ENV = production
+            if (app()->environment('production')) {
+                return response()->json([
+                    'message' => $exception->getMessage(), 
+                ], 422); 
+            } else {
+                // Trường hợp APP_ENV != production
+                return response()->json([
+                    'message' => $exception->getMessage(),
+                    'errors' => $exception->errors(),
+                ], 422);
+            }
+        }
+        return parent::render($request, $exception);
     }
 }
