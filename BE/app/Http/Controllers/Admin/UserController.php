@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Dotenv\Exception\ValidationException;
-use Exception;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Throwable;
 
-use function PHPUnit\Framework\isEmpty;
 
 class UserController extends Controller
 {
@@ -42,7 +38,7 @@ class UserController extends Controller
     }
 
 
-    public function store(UserStoreRequest $request)
+    public function store(StoreUserRequest $request)
     {
 
         try {
@@ -59,10 +55,11 @@ class UserController extends Controller
         }
     }
 
-    public function show(string $code)
+    public function show(string $user_code)
     {
         try {
-            $user = User::query()->where('user_code',$code)->first();
+        
+            $user = User::where('user_code', $user_code)->first();
             if (!$user) {
                 return response()->json([
                     'message' => "Tài khoản không tồn tại!"
@@ -78,10 +75,10 @@ class UserController extends Controller
     }
 
 
-    public function update(UserUpdateRequest $request, string $id)
+    public function update(UpdateUserRequest $request, string $user_code)
     {
         try {
-            $user = User::find($id);
+            $user = User::where('user_code', $user_code)->first();
             if (!$user) {
                 return response()->json([
                     'message' => "Tài khoản không tồn tại!"
@@ -107,10 +104,11 @@ class UserController extends Controller
     }
 
     
-    public function destroy(string $id)
+    public function destroy(string $user_code)
     {
         try {
-            $user = User::find($id);
+           
+            $user = User::where('user_code', $user_code)->first();
             if (!$user) {
                 return response()->json(
                     ['message' => 'Tài khoản không tồn tại'],
@@ -127,8 +125,7 @@ class UserController extends Controller
                 [
                     'message' => 'Đã xảy ra lỗi không xác định',
                     'error' => env('APP_DEBUG') ? $th->getMessage() : 'Lỗi không xác định'
-                ],
-                500
+                ],500
             );
         }
     }

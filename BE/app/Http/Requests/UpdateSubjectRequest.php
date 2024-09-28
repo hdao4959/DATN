@@ -13,7 +13,7 @@ class UpdateSubjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,20 @@ class UpdateSubjectRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'subjectCode' => 'required|string|max:255',
+            'subjectName' => 'required|string|max:255',
+            'tuition' => 'required|numeric',
+            'reStudyFee' => 'required|numeric',
+            'creditNumber' => 'required|integer',
+            'numberStudy' => 'required|integer',
+            'examDay' => 'required|string',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string|max:1000',
+            'isActive' => 'required|boolean',
+            'isDelete' => 'required|boolean',
+            'semesterCode' => 'required|string|max:255',
+            'majorCode' => 'required|string|max:255',
+            'narrowMajorCode' => 'required|string|max:255',
         ];
     }
 }
