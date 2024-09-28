@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Validator;
 
-class UserUpdateRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_code' => 'required',
+            'user_code' => 'required|unique:users,user_code,' . $this->user_code,
             'full_name' => 'required',
             'email' => 'required|email',
             'phone_number' => 'required|regex:/^(0[0-9]{9})$/',
