@@ -162,7 +162,7 @@ const SubjectsList = () => {
       examDay: 17, render: (text) => <span>{text.toLocaleString('Vi-VN')} VNĐ</span>,
     },
     {
-      title: 'Số buổi học',
+      title: 'Số buổi học', 
       dataIndex: 'examDay',
     },
     {

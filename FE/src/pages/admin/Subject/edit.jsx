@@ -10,7 +10,7 @@ const EditSubject = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchSubject = async () => {
+        const fetchSubject = async () => { 
             try {
                 const response = await axios.get(`http://localhost:8000/api/admin/subjects/${id}`);
                 const data = response?.data?.data;

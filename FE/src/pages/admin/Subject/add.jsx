@@ -5,7 +5,7 @@ import axios from 'axios'
 const { Option } = Select
 
 const AddSubject = () => {
-  const [form] = Form.useForm()
+  const [form] = Form.useForm() 
 
   const onFinish = async (values) => {
     try {
