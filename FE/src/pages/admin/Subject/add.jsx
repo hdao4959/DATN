@@ -166,4 +166,4 @@ const AddSubject = () => {
   )
 }
 
-export default AddSubject
+export default AddSubject;
