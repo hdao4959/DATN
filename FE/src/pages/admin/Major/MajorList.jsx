@@ -119,7 +119,7 @@ const MajorList = () => {
                                                     <td>{it.value}</td>
                                                     <td>{it.description}</td>
                                                     <td>
-                                                        {it.status
+                                                        {it.is_active === 1
                                                             ? "Hiển thị"
                                                             : "Ẩn"}
                                                     </td>

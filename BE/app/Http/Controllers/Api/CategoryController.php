@@ -125,7 +125,7 @@ class CategoryController extends Controller
     
             return response()->json([
                 'message' => 'Xoa thanh cong'
-            ], 404);
+            ], 200);
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
            

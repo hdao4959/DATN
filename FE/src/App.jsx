@@ -8,7 +8,7 @@ import EditMajor from "./pages/admin/Major/EditMajor";
 import Signin from "./pages/admin/Auth/Signin";
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
-import EditSubject from "./pages/admin/Subject/EditSubject";
+// import EditSubject from "./pages/admin/Subject/EditSubject";
 
 function App() {
     const router = createBrowserRouter([
@@ -48,10 +48,10 @@ function App() {
                     path: "subjects/add",
                     element: <AddSubject />,
                 },
-                {
-                    path: "subjects/:id/edit",
-                    element: <EditSubject />,
-                },
+                // {
+                //     path: "subjects/:id/edit",
+                //     element: <EditSubject />,
+                // },
             ],
         },
     ]);
