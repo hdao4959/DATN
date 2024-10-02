@@ -13,7 +13,7 @@ class StoreClassRoomRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,35 @@ class StoreClassRoomRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'class_code' => 'required|unique:class_rooms,class_code',
+            'class_name' => 'required|unique:class_rooms,class_name',
+            'description' => 'required',
+            'date_from' => 'required',
+            'date_to' => 'required',
+            'students' => 'required',
+            'is_active' => 'required',
+            'study_room_code' => 'required',
+            'subject_code' => 'required',
+            'user_code' => 'required',
         ];
     }
+
+    public function messages(){
+        return [
+            'class_code.required' => 'Bạn chưa nhập mã lớp học',
+            'class_code.unique' => 'Mã lớp học này đã tồn tại',
+            'class_name.required' => 'Bạn chưa nhập tên lớp học',
+            'class_name.unique' => 'Tên lớp học này đã tồn tại',
+            'description.required' => 'Bạn chưa nhập mô tả lớp học',
+            'date_from.required' => 'Bạn chưa nhập ngày bắt đầu',
+            'date_to.required' => 'Bạn chưa nhập ngày kết thúc',
+            'students.required' => 'Bạn chưa nhập danh sách sinh viên',
+            'is_active.required' => 'Bạn chưa chọn trạng thái lớp học',
+            'study_room_code.required' => 'Bạn chưa nhập mã phòng học',
+            'subject_code.required' => 'Bạn chưa nhập mã môn học',
+            'user_code.required' => 'Bạn chưa chọn giảng viên',
+        ];
+    }
+
+    protected $stopOnFirstFailure = true;
 }
