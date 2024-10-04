@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+import React from "react";
+
+const EditSubject = () => {
+    return <div>EditSubject</div>;
+=======
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
@@ -124,6 +130,7 @@ const EditSubject = ({ subject, handleClose }) => {
             </form>
         </div>
     );
+>>>>>>> 775a8488e160cfc046288b122d13830f93c42f80
 };
 
 export default EditSubject;
