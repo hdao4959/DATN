@@ -3,8 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
-import "/Users/hanhd/DATN/FE/src/css/signin.css";
-
+import "/src/css/signin.css";
 const Signin = () => {
     const navigate = useNavigate();
     const { mutate } = useMutation({
