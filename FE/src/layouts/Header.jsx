@@ -1,6 +1,7 @@
 import React from "react";
 import "../css/header.css";
 const Header = () => {
+    
     return (
         <div>
             <div>
@@ -20,7 +21,10 @@ const Header = () => {
                         >
                             <span className="navbar-toggler-icon" />
                         </button>
-                        <div className="collapse navbar-collapse" id="navbarResponsive">
+                        <div
+                            className="collapse navbar-collapse"
+                            id="navbarResponsive"
+                        >
                             <ul className="navbar-nav ms-auto">
                                 <li className="nav-item active">
                                     <a className="nav-link" href="#">
@@ -47,7 +51,11 @@ const Header = () => {
                     </div>
                 </nav>
                 <header>
-                    <div id="carouselExampleCaptions" className="carousel slide" data-bs-ride="carousel">
+                    <div
+                        id="carouselExampleCaptions"
+                        className="carousel slide"
+                        data-bs-ride="carousel"
+                    >
                         <div className="carousel-indicators">
                             <button
                                 type="button"
@@ -73,29 +81,47 @@ const Header = () => {
                         <div className="carousel-inner">
                             <div
                                 className="carousel-item active"
-                                style={{ backgroundImage: 'url("https://source.unsplash.com/LAaSoL0LrYs/1920x1080")' }}
+                                style={{
+                                    backgroundImage:
+                                        'url("https://source.unsplash.com/LAaSoL0LrYs/1920x1080")',
+                                }}
                             >
                                 <div className="carousel-caption">
                                     <h5>First slide label</h5>
-                                    <p>Some representative placeholder content for the first slide.</p>
+                                    <p>
+                                        Some representative placeholder content
+                                        for the first slide.
+                                    </p>
                                 </div>
                             </div>
                             <div
                                 className="carousel-item"
-                                style={{ backgroundImage: 'url("https://source.unsplash.com/bF2vsubyHcQ/1920x1080")' }}
+                                style={{
+                                    backgroundImage:
+                                        'url("https://source.unsplash.com/bF2vsubyHcQ/1920x1080")',
+                                }}
                             >
                                 <div className="carousel-caption">
                                     <h5>Second slide label</h5>
-                                    <p>Some representative placeholder content for the second slide.</p>
+                                    <p>
+                                        Some representative placeholder content
+                                        for the second slide.
+                                    </p>
                                 </div>
                             </div>
                             <div
                                 className="carousel-item"
-                                style={{ backgroundImage: 'url("https://source.unsplash.com/szFUQoyvrxM/1920x1080")' }}
+                                style={{
+                                    backgroundImage:
+                                        'url("https://source.unsplash.com/szFUQoyvrxM/1920x1080")',
+                                }}
                             >
                                 <div className="carousel-caption">
                                     <h5>Third slide label</h5>
-                                    <p>Some representative placeholder content for the third slide.</p>
+                                    <p>
+                                        Some representative placeholder content
+                                        for the third slide.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +131,10 @@ const Header = () => {
                             data-bs-target="#carouselExampleCaptions"
                             data-bs-slide="prev"
                         >
-                            <span className="carousel-control-prev-icon" aria-hidden="true" />
+                            <span
+                                className="carousel-control-prev-icon"
+                                aria-hidden="true"
+                            />
                             <span className="visually-hidden">Previous</span>
                         </button>
                         <button
@@ -114,7 +143,10 @@ const Header = () => {
                             data-bs-target="#carouselExampleCaptions"
                             data-bs-slide="next"
                         >
-                            <span className="carousel-control-next-icon" aria-hidden="true" />
+                            <span
+                                className="carousel-control-next-icon"
+                                aria-hidden="true"
+                            />
                             <span className="visually-hidden">Next</span>
                         </button>
                     </div>
@@ -123,10 +155,15 @@ const Header = () => {
                     <div className="container">
                         <h1 className="fw-light">Full Page Image Slider</h1>
                         <p className="lead">
-                            The background images for the slider are set directly in the HTML using inline CSS. The
-                            images in this snippet are from <a href="https://unsplash.com">Unsplash</a>, taken by{"{"}"
-                            "{"}"}
-                            <a href="https://unsplash.com/@joannakosinska">Joanna Kosinska</a>!
+                            The background images for the slider are set
+                            directly in the HTML using inline CSS. The images in
+                            this snippet are from{" "}
+                            <a href="https://unsplash.com">Unsplash</a>, taken
+                            by{"{"}" "{"}"}
+                            <a href="https://unsplash.com/@joannakosinska">
+                                Joanna Kosinska
+                            </a>
+                            !
                         </p>
                     </div>
                 </section>

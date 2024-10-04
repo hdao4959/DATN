@@ -1,18 +1,23 @@
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import "/Users/hanhd/DATN/FE/src/css/signin.css";
 
 const Signin = () => {
+    const navigate = useNavigate();
     const { mutate } = useMutation({
         mutationFn: (data) => {
             return api.post("/login", data);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            const { user, token } = data.data;
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("token", JSON.stringify(token));
+
             alert("Đăng nhập thành công!");
-            window.location.href = "/admin";
+            navigate("/admin");
         },
         onError: (error) => {
             if (!error.response) {
