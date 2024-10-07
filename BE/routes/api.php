@@ -29,7 +29,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 
-Route::prefix('/admin')->as('admin.')->group(function() {
+Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
@@ -41,16 +41,17 @@ Route::prefix('/admin')->as('admin.')->group(function() {
     Route::get('/subjects', [SubjectController::class, 'index']);
     Route::get('/subjects/{id}', [SubjectController::class, 'show']);
     Route::post('/subjects', [SubjectController::class, 'store']);
-    Route::put('/subjects/{id}', [SubjectController::class,'update']);
+    Route::put('/subjects/{id}', [SubjectController::class, 'update']);
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
     Route::apiResource('classrooms', ClassRoomController::class);
     Route::apiResource('users', UserController::class);
 
     Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-Route::apiResource('major', MajorController::class);
+    Route::apiResource('major', MajorController::class);
 
-Route::apiResource('category', CategoryController::class);
-Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+    Route::apiResource('category', CategoryController::class);
+    Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+    Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+
 });
-
