@@ -53,5 +53,5 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('category', CategoryController::class);
     Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
-
+ 
 });
