@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // Thêm useQueryClient
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"; // Thêm useQueryClient
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
@@ -7,7 +7,14 @@ const AddMajor = () => {
     const { register, handleSubmit, reset } = useForm();
     const nav = useNavigate();
     const queryClient = useQueryClient(); // Khởi tạo queryClient
-
+    const { data: listMajor } = useQuery({
+        queryKey: ["LIST_MAJOR"],
+        queryFn: async () => {
+            const res = await api.get("/admin/getListCategory/major");
+            return res.data;
+        }
+    });
+    console.log(listMajor);
     const { mutate } = useMutation({
         mutationFn: (data) => api.post("/admin/category", data),
         onSuccess: () => {
@@ -22,13 +29,21 @@ const AddMajor = () => {
     });
 
     const onSubmit = (data) => {
-        const finalData = {
-            ...data,
-            type: "major",
-            is_active: data.is_active === "true" // Chuyển đổi giá trị is_active
-        };
-        console.log(finalData);
-        mutate(finalData); // Gọi hàm mutate để thực hiện mutation
+        const formData = new FormData();
+        formData.append('cate_code', data.cate_code);
+        formData.append('cate_name', data.cate_name);
+        formData.append('parrent_code', data.parrent_code);
+        formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
+        formData.append('description', data.description);
+        formData.append('type', "major");
+        formData.append('value', "123");
+
+        // Thêm file vào FormData
+        if (data.image && data.image.length > 0) {
+            formData.append('image', data.image[0]);
+        }
+
+        mutate(formData); // Gọi hàm mutate để thực hiện mutation
     };
 
     return (
@@ -69,13 +84,19 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parrent_code">Mã danh mục cha</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
+                                        <label htmlFor="parrent_code">Chuyên ngành cha</label>
+                                        <select
+                                            className="form-select"
                                             {...register("parrent_code")}
-                                            placeholder="Nhập mã danh mục cha"
-                                        />
+                                        >
+                                            <option value="">-- Lựa chọn --</option>
+                                            {listMajor.map((element, index) => (
+                                                <option key={index} value={element.cate_code}>
+                                                    {element.cate_name}
+                                                </option>
+                                            ))}
+
+                                        </select>
                                     </div>
 
                                     <div className="form-group">
@@ -85,16 +106,6 @@ const AddMajor = () => {
                                             className="form-control"
                                             {...register("value")}
                                             placeholder="Nhập giá trị"
-                                        />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="description">Mô tả</label>
-                                        <textarea
-                                            className="form-control"
-                                            rows={5}
-                                            {...register("description")}
-                                            placeholder="Nhập mô tả"
                                         />
                                     </div>
 
@@ -112,12 +123,22 @@ const AddMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="image">Hình ảnh</label>
                                         <input
-                                            type="text"
+                                            type="file"
                                             className="form-control"
                                             {...register("image")}
-                                            placeholder="Nhập URL hình ảnh"
                                         />
                                     </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="description">Mô tả</label>
+                                        <textarea
+                                            className="form-control"
+                                            rows={5}
+                                            {...register("description")}
+                                            placeholder="Nhập mô tả"
+                                        />
+                                    </div>
+
                                 </div>
                             </div>
                             <div className="card-action gap-x-3 flex">

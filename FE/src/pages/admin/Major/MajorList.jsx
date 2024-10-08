@@ -87,6 +87,7 @@ const MajorList = () => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
+                                <i className="fa-solid fa-circle-check fs-20 color-green"></i>
                                     <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"
@@ -98,11 +99,10 @@ const MajorList = () => {
                                                 <th>ID</th>
                                                 <th>Mã chuyên ngành</th>
                                                 <th>Tên chuyên ngành</th>
-                                                <th>Value</th>
-                                                <th>Mô tả</th>
+                                                {/* <th>Value</th>
+                                                <th>Mô tả</th> */}
                                                 <th>Trạng thái</th>
                                                 <th>Hình ảnh</th>
-                                                <th>Kiểu</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -116,22 +116,25 @@ const MajorList = () => {
                                                     <td>{it.id}</td>
                                                     <td>{it.cate_code}</td>
                                                     <td>{it.cate_name}</td>
-                                                    <td>{it.value}</td>
-                                                    <td>{it.description}</td>
+                                                    {/* <td>{it.value}</td> */}
+                                                    {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        {it.status
-                                                            ? "Hiển thị"
-                                                            : "Ẩn"}
+                                                        {it.status ? (
+                                                            <i className="fa-solid fa-circle-check fs-20 color-green"></i>
+                                                        ) : (
+                                                            <i className="fa-solid fa-ban fs-20 color-danger"></i>
+                                                        )}
+
+
                                                     </td>
                                                     <td>
                                                         <img
-                                                            src={it.image}
+                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
                                                             alt={it.name}
                                                             width={50}
                                                             height={50}
                                                         />
                                                     </td>
-                                                    <td>{it.type}</td>
                                                     <td>
                                                         <div className="flex gap-x-2">
                                                             <Link to={`/admin/major/${it.id}/edit`}>
