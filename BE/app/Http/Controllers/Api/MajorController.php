@@ -32,7 +32,7 @@ class MajorController extends Controller
         try {
             $params = $request->except('_token');
             if ($request->hasFile('image')) {
-                $fileName = $request->file('image')->store('uploads/major', 'public');
+                $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
                 $fileName = null;
             }

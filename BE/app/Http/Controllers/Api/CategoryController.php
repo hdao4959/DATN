@@ -173,6 +173,8 @@ class CategoryController extends Controller
             ];
         });
 
+        //Cách 2
+
         return response()->json($data);
     }
 }

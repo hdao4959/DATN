@@ -119,10 +119,10 @@ const MajorList = () => {
                                                     {/* <td>{it.value}</td> */}
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        {it.status ? (
-                                                            <i className="fa-solid fa-circle-check fs-20 color-green"></i>
+                                                        {it.is_active == 1 ? (
+                                                            <i className="fas fa-check-circle fs-20 color-green" style={{color: 'green',fontSize: '25px'}}></i>
                                                         ) : (
-                                                            <i className="fa-solid fa-ban fs-20 color-danger"></i>
+                                                            <i className="fas fa-ban fs-20 color-danger" style={{color: 'red', fontSize: '25px'}}></i>
                                                         )}
 
 
