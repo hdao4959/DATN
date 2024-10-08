@@ -44,13 +44,14 @@ Route::prefix('/admin')->as('admin.')->group(function() {
     Route::put('/subjects/{id}', [SubjectController::class,'update']);
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
+
     Route::apiResource('classrooms', ClassRoomController::class);
     Route::apiResource('users', UserController::class);
 
     Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-Route::apiResource('major', MajorController::class);
+    Route::apiResource('major', MajorController::class);
 
-Route::apiResource('category', CategoryController::class);
-Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+    Route::apiResource('category', CategoryController::class);
+    Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
 });
 
