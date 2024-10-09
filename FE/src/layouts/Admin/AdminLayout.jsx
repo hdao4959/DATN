@@ -1,5 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import { toast } from "react-toastify";
 
 const AdminLayout = () => {
     const userData = localStorage.getItem("user");
@@ -24,12 +25,12 @@ const AdminLayout = () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
 
-                alert("Đăng xuất thành công");
+                toast.success("Đăng xuất thành công");
                 window.location.href = "/signin";
             } else {
                 const data = await response.json();
                 console.error("Lỗi khi đăng xuất:", data);
-                alert("Có lỗi xảy ra khi đăng xuất");
+                toast.error("Có lỗi xảy ra khi đăng xuất");
             }
         } catch (error) {
             console.error("Lỗi khi gọi API:", error);

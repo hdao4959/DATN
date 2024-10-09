@@ -30,9 +30,9 @@ const CreateAccount = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/account">
+                <Link to="/admin/account/list">
                     <button className="btn btn-primary">
-                        Danh sách sinh viên
+                        Danh sách tài khoản
                     </button>
                 </Link>
             </div>
@@ -408,25 +408,9 @@ const CreateAccount = () => {
                                                 Ngành học
                                             </label>
                                             <select className="form-select">
-                                                <option>Admin</option>
-                                                <option>Giảng viên</option>
-                                                <option>Sinh viên</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Dòng 9 */}
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="exampleFormControlSelect1">
-                                                Lớp học
-                                            </label>
-                                            <select className="form-select">
-                                                <option>Admin</option>
-                                                <option>Giảng viên</option>
-                                                <option>Sinh viên</option>
+                                                <option>LTWE</option>
+                                                <option>BE</option>
+                                                <option>MOBILE</option>
                                             </select>
                                         </div>
                                     </div>
