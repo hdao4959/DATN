@@ -19,9 +19,23 @@ class MajorController extends Controller
      */
     public function index()
     {
-        $data = Category::get();
+        try {
+            $data = User::paginate(20);
 
-        return response()->json($data);
+            if ($data->isEmpty()) {
+                return response()->json(
+                    ['message' => 'Không có chuyên ngành nào!'],
+                    404
+                );
+            }
+            return response()->json($data, 200);
+        } catch (Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+            return response()->json([
+                'message' => 'Lỗi không xác định'
+            ], 500);
+        }
     }
 
     /**
