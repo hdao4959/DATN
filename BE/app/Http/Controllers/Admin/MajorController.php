@@ -204,11 +204,11 @@ class MajorController extends Controller
     public function bulkUpdateType(Request $request)
     {
         try {
-            $types = $request->input('type'); // Lấy dữ liệu từ request            
-            foreach ($types as $id => $type) {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
+            foreach ($activies as $id => $active) {
                 // Tìm category theo ID và cập nhật trường 'type'
                 $category = Category::findOrFail($id);
-                $category->type = $type;
+                $category->ia_active = $active;
                 $category->save();
             }
 
