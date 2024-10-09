@@ -24,7 +24,7 @@ return new class extends Migration
             $table->date('date_from')->comment('Ngày bắt đầu');
             $table->date('date_to')->comment('Ngày kết thúc');
             $table->json('students')->comment('Json sinh viên');
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(true);
             $table->string('study_room_code',255)->comment('Mã phòng học');
             $table->string('subject_code',255)->comment('Mã môn học');
             $table->foreignId('user_code')->comment('Giảng viên');
