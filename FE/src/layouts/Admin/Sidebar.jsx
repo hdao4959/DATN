@@ -1,17 +1,19 @@
+import { Link } from "react-router-dom";
+
 const Sidebar = () => {
     return (
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
-                {/* Logo Header */}
                 <div className="logo-header" data-background-color="dark">
-                    <a href="../index.html" className="logo">
+                    <Link to={"/admin"} className="logo">
                         <img
-                            src="/assets/img/kaiadmin/logo_light.svg"
+                            src="https://ap.poly.edu.vn/images/whiteLogo.png"
+                            width={150}
                             alt="navbar brand"
                             className="navbar-brand"
                             height={20}
                         />
-                    </a>
+                    </Link>
                     <button
                         className="navbar-toggler sidenav-toggler ms-auto"
                         type="button"
@@ -270,9 +272,9 @@ const Sidebar = () => {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a href="../widgets.html">
-                                <i className="fas fa-desktop" />
-                                <p>Widgets</p>
+                            <a href="/admin/account/create">
+                                <i className="fas fa-plus" />
+                                <p>Create Account</p>
                                 <span className="badge badge-success">4</span>
                             </a>
                         </li>
