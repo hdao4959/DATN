@@ -1,212 +1,207 @@
-import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
 
-const ClassroomManagement = () => {
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      name: "Phòng 101",
-      capacity: 30,
-      status: "Available",
-      location: "Tầng 1",
-      schedule: [
-        { ca: 1, date: "2024-10-01" },
-        { ca: 3, date: "2024-10-01" },
-        { ca: 6, date: "2024-10-01" },
-        { ca: 2, date: "2024-10-02" },
-        { ca: 1, date: "2024-10-03" },
-        { ca: 1, date: "2024-10-04" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Phòng 102",
-      capacity: 30,
-      status: "Available",
-      location: "Tầng 1",
-      schedule: [
-        { ca: 1, date: "2024-10-01" },
-        { ca: 2, date: "2024-10-02" },
-      ],
-    },
-  ]);
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRoom, setEditingRoom] = useState(null);
-  const [showCalendarModal, setShowCalendarModal] = useState(false);
-  const [currentRoomId, setCurrentRoomId] = useState(null); 
+const ClassRoomsList = () => {
+    const { data, refetch } = useQuery({
+        queryKey: ["LIST_ROOMS"],
+        queryFn: async () => {
+            const res = await api.get("/admin/classrooms");
+            return res.data;
+        },
+    });
+    const classrooms = data?.classrooms?.data || [];
 
-  const handleDelete = (id) => {
-    const newRooms = rooms.filter((room) => room.id !== id);
-    setRooms(newRooms);
-    alert("Xóa thành công!");
-  };
-
-  const handleEdit = (room) => {
-    setEditingRoom(room);
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setEditingRoom(null);
-    setIsModalOpen(false);
-    setShowCalendarModal(false);
-  };
-
-  const handleOk = (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const values = {
-      name: form.name.value,
-      location: form.location.value,
-      capacity: form.capacity.value,
-      status: form.status.value,
-      startDate: form.startDate.value,
-      numberOfClasses: form.numberOfClasses.value,
+    const { mutate, isLoading } = useMutation({
+        mutationFn: (class_code) =>
+            api.delete(`/admin/classrooms/${class_code}`),
+        onSuccess: () => {
+            alert("Xóa phòng học thành công");
+            refetch();
+        },
+        onError: () => {
+            alert("Có lỗi xảy ra khi xóa phòng học");
+        },
+    });
+    const handleDelete = (class_code) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa phòng học này không?")) {
+            mutate(class_code);
+        }
     };
 
-    if (editingRoom) {
-      setRooms(
-        rooms.map((room) =>
-          room.id === editingRoom.id ? { ...editingRoom, ...values } : room
-        )
-      );
-      alert("Cập nhật phòng học thành công!");
-    } else {
-      setRooms([...rooms, { id: rooms.length + 1, ...values }]);
-      alert("Thêm phòng học mới thành công!");
-    }
-    setIsModalOpen(false);
-  };
+    if (!data) return <div>Loading...</div>;
 
-  return (
-    <div className="container">
-      <button
-        className="btn btn-primary mb-3"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Thêm phòng học
-      </button>
-
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Tên phòng</th>
-            <th>Vị trí</th>
-            <th>Sức chứa</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rooms.map((room) => (
-            <tr key={room.id}>
-              <td>{room.name}</td>
-              <td>{room.location}</td>
-              <td>{room.capacity}</td>
-              <td>{room.status}</td>
-              <td>
-                <button
-                  className="btn btn-primary me-2"
-                  onClick={() => handleEdit(room)}
-                >
-                  Sửa
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDelete(room.id)}
-                >
-                  Xóa
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Modal Add/Edit */}
-      {isModalOpen && (
-        <div className="modal show" tabIndex="-1" style={{ display: "block" }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  {editingRoom ? "Chỉnh sửa phòng học" : "Thêm phòng học"}
-                </h5>
-                <button type="button" className="btn-close" onClick={handleCancel}></button>
-              </div>
-              <div className="modal-body">
-                <form onSubmit={handleOk}>
-                  <div className="mb-3">
-                    <label className="form-label">Tên phòng</label>
-                    <input
-                      type="text"
-                      name="name"
-                      className="form-control"
-                      defaultValue={editingRoom?.name || ""}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Vị trí</label>
-                    <input
-                      type="text"
-                      name="location"
-                      className="form-control"
-                      defaultValue={editingRoom?.location || ""}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Sức chứa</label>
-                    <input
-                      type="number"
-                      name="capacity"
-                      className="form-control"
-                      defaultValue={editingRoom?.capacity || ""}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Trạng thái</label>
-                    <input
-                      type="text"
-                      name="status"
-                      className="form-control"
-                      defaultValue={editingRoom?.status || ""}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Ngày bắt đầu</label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      className="form-control"
-                      defaultValue={editingRoom?.startDate || ""}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Số buổi học</label>
-                    <input
-                      type="number"
-                      name="numberOfClasses"
-                      className="form-control"
-                      defaultValue={editingRoom?.numberOfClasses || 17}
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="btn btn-primary">
-                    {editingRoom ? "Cập nhật" : "Thêm mới"}
-                  </button>
-                </form>
-              </div>
+    return (
+        <>
+            <div className="mb-3 mt-2 flex items-center justify-between">
+                <Link to="/admin/classrooms/add">
+                    <button className="btn btn-primary">Thêm phòng học</button>
+                </Link>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+
+            <div className="card">
+                <div className="card-header">
+                    <h4 className="card-title">Classrooms Management</h4>
+                </div>
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="dataTables_wrapper container-fluid dt-bootstrap4">
+                            <div className="row">
+                                <div className="col-sm-12 col-md-6">
+                                    <div
+                                        id="basic-datatables_filter"
+                                        className="dataTables_filter"
+                                    >
+                                        <label>
+                                            Search:
+                                            <input
+                                                type="search"
+                                                className="form-control form-control-sm"
+                                                placeholder=""
+                                                aria-controls="basic-datatables"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    <table
+                                        id="basic-datatables"
+                                        className="display table table-striped table-hover dataTable"
+                                        role="grid"
+                                        aria-describedby="basic-datatables_info"
+                                    >
+                                        <thead>
+                                            <tr role="row">
+                                                <th>ID</th>
+                                                <th>Mã lớp học</th>
+                                                <th>Tên lớp</th>
+                                                <th>Mô tả</th>
+                                                <th>Số lượng sinh viên</th>
+                                                <th>Môn học</th>
+                                                <th>Trạng thái</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {classrooms.map((it, index) => (
+                                                <tr
+                                                    role="row"
+                                                    key={index}
+                                                    className="odd"
+                                                >
+                                                    <td>{it.id}</td>
+                                                    <td>{it.class_code}</td>
+                                                    <td>{it.class_name}</td>
+                                                    <td>{it.description}</td>
+                                                    <td>30</td>
+                                                    <td>LTWE</td>
+                                                    <td>
+                                                        {it.is_active == 1 ? (
+                                                            <i
+                                                                className="fas fa-check-circle"
+                                                                style={{
+                                                                    color: "green",
+                                                                }}
+                                                            ></i>
+                                                        ) : (
+                                                            <i
+                                                                className="fas fa-times-circle"
+                                                                style={{
+                                                                    color: "red",
+                                                                }}
+                                                            ></i>
+                                                        )}
+                                                    </td>
+
+                                                    <td>
+                                                        <div>
+                                                            <Link
+                                                                to={`/admin/classrooms/edit/${it.class_code}`}
+                                                            >
+                                                                <i className="fas fa-edit"></i>
+                                                            </Link>
+
+                                                            <i
+                                                                className="fas fa-trash ml-6"
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        it.class_code
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    isLoading
+                                                                }
+                                                            ></i>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-12 col-md-5">
+                                    <div className="dataTables_info">
+                                        Showing 1 to 10 of {data.length} entries
+                                    </div>
+                                </div>
+                                <div className="col-sm-12 col-md-7">
+                                    <div className="dataTables_paginate paging_simple_numbers">
+                                        <ul className="pagination">
+                                            <li className="paginate_button page-item previous disabled">
+                                                <a
+                                                    href="#"
+                                                    className="page-link"
+                                                >
+                                                    Previous
+                                                </a>
+                                            </li>
+                                            <li className="paginate_button page-item active">
+                                                <a
+                                                    href="#"
+                                                    className="page-link"
+                                                >
+                                                    1
+                                                </a>
+                                            </li>
+                                            <li className="paginate_button page-item ">
+                                                <a
+                                                    href="#"
+                                                    className="page-link"
+                                                >
+                                                    2
+                                                </a>
+                                            </li>
+                                            <li className="paginate_button page-item ">
+                                                <a
+                                                    href="#"
+                                                    className="page-link"
+                                                >
+                                                    3
+                                                </a>
+                                            </li>
+
+                                            <li className="paginate_button page-item next">
+                                                <a
+                                                    href="#"
+                                                    className="page-link"
+                                                >
+                                                    Next
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
 };
 
-export default ClassroomManagement;
+export default ClassRoomsList;
