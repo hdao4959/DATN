@@ -10,19 +10,19 @@ class Subject extends Model
     use HasFactory;
 
     protected $fillable = [
-        'subjectCode',
-        'subjectName',
+        'subject_code',
+        'subject_name',
         'tuition',
-        'reStudyFee',
-        'creditNumber',
-        'numberStudy',
-        'examDay',
+        're_study_fee',
+        'credit_number',
+        'number_study',
+        'exam_day',
         'description',
         'image',
-        'isActive',
-        'isDelete',
-        'semesterCode',
-        'majorCode',
-        'narrowMajorCode',
+        'is_active',
+        'is_delete',
+        'semester_code',
+        'major_code',
+        'narrow_major_code',
     ];
 }

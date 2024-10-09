@@ -15,20 +15,20 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->string('subjectCode',255);
-            $table->string('subjectName',255);
+            $table->string('subject_code',255);
+            $table->string('subject_name',255);
             $table->decimal('tuition', 8, 2);
-            $table->decimal('reStudyFee', 8, 2);
-            $table->integer('creditNumber');
-            $table->integer('numberStudy');
-            $table->text('examDay');
+            $table->decimal('re_study_fee', 8, 2);
+            $table->integer('credit_number');
+            $table->integer('number_study');
+            $table->text('exam_day');
             $table->text('description');
             $table->string('image',1000);
-            $table->boolean('isActive');
-            $table->boolean('isDelete');
-            $table->string('semesterCode',255);
-            $table->string('majorCode',255);
-            $table->string('narrowMajorCode',255);
+            $table->boolean('is_active');
+            $table->boolean('is_delete');
+            $table->string('semester_code',255);
+            $table->string('major_code',255);
+            $table->string('narrow_major_code',255);
             $table->timestamps();
         });
     }
