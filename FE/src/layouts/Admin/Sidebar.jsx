@@ -265,15 +265,15 @@ const Sidebar = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a href="../calendar.html">
-                                <i className="far fa-calendar-alt" />
-                                <p>Calendar</p>
+                            <a href="/admin/classrooms">
+                                <i className="fas fa-school" />
+                                <p>Classrooms</p>
                                 <span className="badge badge-info">1</span>
                             </a>
                         </li>
                         <li className="nav-item">
                             <a href="/admin/account/create">
-                                <i className="fas fa-plus" />
+                                <i className="fas fa-user" />
                                 <p>Create Account</p>
                                 <span className="badge badge-success">4</span>
                             </a>

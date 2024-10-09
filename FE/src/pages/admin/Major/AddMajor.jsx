@@ -10,13 +10,13 @@ const AddMajor = () => {
     const { data: listMajor } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/getListCategory/major");
+            const res = await api.get("/admin/getListMajor/major");
             return res.data;
         }
     });
     console.log(listMajor);
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post("/admin/category", data),
+        mutationFn: (data) => api.post("/admin/major", data),
         onSuccess: () => {
             queryClient.invalidateQueries(['majors']); // Invalidate query để cập nhật danh sách
             alert("Thêm chuyên ngành thành công");

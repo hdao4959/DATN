@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreClassRoomRequest extends FormRequest
+class UpdateClassRoomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class StoreClassRoomRequest extends FormRequest
     public function rules()
     {
         return [
-            'class_code' => 'required|unique:class_rooms,class_code',
-            'class_name' => 'required|unique:class_rooms,class_name',
+            'id' => 'integer',
+            'class_code' => 'required|unique:class_rooms,class_code,' . $this->route('classroom') . ',class_code',
+            'class_name' => 'required|unique:class_rooms,class_name,' . $this->route('classroom') . ',class_code',
             'description' => 'required',
             'date_from' => 'required',
             'date_to' => 'required',
@@ -55,4 +56,5 @@ class StoreClassRoomRequest extends FormRequest
     }
 
     protected $stopOnFirstFailure = true;
+
 }

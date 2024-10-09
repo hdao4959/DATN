@@ -6,14 +6,14 @@ const MajorList = () => {
     const { data, refetch } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/category");
+            const res = await api.get("/admin/major");
             return res.data;
         }
     });
 
     const { mutate, isLoading } = useMutation({
 
-        mutationFn: (id) => api.delete(`/admin/category/${id}`),
+        mutationFn: (id) => api.delete(`/admin/major/${id}`),
         onSuccess: () => {
             alert('Xóa chuyên ngành thành công');
             refetch();
