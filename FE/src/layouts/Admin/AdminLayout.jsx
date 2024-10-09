@@ -1,7 +1,41 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 const AdminLayout = () => {
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (token) {
+        var accessToken = token.access_token;
+        console.log("Access Token:", accessToken);
+    }
+
+    const Signout = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.ok) {
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
+
+                alert("Đăng xuất thành công");
+                window.location.href = "/signin";
+            } else {
+                const data = await response.json();
+                console.error("Lỗi khi đăng xuất:", data);
+                alert("Có lỗi xảy ra khi đăng xuất");
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+            alert("Có lỗi xảy ra khi gọi API");
+        }
+    };
     return (
         <div className="wrapper">
             <Sidebar />
@@ -9,7 +43,6 @@ const AdminLayout = () => {
             <div className="main-panel">
                 <div className="main-header">
                     <div className="main-header-logo">
-                        {/* Logo Header */}
                         <div
                             className="logo-header"
                             data-background-color="dark"
@@ -413,15 +446,15 @@ const AdminLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src="../assets/img/profile.jpg"
+                                                src={user.avatar}
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
                                         </div>
                                         <span className="profile-username">
-                                            <span className="op-7">Hi,</span>
+                                            <span className="op-7">Hi, </span>
                                             <span className="fw-bold">
-                                                Hizrian
+                                                {user.full_name}
                                             </span>
                                         </span>
                                     </a>
@@ -431,18 +464,20 @@ const AdminLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src="../assets/img/profile.jpg"
+                                                            src={user.avatar}
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />
                                                     </div>
                                                     <div className="u-text">
-                                                        <h4>Hizrian</h4>
+                                                        <h4>
+                                                            {user.full_name}
+                                                        </h4>
                                                         <p className="text-muted">
-                                                            hello@example.com
+                                                            {user.email}
                                                         </p>
                                                         <a
-                                                            href="profile.html"
+                                                            href="/admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -452,12 +487,13 @@ const AdminLayout = () => {
                                             </li>
                                             <li>
                                                 <div className="dropdown-divider" />
-                                                <a
+                                                <Link
+                                                    to={`account/details/${user.user_code}`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
                                                     My Profile
-                                                </a>
+                                                </Link>
                                                 <a
                                                     className="dropdown-item"
                                                     href="#"
@@ -479,10 +515,15 @@ const AdminLayout = () => {
                                                 </a>
                                                 <div className="dropdown-divider" />
                                                 <a
+                                                    onClick={Signout}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
-                                                    Logout
+                                                    {user ? (
+                                                        <b>Đăng xuất</b>
+                                                    ) : (
+                                                        ""
+                                                    )}
                                                 </a>
                                             </li>
                                         </div>
@@ -498,7 +539,7 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-                <footer className="footer">
+                {/* <footer className="footer">
                     <div className="container-fluid d-flex justify-content-between">
                         <nav className="pull-left">
                             <ul className="nav">
@@ -524,20 +565,8 @@ const AdminLayout = () => {
                                 </li>
                             </ul>
                         </nav>
-                        <div className="copyright">
-                            2024, made with{" "}
-                            <i className="fa fa-heart heart text-danger" /> by
-                            <a href="http://www.themekita.com">ThemeKita</a>
-                        </div>
-                        <div>
-                            Distributed by
-                            <a target="_blank" href="https://themewagon.com/">
-                                ThemeWagon
-                            </a>
-                            .
-                        </div>
                     </div>
-                </footer>
+                </footer> */}
             </div>
         </div>
     );

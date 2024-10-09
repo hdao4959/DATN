@@ -1,25 +1,34 @@
 import { Link } from "react-router-dom";
-
-const MAJOR_DATA = [
-    {
-        id: 1,
-        code: "WE",
-        name: "Lập trình Website",
-        status: 0,
-        type: "Kiểu 1",
-        parentMajor: "CNTT",
-    },
-    {
-        id: 2,
-        code: "MAR",
-        name: "Marketing",
-        status: 1,
-        type: "Kiểu 2",
-        parentMajor: "CNTT",
-    },
-];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
 
 const MajorList = () => {
+    const { data, refetch } = useQuery({
+        queryKey: ["LIST_MAJOR"],
+        queryFn: async () => {
+            const res = await api.get("/admin/major");
+            return res.data;
+        }
+    });
+
+    const { mutate, isLoading } = useMutation({
+
+        mutationFn: (id) => api.delete(`/admin/major/${id}`),
+        onSuccess: () => {
+            alert('Xóa chuyên ngành thành công');
+            refetch();
+        },
+        onError: () => {
+            alert('Có lỗi xảy ra khi xóa chuyên ngành');
+        }
+    });
+    const handleDelete = (id) => {
+        if (window.confirm('Bạn có chắc chắn muốn xóa chuyên ngành này không?')) {
+            mutate(id);
+        }
+    };
+    if (!data) return <div>Loading...</div>;
+
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
@@ -78,6 +87,7 @@ const MajorList = () => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
+                                <i className="fa-solid fa-circle-check fs-20 color-green"></i>
                                     <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"
@@ -86,80 +96,61 @@ const MajorList = () => {
                                     >
                                         <thead>
                                             <tr role="row">
-                                                <th
-                                                    className="sorting_asc"
-                                                    aria-controls="basic-datatables"
-                                                    aria-sort="ascending"
-                                                    aria-label="Name: activate to sort column descending"
-                                                >
-                                                    ID
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Mã
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Tên
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Chế độ hiển thị
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Kiểu
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Danh mục cha
-                                                </th>
-                                                <th
-                                                    className="sorting"
-                                                    aria-controls="basic-datatables"
-                                                >
-                                                    Actions
-                                                </th>
+                                                <th>ID</th>
+                                                <th>Mã chuyên ngành</th>
+                                                <th>Tên chuyên ngành</th>
+                                                {/* <th>Value</th>
+                                                <th>Mô tả</th> */}
+                                                <th>Trạng thái</th>
+                                                <th>Hình ảnh</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {MAJOR_DATA.map((it, index) => (
+                                            {data.map((it, index) => (
                                                 <tr
                                                     role="row"
                                                     key={index}
                                                     className="odd"
                                                 >
                                                     <td>{it.id}</td>
-                                                    <td>{it.code}</td>
-                                                    <td>{it.name}</td>
+                                                    <td>{it.cate_code}</td>
+                                                    <td>{it.cate_name}</td>
+                                                    {/* <td>{it.value}</td> */}
+                                                    {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        {it.status
-                                                            ? "Hiển thị"
-                                                            : "Ẩn"}
+                                                        {it.is_active == 1 ? (
+                                                            <i className="fas fa-check-circle fs-20 color-green" style={{color: 'green',fontSize: '25px'}}></i>
+                                                        ) : (
+                                                            <i className="fas fa-ban fs-20 color-danger" style={{color: 'red', fontSize: '25px'}}></i>
+                                                        )}
+
+
                                                     </td>
-                                                    <td>{it.type}</td>
-                                                    <td>{it.parentMajor}</td>
+                                                    <td>
+                                                        <img
+                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
+                                                            alt={it.name}
+                                                            width={50}
+                                                            height={50}
+                                                        />
+                                                    </td>
                                                     <td>
                                                         <div className="flex gap-x-2">
-                                                            <Link to="/admin/major/888/edit">
+                                                            <Link to={`/admin/major/${it.id}/edit`}>
                                                                 <button className="btn btn-primary">
                                                                     Edit
                                                                 </button>
                                                             </Link>
 
-                                                            <button className="btn btn-danger">
+                                                            <button
+                                                                className="btn btn-danger"
+                                                                onClick={() => handleDelete(it.id)}
+                                                                disabled={isLoading}
+                                                            >
                                                                 Delete
                                                             </button>
+
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -171,7 +162,7 @@ const MajorList = () => {
                             <div className="row">
                                 <div className="col-sm-12 col-md-5">
                                     <div className="dataTables_info">
-                                        Showing 1 to 10 of 57 entries
+                                        Showing 1 to 10 of {data.length} entries
                                     </div>
                                 </div>
                                 <div className="col-sm-12 col-md-7">

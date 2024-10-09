@@ -5,23 +5,44 @@ import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import MajorList from "./pages/admin/Major/MajorList";
 import AddMajor from "./pages/admin/Major/AddMajor";
 import EditMajor from "./pages/admin/Major/EditMajor";
+import Signin from "./pages/admin/Auth/Signin";
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
 import EditSubject from "./pages/admin/Subject/EditSubject";
+import CreateAccount from "./pages/admin/Account/CreateAccount";
+import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
+import CheckRole from "./pages/admin/Auth/CheckRole";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: "",
-            element: <h1>Hello World!</h1>,
+            element: <Signin />,
+        },
+
+        {
+            path: "/signin",
+            element: <Signin />,
         },
         {
             path: "admin",
-            element: <AdminLayout />,
+            element: (
+                <CheckRole>
+                    <AdminLayout />
+                </CheckRole>
+            ),
             children: [
                 {
                     path: "",
                     element: <Dashboard />,
+                },
+                {
+                    path: "account/create",
+                    element: <CreateAccount />,
+                },
+                {
+                    path: "account/details/:user_code",
+                    element: <ViewMyAccount />,
                 },
                 {
                     path: "major",
