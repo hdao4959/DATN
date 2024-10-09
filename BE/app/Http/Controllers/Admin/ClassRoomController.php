@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassRoom;
-use App\Http\Requests\StoreClassRoomRequest;
-use App\Http\Requests\UpdateClassRoomRequest;
+use App\Http\Requests\Classroom\StoreClassRoomRequest;
+use App\Http\Requests\Classroom\UpdateClassRoomRequest;
 
 class ClassRoomController extends Controller
 {
@@ -33,7 +33,7 @@ class ClassRoomController extends Controller
     public function index()
     {
         try {
-            $classrooms = ClassRoom::paginate(10);
+            $classrooms = ClassRoom::where('is_active', true)->paginate(10);
 
             if ($classrooms->isEmpty()) {
                 return response()->json([
@@ -76,7 +76,10 @@ class ClassRoomController extends Controller
     public function show(string $classCode)
     {
         try {
-            $classroom = ClassRoom::where('class_code', $classCode)->first();
+            $classroom = ClassRoom::where([
+                'class_code' =>  $classCode,
+                'is_active' => true
+            ])->first();
 
             if (!$classroom) {
                 return $this->handleInvalidId();
