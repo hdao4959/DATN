@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
+use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Api\CategoryRequest;
+use App\Http\Requests\Major\StoreMajorRequest;
+use App\Http\Requests\Major\UpdateMajorRequest;
 
-class CategoryController extends Controller
+class MajorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,13 +27,13 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CategoryRequest $request)
+    public function store(StoreMajorRequest $request)
 {
     try {
         $params = $request->except('_token');
 
         if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/category', 'public');
+            $fileName = $request->file('image')->store('uploads/image', 'public');
         } else {
             $fileName = null;
         }
@@ -83,27 +85,27 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CategoryRequest $request, string $id)
+    public function update(UpdateMajorRequest $request, string $id)
     {
         try {
             $params = $request->except('_token', '_method');
-            $listCategory = Category::findOrFail($id);
+            $listMajor = Category::findOrFail($id);
             if ($request->hasFile('image')) {
-                if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
-                    Storage::disk('public')->delete($listCategory->image);
+                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
+                    Storage::disk('public')->delete($listMajor->image);
                 }
-                $fileName = $request->file('image')->store('uploads/category', 'public');
+                $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
-                $fileName = $listCategory->image;
+                $fileName = $listMajor->image;
             }
             $params['image'] = $fileName;
-            $listCategory->update($params);
+            $listMajor->update($params);
 
             return response()->json([
                 'message' => 'Sửa thành công',
-                'data' => $listCategory
+                'data' => $listMajor
             ], 201);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
             return response()->json([
@@ -118,11 +120,11 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         try {
-            $listCategory = Category::findOrFail($id);
-            if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
-                Storage::disk('public')->delete($listCategory->image);
+            $listMajor = Category::findOrFail($id);
+            if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
+                Storage::disk('public')->delete($listMajor->image);
             }
-            $listCategory->delete($listCategory);
+            $listMajor->delete($listMajor);
 
             return response()->json([
                 'message' => 'Xoa thanh cong'
@@ -136,14 +138,14 @@ class CategoryController extends Controller
         }
     }
 
-    public function getAllCategory(string $type)
+    public function getAllMajor(string $type)
     {
         // dd($type);
         $data = DB::table('categories')->where('type', '=', $type)->get();
         return response()->json($data);
     }
 
-    public function getListCategory(string $type)
+    public function getListMajor(string $type)
     {
         // Lấy tất cả danh mục cha
         // dd($type);
@@ -172,6 +174,8 @@ class CategoryController extends Controller
                 'listItem'  => $subCategories
             ];
         });
+
+        //Cách 2
 
         return response()->json($data);
     }

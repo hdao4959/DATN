@@ -1,14 +1,13 @@
 <?php
 
 
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\Admin\ClassRoomController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MajorController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Admin\MajorController;
+use App\Http\Controllers\Admin\ClassRoomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,11 +46,8 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('classrooms', ClassRoomController::class);
     Route::apiResource('users', UserController::class);
 
-    Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
     Route::apiResource('major', MajorController::class);
-
-    Route::apiResource('category', CategoryController::class);
-    Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
-    Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
-
+    Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+    Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
+ 
 });
