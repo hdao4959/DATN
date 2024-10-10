@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"; // Thêm useQueryClient
+import { useMutation, useQuery } from "@tanstack/react-query"; // Thêm useQueryClient
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
+import { toast } from "react-toastify";
 
 const AddMajor = () => {
     const { register, handleSubmit, reset } = useForm();
     const nav = useNavigate();
-    const queryClient = useQueryClient(); // Khởi tạo queryClient
     const { data: listMajor } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
@@ -18,13 +18,12 @@ const AddMajor = () => {
     const { mutate } = useMutation({
         mutationFn: (data) => api.post("/admin/major", data),
         onSuccess: () => {
-            queryClient.invalidateQueries(['majors']); // Invalidate query để cập nhật danh sách
-            alert("Thêm chuyên ngành thành công");
+            toast.success("Thêm chuyên ngành thành công");
             reset();
             nav("/admin/major");
         },
         onError: (error) => {
-            alert(error?.response?.data?.message || "Có lỗi xảy ra");
+            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
         },
     });
 
@@ -35,8 +34,7 @@ const AddMajor = () => {
         formData.append('parrent_code', data.parrent_code);
         formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
         formData.append('description', data.description);
-        formData.append('type', "major");
-        formData.append('value', "123");
+        formData.append('value', data.value);
 
         // Thêm file vào FormData
         if (data.image && data.image.length > 0) {
@@ -90,7 +88,7 @@ const AddMajor = () => {
                                             {...register("parrent_code")}
                                         >
                                             <option value="">-- Lựa chọn --</option>
-                                            {listMajor.map((element, index) => (
+                                            {listMajor?.map((element, index) => (
                                                 <option key={index} value={element.cate_code}>
                                                     {element.cate_name}
                                                 </option>

@@ -1,33 +1,43 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
+import Modal from "./Modal";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import Spinner from "../../../components/Spinner/Spinner";
 
 const MajorList = () => {
-    const { data, refetch } = useQuery({
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedMajor, setSelectedMajor] = useState();
+
+    const onModalVisible = () => setModalOpen(prev => !prev);
+
+    const { data, refetch, isFetching } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
             const res = await api.get("/admin/major");
-            return res.data;
-        }
+            return res.data.data;
+        },
     });
 
     const { mutate, isLoading } = useMutation({
 
         mutationFn: (id) => api.delete(`/admin/major/${id}`),
         onSuccess: () => {
-            alert('Xóa chuyên ngành thành công');
+            toast.success('Xóa chuyên ngành thành công');
+            onModalVisible();
             refetch();
         },
         onError: () => {
-            alert('Có lỗi xảy ra khi xóa chuyên ngành');
+            toast.error('Có lỗi xảy ra khi xóa chuyên ngành');
         }
     });
     const handleDelete = (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa chuyên ngành này không?')) {
-            mutate(id);
-        }
+        setSelectedMajor(id);
+        onModalVisible();
     };
-    if (!data) return <div>Loading...</div>;
+
+    if (isFetching && !data) return <Spinner />;
 
     return (
         <>
@@ -217,6 +227,16 @@ const MajorList = () => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                title='Xoá chuyên ngành'
+                description='Bạn có chắc chắn muốn xoá chuyên ngành này?'
+                closeTxt='Huỷ'
+                okTxt='Xác nhận'
+                visible={modalOpen}
+                onVisible={onModalVisible}
+                onOk={() => mutate(selectedMajor)}
+            />
         </>
     );
 };
