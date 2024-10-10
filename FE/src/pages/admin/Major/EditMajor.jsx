@@ -15,7 +15,7 @@ const EditMajor = () => {
                         <div className="card-header">
                             <div className="card-title">Edit Major</div>
                         </div>
-                        <div className="card-body">z
+                        <div className="card-body">
                             <div className="row">
                                 <div className="form-group">
                                     <label htmlFor="email2">
