@@ -20,7 +20,7 @@ class MajorController extends Controller
     public function index()
     {
         try {
-            $data = User::paginate(20);
+            $data = Category::paginate(20);
 
             if ($data->isEmpty()) {
                 return response()->json(
