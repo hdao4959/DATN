@@ -47,5 +47,6 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
     Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
- 
+    
+    Route::apiResource('schoolrooms', SchoolRoomController::class);
 });
