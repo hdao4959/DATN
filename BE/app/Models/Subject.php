@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
 {
+    // môn học
     use HasFactory;
 
     protected $fillable = [

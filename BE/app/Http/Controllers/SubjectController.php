@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Subject;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\SubjectRepository;
 
 class SubjectController extends Controller
 {
     protected $subjectRepository;
 
-    public function __construct(SubjectRepository $subjectRepository){
+    public function __construct(SubjectRepositoryInterface $subjectRepository){
         $this->subjectRepository = $subjectRepository;
     }
+
     public function index()
     {
         $subjects = $this->subjectRepository->getAll();
@@ -31,7 +33,6 @@ class SubjectController extends Controller
         }
     }
 
-
     public function show(string $id)
     {
         try {
@@ -43,18 +44,16 @@ class SubjectController extends Controller
         }
     }
 
-
     public function update(UpdateSubjectRequest $request, string $id)
     {
         try {
-            $subject = $this->subjectRepository->update($request->toArray() , $id);
+            $this->subjectRepository->update($request->toArray() , $id);
             return response()->json(['message' => 'cập nhật thành công' ]);
         } catch (\Throwable $th) {
             return response()->json(['message'=>'không tìm thấy môn học'], 400);
         }
 
     }
-
 
     public function destroy(string $id)
     {

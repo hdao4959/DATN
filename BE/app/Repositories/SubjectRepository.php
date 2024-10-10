@@ -8,29 +8,25 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SubjectRepository implements SubjectRepositoryInterface {
 
-    protected $model;
 
-    public function __construct(Subject $subject){
-        $this->model = $subject;
-    }
     public function getAll(){
-        return $this->model->all();
+        return Subject::all();
     }
 
     public function getById($id){
-        return $this->model->findOrFail($id);
+        return Subject::findOrFail($id);
     }
 
     public function create(array $data){
-        return $this->model->create($data);
+        return Subject::create($data);
     }
 
     public function update($data, $id) {
-        return $this->model->findOrFail($id)->update($data);
+        return Subject::findOrFail($id)->update($data);
     }
 
     public function delete($id){
-        return $this->model->findOrFail($id)->delete();
+        return Subject::findOrFail($id)->delete();
     }
 
 }

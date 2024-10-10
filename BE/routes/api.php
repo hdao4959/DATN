@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\SemesterController;
+use App\Http\Controllers\TimeSlotController;
+use App\Models\Semester;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,5 +58,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
 
+    Route::apiResource('timeslot', TimeSlotController::class);
 
+    Route::apiResource('semester', SemesterController::class);
 });
