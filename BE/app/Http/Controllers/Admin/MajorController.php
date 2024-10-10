@@ -21,6 +21,14 @@ class MajorController extends Controller
     {
         try {
             $data = Category::where('type', '=', 'major')->paginate(20);
+            // $search = $request->input('search');
+            // $data = Category::where('type', '=', 'major')
+            //                     ->when($search, function ($query, $search) {
+            //                         return $query
+            //                                 ->where('cate_name', 'like', "%{$search}%");
+            //                                 // ->orwhere('ma_san_pham', 'like', "%{$search}%");
+            //                     })
+            //                     ->paginate(4);
             if ($data->isEmpty()) {
                 return response()->json(
                     ['message' => 'Không có chuyên ngành nào!'],
