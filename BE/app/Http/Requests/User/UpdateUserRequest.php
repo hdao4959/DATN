@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
@@ -24,9 +24,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_code' => 'required|unique:users,user_code,' . $this->user_code,
+            'user_code' => 'required|unique:users,user_code,' . $this->route('user') . ',user_code',
             'full_name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,' . $this->route('user') . ',user_code',
             'phone_number' => 'required|regex:/^(0[0-9]{9})$/',
             'address' => 'required',
             'citizen_card_number' => 'required',
@@ -40,6 +40,7 @@ class UpdateUserRequest extends FormRequest
             'user_code.required' => 'Bạn chưa nhập mã user',
             'full_name.required' => 'Bạn chưa nhập họ và tên',
             'email.required' => 'Bạn chưa nhập email',
+            'email.unique' => 'Email đã được sử dụng',
             'email.email' => 'Định dạng Email không hợp lệ',
             'phone_number.required' => 'Bạn chưa nhập số đt',
             'phone_number.regex' => 'Số điện thoại không hợp lệ',

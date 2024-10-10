@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Api\CategoryRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoryController extends Controller
 {
@@ -26,33 +27,30 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CategoryRequest $request)
-{
-    try {
-        $params = $request->except('_token');
+    {
 
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/category', 'public');
-        } else {
-            $fileName = null;
+        try {
+            $params = $request->except('_token');
+            if ($request->hasFile('image')) {
+                $fileName = $request->file('image')->store('uploads/category', 'public');
+            } else {
+                $fileName = null;
+            }
+            $params['image'] = $fileName;
+            Category::create($params);
+
+            return response()->json([
+                'message' => 'Tạo mới thành công',
+                'data' => $params
+            ]); 
+        } catch (\Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+           
+            return response()->json([
+                'message' => 'Lỗi không xác định'
+            ], 500);                
         }
-
-        $params['image'] = $fileName;
-        Category::create($params);
-
-        return response()->json([
-            'message' => 'Tạo mới thành công',
-            'data' => $params
-        ]);
-    } catch (\Throwable $th) {
-        Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
-        return response()->json([
-            'message' => 'Lỗi không xác định',
-            'error' => $th->getMessage()
-        ], 500);
     }
-}
-
 
     /**
      * Display the specified resource.
@@ -72,11 +70,13 @@ class CategoryController extends Controller
                 return response()->json([
                     'message' => 'Không tồn tại id = ' . $id
                 ], 404);
-            } else {
+            }
+            else {
                 return response()->json([
                     'message' => 'Lỗi không xác định'
-                ], 500);
+                ], 500);                
             }
+
         }
     }
 
@@ -98,17 +98,17 @@ class CategoryController extends Controller
             }
             $params['image'] = $fileName;
             $listCategory->update($params);
-
+    
             return response()->json([
                 'message' => 'Sửa thành công',
                 'data' => $listCategory
             ], 201);
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
+           
             return response()->json([
                 'message' => 'Lỗi không xác định'
-            ], 500);
+            ], 500);    
         }
     }
 
@@ -123,56 +123,22 @@ class CategoryController extends Controller
                 Storage::disk('public')->delete($listCategory->image);
             }
             $listCategory->delete($listCategory);
-
+    
             return response()->json([
                 'message' => 'Xoa thanh cong'
             ], 404);
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
+           
             return response()->json([
                 'message' => 'Lỗi không xác định'
-            ], 500);
+            ], 500);    
         }
     }
 
-    public function getAllCategory(string $type)
-    {
+    public function getAllCategory (string $type) {
         // dd($type);
-        $data = DB::table('categories')->where('type', '=', $type)->get();
-        return response()->json($data);
-    }
-
-    public function getListCategory(string $type)
-    {
-        // Lấy tất cả danh mục cha
-        // dd($type);
-        $categories = DB::table('categories')
-            ->where('type', '=', $type)
-            ->where('parrent_code', '=', "")
-            // ->whereNull('parrent_code')
-            ->get();
-        // dd($categories);
-        // return;
-
-        // Duyệt qua từng danh mục cha để lấy danh mục con
-        $data = $categories->map(function ($category) {
-            // Lấy danh mục con dựa trên parent_code
-            $subCategories = DB::table('categories')
-                ->where('parrent_code', '=', $category->cate_code)
-                ->get();
-
-            // Trả về cấu trúc dữ liệu theo yêu cầu
-            return [
-                'id' => $category->id,
-                'cate_code' => $category->cate_code,
-                'cate_name' => $category->cate_name,
-                'image' => $category->image,
-                'description' => $category->description,
-                'listItem'  => $subCategories
-            ];
-        });
-
+        $data = DB::table('categories')->where('type','=', $type)->get();
         return response()->json($data);
     }
 }

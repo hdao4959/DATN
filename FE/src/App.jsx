@@ -1,4 +1,6 @@
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from "./layouts/Admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
@@ -12,6 +14,10 @@ import EditSubject from "./pages/admin/Subject/EditSubject";
 import CreateAccount from "./pages/admin/Account/CreateAccount";
 import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
 import CheckRole from "./pages/admin/Auth/CheckRole";
+import ClassRoomsList from "./pages/admin/Rooms/ListRooms";
+import AddClassroom from "./pages/admin/Rooms/AddClassRoom";
+import EditClassroom from "./pages/admin/Rooms/EditClassroom";
+import ListAccount from "./pages/admin/Account/ListAccount";
 
 function App() {
     const router = createBrowserRouter([
@@ -35,6 +41,10 @@ function App() {
                 {
                     path: "",
                     element: <Dashboard />,
+                },
+                {
+                    path: "account/list",
+                    element: <ListAccount />,
                 },
                 {
                     path: "account/create",
@@ -68,11 +78,28 @@ function App() {
                     path: "subjects/:id/edit",
                     element: <EditSubject />,
                 },
+                {
+                    path: "classrooms",
+                    element: <ClassRoomsList />,
+                },
+                {
+                    path: "classrooms/add",
+                    element: <AddClassroom />,
+                },
+                {
+                    path: "classrooms/edit/:class_code",
+                    element: <EditClassroom />,
+                },
             ],
         },
     ]);
 
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <ToastContainer />
+            <RouterProvider router={router} />;
+        </>
+    );
 }
 
 export default App;
