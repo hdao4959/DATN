@@ -2,17 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Major\StoreMajorRequest;
-use App\Http\Requests\Major\UpdateMajorRequest;
 
-class MajorController extends Controller
+class SchoolRoomController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +14,8 @@ class MajorController extends Controller
     public function index()
     {
         try {
-            $data = Category::where('type', '=', 'major')->paginate(20);
+            $data = Category::paginate(20);
+
             if ($data->isEmpty()) {
                 return response()->json(
                     ['message' => 'Không có chuyên ngành nào!'],
@@ -178,62 +173,4 @@ class MajorController extends Controller
         $data = DB::table('categories')->where('type', '=', $type)->get();
         return response()->json($data);
     }
-
-    public function getListMajor(string $type)
-    {
-        // Lấy tất cả danh mục cha
-        // dd($type);
-        $categories = DB::table('categories')
-            ->where('type', '=', $type)
-            ->where('parrent_code', '=', "")
-            // ->whereNull('parrent_code')
-            ->get();
-        // dd($categories);
-        // return;
-
-        // Duyệt qua từng danh mục cha để lấy danh mục con
-        $data = $categories->map(function ($category) {
-            // Lấy danh mục con dựa trên parent_code
-            $subCategories = DB::table('categories')
-                ->where('parrent_code', '=', $category->cate_code)
-                ->get();
-
-            // Trả về cấu trúc dữ liệu theo yêu cầu
-            return [
-                'id' => $category->id,
-                'cate_code' => $category->cate_code,
-                'cate_name' => $category->cate_name,
-                'image' => $category->image,
-                'description' => $category->description,
-                'listItem'  => $subCategories
-            ];
-        });
-
-        //Cách 2
-
-        return response()->json($data);
-    }
-
-    public function bulkUpdateType(Request $request)
-    {
-        try {
-            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
-            foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'type'
-                $category = Category::findOrFail($id);
-                $category->ia_active = $active;
-                $category->save();
-            }
-
-            return response()->json([
-                'message' => 'Loại đã được cập nhật thành công!'
-            ], 200);
-        } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
-        }
-    }    
 }
