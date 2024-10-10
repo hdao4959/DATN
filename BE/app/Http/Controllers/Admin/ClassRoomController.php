@@ -55,6 +55,11 @@ class ClassRoomController extends Controller
     {
         try {
             $data = $request->all();
+            if(!$request->has('is_active')){
+                $data['is_active'] = false;
+            }else{
+                $data['is_active'] = true;
+            }
             ClassRoom::create($data);
 
             return response()->json(
@@ -101,6 +106,12 @@ class ClassRoomController extends Controller
         try {
             $data = $request->all();
 
+            if($request->has('is_active')){
+                $data['is_active'] = true;
+            }else{
+                $data['is_active'] = false;
+            }
+
             $classroom = Classroom::where('class_code', $classCode)->first();
 
             if(!$classroom){
@@ -115,7 +126,6 @@ class ClassRoomController extends Controller
             
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
-
         }
        
     }
