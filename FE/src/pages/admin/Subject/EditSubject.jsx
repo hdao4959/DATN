@@ -1,16 +1,7 @@
-<<<<<<< Updated upstream
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-=======
-
-
-import React, { useEffect } from 'react';
-import axios from 'axios';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
->>>>>>> Stashed changes
 
 const EditSubject = ({ subject, handleClose }) => {
     const queryClient = useQueryClient();
@@ -201,10 +192,6 @@ const EditSubject = ({ subject, handleClose }) => {
             </form>
         </div>
     );
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 };
 
 export default EditSubject;
