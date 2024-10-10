@@ -34,8 +34,7 @@ const AddMajor = () => {
         formData.append('parrent_code', data.parrent_code);
         formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
         formData.append('description', data.description);
-        formData.append('type', "major");
-        formData.append('value', "123");
+        formData.append('value', data.value);
 
         // Thêm file vào FormData
         if (data.image && data.image.length > 0) {
@@ -89,7 +88,7 @@ const AddMajor = () => {
                                             {...register("parrent_code")}
                                         >
                                             <option value="">-- Lựa chọn --</option>
-                                            {listMajor.map((element, index) => (
+                                            {listMajor?.map((element, index) => (
                                                 <option key={index} value={element.cate_code}>
                                                     {element.cate_name}
                                                 </option>

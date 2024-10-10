@@ -4,6 +4,7 @@ import api from "../../../config/axios";
 import Modal from "./Modal";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Spinner from "../../../components/Spinner/Spinner";
 
 const MajorList = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -11,12 +12,12 @@ const MajorList = () => {
 
     const onModalVisible = () => setModalOpen(prev => !prev);
 
-    const { data, refetch } = useQuery({
+    const { data, refetch, isFetching } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
             const res = await api.get("/admin/major");
-            return res.data;
-        }
+            return res.data.data;
+        },
     });
 
     const { mutate, isLoading } = useMutation({
@@ -36,7 +37,7 @@ const MajorList = () => {
         onModalVisible();
     };
 
-    if (!data) return <div>Loading...</div>;
+    if (isFetching && !data) return <Spinner />;
 
     return (
         <>
