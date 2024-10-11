@@ -1,43 +1,35 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import api from "../../../config/axios";
-import { toast } from "react-toastify";
+import { useMutation } from '@tanstack/react-query';
+import React from 'react'
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../../../config/axios';
+import { toast } from 'react-toastify';
 
-const AddMajor = () => {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm(); // Lấy formState để xử lý lỗi
+const AddSchoolRoom = () => {
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const nav = useNavigate();
-    const { data: listMajor } = useQuery({
-        queryKey: ["LIST_MAJOR"],
-        queryFn: async () => {
-            const res = await api.get("/admin/getListMajor/major");
-            return res.data;
-        }
-    });
-    console.log(listMajor);
+
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post("/admin/major", data),
+        mutationFn: (data) => api.post("admin/schoolrooms", data),
         onSuccess: () => {
-            toast.success("Thêm chuyên ngành thành công");
+            toast.success("Thêm phòng học thành công");
             reset();
-            nav("/admin/major");
+            nav("/admin/schoolrooms");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
-        },
+        }
     });
 
     const onSubmit = (data) => {
         const formData = new FormData();
         formData.append('cate_code', data.cate_code);
         formData.append('cate_name', data.cate_name);
-        formData.append('parrent_code', data.parrent_code);
         formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
         formData.append('description', data.description);
         formData.append('value', data.value);
-        formData.append('type', 'major');
+        formData.append('type', 'School Room');
 
-        // Thêm file vào FormData
         if (data.image && data.image.length > 0) {
             formData.append('image', data.image[0]);
         }
@@ -48,8 +40,8 @@ const AddMajor = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
-                    <button className="btn btn-primary">DS chuyên ngành</button>
+                <Link to="/admin/schoolrooms">
+                    <button className="btn btn-primary">DS phòng học</button>
                 </Link>
             </div>
 
@@ -58,17 +50,17 @@ const AddMajor = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Thêm Chuyên Ngành*</div>
+                                <div className="card-title">Thêm Phòng Học</div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
-                                        <label htmlFor="cate_code" className="text-danger">Mã chuyên ngành*</label>
+                                        <label htmlFor="cate_code" className="text-danger">Mã phòng học*</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_code", { required: "Mã chuyên ngành là bắt buộc" })}
-                                            placeholder="Nhập mã chuyên ngành"
+                                            {...register("cate_code", { required: "Mã phòng học là bắt buộc" })}
+                                            placeholder="Nhập mã phòng học"
                                         />
                                         {errors.cate_code && (
                                             <span className="text-danger">{errors.cate_code.message}</span>
@@ -76,12 +68,12 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="cate_name" className="text-danger">Tên chuyên ngành*</label>
+                                        <label htmlFor="cate_name" className="text-danger">Tên phòng học*</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_name", { required: "Tên chuyên ngành là bắt buộc" })}
-                                            placeholder="Nhập tên chuyên ngành"
+                                            {...register("cate_name", { required: "Tên phòng học là bắt buộc" })}
+                                            placeholder="Nhập tên phòng học"
                                         />
                                         {errors.cate_name && (
                                             <span className="text-danger">{errors.cate_name.message}</span>
@@ -89,39 +81,23 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parrent_code">Chuyên ngành cha</label>
-                                        <select
-                                            className="form-select"
-                                            {...register("parrent_code")}
-                                        >
-                                            <option value="">-- Lựa chọn --</option>
-                                            {listMajor?.map((element, index) => (
-                                                <option key={index} value={element.cate_code}>
-                                                    {element.cate_name}
-                                                </option>
-                                            ))}
-
-                                        </select>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="value">Giá trị</label>
+                                        <label htmlFor="value">Số lượng sinh viên</label>
                                         <input
                                             type="text"
                                             className="form-control"
                                             {...register("value")}
-                                            placeholder="Nhập giá trị"
+                                            placeholder="Nhập số lượng sinh viên"
                                         />
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active">Trạng thái</label>
+                                        <label htmlFor="is_active" className="text-danger">Trạng thái*</label>
                                         <select
                                             className="form-select"
                                             {...register("is_active", { required: "Trạng thái là bắt buộc" })}
                                         >
-                                            <option value="true">Công khai</option>
-                                            <option value="false">Ẩn</option>
+                                            <option value="true">Hoạt động</option>
+                                            <option value="false">Không hoạt động</option>
                                         </select>
                                         {errors.is_active && (
                                             <span className="text-danger">{errors.is_active.message}</span>
@@ -146,14 +122,13 @@ const AddMajor = () => {
                                             placeholder="Nhập mô tả"
                                         />
                                     </div>
-
                                 </div>
                             </div>
                             <div className="card-action gap-x-3 flex">
                                 <button type="submit" className="btn btn-success">
                                     Submit
                                 </button>
-                                <button type="button" className="btn btn-danger" onClick={() => nav("/admin/major")}>
+                                <button type="button" className="btn btn-danger" onClick={() => nav("/admin/schoolrooms")}>
                                     Hủy
                                 </button>
                             </div>
@@ -165,4 +140,4 @@ const AddMajor = () => {
     );
 };
 
-export default AddMajor;
+export default AddSchoolRoom;

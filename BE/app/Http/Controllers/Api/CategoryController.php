@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Api\CategoryRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoryController extends Controller
 {
@@ -126,7 +125,7 @@ class CategoryController extends Controller
     
             return response()->json([
                 'message' => 'Xoa thanh cong'
-            ], 404);
+            ], 200);
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
            

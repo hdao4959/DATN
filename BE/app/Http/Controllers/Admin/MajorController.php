@@ -19,9 +19,30 @@ class MajorController extends Controller
      */
     public function index()
     {
-        $data = Category::get();
+        try {
+            $data = Category::where('type', '=', 'major')->paginate(20);
+            // $search = $request->input('search');
+            // $data = Category::where('type', '=', 'major')
+            //                     ->when($search, function ($query, $search) {
+            //                         return $query
+            //                                 ->where('cate_name', 'like', "%{$search}%");
+            //                                 // ->orwhere('ma_san_pham', 'like', "%{$search}%");
+            //                     })
+            //                     ->paginate(4);
+            if ($data->isEmpty()) {
+                return response()->json(
+                    ['message' => 'Không có chuyên ngành nào!'],
+                    404
+                );
+            }
+            return response()->json($data, 200);
+        } catch (Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-        return response()->json($data);
+            return response()->json([
+                'message' => 'Lỗi không xác định'
+            ], 500);
+        }
     }
 
     /**
@@ -62,12 +83,19 @@ class MajorController extends Controller
     public function show(string $id)
     {
         try {
-            $data = Category::query()->findOrFail($id);
+            $major = Category::where('id', $id)->first();
+            if (!$major) {
+                return response()->json([
+                    'message' => "Chuyên ngành không tồn tại!"
+                ], 404);
+            } else {
+                $data = Category::query()->findOrFail($id);
 
-            return response()->json([
-                'message' => 'Chi tiết danh muc = ' . $id,
-                'data' => $data
-            ]);
+                return response()->json([
+                    'message' => 'Chi tiết danh muc = ' . $id,
+                    'data' => $data
+                ]);                
+            }
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
             if ($th instanceof ModelNotFoundException) {
@@ -88,23 +116,30 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $id)
     {
         try {
-            $params = $request->except('_token', '_method');
-            $listMajor = Category::findOrFail($id);
-            if ($request->hasFile('image')) {
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
-                }
-                $fileName = $request->file('image')->store('uploads/image', 'public');
+            $major = Category::where('id', $id)->first();
+            if (!$major) {
+                return response()->json([
+                    'message' => "Chuyên ngành không tồn tại!"
+                ], 404);
             } else {
-                $fileName = $listMajor->image;
-            }
-            $params['image'] = $fileName;
-            $listMajor->update($params);
+                $params = $request->except('_token', '_method');
+                $listMajor = Category::findOrFail($id);
+                if ($request->hasFile('image')) {
+                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
+                        Storage::disk('public')->delete($listMajor->image);
+                    }
+                    $fileName = $request->file('image')->store('uploads/image', 'public');
+                } else {
+                    $fileName = $listMajor->image;
+                }
+                $params['image'] = $fileName;
+                $listMajor->update($params);
 
-            return response()->json([
-                'message' => 'Sửa thành công',
-                'data' => $listMajor
-            ], 201);
+                return response()->json([
+                    'message' => 'Sửa thành công',
+                    'data' => $listMajor
+                ], 201);          
+            }
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
@@ -120,15 +155,22 @@ class MajorController extends Controller
     public function destroy(string $id)
     {
         try {
-            $listMajor = Category::findOrFail($id);
-            if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                Storage::disk('public')->delete($listMajor->image);
-            }
-            $listMajor->delete($listMajor);
+            $major = Category::where('id', $id)->first();
+            if (!$major) {
+                return response()->json([
+                    'message' => "Chuyên ngành không tồn tại!"
+                ], 404);
+            } else {
+                $listMajor = Category::findOrFail($id);
+                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
+                    Storage::disk('public')->delete($listMajor->image);
+                }
+                $listMajor->delete($listMajor);
 
-            return response()->json([
-                'message' => 'Xoa thanh cong'
-            ], 404);
+                return response()->json([
+                    'message' => 'Xoa thanh cong'
+                ], 200);            
+            }
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
@@ -179,4 +221,27 @@ class MajorController extends Controller
 
         return response()->json($data);
     }
+
+    public function bulkUpdateType(Request $request)
+    {
+        try {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
+            foreach ($activies as $id => $active) {
+                // Tìm category theo ID và cập nhật trường 'type'
+                $category = Category::findOrFail($id);
+                $category->ia_active = $active;
+                $category->save();
+            }
+
+            return response()->json([
+                'message' => 'Loại đã được cập nhật thành công!'
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+            return response()->json([
+                'message' => 'Lỗi không xác định'
+            ], 500);
+        }
+    }    
 }

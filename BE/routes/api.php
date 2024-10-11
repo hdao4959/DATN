@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\SchoolRoomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,5 +47,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('major', MajorController::class);
     Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
     Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
- 
+    Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
+    
+    Route::apiResource('schoolrooms', SchoolRoomController::class);
 });
