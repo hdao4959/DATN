@@ -43,7 +43,7 @@ function App() {
                     element: <Dashboard />,
                 },
                 {
-                    path: "account/list",
+                    path: "account",
                     element: <ListAccount />,
                 },
                 {

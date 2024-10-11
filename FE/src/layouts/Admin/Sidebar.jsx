@@ -272,9 +272,9 @@ const Sidebar = () => {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a href="/admin/account/create">
+                            <a href="/admin/account">
                                 <i className="fas fa-user" />
-                                <p>Create Account</p>
+                                <p>Account Manager</p>
                                 <span className="badge badge-success">4</span>
                             </a>
                         </li>
