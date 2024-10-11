@@ -4,6 +4,7 @@ namespace App\Http\Requests\SchoolRoom;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException; // Thêm dòng này
 
 class StoreSchoolRoomRequest extends FormRequest
 {
@@ -31,7 +32,8 @@ class StoreSchoolRoomRequest extends FormRequest
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'cate_code.required' => 'Bạn chưa nhập mã phòng học',
             'cate_code.unique' => 'Mã phòng học đã được sử dụng',
@@ -53,6 +55,6 @@ class StoreSchoolRoomRequest extends FormRequest
             'errors' => $errors->messages()
         ], 400);
 
-        throw new HttpResponseException($response);
+        throw new HttpResponseException($response); // Dòng này đã đúng, chỉ thiếu import
     }
 }

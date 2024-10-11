@@ -32,7 +32,8 @@ class StoreMajorRequest extends FormRequest
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'cate_code.required' => 'Bạn chưa nhập mã chuyên ngành',
             'cate_code.unique' => 'Mã chuyên ngành đã được sử dụng',
