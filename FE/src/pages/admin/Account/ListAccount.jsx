@@ -1,83 +1,52 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
-import Modal from "./Modal";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import Spinner from "../../../components/Spinner/Spinner";
 
-const MajorList = () => {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedMajor, setSelectedMajor] = useState();
-
-    const onModalVisible = () => setModalOpen(prev => !prev);
-
-    const { data, refetch, isFetching } = useQuery({
-        queryKey: ["LIST_MAJOR"],
+const ListAccount = () => {
+    const { data, refetch } = useQuery({
+        queryKey: ["LIST_ACCOUNT"],
         queryFn: async () => {
-            const res = await api.get("/admin/major");
-            return res.data.data;
+            const res = await api.get("/admin/users");
+            return res.data;
         },
     });
+    const users = data?.data || [];
+    console.log(users);
 
     const { mutate, isLoading } = useMutation({
-
-        mutationFn: (id) => api.delete(`/admin/major/${id}`),
+        mutationFn: (user_code) => api.delete(`/admin/users/${user_code}`),
         onSuccess: () => {
-            toast.success('Xóa chuyên ngành thành công');
-            onModalVisible();
+            alert("Xóa tài khoản thành công");
             refetch();
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi xóa chuyên ngành');
-        }
+            alert("Có lỗi xảy ra khi xóa tài khoản");
+        },
     });
-    const handleDelete = (id) => {
-        setSelectedMajor(id);
-        onModalVisible();
+    const handleDelete = (user_code) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
+            mutate(user_code);
+        }
     };
 
-    if (isFetching && !data) return <Spinner />;
+    if (!data) return <div>Loading...</div>;
 
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/major/add">
-                    <button className="btn btn-primary">
-                        Thêm chuyên ngành
-                    </button>
+                <Link to="/admin/account/create">
+                    <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Major Management</h4>
+                    <h4 className="card-title">Account Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
                         <div className="dataTables_wrapper container-fluid dt-bootstrap4">
                             <div className="row">
-                                <div className="col-sm-12 col-md-6">
-                                    <div
-                                        className="dataTables_length"
-                                        id="basic-datatables_length"
-                                    >
-                                        <label>
-                                            Show{" "}
-                                            <select
-                                                name="basic-datatables_length"
-                                                aria-controls="basic-datatables"
-                                                className="form-control form-control-sm"
-                                            >
-                                                <option value={10}>10</option>
-                                                <option value={25}>25</option>
-                                                <option value={50}>50</option>
-                                                <option value={100}>100</option>
-                                            </select>{" "}
-                                            entries
-                                        </label>
-                                    </div>
-                                </div>
                                 <div className="col-sm-12 col-md-6">
                                     <div
                                         id="basic-datatables_filter"
@@ -97,7 +66,6 @@ const MajorList = () => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <i className="fa-solid fa-circle-check fs-20 color-green"></i>
                                     <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"
@@ -107,64 +75,65 @@ const MajorList = () => {
                                         <thead>
                                             <tr role="row">
                                                 <th>ID</th>
-                                                <th>Mã chuyên ngành</th>
-                                                <th>Tên chuyên ngành</th>
-                                                {/* <th>Value</th>
-                                                <th>Mô tả</th> */}
+                                                <th>Mã người dùng</th>
+                                                <th>Họ và tên</th>
+                                                <th>Email</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Quyền</th>
                                                 <th>Trạng thái</th>
-                                                <th>Hình ảnh</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {data.map((it, index) => (
+                                            {users.map((it, index) => (
                                                 <tr
                                                     role="row"
                                                     key={index}
                                                     className="odd"
                                                 >
                                                     <td>{it.id}</td>
-                                                    <td>{it.cate_code}</td>
-                                                    <td>{it.cate_name}</td>
-                                                    {/* <td>{it.value}</td> */}
-                                                    {/* <td>{it.description}</td> */}
+                                                    <td>{it.user_code}</td>
+                                                    <td>{it.full_name}</td>
+                                                    <td>{it.email}</td>
+                                                    <td>{it.birthday}</td>
+                                                    <td>{it.role}</td>
                                                     <td>
-<<<<<<< HEAD
-                                                        {it.is_active === 1
-                                                            ? "Hiển thị"
-                                                            : "Ẩn"}
-=======
                                                         {it.is_active == 1 ? (
-                                                            <i className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
+                                                            <i
+                                                                className="fas fa-check-circle"
+                                                                style={{
+                                                                    color: "green",
+                                                                }}
+                                                            ></i>
                                                         ) : (
-                                                            <i className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
+                                                            <i
+                                                                className="fa-solid fa-ban"
+                                                                style={{
+                                                                    color: "red",
+                                                                }}
+                                                            ></i>
                                                         )}
-
-
->>>>>>> main
                                                     </td>
+
                                                     <td>
-                                                        <img
-                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
-                                                            alt={it.name}
-                                                            width={50}
-                                                            height={50}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <div className="flex gap-x-2">
-                                                            <Link to={`/admin/major/${it.id}/edit`}>
+                                                        <div>
+                                                            <Link
+                                                                to={`/admin/classrooms/edit/${it.class_code}`}
+                                                            >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <i
                                                                 className="fas fa-trash ml-6"
-                                                                onClick={() => handleDelete(it.id)}
-                                                                disabled={isLoading}
-                                                            >
-
-                                                            </i>
-
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        it.class_code
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    isLoading
+                                                                }
+                                                            ></i>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -231,18 +200,8 @@ const MajorList = () => {
                     </div>
                 </div>
             </div>
-
-            <Modal
-                title='Xoá chuyên ngành'
-                description='Bạn có chắc chắn muốn xoá chuyên ngành này?'
-                closeTxt='Huỷ'
-                okTxt='Xác nhận'
-                visible={modalOpen}
-                onVisible={onModalVisible}
-                onOk={() => mutate(selectedMajor)}
-            />
         </>
     );
 };
 
-export default MajorList;
+export default ListAccount;

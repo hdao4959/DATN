@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateClassRoomRequest extends FormRequest
+class StoreClassRoomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,12 @@ class UpdateClassRoomRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'integer',
-            'class_code' => 'required|unique:class_rooms,class_code,'. $this->class_code,
-            'class_name' => 'required|unique:class_rooms,class_name,'. $this->class_name,
+            'class_code' => 'required|unique:class_rooms,class_code',
+            'class_name' => 'required|unique:class_rooms,class_name',
             'description' => 'required',
             'date_from' => 'required',
             'date_to' => 'required',
             'students' => 'required',
-            'is_active' => 'required',
             'study_room_code' => 'required',
             'subject_code' => 'required',
             'user_code' => 'required',
@@ -48,7 +46,6 @@ class UpdateClassRoomRequest extends FormRequest
             'date_from.required' => 'Bạn chưa nhập ngày bắt đầu',
             'date_to.required' => 'Bạn chưa nhập ngày kết thúc',
             'students.required' => 'Bạn chưa nhập danh sách sinh viên',
-            'is_active.required' => 'Bạn chưa chọn trạng thái lớp học',
             'study_room_code.required' => 'Bạn chưa nhập mã phòng học',
             'subject_code.required' => 'Bạn chưa nhập mã môn học',
             'user_code.required' => 'Bạn chưa chọn giảng viên',
@@ -56,5 +53,4 @@ class UpdateClassRoomRequest extends FormRequest
     }
 
     protected $stopOnFirstFailure = true;
-
 }

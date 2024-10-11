@@ -1,142 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button, message } from 'antd';
-
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
+import 'datatables.net';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import api from '../../../config/axios';
 import { Link } from 'react-router-dom';
-import Input from 'antd/es/input/Input';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ListSubject = () => {
+const SubjectsList = () => {
+  const queryClient = useQueryClient();
 
-  const [subjects, setSubjects] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const { data, isLoading } = useQuery({
+    queryKey: ["LIST_SUBJECT"],
+    queryFn: async () => {
+      const res = await api.get("/admin/subjects");
+      return res?.data?.data;
+    }
+  });
 
-  useEffect(() => {
-    const fetchSubjects = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/admin/subjects'); 
-        setSubjects(response.data);
-      } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu môn học:', error);
-        message.error('Có lỗi xảy ra khi lấy danh sách môn học!');
-      }
-    };
+  const { mutate } = useMutation({
+    mutationFn: (id) => api.delete(`/admin/subjects/${id}`),
+    onSuccess: () => {
+      toast.success('Xóa môn học thành công');
+      queryClient.invalidateQueries("LIST_SUBJECT");
+    },
+    onError: () => {
+      toast.error('Có lỗi xảy ra khi xóa môn học');
+    }
+  });
 
-    fetchSubjects();
-  }, []);
-
-  const handleEdit = (subjectId) => {
-    console.log('Sửa môn học theo id:', subjectId);
-  };
-
-  const handleDelete = async (subjectId) => {
-    try {
-      await axios.delete(`http://localhost:8000/api/admin/subjects/${subjectId}`);
-      
-      const updatedSubjects = subjects.filter(subject => subject.id !== subjectId);
-      setSubjects(updatedSubjects);
-      
-      message.success('Xóa môn học thành công!');
-    } catch (error) {
-      console.error('Lỗi khi xóa môn học:', error);
-      message.error('Có lỗi xảy ra khi xóa môn học!');
+  const handleDelete = (id) => {
+    const confirmed = window.confirm('Bạn có chắc chắn muốn xóa môn học này không?');
+    if (confirmed) {
+      mutate(id);
     }
   };
 
-  const filteredSubjects = subjects.filter(subject =>
-    subject.subjectName.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-    subject.subjectCode.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  const table = $('#subjectList').DataTable({
+    pageLength: 5,
+    lengthMenu: [5, 10, 20, 50, 100],
+    language: {
+      paginate: {
+        previous: 'Trước',
+        next: 'Tiếp theo'
+      },
+      lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+      info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
+      search: 'Tìm kiếm:'
+    },
+    destroy: true,
+  });
 
-  const columns = [
-    {
-      title: 'STT',
-      dataIndex: 'index',
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: 'Mã Môn',
-      dataIndex: 'subjectCode',
-    },
-    {
-      title: 'Tên Môn Học',
-      dataIndex: 'subjectName',
-    },
-    {
-      title: 'Số Tín Chỉ',
-      dataIndex: 'creditNumber',
-    },
-    {
-      title: 'Mô Tả',
-      dataIndex: 'description',
-    },
-    {
-      title: 'Học phí môn',
-      dataIndex: 'tuition',
-      render: (text) => <span>{text.toLocaleString()} VNĐ</span>,
-    },
-    {
-      title: 'Học phí học lại',
-      dataIndex: 'reStudyFee',
+  useEffect(() => {
+    return () => {
+      if ($.fn.dataTable.isDataTable('#subjectList')) {
+        table.destroy();
+      }
+    };
+  }, [data]);
 
-      examDay: 17, render: (text) => <span>{text.toLocaleString('Vi-VN')} VNĐ</span>,
-    },
-    {
-      title: 'Số buổi học', 
-      dataIndex: 'examDay',
-    },
-    {
-      title: 'Chuyên ngành',
-      dataIndex: 'majorCode',
-    },
-    {
-      title: 'Kì học',
-      dataIndex: 'semestersCode',
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'isActive',
-      render: (isActive) => (isActive === 1 ? <i className="fas fa-check-circle" style={{ color: 'green' }}></i> : <i className="fas fa-ban" style={{ color: 'red' }}></i>)
-    },
-    {
-      title: 'Action',
-      render: (text, record) => (
-        <span style={{ whiteSpace: 'nowrap' }}>
-          <Button onClick={() => handleEdit(record.id)} color="primary" variant='solid' style={{ marginRight: 8 }}>
-            <Link to={`/admin/subjects/${record.id}/edit`}>Edit</Link>
-          </Button>
-          <Button onClick={() => handleDelete(record.id)} color="danger" variant='solid'>
-            Delete
-          </Button>
-        </span>
-      ),
-    },
-  ];
+  if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>
-        <i className='fas fa-th-list'> Danh sách môn học</i>
-      </h1>
-      <Input.Search
-        placeholder="Nhập tên hoặc mã môn để tìm kiếm"
-        enterButton="Tìm kiếm"
-        size="large"
-        allowClear
-        onSearch={(value) => setSearchKeyword(value)}
-        style={{ marginBottom: 20, width: '50%', float: 'right' }}
-      />
-      <Table
-        dataSource={filteredSubjects}
-        columns={columns}
-        rowKey="id"
-        pagination={{
-          defaultPageSize: 5,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showSizeChanger: true,
-        }}
-      />
-    </div>
+    <>
+      <div className="row">
+        <div className="col-md-12">
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title text-center">Quản lý Môn Học</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="mb-3 mt-2 flex items-center justify-between">
+        <Link to={`/admin/subjects/add`}>
+          <button className="btn btn-success">
+            <i className='fas fa-plus'> Thêm môn học</i>
+          </button>
+        </Link>
+      </div>
+      <table id="subjectList" className="table table-striped">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Mã Môn</th>
+            <th>Tên Môn Học</th>
+            <th>Hình ảnh</th>
+            <th>Chuyên ngành</th>
+            <th>Chuyên ngành hẹp</th>
+            <th>Trạng thái</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.map((item, index) => (
+            <tr key={item.id}>
+              <td>{index + 1}</td>
+              <td>{item.subject_code}</td>
+              <td>{item.subject_name}</td>
+              <td>
+                <img
+                  src={item.image}
+                  alt={item.subject_name}
+                  width={50}
+                  height={50}
+                />
+              </td>
+              <td>{item.major_code}</td>
+              <td>{item.narrow_major_code}</td>
+              <td>
+                {item.is_active === 1 ? (
+                  <i className="fas fa-check-circle" style={{ color: 'green' }}></i>
+                ) : (
+                  <i className="fas fa-ban" style={{ color: 'red' }}></i>
+                )}
+              </td>
+              <td className='whitespace-nowrap'>
+                <Link to={`/admin/subjects/${item.id}/edit`}>
+                  <button className="btn btn-primary btn-sm">
+                    <i className='fas fa-edit'></i>
+                  </button>
+                </Link>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id)}>
+                  <i className='fas fa-trash'></i>
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ToastContainer />
+    </>
   );
 };
 
-export default ListSubject;
+export default SubjectsList;
