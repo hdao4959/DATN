@@ -24,6 +24,9 @@ import EditSemester from "./pages/admin/Semester/EditSemester";
 import ListTimeslot from "./pages/admin/TimeSlot/ListTimeSlot";
 import AddTimeslot from "./pages/admin/TimeSlot/AddTimeSlot";
 import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
+import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
+import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
+import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
 
 function App() {
     const router = createBrowserRouter([
@@ -120,6 +123,18 @@ function App() {
                     path: "time_slots/edit/:class_code",
                     element: <EditTimeslot />,
                 },
+                {
+                    path: "schoolrooms/add",
+                    element: <AddSchoolRoom />,
+                },
+                {
+                    path: "schoolrooms",
+                    element: <RoomSchoolList />,
+                },
+                {
+                    path: "schoolrooms/:id/edit",
+                    element: <EditSchoolRooms />
+                }
             ],
         },
     ]);

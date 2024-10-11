@@ -1,3 +1,4 @@
+import React from 'react'
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
@@ -6,34 +7,35 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
 
-const MajorList = () => {
+
+const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedMajor, setSelectedMajor] = useState();
+    const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
 
     const onModalVisible = () => setModalOpen(prev => !prev);
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["LIST_MAJOR"],
+        queryKey: ["LIST_SCHOOLROOMS"],
         queryFn: async () => {
-            const res = await api.get("/admin/major");
+            const res = await api.get("/admin/schoolrooms");
             return res.data.data;
         },
     });
 
     const { mutate, isLoading } = useMutation({
 
-        mutationFn: (id) => api.delete(`/admin/major/${id}`),
+        mutationFn: (id) => api.delete(`/admin/schoolrooms/${id}`),
         onSuccess: () => {
-            toast.success('Xóa chuyên ngành thành công');
+            toast.success('Xóa phòng học thành công');
             onModalVisible();
             refetch();
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi xóa chuyên ngành');
+            toast.error('Có lỗi xảy ra khi xóa phòng học');
         }
     });
     const handleDelete = (id) => {
-        setSelectedMajor(id);
+        setSelectedSchoolRooms(id);
         onModalVisible();
     };
 
@@ -42,16 +44,16 @@ const MajorList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/major/add">
+                <Link to="/admin/schoolrooms/add">
                     <button className="btn btn-primary">
-                        Thêm chuyên ngành
+                        Thêm phòng học
                     </button>
                 </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Major Management</h4>
+                    <h4 className="card-title">School Room Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
@@ -107,10 +109,10 @@ const MajorList = () => {
                                         <thead>
                                             <tr role="row">
                                                 <th>ID</th>
-                                                <th>Mã chuyên ngành</th>
-                                                <th>Tên chuyên ngành</th>
-                                                {/* <th>Value</th>
-                                                <th>Mô tả</th> */}
+                                                <th>Mã phòng học</th>
+                                                <th>Tên phòng học</th>
+                                                <th>Sinh viên</th>
+                                                {/* <th>Mô tả</th> */}
                                                 <th>Trạng thái</th>
                                                 <th>Hình ảnh</th>
                                                 <th>Actions</th>
@@ -126,7 +128,7 @@ const MajorList = () => {
                                                     <td>{it.id}</td>
                                                     <td>{it.cate_code}</td>
                                                     <td>{it.cate_name}</td>
-                                                    {/* <td>{it.value}</td> */}
+                                                    <td>{it.value}</td>
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
                                                         {it.is_active == 1 ? (
@@ -147,7 +149,7 @@ const MajorList = () => {
                                                     </td>
                                                     <td>
                                                         <div className="flex gap-x-2">
-                                                            <Link to={`/admin/major/${it.id}/edit`}>
+                                                            <Link to={`/admin/schoolrooms/${it.id}/edit`}>
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
@@ -227,16 +229,15 @@ const MajorList = () => {
             </div>
 
             <Modal
-                title='Xoá chuyên ngành'
-                description='Bạn có chắc chắn muốn xoá chuyên ngành này?'
+                title='Xoá phòng học'
+                description='Bạn có chắc chắn muốn xoá phòng học này?'
                 closeTxt='Huỷ'
                 okTxt='Xác nhận'
                 visible={modalOpen}
                 onVisible={onModalVisible}
-                onOk={() => mutate(selectedMajor)}
+                onOk={() => mutate(selectedSchoolRooms)}
             />
         </>
     );
-};
-
-export default MajorList;
+}
+export default RoomSchoolList
