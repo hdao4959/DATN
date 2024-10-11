@@ -129,11 +129,7 @@ const MajorList = () => {
                                                     {/* <td>{it.value}</td> */}
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
-<<<<<<< HEAD
-                                                        {it.is_active === 1
-                                                            ? "Hiển thị"
-                                                            : "Ẩn"}
-=======
+
                                                         {it.is_active == 1 ? (
                                                             <i className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
                                                         ) : (
@@ -141,7 +137,6 @@ const MajorList = () => {
                                                         )}
 
 
->>>>>>> main
                                                     </td>
                                                     <td>
                                                         <img

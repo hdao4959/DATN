@@ -10,9 +10,7 @@ import EditMajor from "./pages/admin/Major/EditMajor";
 import Signin from "./pages/admin/Auth/Signin";
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
-<<<<<<< HEAD
-// import EditSubject from "./pages/admin/Subject/EditSubject";
-=======
+
 import EditSubject from "./pages/admin/Subject/EditSubject";
 import CreateAccount from "./pages/admin/Account/CreateAccount";
 import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
@@ -30,7 +28,7 @@ import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
 import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
->>>>>>> main
+
 
 function App() {
     const router = createBrowserRouter([
@@ -87,12 +85,7 @@ function App() {
                     path: "subjects/add",
                     element: <AddSubject />,
                 },
-<<<<<<< HEAD
-                // {
-                //     path: "subjects/:id/edit",
-                //     element: <EditSubject />,
-                // },
-=======
+
                 {
                     path: "subjects/:id/edit",
                     element: <EditSubject />,
@@ -145,7 +138,6 @@ function App() {
                     path: "schoolrooms/:id/edit",
                     element: <EditSchoolRooms />
                 }
->>>>>>> main
             ],
         },
     ]);
