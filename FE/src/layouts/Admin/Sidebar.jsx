@@ -272,11 +272,11 @@ const Sidebar = () => {
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a href="/admin/account/create">
+                            <Link to="/admin/account/create">
                                 <i className="fas fa-user" />
                                 <p>Create Account</p>
                                 <span className="badge badge-success">4</span>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#submenu">
