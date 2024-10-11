@@ -21,7 +21,7 @@ class SchoolRoomController extends Controller
 
             if ($data->isEmpty()) {
                 return response()->json(
-                    ['message' => 'Không có chuyên ngành nào!'],
+                    ['message' => 'Không có Phòng học nào!'],
                     404
                 );
             }
@@ -76,7 +76,7 @@ class SchoolRoomController extends Controller
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
                 return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
+                    'message' => "Phòng học không tồn tại!"
                 ], 404);
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -109,7 +109,7 @@ class SchoolRoomController extends Controller
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
                 return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
+                    'message' => "Phòng học không tồn tại!"
                 ], 404);
             } else {
                 $params = $request->except('_token', '_method');
@@ -148,7 +148,7 @@ class SchoolRoomController extends Controller
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
                 return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
+                    'message' => "Phòng học không tồn tại!"
                 ], 404);
             } else {
                 $listSchoolRoom = Category::findOrFail($id);
