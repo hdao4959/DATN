@@ -119,16 +119,40 @@ class CategoryController extends Controller
             if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
                 Storage::disk('public')->delete($listCategory->image);
             }
-            $listCategory->delete($listCategory);
+            
+            $listCategory->update($params);
 
             return response()->json([
-                'message' => 'Xoa thanh cong'
+                'message' => 'Xóa thành công'
             ], 200);
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
             return response()->json([
                 'message' => 'Lỗi không xác định'
+            ], 500);
+        }
+    }
+
+    public function updateActive(string $code)
+    {
+        try {
+            $listCategory = Category::where('cate_code', $code)->firstOrFail();
+            // dd(!$listCategory->is_active);
+            $listCategory->update([
+                'is_active' => !$listCategory->is_active
+            ]);
+            $listCategory->save();
+            return response()->json([
+                'message' => 'Cập nhật thành công',
+                'error' => false
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+            return response()->json([
+                'message' => 'Lỗi không xác định',
+                'error' => true
             ], 500);
         }
     }

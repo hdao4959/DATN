@@ -51,6 +51,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     
     Route::apiResource('schoolrooms', SchoolRoomController::class);
     Route::apiResource('category', CategoryController::class);
+    Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
     Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
     Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
