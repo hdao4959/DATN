@@ -28,7 +28,7 @@ const AddSchoolRoom = () => {
         formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
         formData.append('description', data.description);
         formData.append('value', data.value);
-        formData.append('type', 'School Room');
+        formData.append('type', 'school_room');
 
         if (data.image && data.image.length > 0) {
             formData.append('image', data.image[0]);

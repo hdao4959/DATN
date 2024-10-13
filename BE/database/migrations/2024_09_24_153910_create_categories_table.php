@@ -25,6 +25,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();
+            // Thiết lập khóa ngoại cho parent_code để trỏ đến cate_code của danh mục cha
+            $table->foreign('parrent_code')->references('cate_code')->on('categories')
+            ->onDelete('cascade'); // Xóa danh mục cha sẽ xóa tất cả các danh mục con
         });
     }
 
