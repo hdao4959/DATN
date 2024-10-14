@@ -36,15 +36,9 @@ class PointHeadController extends Controller
     public function index(Request $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                    ->where('type', '=', 'point_head')
-                                    ->select('cate_code', 'cate_name')
-                                    ->get();
-
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
+            $data = Category::where('type', '=', 'PointHead')
                                 ->when($search, function ($query, $search) {
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
@@ -54,8 +48,7 @@ class PointHeadController extends Controller
                 return $this->handleInvalidId();
             }
             return response()->json([
-                'data' => $data, 
-                'parent' => $parent
+                'data' => $data
             ],200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -66,27 +59,32 @@ class PointHeadController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StorePointHeadRequest $request)
-{
-    try {
-        $params = $request->except('_token');
+    {
+        try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'point_head')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
 
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/image', 'public');
-        } else {
-            $fileName = null;
+            $params = $request->except('_token');
+            if ($request->hasFile('image')) {
+                $fileName = $request->file('image')->store('uploads/image', 'public');
+            } else {
+                $fileName = null;
+            }
+
+            $params['image'] = $fileName;
+            Category::create($params);
+
+            return response()->json([
+                'message' => 'Tạo mới thành công',
+                'data' => $params
+            ]);
+        } catch (Throwable $th) {
+            return $this->handleErrorNotDefine($th);
         }
-
-        $params['image'] = $fileName;
-        Category::create($params);
-
-        return response()->json([
-            'message' => 'Tạo mới thành công',
-            'data' => $params
-        ]);
-    } catch (Throwable $th) {
-        return $this->handleErrorNotDefine($th);
     }
-}
 
 
     /**
@@ -95,8 +93,8 @@ class PointHeadController extends Controller
     public function show(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -117,26 +115,32 @@ class PointHeadController extends Controller
     public function update(UpdatePointHeadRequest $request, string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'point_head')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listMajor = Category::findOrFail($id);
+                $listPointHead = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
+                    if ($listPointHead->image && Storage::disk('public')->exists($listPointHead->image)) {
+                        Storage::disk('public')->delete($listPointHead->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listMajor->image;
+                    $fileName = $listPointHead->image;
                 }
                 $params['image'] = $fileName;
-                $listMajor->update($params);
+                $listPointHead->update($params);
 
                 return response()->json([
                     'message' => 'Sửa thành công',
-                    'data' => $listMajor
+                    'data' => $listPointHead
                 ], 201);          
             }
         } catch (Throwable $th) {
@@ -150,15 +154,15 @@ class PointHeadController extends Controller
     public function destroy(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
-                $listMajor = Category::findOrFail($id);
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
+                $listPointHead = Category::findOrFail($id);
+                if ($listPointHead->image && Storage::disk('public')->exists($listPointHead->image)) {
+                    Storage::disk('public')->delete($listPointHead->image);
                 }
-                $listMajor->delete($listMajor);
+                $listPointHead->delete($listPointHead);
 
                 return response()->json([
                     'message' => 'Xoa thanh cong'
@@ -174,14 +178,14 @@ class PointHeadController extends Controller
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'type'
+                // Tìm category theo ID và cập nhật trường 'is_active'
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();
             }
 
             return response()->json([
-                'message' => 'Loại đã được cập nhật thành công!'
+                'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);

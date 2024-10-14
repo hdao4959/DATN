@@ -34,12 +34,6 @@ class SchoolRoomController extends Controller
     public function index(Request $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                    ->where('type', '=', 'school_room')
-                                    ->select('cate_code', 'cate_name')
-                                    ->get();
-
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'school_room')
@@ -52,8 +46,7 @@ class SchoolRoomController extends Controller
                 return $this->handleInvalidId();
             }
             return response()->json([
-                'data' => $data, 
-                'parent' => $parent
+                'data' => $data
             ],200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -64,27 +57,33 @@ class SchoolRoomController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreSchoolRoomRequest $request)
-{
-    try {
-        $params = $request->except('_token');
+    {
+        try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'school_room')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
 
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/image', 'public');
-        } else {
-            $fileName = null;
+            $params = $request->except('_token');
+
+            if ($request->hasFile('image')) {
+                $fileName = $request->file('image')->store('uploads/image', 'public');
+            } else {
+                $fileName = null;
+            }
+
+            $params['image'] = $fileName;
+            Category::create($params);
+
+            return response()->json([
+                'message' => 'Tạo mới thành công',
+                'data' => $params
+            ]);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
         }
-
-        $params['image'] = $fileName;
-        Category::create($params);
-
-        return response()->json([
-            'message' => 'Tạo mới thành công',
-            'data' => $params
-        ]);
-    } catch (\Throwable $th) {
-        return $this->handleErrorNotDefine($th);
     }
-}
 
 
     /**
@@ -93,8 +92,8 @@ class SchoolRoomController extends Controller
     public function show(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $schoolRoom = Category::where('id', $id)->first();
+            if (!$schoolRoom) {
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -115,26 +114,32 @@ class SchoolRoomController extends Controller
     public function update(UpdateSchoolRoomRequest $request, string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'school_room')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
+            $schoolRoom = Category::where('id', $id)->first();
+            if (!$schoolRoom) {
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listMajor = Category::findOrFail($id);
+                $listSchoolRoom = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
+                    if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
+                        Storage::disk('public')->delete($listSchoolRoom->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listMajor->image;
+                    $fileName = $listSchoolRoom->image;
                 }
                 $params['image'] = $fileName;
-                $listMajor->update($params);
+                $listSchoolRoom->update($params);
 
                 return response()->json([
                     'message' => 'Sửa thành công',
-                    'data' => $listMajor
+                    'data' => $listSchoolRoom
                 ], 201);          
             }
         } catch (Throwable $th) {
@@ -148,18 +153,18 @@ class SchoolRoomController extends Controller
     public function destroy(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $schoolRoom = Category::where('id', $id)->first();
+            if (!$schoolRoom) {
                 return $this->handleInvalidId();
             } else {
-                $listMajor = Category::findOrFail($id);
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
+                $listSchoolRoom = Category::findOrFail($id);
+                if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
+                    Storage::disk('public')->delete($listSchoolRoom->image);
                 }
-                $listMajor->delete($listMajor);
+                $listSchoolRoom->delete($listSchoolRoom);
 
                 return response()->json([
-                    'message' => 'Xoa thanh cong'
+                    'message' => 'Xóa thành công'
                 ], 200);            
             }
         } catch (\Throwable $th) {
@@ -172,14 +177,14 @@ class SchoolRoomController extends Controller
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'type'
+                // Tìm category theo ID và cập nhật trường 'is_active'
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();
             }
 
             return response()->json([
-                'message' => 'Loại đã được cập nhật thành công!'
+                'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
