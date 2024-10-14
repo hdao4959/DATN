@@ -19,4 +19,19 @@ class Category extends Model
         'type',
         'is_active'
     ];
+    /**
+    * Quan hệ với các danh mục con.
+    */
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_code', 'cate_code');
+    }
+
+    /**
+    * Quan hệ với danh mục cha.
+    */
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_code', 'cate_code');
+    }
 }

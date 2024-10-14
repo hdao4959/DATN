@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\ClassRoomController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubjectController;
@@ -10,6 +10,11 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\Admin\MajorController;
+
+use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\PointHeadController;
+use App\Http\Controllers\Admin\SchoolRoomController;
+
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -49,7 +54,9 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('semester', SemesterController::class);
 
+    Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 
-
+    Route::apiResource('schoolrooms', SchoolRoomController::class);
+    Route::apiResource('pointhead', PointHeadController::class);
 
 });

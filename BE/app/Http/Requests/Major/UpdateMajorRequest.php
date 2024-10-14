@@ -26,7 +26,7 @@ class UpdateMajorRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'cate_code' => 'required|unique:categories,cate_code,' . $id,
+            'cate_code' => 'required|unique:categories,id,' . $id . ',id',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',

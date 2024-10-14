@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Major\StoreMajorRequest;
-use App\Http\Requests\Major\UpdateMajorRequest;
+use App\Http\Requests\SchoolRoom\StoreSchoolRoomRequest;
+use App\Http\Requests\SchoolRoom\UpdateSchoolRoomRequest;
 
-class MajorController extends Controller
+class SchoolRoomController extends Controller
 {
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
         return response()->json([
-            'message' => 'Không có chuyên ngành nào!',
+            'message' => 'Không có Phòng Học nào!',
         ], 404);
     }
 
@@ -37,15 +34,15 @@ class MajorController extends Controller
     public function index(Request $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của chuyên ngành cha
+            // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                    ->where('type', '=', 'major')
+                                    ->where('type', '=', 'school_room')
                                     ->select('cate_code', 'cate_name')
                                     ->get();
 
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
+            $data = Category::where('type', '=', 'school_room')
                                 ->when($search, function ($query, $search) {
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
@@ -66,7 +63,7 @@ class MajorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMajorRequest $request)
+    public function store(StoreSchoolRoomRequest $request)
 {
     try {
         $params = $request->except('_token');
@@ -103,7 +100,7 @@ class MajorController extends Controller
                 $data = Category::query()->findOrFail($id);
 
                 return response()->json([
-                    'message' => 'Chi tiết danh muc = ' . $id,
+                    'message' => 'Chi tiết phòng học = ' . $id,
                     'data' => $data
                 ]);                
             }
@@ -115,7 +112,7 @@ class MajorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMajorRequest $request, string $id)
+    public function update(UpdateSchoolRoomRequest $request, string $id)
     {
         try {
             $major = Category::where('id', $id)->first();
@@ -187,40 +184,5 @@ class MajorController extends Controller
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-    }    
-
-    // public function getListMajor(string $type)
-    // {
-    //     // Lấy tất cả danh mục cha
-    //     // dd($type);
-    //     $categories = DB::table('categories')
-    //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
-    //         ->get();
-    //     // dd($categories);
-    //     // return;
-
-    //     // Duyệt qua từng danh mục cha để lấy danh mục con
-    //     $data = $categories->map(function ($category) {
-    //         // Lấy danh mục con dựa trên parent_code
-    //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
-    //             ->get();
-
-    //         // Trả về cấu trúc dữ liệu theo yêu cầu
-    //         return [
-    //             'id' => $category->id,
-    //             'cate_code' => $category->cate_code,
-    //             'cate_name' => $category->cate_name,
-    //             'image' => $category->image,
-    //             'description' => $category->description,
-    //             'listItem'  => $subCategories
-    //         ];
-    //     });
-
-    //     //Cách 2
-
-    //     return response()->json($data);
-    // }
+    }
 }

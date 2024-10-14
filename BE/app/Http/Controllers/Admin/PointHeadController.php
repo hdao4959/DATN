@@ -5,20 +5,19 @@ namespace App\Http\Controllers\Admin;
 use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Major\StoreMajorRequest;
-use App\Http\Requests\Major\UpdateMajorRequest;
+use App\Http\Requests\PointHead\StorePointHeadRequest;
+use App\Http\Requests\PointHead\UpdatePointHeadRequest;
 
-class MajorController extends Controller
+class PointHeadController extends Controller
 {
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
         return response()->json([
-            'message' => 'Không có chuyên ngành nào!',
+            'message' => 'Không có đầu điểm nào!',
         ], 404);
     }
 
@@ -37,9 +36,9 @@ class MajorController extends Controller
     public function index(Request $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của chuyên ngành cha
+            // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                    ->where('type', '=', 'major')
+                                    ->where('type', '=', 'point_head')
                                     ->select('cate_code', 'cate_name')
                                     ->get();
 
@@ -66,7 +65,7 @@ class MajorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMajorRequest $request)
+    public function store(StorePointHeadRequest $request)
 {
     try {
         $params = $request->except('_token');
@@ -84,7 +83,7 @@ class MajorController extends Controller
             'message' => 'Tạo mới thành công',
             'data' => $params
         ]);
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
         return $this->handleErrorNotDefine($th);
     }
 }
@@ -115,7 +114,7 @@ class MajorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMajorRequest $request, string $id)
+    public function update(UpdatePointHeadRequest $request, string $id)
     {
         try {
             $major = Category::where('id', $id)->first();
@@ -165,7 +164,7 @@ class MajorController extends Controller
                     'message' => 'Xoa thanh cong'
                 ], 200);            
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -187,40 +186,5 @@ class MajorController extends Controller
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-    }    
-
-    // public function getListMajor(string $type)
-    // {
-    //     // Lấy tất cả danh mục cha
-    //     // dd($type);
-    //     $categories = DB::table('categories')
-    //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
-    //         ->get();
-    //     // dd($categories);
-    //     // return;
-
-    //     // Duyệt qua từng danh mục cha để lấy danh mục con
-    //     $data = $categories->map(function ($category) {
-    //         // Lấy danh mục con dựa trên parent_code
-    //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
-    //             ->get();
-
-    //         // Trả về cấu trúc dữ liệu theo yêu cầu
-    //         return [
-    //             'id' => $category->id,
-    //             'cate_code' => $category->cate_code,
-    //             'cate_name' => $category->cate_name,
-    //             'image' => $category->image,
-    //             'description' => $category->description,
-    //             'listItem'  => $subCategories
-    //         ];
-    //     });
-
-    //     //Cách 2
-
-    //     return response()->json($data);
-    // }
+    }
 }

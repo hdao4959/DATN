@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Major;
+namespace App\Http\Requests\PointHead;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreMajorRequest extends FormRequest
+class UpdatePointHeadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +23,11 @@ class StoreMajorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('id');
         return [
-            'cate_code' => 'required|unique:categories,cate_code',
+            'cate_code' => 'required|unique:categories,id,' . $id . ',id',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'regex:/^[^<>{}]*$/',
         ];
     }
@@ -41,8 +41,6 @@ class StoreMajorRequest extends FormRequest
             'cate_name.max' => 'Tên chuyên ngành không quá 255 kí tự',
             'cate_name.regex' => 'Tên chuyên ngành không chứa kí tự đặc biệt',
             'value.regex' => 'Giá trị không chứa kí tự đặc biệt',
-            'image.image' => 'File phải là ảnh',
-            'image.mimes' => 'File ảnh phải có định dạng jpeg, png, jpg, gif, hoặc svg.',
             'description.regex' => 'Mô tả không chứa kí tự đặc biệt'
         ];
     }
