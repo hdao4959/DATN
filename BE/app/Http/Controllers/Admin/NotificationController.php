@@ -5,20 +5,19 @@ namespace App\Http\Controllers\Admin;
 use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Major\StoreMajorRequest;
-use App\Http\Requests\Major\UpdateMajorRequest;
+use App\Http\Requests\Notification\StoreNotificationRequest;
+use App\Http\Requests\Notification\UpdateNotificationRequest;
 
-class MajorController extends Controller
+class NotificationController extends Controller
 {
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
         return response()->json([
-            'message' => 'Không có chuyên ngành nào!',
+            'message' => 'Không có thông báo nào!',
         ], 404);
     }
 
@@ -39,7 +38,7 @@ class MajorController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
+            $data = Category::where('type', '=', 'notification')
                                 ->when($search, function ($query, $search) {
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
@@ -59,17 +58,16 @@ class MajorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMajorRequest $request)
+    public function store(StoreNotificationRequest $request)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
+                                ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
             $params = $request->except('_token');
-
             if ($request->hasFile('image')) {
                 $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
@@ -83,7 +81,7 @@ class MajorController extends Controller
                 'message' => 'Tạo mới thành công',
                 'data' => $params
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -95,14 +93,14 @@ class MajorController extends Controller
     public function show(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
 
                 return response()->json([
-                    'message' => 'Chi tiết danh muc = ' . $id,
+                    'message' => 'Chi tiết thông báo = ' . $id,
                     'data' => $data
                 ]);                
             }
@@ -114,35 +112,35 @@ class MajorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMajorRequest $request, string $id)
+    public function update(UpdateNotificationRequest $request, string $id)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
+                                ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listMajor = Category::findOrFail($id);
+                $listNotification = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
+                    if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
+                        Storage::disk('public')->delete($listNotification->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listMajor->image;
+                    $fileName = $listNotification->image;
                 }
                 $params['image'] = $fileName;
-                $listMajor->update($params);
+                $listNotification->update($params);
 
                 return response()->json([
                     'message' => 'Sửa thành công',
-                    'data' => $listMajor
+                    'data' => $listNotification
                 ], 201);          
             }
         } catch (Throwable $th) {
@@ -156,21 +154,21 @@ class MajorController extends Controller
     public function destroy(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
-                $listMajor = Category::findOrFail($id);
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
+                $listNotification = Category::findOrFail($id);
+                if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
+                    Storage::disk('public')->delete($listNotification->image);
                 }
-                $listMajor->delete($listMajor);
+                $listNotification->delete($listNotification);
 
                 return response()->json([
                     'message' => 'Xóa thành công'
                 ], 200);            
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -180,7 +178,7 @@ class MajorController extends Controller
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'is_active'
+                // Tìm category theo ID và cập nhật trường is_active
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();
@@ -192,40 +190,5 @@ class MajorController extends Controller
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-    }    
-
-    // public function getListMajor(string $type)
-    // {
-    //     // Lấy tất cả danh mục cha
-    //     // dd($type);
-    //     $categories = DB::table('categories')
-    //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
-    //         ->get();
-    //     // dd($categories);
-    //     // return;
-
-    //     // Duyệt qua từng danh mục cha để lấy danh mục con
-    //     $data = $categories->map(function ($category) {
-    //         // Lấy danh mục con dựa trên parent_code
-    //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
-    //             ->get();
-
-    //         // Trả về cấu trúc dữ liệu theo yêu cầu
-    //         return [
-    //             'id' => $category->id,
-    //             'cate_code' => $category->cate_code,
-    //             'cate_name' => $category->cate_name,
-    //             'image' => $category->image,
-    //             'description' => $category->description,
-    //             'listItem'  => $subCategories
-    //         ];
-    //     });
-
-    //     //Cách 2
-
-    //     return response()->json($data);
-    // }
+    }
 }

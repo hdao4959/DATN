@@ -8,7 +8,9 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +52,6 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
     
     Route::apiResource('schoolrooms', SchoolRoomController::class);
+    Route::apiResource('pointheads', PointHeadController::class);
+    Route::apiResource('notifications', NotificationController::class);
 });

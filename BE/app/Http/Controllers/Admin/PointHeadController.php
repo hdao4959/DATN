@@ -5,20 +5,19 @@ namespace App\Http\Controllers\Admin;
 use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Major\StoreMajorRequest;
-use App\Http\Requests\Major\UpdateMajorRequest;
+use App\Http\Requests\PointHead\StorePointHeadRequest;
+use App\Http\Requests\PointHead\UpdatePointHeadRequest;
 
-class MajorController extends Controller
+class PointHeadController extends Controller
 {
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
         return response()->json([
-            'message' => 'Không có chuyên ngành nào!',
+            'message' => 'Không có đầu điểm nào!',
         ], 404);
     }
 
@@ -39,7 +38,7 @@ class MajorController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
+            $data = Category::where('type', '=', 'PointHead')
                                 ->when($search, function ($query, $search) {
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
@@ -59,17 +58,16 @@ class MajorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMajorRequest $request)
+    public function store(StorePointHeadRequest $request)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
+                                ->where('type', '=', 'point_head')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
             $params = $request->except('_token');
-
             if ($request->hasFile('image')) {
                 $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
@@ -83,7 +81,7 @@ class MajorController extends Controller
                 'message' => 'Tạo mới thành công',
                 'data' => $params
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -95,8 +93,8 @@ class MajorController extends Controller
     public function show(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -114,35 +112,35 @@ class MajorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMajorRequest $request, string $id)
+    public function update(UpdatePointHeadRequest $request, string $id)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
+                                ->where('type', '=', 'point_head')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listMajor = Category::findOrFail($id);
+                $listPointHead = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
+                    if ($listPointHead->image && Storage::disk('public')->exists($listPointHead->image)) {
+                        Storage::disk('public')->delete($listPointHead->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listMajor->image;
+                    $fileName = $listPointHead->image;
                 }
                 $params['image'] = $fileName;
-                $listMajor->update($params);
+                $listPointHead->update($params);
 
                 return response()->json([
                     'message' => 'Sửa thành công',
-                    'data' => $listMajor
+                    'data' => $listPointHead
                 ], 201);          
             }
         } catch (Throwable $th) {
@@ -156,21 +154,21 @@ class MajorController extends Controller
     public function destroy(string $id)
     {
         try {
-            $major = Category::where('id', $id)->first();
-            if (!$major) {
+            $pointHead = Category::where('id', $id)->first();
+            if (!$pointHead) {
                 return $this->handleInvalidId();
             } else {
-                $listMajor = Category::findOrFail($id);
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
+                $listPointHead = Category::findOrFail($id);
+                if ($listPointHead->image && Storage::disk('public')->exists($listPointHead->image)) {
+                    Storage::disk('public')->delete($listPointHead->image);
                 }
-                $listMajor->delete($listMajor);
+                $listPointHead->delete($listPointHead);
 
                 return response()->json([
-                    'message' => 'Xóa thành công'
+                    'message' => 'Xoa thanh cong'
                 ], 200);            
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -192,40 +190,5 @@ class MajorController extends Controller
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-    }    
-
-    // public function getListMajor(string $type)
-    // {
-    //     // Lấy tất cả danh mục cha
-    //     // dd($type);
-    //     $categories = DB::table('categories')
-    //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
-    //         ->get();
-    //     // dd($categories);
-    //     // return;
-
-    //     // Duyệt qua từng danh mục cha để lấy danh mục con
-    //     $data = $categories->map(function ($category) {
-    //         // Lấy danh mục con dựa trên parent_code
-    //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
-    //             ->get();
-
-    //         // Trả về cấu trúc dữ liệu theo yêu cầu
-    //         return [
-    //             'id' => $category->id,
-    //             'cate_code' => $category->cate_code,
-    //             'cate_name' => $category->cate_name,
-    //             'image' => $category->image,
-    //             'description' => $category->description,
-    //             'listItem'  => $subCategories
-    //         ];
-    //     });
-
-    //     //Cách 2
-
-    //     return response()->json($data);
-    // }
+    }
 }
