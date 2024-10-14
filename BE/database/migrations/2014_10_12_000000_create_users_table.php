@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('user_code',190)->unique()->comment('Mã người dùng');
             $table->string('full_name',50)->comment('Họ và tên');
-            $table->string('email',25)->unique()->comment('Email');
+            $table->string('email')->unique()->comment('Email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password',191)->comment('Mật khẩu');
             $table->string('phone_number',20)->comment('Số điện thoại');

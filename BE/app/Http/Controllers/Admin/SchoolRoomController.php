@@ -34,6 +34,7 @@ class SchoolRoomController extends Controller
     public function index(Request $request)
     {
         try {
+<<<<<<< Updated upstream
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'school_room')
@@ -42,6 +43,10 @@ class SchoolRoomController extends Controller
                                             ->where('cate_name', 'like', "%{$search}%");
                                 })
                                 ->paginate(4);
+=======
+            $data = Category::where('type', 'school_room')->paginate(20);
+
+>>>>>>> Stashed changes
             if ($data->isEmpty()) {
                 return $this->handleInvalidId();
             }
