@@ -14,8 +14,7 @@ use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\SchoolRoomController;
-
-
+use App\Http\Controllers\GradesController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -58,5 +57,10 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('schoolrooms', SchoolRoomController::class);
     Route::apiResource('pointhead', PointHeadController::class);
+
+    Route::apiResource('grades', GradesController::class);
+    Route::get('grades', [GradesController::class, 'getByParam']);
+    Route::patch('grades/{id}',[GradesController::class, 'update']);
+
 
 });
