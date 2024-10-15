@@ -1,38 +1,38 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
-import Modal from "./Modal";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
+import Modal from "../../../components/Modal/Modal";
 
-const RoomSchoolList = () => {
+const GradeComponentList = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
+    const [selectedGradeComponent, setSelectedGradeComponent] = useState();
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["LIST_SCHOOLROOMS"],
+        queryKey: ["GRADE_COMPONENTS"],
         queryFn: async () => {
-            const res = await api.get("/admin/schoolrooms");
-            return res.data.data;
+            const res = await api.get("/admin/pointheads");
+            return res.data.data ?? [];
         },
     });
 
-    const { mutate, isLoading } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/schoolrooms/${id}`),
+    const { mutate } = useMutation({
+        mutationFn: (id) => api.delete(`/admin/pointheads/${id}`),
         onSuccess: () => {
-            toast.success("Xóa phòng học thành công");
+            toast.success("Xóa điểm thành phần thành công");
             onModalVisible();
             refetch();
         },
         onError: () => {
-            toast.error("Có lỗi xảy ra khi xóa phòng học");
+            toast.error("Có lỗi xảy ra khi xóa điểm thành phần");
         },
     });
     const handleDelete = (id) => {
-        setSelectedSchoolRooms(id);
+        setSelectedGradeComponent(id);
         onModalVisible();
     };
 
@@ -41,14 +41,16 @@ const RoomSchoolList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/schoolrooms/add">
-                    <button className="btn btn-primary">Thêm phòng học</button>
+                <Link to="/admin/grade-components/add">
+                    <button className="btn btn-primary">
+                        Thêm điểm thành phần
+                    </button>
                 </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">School Room Management</h4>
+                    <h4 className="card-title">Grade Components Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
@@ -104,12 +106,9 @@ const RoomSchoolList = () => {
                                         <thead>
                                             <tr role="row">
                                                 <th>ID</th>
-                                                <th>Mã phòng học</th>
-                                                <th>Tên phòng học</th>
-                                                <th>Sinh viên</th>
-                                                {/* <th>Mô tả</th> */}
-                                                <th>Trạng thái</th>
-                                                <th>Hình ảnh</th>
+                                                <th>Mã điểm TP</th>
+                                                <th>Tên điểm TP</th>
+                                                <th>Trọng số</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -123,61 +122,25 @@ const RoomSchoolList = () => {
                                                     <td>{it.id}</td>
                                                     <td>{it.cate_code}</td>
                                                     <td>{it.cate_name}</td>
-                                                    <td>{it.value}</td>
-                                                    {/* <td>{it.description}</td> */}
-                                                    <td>
-                                                        {it.is_active == 1 ? (
-                                                            <i
-                                                                className="fas fa-check-circle fs-20 color-green"
-                                                                style={{
-                                                                    color: "green",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        ) : (
-                                                            <i
-                                                                className="fas fa-ban fs-20 color-danger"
-                                                                style={{
-                                                                    color: "red",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        )}
-                                                    </td>
-                                                    <td>
-                                                        <img
-                                                            src={
-                                                                it.image
-                                                                    ? "http://localhost:8000/storage/" +
-                                                                      it.image
-                                                                    : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
-                                                            }
-                                                            alt={it.name}
-                                                            width={50}
-                                                            height={50}
-                                                        />
-                                                    </td>
+                                                    <td>{it.value}%</td>
                                                     <td>
                                                         <div className="flex gap-x-2">
                                                             <Link
-                                                                to={`/admin/schoolrooms/${it.id}/edit`}
+                                                                to={`/admin/grade-components/${it.id}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
-                                                            <i
-                                                                className="fas fa-trash ml-6"
+                                                            <div
                                                                 onClick={() =>
                                                                     handleDelete(
                                                                         it.id
                                                                     )
                                                                 }
-                                                                disabled={
-                                                                    isLoading
-                                                                }
-                                                            ></i>
+                                                                className="cursor-pointer"
+                                                            >
+                                                                <i className="fas fa-trash ml-6"></i>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -187,12 +150,12 @@ const RoomSchoolList = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-sm-12 col-md-5">
+                                {/* <div className="col-sm-12 col-md-5">
                                     <div className="dataTables_info">
                                         Showing 1 to 10 of {data.length} entries
                                     </div>
-                                </div>
-                                <div className="col-sm-12 col-md-7">
+                                </div> */}
+                                <div className="col-sm-12 col-md-7 ml-auto">
                                     <div className="dataTables_paginate paging_simple_numbers">
                                         <ul className="pagination">
                                             <li className="paginate_button page-item previous disabled">
@@ -246,15 +209,16 @@ const RoomSchoolList = () => {
             </div>
 
             <Modal
-                title="Xoá phòng học"
-                description="Bạn có chắc chắn muốn xoá phòng học này?"
+                title="Xoá điểm thành phần"
+                description="Bạn có chắc chắn muốn xoá điểm thành phần này?"
                 closeTxt="Huỷ"
                 okTxt="Xác nhận"
                 visible={modalOpen}
                 onVisible={onModalVisible}
-                onOk={() => mutate(selectedSchoolRooms)}
+                onOk={() => mutate(selectedGradeComponent)}
             />
         </>
     );
 };
-export default RoomSchoolList;
+
+export default GradeComponentList;

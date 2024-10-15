@@ -79,10 +79,7 @@ class SchoolRoomController extends Controller
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
+            return response()->json($params, 200);
         } catch (\Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -103,10 +100,7 @@ class SchoolRoomController extends Controller
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết phòng học = ' . $id,
-                    'data' => $data
-                ]);                
+                return response()->json($data, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -144,10 +138,7 @@ class SchoolRoomController extends Controller
                 $params['image'] = $fileName;
                 $listSchoolRoom->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listSchoolRoom
-                ], 201);          
+                return response()->json($listSchoolRoom, 201);          
             }
         } catch (Throwable $th) {
 

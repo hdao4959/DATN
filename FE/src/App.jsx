@@ -28,9 +28,10 @@ import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
 import ShowGrades from "./pages/admin/Grades/pages";
-import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
+import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
+import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
+import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
 import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
-import CreateClassroomWSchedule from "./pages/admin/Rooms/CreateClassroomWSchedule";
 
 function App() {
     const router = createBrowserRouter([
@@ -101,10 +102,6 @@ function App() {
                     element: <AddClassroomTest />,
                 },
                 {
-                    path: "classrooms/create",
-                    element: <CreateClassroomWSchedule />,
-                },
-                {
                     path: "classrooms/edit/:class_code",
                     element: <EditClassroom />,
                 },
@@ -148,9 +145,21 @@ function App() {
                     path: "grades",
                     element: <ShowGrades />,
                 },
+                // {
+                //     path: "schedules/study/manager",
+                //     element: <ScheduleManager />,
+                // },
                 {
-                    path: "schedules/study/manager",
-                    element: <ScheduleManager />,
+                    path: "grade-components",
+                    element: <GradeComponentList />,
+                },
+                {
+                    path: "grade-components/add",
+                    element: <AddGradeComponents />,
+                },
+                {
+                    path: "grade-components/:id/edit",
+                    element: <UpdateGradeComponents />,
                 },
             ],
         },

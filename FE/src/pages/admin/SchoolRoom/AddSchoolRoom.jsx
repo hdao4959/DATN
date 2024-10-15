@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query';
-import React from 'react'
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../../config/axios';
@@ -25,7 +24,7 @@ const AddSchoolRoom = () => {
         const formData = new FormData();
         formData.append('cate_code', data.cate_code);
         formData.append('cate_name', data.cate_name);
-        formData.append('is_active', data.is_active === "true" ? 1 : 0); // Chuyển đổi giá trị is_active
+        formData.append('is_active', data.is_active); // Chuyển đổi giá trị is_active
         formData.append('description', data.description);
         formData.append('value', data.value);
         formData.append('type', 'school_room');
@@ -55,7 +54,12 @@ const AddSchoolRoom = () => {
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
-                                        <label htmlFor="cate_code" className="text-danger">Mã phòng học*</label>
+                                        <label htmlFor="cate_code">
+                                            Mã phòng học
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -68,7 +72,12 @@ const AddSchoolRoom = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="cate_name" className="text-danger">Tên phòng học*</label>
+                                        <label htmlFor="cate_name">
+                                            Tên phòng học
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -81,23 +90,37 @@ const AddSchoolRoom = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="value">Số lượng sinh viên</label>
+                                        <label htmlFor="value">
+                                            Số lượng sinh viên
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             className="form-control"
-                                            {...register("value")}
+                                            {...register("value", {
+                                                required: "Vui lòng nhập số lượng",
+                                                min: {
+                                                    value: 1,
+                                                    message: "Số lượng không hợp lệ"
+                                                }
+                                            })}
                                             placeholder="Nhập số lượng sinh viên"
                                         />
+                                         {errors.value && (
+                                            <span className="text-danger">{errors.value.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active" className="text-danger">Trạng thái*</label>
+                                        <label htmlFor="is_active">Trạng thái</label>
                                         <select
                                             className="form-select"
                                             {...register("is_active", { required: "Trạng thái là bắt buộc" })}
                                         >
-                                            <option value="true">Hoạt động</option>
-                                            <option value="false">Không hoạt động</option>
+                                            <option value={1}>Hoạt động</option>
+                                            <option value={0}>Không hoạt động</option>
                                         </select>
                                         {errors.is_active && (
                                             <span className="text-danger">{errors.is_active.message}</span>
@@ -105,22 +128,42 @@ const AddSchoolRoom = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="image">Hình ảnh</label>
+                                        <label htmlFor="image">
+                                            Hình ảnh
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image")}
+                                            {...register("image", {
+                                                required: "Vui lòng chọn hình ảnh"
+                                            })}
                                         />
+                                         {errors.image && (
+                                            <span className="text-danger">{errors.image.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="description">Mô tả</label>
+                                        <label htmlFor="description">
+                                            Mô tả
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description")}
+                                            {...register("description", {
+                                                required: "Vui lòng nhập mô tả"
+                                            })}
                                             placeholder="Nhập mô tả"
                                         />
+                                         {errors.description && (
+                                            <span className="text-danger">{errors.description.message}</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -19,7 +19,7 @@ class PointHeadController extends Controller
 
         return response()->json([
             'message' => 'Không có đầu điểm nào!',
-        ], 404);
+        ], 200);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)
@@ -39,7 +39,7 @@ class PointHeadController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'PointHead')
+            $data = Category::where('type', '=', 'point_head')
                                 ->when($search, function ($query, $search) {
                                     
                                     return $query
@@ -80,10 +80,7 @@ class PointHeadController extends Controller
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
+            return response()->json($params, 200);
         } catch (Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -104,10 +101,7 @@ class PointHeadController extends Controller
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết danh muc = ' . $id,
-                    'data' => $data
-                ]);                
+                return response()->json($data, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -145,10 +139,7 @@ class PointHeadController extends Controller
                 $params['image'] = $fileName;
                 $listPointHead->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listPointHead
-                ], 201);          
+                return response()->json($listPointHead, 201);          
             }
         } catch (Throwable $th) {
 
