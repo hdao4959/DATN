@@ -4,7 +4,7 @@ namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreClassroomRequest extends FormRequest
+class StoreClassRoomRequest  extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,16 +25,16 @@ class StoreClassroomRequest extends FormRequest
     {
         return [
             'class_code' => 'required|unique:class_rooms,class_code',
-            // 'class_name' => 'required|unique:class_rooms,class_name',
-            // 'subject_code' => 'required',
-            // 'section' => 'required',
+            'class_name' => 'required|unique:class_rooms,class_name',
+            'subject_code' => 'required',
+            'section' => 'required',
             // 'description' => 'nullable',
             // 'date_to' => 'nullable',
             // 'students' => 'nullable',
-            // 'study_days' => 'required',
-            // 'total_sessions' => 'required|integer|min:1',
-            // 'date_from' => 'required|date|after_or_equal:today',
-            // 'room_code' => 'required',
+            'study_days' => 'required',
+            'total_sessions' => 'required|integer|min:1',
+            'date_from' => 'required|date|after_or_equal:today',
+            'room_code' => 'required',
             // 'user_code' => 'nullable',
         ];
     }

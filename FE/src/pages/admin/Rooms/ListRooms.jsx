@@ -35,7 +35,9 @@ const ClassRoomsList = () => {
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
                 <Link to="/admin/classrooms/add">
-                    <button className="btn btn-primary">Thêm phòng học</button>
+                    <button className="btn btn-primary">
+                        Tạo lịch học mới
+                    </button>
                 </Link>
             </div>
 
@@ -89,7 +91,7 @@ const ClassRoomsList = () => {
                                                 <tr
                                                     role="row"
                                                     key={index}
-                                                    className="odd"
+                                                    className="odd text-center"
                                                 >
                                                     <td>{it.id}</td>
                                                     <td>{it.class_code}</td>

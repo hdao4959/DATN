@@ -28,9 +28,9 @@ import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
 import ShowGrades from "./pages/admin/Grades/pages";
-import ScheduleForm from "./pages/admin/StudyCalenderCase/ScheduleManager";
 import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
 import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
+import CreateClassroomWSchedule from "./pages/admin/Rooms/CreateClassroomWSchedule";
 
 function App() {
     const router = createBrowserRouter([
@@ -99,6 +99,10 @@ function App() {
                 {
                     path: "classrooms/add",
                     element: <AddClassroomTest />,
+                },
+                {
+                    path: "classrooms/create",
+                    element: <CreateClassroomWSchedule />,
                 },
                 {
                     path: "classrooms/edit/:class_code",

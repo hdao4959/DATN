@@ -17,7 +17,7 @@ const RoomSchoolList = () => {
         queryKey: ["LIST_SCHOOLROOMS"],
         queryFn: async () => {
             const res = await api.get("/admin/schoolrooms");
-            return res.data.data.data;
+            return res.data.data;
         },
     });
 

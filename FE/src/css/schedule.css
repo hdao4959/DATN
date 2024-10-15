@@ -1,0 +1,62 @@
+.dates-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.date-box {
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.remove-button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.room-selection {
+    margin-top: 20px;
+}
+
+.room-button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.room-button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.save-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
