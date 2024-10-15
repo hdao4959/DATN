@@ -49,9 +49,9 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
 
-    Route::apiResource('timeslot', TimeSlotController::class);
+    Route::apiResource('time_slots', TimeSlotController::class);
 
-    Route::apiResource('semester', SemesterController::class);
+    Route::apiResource('semesters', SemesterController::class);
 
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 

@@ -38,8 +38,6 @@ class GradeRepository implements GradeRepositoryInterface{
         return $grade->update([
             'score'=> $request->input('score')
         ]);
-
-
     }
 
     public function delete($id){

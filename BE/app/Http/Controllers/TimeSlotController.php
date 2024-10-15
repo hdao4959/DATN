@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTimeSlotRequest;
 use App\Http\Requests\UpdateTimeSlotRequest;
 use App\Repositories\Contracts\TimeSlotRepositoryInterface;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class TimeSlotController extends Controller
@@ -20,8 +21,11 @@ class TimeSlotController extends Controller
         try{
             $timeSlot = $this->timeslotRepository->getAll();
             return response()->json($timeSlot , 200);
-        }catch(\Throwable $th){
-            return response()->json(["message"=>$th]);
+        }catch(NotFoundHttpException $e){
+            return response()->json(['message'=>$e->getMessage()],404);
+        }
+        catch(\Throwable $th){
+            return response()->json(["message"=>$th],500);
         }
     }
 
