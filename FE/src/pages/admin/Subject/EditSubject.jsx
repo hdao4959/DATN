@@ -10,7 +10,6 @@ const EditSubject = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [major, setMajor] = useState([]);
-    const [filteredNarrowMajor, setFilteredNarrowMajor] = useState([]);
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const { data: subject, isLoading: loadingSubject } = useQuery({
@@ -21,11 +20,13 @@ const EditSubject = () => {
         }
     });
 
-    const { data: categories, isLoading: loadingCategories } = useQuery({
-        queryKey: ['categories'],
+    const { data: majors, isLoading: loadingMajor } = useQuery({
+        queryKey: ['majors'],
         queryFn: async () => {
-            const response = await api.get('/admin/category');
-            return response?.data;
+            const response = await api.get('/admin/major');
+            console.log(response?.data?.data?.data);
+            
+            return response?.data?.data?.data;
         }
     });
 
@@ -44,17 +45,12 @@ const EditSubject = () => {
     });
 
     useEffect(() => {
-        if (subject && categories) {
-            console.log(subject);
-
+        if (subject && majors) {
+            const filteredMajor = majors?.filter(major => major.cate_code === subject.major_code);
+            setMajor(filteredMajor);
             reset(subject);
-
-            const filteredMajors = categories?.filter(category => category.type === 'major');
-            setMajor(filteredMajors);
-            const selectedNarrowMajor = categories?.filter(category => category.cate_code === subject.narrow_major_code);
-            setFilteredNarrowMajor(categories?.filter(category => category.parent_code === subject.major_code));
         }
-    }, [subject, reset, categories]);
+    }, [subject, reset, majors]);
 
     const onSubmitForm = (data) => {
         const formData = new FormData();
@@ -66,15 +62,9 @@ const EditSubject = () => {
 
     const handleMajorChange = (event) => {
         const selectedValue = event?.target.value;
-        console.log(selectedValue);
-
-        const updatedNarrowMajor = categories?.filter(narrow => narrow.parrent_code === selectedValue);
-        console.log(updatedNarrowMajor);
-
-        setFilteredNarrowMajor(updatedNarrowMajor);
     };
 
-    if (loadingSubject || loadingCategories) return <div>Loading...</div>;
+    if (loadingSubject || loadingMajor) return <div>Loading...</div>;
 
     return (
         <div>
@@ -167,11 +157,12 @@ const EditSubject = () => {
                                             <label>Chuyên Ngành:</label>
                                             <select
                                                 className="form-control"
+                                                value={major[0].cate_code}
                                                 {...register('major_code', { required: true })}
                                                 onChangeCapture={handleMajorChange}
                                             >
-                                                <option value="">Chọn chuyên ngành</option>
-                                                {major?.map(major => (
+                                                <option value={subject.major_code}>{major[0].cate_name}</option>
+                                                {majors?.map(major => (
                                                     <option key={major.cate_code} value={major.cate_code}>
                                                         {major.cate_name}
                                                     </option>
@@ -184,14 +175,12 @@ const EditSubject = () => {
                                             <label>Chuyên Ngành Hẹp:</label>
                                             <select
                                                 className="form-control"
+                                                value=""
                                                 {...register('narrow_major_code')}
                                             >
-                                                <option value="">Chọn chuyên ngành hẹp</option>
-                                                {filteredNarrowMajor?.map(narrow => (
-                                                    <option key={narrow.cate_code} value={narrow.cate_code}>
-                                                        {narrow.cate_name}
-                                                    </option>
-                                                ))}
+                                                <option value="0">Chọn chuyên ngành hẹp</option>
+                                                <option value="1111">chuyên ngành hẹp 1</option>
+                                                <option value="2222">chuyên ngành hẹp 2</option>
                                             </select>
                                             {errors.narrow_major_code && <span className="text-danger">{errors.narrow_major_code.message}</span>}
                                         </div>
