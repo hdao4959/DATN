@@ -18,6 +18,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_code' => fake()->numberBetween(100,10000000),
             'full_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
@@ -34,7 +35,7 @@ class UserFactory extends Factory
             'avatar' => fake()->imageUrl(),
             'majors_id' => null, 
             'class_id' => null,
-            'role' => 'admin',
+            'role' => 'student',
             'is_active' => true
         ];
     }

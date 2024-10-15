@@ -12,21 +12,21 @@ const EditTimeslot = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     const { data: timeslotItem, isLoading } = useQuery({
-        queryKey: ['time_slot', id],
+        queryKey: ['timeslot', id],
         queryFn: async () => {
-            const response = await api.get(`/admin/time_slots/${id}`);
+            const response = await api.get(`/admin/timeslot/${id}`);
             return response.data.data;
         }
     });
 
     const mutation = useMutation({
         mutationFn: async (data) => {
-            await api.put(`/admin/time_slots/${id}`, data);
+            await api.put(`/admin/timeslot/${id}`, data);
         },
         onSuccess: () => {
             toast.success("Cập nhật ca học thành công!");
-            queryClient.invalidateQueries(['time_slots']);
-            navigate('/admin/time_slots');
+            queryClient.invalidateQueries(['timeslot']);
+            navigate('/admin/timeslot');
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -34,10 +34,10 @@ const EditTimeslot = () => {
     });
 
     useEffect(() => {
-        if (time_slotItem) {
-            reset(time_slotItem);
+        if (timeslotItem) {
+            reset(timeslotItem);
         }
-    }, [time_slotItem, reset]);
+    }, [timeslotItem, reset]);
 
     const onSubmitForm = (data) => {
         mutation.mutate(data);
@@ -51,13 +51,13 @@ const EditTimeslot = () => {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="card-title text-center">Quản lý Kỳ Học</div>
+                            <div className="card-title text-center">Quản lý Ca Học</div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/admin/time_slots">
+                <Link to="/admin/timeslot">
                     <button className="btn btn-primary">
                         <i className='fas fa-list'></i> Danh sách ca học
                     </button>
