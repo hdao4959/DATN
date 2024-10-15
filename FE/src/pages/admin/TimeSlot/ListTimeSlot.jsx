@@ -1,27 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../../../config/axios';
 import { toast, ToastContainer } from 'react-toastify';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
 
 const ListTimeslot = () => {
     const queryClient = useQueryClient();
 
-    const { data: time_slots, isLoading, isError } = useQuery({
-        queryKey: ['time_slots'],
+    const { data: timeslots, isLoading } = useQuery({
+        queryKey: ['timeslot'],
         queryFn: async () => {
-            const response = await api.get('/admin/time_slots');
-            return response.data.data;
+            const response = await api.get('/admin/timeslot');
+            return response?.data;
         }
     });
 
     const mutation = useMutation({
         mutationFn: async (id) => {
-            await api.delete(`/admin/time_slots/${id}`);
+            await api.delete(`/admin/timeslot/${id}`);
         },
         onSuccess: () => {
             toast.success("Xóa ca học thành công!");
-            queryClient.invalidateQueries(['time_slots']);
+            queryClient.invalidateQueries(['timeslot']);
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -29,43 +31,87 @@ const ListTimeslot = () => {
     });
 
     const handleDelete = (id) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa ca học này?")) {
+        const confirmed = window.confirm("Bạn có chắc chắn muốn xóa ca học này không?");
+        if (confirmed) {
             mutation.mutate(id);
         }
     };
 
+    useEffect(() => {
+        if (timeslots) {
+            if ($.fn.dataTable.isDataTable('#timeslotList')) {
+                $('#timeslotList').DataTable().destroy();
+            }
+
+            $('#timeslotList').DataTable({
+                data: timeslots,
+                columns: [
+                    { title: "Tên Ca Học", data: "name" },
+                    { title: "Thời Gian Bắt Đầu", data: "start_time" },
+                    { title: "Thời Gian Kết Thúc", data: "end_time" },
+                    {
+                        title: "Action",
+                        data: null,
+                        render: (data, type, row) => {
+                            return `
+                            <div className="whitespace-nowrap">
+                                <button>
+                                  <a href="/admin/timeslot/${row.id}/edit">
+                                    <i class='fas fa-edit hover:text-blue-500'></i>
+                                  </a>
+                                </button>
+                                <button class="delete-button ml-2" data-id="${row.id}">
+                                  <i class='fas fa-trash hover:text-red-500'></i>
+                                </button>
+                            </div>`;
+                          }
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        previous: 'Trước',
+                        next: 'Tiếp theo'
+                    },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
+                    search: 'Tìm kiếm:'
+                },
+                destroy: true
+            });
+
+            $('#timeslotList tbody').off('click', '.delete-button');
+            $('#timeslotList tbody').on('click', '.delete-button', function () {
+                const id = $(this).data('id');
+                handleDelete(id);
+            });
+        }
+    }, [timeslots]);
+
     if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Có lỗi xảy ra trong quá trình tải dữ liệu.</div>;
 
     return (
         <div>
-            <h2>Danh Sách Ca Học</h2>
-            <Link to="/admin/time_slots/add">
-                <button className="btn btn-primary">Thêm Ca Học</button>
-            </Link>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Tên Ca Học</th>
-                        <th>Thời Gian Bắt Đầu</th>
-                        <th>Thời Gian Kết Thúc</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {time_slots?.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.name}</td>
-                            <td>{item.start_time}</td>
-                            <td>{item.end_time}</td>
-                            <td>
-                                <Link to={`/admin/time_slots/${item.id}/edit`} className="btn btn-warning">Sửa</Link>
-                                <button onClick={() => handleDelete(item.id)} className="btn btn-danger">Xóa</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title text-center">Quản lý Ca Học</div>
+                        </div>
+                        <div className='card-body'>
+                            <div className="mb-3 mt-2 flex items-center justify-between">
+                                <Link to={`/admin/timeslot/add`}>
+                                    <button className="btn btn-success">
+                                        <i className='fas fa-plus'></i> Thêm ca học
+                                    </button>
+                                </Link>
+                            </div>
+                            <table id="timeslotList" className="table table-striped"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <ToastContainer />
         </div>
     );
