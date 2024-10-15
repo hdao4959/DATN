@@ -16,6 +16,7 @@ class NotificationController extends Controller
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
+
         return response()->json([
             'message' => 'Không có thông báo nào!',
         ], 404);
@@ -40,17 +41,19 @@ class NotificationController extends Controller
             $search = $request->input('search');
             $data = Category::where('type', '=', 'notification')
                                 ->when($search, function ($query, $search) {
+                                    
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
                                 })
                                 ->paginate(4);
             if ($data->isEmpty()) {
+
                 return $this->handleInvalidId();
             }
-            return response()->json([
-                'data' => $data
-            ],200);
+
+            return response()->json($data, 200);
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -82,6 +85,7 @@ class NotificationController extends Controller
                 'data' => $params
             ]);
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -95,6 +99,7 @@ class NotificationController extends Controller
         try {
             $notification = Category::where('id', $id)->first();
             if (!$notification) {
+
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -105,6 +110,7 @@ class NotificationController extends Controller
                 ]);                
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -123,6 +129,7 @@ class NotificationController extends Controller
 
             $notification = Category::where('id', $id)->first();
             if (!$notification) {
+
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
@@ -144,6 +151,7 @@ class NotificationController extends Controller
                 ], 201);          
             }
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -156,6 +164,7 @@ class NotificationController extends Controller
         try {
             $notification = Category::where('id', $id)->first();
             if (!$notification) {
+
                 return $this->handleInvalidId();
             } else {
                 $listNotification = Category::findOrFail($id);
@@ -169,6 +178,7 @@ class NotificationController extends Controller
                 ], 200);            
             }
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -188,6 +198,7 @@ class NotificationController extends Controller
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
