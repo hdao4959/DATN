@@ -28,9 +28,11 @@ import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
 import ShowGrades from "./pages/admin/Grades/pages";
-import ScheduleForm from "./pages/admin/StudyCalenderCase/ScheduleManager";
-import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
-import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
+import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
+import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
+import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
+// import ScheduleForm from "./pages/admin/StudyCalenderCase/ScheduleManager";
+// import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
 
 function App() {
     const router = createBrowserRouter([
@@ -98,7 +100,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroomTest />,
+                    element: <AddClassroom />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -144,9 +146,21 @@ function App() {
                     path: "grades",
                     element: <ShowGrades />,
                 },
+                // {
+                //     path: "schedules/study/manager",
+                //     element: <ScheduleManager />,
+                // },
                 {
-                    path: "schedules/study/manager",
-                    element: <ScheduleManager />,
+                    path: "grade-components",
+                    element: <GradeComponentList />,
+                },
+                {
+                    path: "grade-components/add",
+                    element: <AddGradeComponents />,
+                },
+                {
+                    path: "grade-components/:id/edit",
+                    element: <UpdateGradeComponents />,
                 },
             ],
         },

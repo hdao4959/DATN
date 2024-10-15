@@ -19,7 +19,7 @@ class PointHeadController extends Controller
 
         return response()->json([
             'message' => 'Không có đầu điểm nào!',
-        ], 404);
+        ], 200);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)
@@ -39,7 +39,7 @@ class PointHeadController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'PointHead')
+            $data = Category::where('type', '=', 'point_head')
                                 ->when($search, function ($query, $search) {
                                     
                                     return $query
