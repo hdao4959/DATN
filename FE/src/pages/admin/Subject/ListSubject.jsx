@@ -14,7 +14,7 @@ const SubjectsList = () => {
     queryKey: ["LIST_SUBJECT"],
     queryFn: async () => {
       const res = await api.get("/admin/subjects");
-      return res?.data;
+      return res?.data?.data;
     }
   });
 
@@ -103,44 +103,6 @@ const SubjectsList = () => {
   }, [data]);
 
   if (isLoading) return <div>Loading...</div>;
-
-  const columns = [
-    { title: "STT", data: null, render: (data, type, row, meta) => meta.row + 1 },
-    { title: "Mã Môn", data: "subject_code" },
-    { title: "Tên Môn Học", data: "subject_name" },
-    {
-      title: "Hình ảnh",
-      data: "image",
-      render: (data, type, row) => (
-        <img src={data} alt={row.subject_name} width={50} height={50} />
-      )
-    },
-    { title: "Chuyên ngành", data: "major_code" },
-    { title: "Chuyên ngành hẹp", data: "narrow_major_code" },
-    {
-      title: "Trạng thái",
-      data: "is_active",
-      render: (data) => (
-        data === 1 
-          ? <i className="fas fa-check-circle" style={{ color: 'green' }}></i>
-          : <i className="fas fa-ban" style={{ color: 'red' }}></i>
-      )
-    },
-    {
-      title: "Action",
-      data: null,
-      render: (data, type, row) => (
-        <>
-          <Link to={`/admin/subjects/${row.id}/edit`}>
-            <i className='fas fa-edit' />
-          </Link>
-          <button className='ml-2' onClick={() => handleDelete(row.id)}>
-            <i className='fas fa-trash' />
-          </button>
-        </>
-      )
-    }
-  ];
 
   return (
     <>
