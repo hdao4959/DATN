@@ -264,11 +264,16 @@ const Sidebar = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a href="/admin/classrooms">
+                            <Link to="/admin/classrooms">
                                 <i className="fas fa-school" />
                                 <p>Classrooms</p>
-                                <span className="badge badge-info">1</span>
-                            </a>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/grade-components">
+                                <i className="fas fa-th-list" />
+                                <p>Grade components</p>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <Link to="/admin/account">
