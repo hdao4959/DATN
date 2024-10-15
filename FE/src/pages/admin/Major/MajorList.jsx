@@ -117,7 +117,7 @@ const MajorList = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {data.map((it, index) => (
+                                            {data?.map((it, index) => (
                                                 <tr
                                                     role="row"
                                                     key={index}

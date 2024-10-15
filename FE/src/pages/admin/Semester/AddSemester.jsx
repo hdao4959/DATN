@@ -12,7 +12,7 @@ const AddSemester = () => {
 
     const { mutate } = useMutation({
         mutationFn: async (data) => {
-            await api.post("/admin/semesters", data);
+            await api.post("/admin/semester", data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['LIST_SEMESTER']);
@@ -26,9 +26,9 @@ const AddSemester = () => {
 
     const onSubmitForm = (data) => {
         const requestData = {
-            semester_code: data.semester_code,
-            semester_name: data.semester_name,
-            is_active: data.is_active,
+            name: data.name,
+            start_date: data.start_date,
+            end_date: data.end_date,
         };
         mutate(requestData);
     };
@@ -60,33 +60,15 @@ const AddSemester = () => {
                             </div>
                             <div className="card-body">
                                 <div className="row">
-                                    <div className="form-group">
-                                        <label>Mã Kỳ Học:</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            {...register('semester_code', { required: 'Mã kỳ học không được để trống.' })}
-                                        />
-                                        {errors.semester_code && <span className="text-danger">{errors.semester_code.message}</span>}
-                                    </div>
 
                                     <div className="form-group">
                                         <label>Tên Kỳ Học:</label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register('semester_name', { required: 'Tên kỳ học không được để trống.' })}
+                                            {...register('name', { required: 'Tên kỳ học không được để trống.' })}
                                         />
-                                        {errors.semester_name && <span className="text-danger">{errors.semester_name.message}</span>}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Năm Học:</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            {...register('academic_year', { required: 'Năm học không được để trống.' })}
-                                        />
-                                        {errors.academic_year && <span className="text-danger">{errors.academic_year.message}</span>}
+                                        {errors.name && <span className="text-danger">{errors.name.message}</span>}
                                     </div>
 
                                     <div className="form-group">
@@ -107,14 +89,6 @@ const AddSemester = () => {
                                             {...register('end_date', { required: 'Ngày kết thúc không được để trống.' })}
                                         />
                                         {errors.end_date && <span className="text-danger">{errors.end_date.message}</span>}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Trạng Thái:</label>
-                                        <select className="form-control" {...register('is_active')}>
-                                            <option value="1">Công Khai</option>
-                                            <option value="0">Ẩn</option>
-                                        </select>
                                     </div>
                                 </div>
                             </div>

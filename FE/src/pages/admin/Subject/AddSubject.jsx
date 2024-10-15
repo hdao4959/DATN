@@ -4,40 +4,28 @@ import api from '../../../config/axios';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS của toast
+import 'react-toastify/dist/ReactToastify.css';
 
-const AddSubject = ({ }) => {
+const AddSubject = () => {
   const query_client = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset, getValues } = useForm();
 
   const [major, set_major] = useState([]);
-  const [narrow_major, set_narrow_major] = useState([]);
   const [selected_major, set_selected_major] = useState();
-  const [narrow_major_code, set_narrow_major_code] = useState();
-  const [filtered_narrow_major, set_filtered_narrow_major] = useState([]);
 
-  const { data: categories, isLoading } = useQuery({
-    queryKey: ['categories'],
+  const { data: majors, isLoading } = useQuery({
+    queryKey: ['majors'],
     queryFn: async () => {
-      const response = await api.get('/admin/category');
-      return response?.data;
+      const response = await api.get('/admin/major');
+      return response?.data?.data?.data;
     }
   });
 
   useEffect(() => {
-    if (categories) {
-      try {
-        const filtered_majors = categories.filter(category => category.type === 'major');
-        set_major(filtered_majors);
-
-        const filtered_narrow_majors = categories.filter(category => category.type === 'narrow_major');
-        set_narrow_major(filtered_narrow_majors);
-      } catch (error) {
-        console.error('Error fetching majors:', error);
-        toast.error("Lỗi khi tải danh sách chuyên ngành");
-      }
+    if (majors) {
+      set_major(majors);
     }
-  }, [categories]);
+  }, [majors]);
 
   const { mutate } = useMutation({
     mutationFn: async (data) => {
@@ -57,14 +45,8 @@ const AddSubject = ({ }) => {
     const selected_value = event.target.value;
     set_selected_major(selected_value);
 
-    const updated_narrow_major = narrow_major.filter(narrow => narrow.parrent_code === selected_value);
-    set_filtered_narrow_major(updated_narrow_major);
-
-    set_narrow_major_code('');
-
     reset({
       ...getValues(),
-      narrow_major_code: "",
     });
   };
 
@@ -92,7 +74,7 @@ const AddSubject = ({ }) => {
 
   return (
     <>
-     <div className="row">
+      <div className="row">
         <div className="col-md-12">
           <div className="card">
             <div className="card-header">
@@ -200,16 +182,12 @@ const AddSubject = ({ }) => {
                       <label>Chuyên Ngành Hẹp:</label>
                       <select
                         className="form-control"
-                        value={narrow_major_code}
-                        onChangeCapture={(e) => set_narrow_major_code(e.target.value)}
+                        value=""
                         {...register('narrow_major_code')}
                       >
-                        <option value="">Chọn chuyên ngành hẹp</option>
-                        {filtered_narrow_major?.map(narrow => (
-                          <option key={narrow.cate_code} value={narrow.cate_code}>
-                            {narrow.cate_name}
-                          </option>
-                        ))}
+                        <option value="0">Chọn chuyên ngành hẹp</option>
+                        <option value="1111">chuyên ngành hẹp 1</option>
+                        <option value="2222">chuyên ngành hẹp 2</option>
                       </select>
                       {errors.narrow_major_code && <span className="text-danger">{errors.narrow_major_code.message}</span>}
                     </div>
@@ -257,21 +235,20 @@ const AddSubject = ({ }) => {
                     <div className="form-group">
                       <label>Trạng Thái:</label>
                       <select className="form-control" {...register('is_active')}>
-                        <option value="1">Công Khai</option>
-                        <option value="0">Ẩn</option>
+                        <option value="1">Kích hoạt</option>
+                        <option value="0">Không kích hoạt</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <div className="card-action d-flex justify-content-end gap-x-3">
-                  <button type="button" className="btn btn-danger" onClick={() => reset()}>
-                    <i className='fas fa-undo'> Reset</i>
-                  </button>
-                  <button type="submit" className="btn btn-success">
-                    <i className='fas fa-plus'> Thêm</i>
-                  </button>
-                </div>
-
+              </div>
+              <div className="card-action d-flex justify-content-end gap-x-3">
+                <button type="button" className="btn btn-danger" onClick={() => reset()}>
+                  <i className='fas fa-undo'> Reset</i>
+                </button>
+                <button type="submit" className="btn btn-success">
+                  <i className='fas fa-plus'> Thêm</i>
+                </button>
               </div>
             </div>
           </div>

@@ -28,6 +28,7 @@ import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
 import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
+import ShowGrades from "./pages/admin/grades/page";
 
 
 function App() {
@@ -115,16 +116,20 @@ function App() {
                     element: <EditSemester />,
                 },
                 {
-                    path: "time_slots",
+                    path: "timeslot",
                     element: <ListTimeslot />,
                 },
                 {
-                    path: "time_slots/add",
+                    path: "timeslot/add",
                     element: <AddTimeslot />,
                 },
                 {
-                    path: "time_slots/edit/:class_code",
+                    path: "timeslot/:id/edit",
                     element: <EditTimeslot />,
+                },
+                {
+                    path: "grades",
+                    element: <ShowGrades />
                 },
                 {
                     path: "schoolrooms/add",
