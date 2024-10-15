@@ -31,8 +31,7 @@ import ShowGrades from "./pages/admin/Grades/pages";
 import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
-// import ScheduleForm from "./pages/admin/StudyCalenderCase/ScheduleManager";
-// import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
+import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 
 function App() {
     const router = createBrowserRouter([
@@ -100,7 +99,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroom />,
+                    element: <AddClassroomTest />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
