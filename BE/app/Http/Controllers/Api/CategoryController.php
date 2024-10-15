@@ -119,7 +119,7 @@ class CategoryController extends Controller
             if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
                 Storage::disk('public')->delete($listCategory->image);
             }
-            
+
             $listCategory->update($params);
 
             return response()->json([
@@ -307,55 +307,82 @@ class CategoryController extends Controller
     private function generateStudentList()
     {
         $listHocSinh = [];
-        $chuyenNganh = ["CS", "SE", "IS"]; // Mã các chuyên ngành
+        // $chuyenNganh = ["CS", "SE", "IS"]; // Mã các chuyên ngành
 
-        for ($i = 1; $i <= 2500; $i++) {
-            // Chọn ngẫu nhiên chuyên ngành
-            $randomIndex = array_rand($chuyenNganh);
-            $randomChuyenNganh = $chuyenNganh[$randomIndex];
+        // for ($i = 1; $i <= 2500; $i++) {
+        //     // Chọn ngẫu nhiên chuyên ngành
+        //     $randomIndex = array_rand($chuyenNganh);
+        //     $randomChuyenNganh = $chuyenNganh[$randomIndex];
 
-            $listHocSinh[] = [
-                "maHS" => "HS$i",
-                "ten" => "Học sinh $i",
-                "chuyenNganh" => $randomChuyenNganh // Gán mã chuyên ngành ngẫu nhiên
+        //     $listHocSinh[] = [
+        //         "maHS" => "HS$i",
+        //         "ten" => "Học sinh $i",
+        //         "ten" => $randomChuyenNganh // Gán mã chuyên ngành ngẫu nhiên
+        //     ];
+        // }
+
+        // return $listHocSinh;
+        $studentList = DB::table('users')->where('role', '=', "student")->where('is_active', '=', true)->get();
+        $students = $studentList->map(function ($student) {
+            return [
+                'maHS' => $student->user_code,
+                'ten' => $student->full_name,
+                'chuyenNganh' => "CN1",
             ];
-        }
-
-        return $listHocSinh;
+        })->toArray();
+        return $students;
     }
 
     private function generateClassrooms()
     {
-        return [
-            ["code" => "phong1", "name" => "Phòng 1", "sucChua" => 31],
-            ["code" => "phong2", "name" => "Phòng 2", "sucChua" => 24],
-            ["code" => "phong3", "name" => "Phòng 3", "sucChua" => 28],
-            ["code" => "phong4", "name" => "Phòng 4", "sucChua" => 22],
-            ["code" => "phong5", "name" => "Phòng 4", "sucChua" => 22],
-            ["code" => "phong6", "name" => "Phòng 4", "sucChua" => 22],
-            ["code" => "phong7", "name" => "Phòng 4", "sucChua" => 22],
-            ["code" => "phong8", "name" => "Phòng 4", "sucChua" => 22],
-            ["code" => "phong9", "name" => "Phòng 4", "sucChua" => 22],
-            // ["code" => "phong10", "name" => "Phòng 4", "sucChua" => 22],
-            // Thêm các phòng học khác...
-            ["code" => "phong10", "name" => "Phòng 10", "sucChua" => 26]
-        ];
+        // return [
+        //     ["code" => "phong1", "name" => "Phòng 1", "sucChua" => 31],
+        //     ["code" => "phong2", "name" => "Phòng 2", "sucChua" => 24],
+        //     ["code" => "phong3", "name" => "Phòng 3", "sucChua" => 28],
+        //     ["code" => "phong4", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong5", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong6", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong7", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong8", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong9", "name" => "Phòng 4", "sucChua" => 22],
+        //     ["code" => "phong10", "name" => "Phòng 10", "sucChua" => 26]
+        // ];
+        $rooms = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
+        $classRooms = $rooms->map(function ($room) {
+            return [
+                'code' => $room->cate_code,
+                'name' => $room->cate_name,
+                'sucChua' => $room->value
+            ];
+        })->toArray();
+        return $classRooms;
     }
 
     private function generateSubjects()
     {
-        return [
-            ["code" => "MH101", "name" => "Toán đại cương", "tinChi" => 3, "chuyenNganh" => "CS"],
-            ["code" => "MH102", "name" => "Lập trình cơ bản", "tinChi" => 3, "chuyenNganh" => "SE"],
-            ["code" => "MH103", "name" => "Giải tích", "tinChi" => 4, "chuyenNganh" => "IS"],
-            ["code" => "MH104", "name" => "Cấu trúc dữ liệu", "tinChi" => 3, "chuyenNganh" => "CS"],
-            ["code" => "MH105", "name" => "Hệ điều hành", "tinChi" => 3, "chuyenNganh" => "SE"],
-            ["code" => "MH106", "name" => "Mạng máy tính", "tinChi" => 3, "chuyenNganh" => "IS"],
-            ["code" => "MH107", "name" => "Cơ sở dữ liệu", "tinChi" => 3, "chuyenNganh" => "CS"],
-            ["code" => "MH108", "name" => "Khoa học máy tính", "tinChi" => 3, "chuyenNganh" => "SE"],
-            ["code" => "MH109", "name" => "Xử lý tín hiệu", "tinChi" => 3, "chuyenNganh" => "IS"],
-            ["code" => "MH110", "name" => "Thiết kế web", "tinChi" => 3, "chuyenNganh" => "SE"],
-        ];
+        // return [
+        //     ["code" => "MH101", "name" => "Toán đại cương", "tinChi" => 3, "chuyenNganh" => "CS"],
+        //     ["code" => "MH102", "name" => "Lập trình cơ bản", "tinChi" => 3, "chuyenNganh" => "SE"],
+        //     ["code" => "MH103", "name" => "Giải tích", "tinChi" => 4, "chuyenNganh" => "IS"],
+        //     ["code" => "MH104", "name" => "Cấu trúc dữ liệu", "tinChi" => 3, "chuyenNganh" => "CS"],
+        //     ["code" => "MH105", "name" => "Hệ điều hành", "tinChi" => 3, "chuyenNganh" => "SE"],
+        //     ["code" => "MH106", "name" => "Mạng máy tính", "tinChi" => 3, "chuyenNganh" => "IS"],
+        //     ["code" => "MH107", "name" => "Cơ sở dữ liệu", "tinChi" => 3, "chuyenNganh" => "CS"],
+        //     ["code" => "MH108", "name" => "Khoa học máy tính", "tinChi" => 3, "chuyenNganh" => "SE"],
+        //     ["code" => "MH109", "name" => "Xử lý tín hiệu", "tinChi" => 3, "chuyenNganh" => "IS"],
+        //     ["code" => "MH110", "name" => "Thiết kế web", "tinChi" => 3, "chuyenNganh" => "SE"],
+        // ];
+
+        $subjects = DB::table('subjects')->where('is_delete', '=', false)->where('is_active', '=', true)->get();
+        $subjectList = $subjects->map(function ($subject) {
+            return [
+                'code' => $subject->subject_code,
+                'name' => $subject->subject_name,
+                'tinChi' => $subject->credit_number,
+                'chuyenNganh' => $subject->narrow_major_code,
+            ];
+        })->toArray();
+        return $subjectList;
     }
 
     private function generateDaysOfWeek()
@@ -371,63 +398,83 @@ class CategoryController extends Controller
         $listLop = []; // Danh sách lớp học đã xếp
         $classTimes = $this->generateClassTimes(); // Danh sách ca học
 
-        foreach ($daysOfWeek as $day) {
+        // Lưu trạng thái hiện tại của ngày, ca, và phòng cho mỗi môn
+        $currentDayIndex = 0;
+        $currentRoomIndex = 0;
+        $currentTimeIndex = 0;
 
-            // Duyệt qua từng môn học
-            foreach ($listMonHoc as $mon) {
-                // Bộ đếm lớp học cho mỗi môn
-                $classCounter = 1;
+        // Duyệt qua từng môn học
+        foreach ($listMonHoc as $mon) {
+            // Bộ đếm lớp học cho mỗi môn
+            $classCounter = 1;
 
-                // Lọc danh sách học sinh theo chuyên ngành của môn học
-                $studentsInClass = array_filter($listHocSinh, function ($hs) use ($mon) {
-                    return $hs['chuyenNganh'] === $mon['chuyenNganh']; // Lọc theo chuyên ngành
-                });
+            // Lọc danh sách học sinh theo chuyên ngành của môn học
+            $studentsInClass = array_filter($listHocSinh, function ($hs) use ($mon) {
+                return $hs['chuyenNganh'] === $mon['chuyenNganh']; // Lọc theo chuyên ngành
+            });
 
-                $currentStudentIndex = 0; // Chỉ số học sinh hiện tại
-                $totalStudents = count($studentsInClass); // Tổng số học sinh cho môn này
+            $currentStudentIndex = 0; // Chỉ số học sinh hiện tại
+            $totalStudents = count($studentsInClass); // Tổng số học sinh cho môn này
 
-                // Duyệt qua từng ngày trong tuần
-                // Kiểm tra nếu đã xếp hết học sinh thì thoát
-                if ($currentStudentIndex >= $totalStudents) {
-                    break;
+            // Tiếp tục vòng lặp qua các ngày, ca, và phòng học, bắt đầu từ trạng thái hiện tại
+            while ($currentStudentIndex < $totalStudents) {
+                // Kiểm tra nếu đã hết các ngày trong tuần
+                if ($currentDayIndex >= count($daysOfWeek)) {
+                    break; // Dừng lại khi đã hết các ngày
                 }
 
-                // Duyệt qua các phòng học
-                foreach ($listPhonghoc as $phong) {
-                    // Duyệt qua từng ca học từ 1 đến 7
-                    foreach ($classTimes as $classTime) {
-                        // Kiểm tra nếu đã xếp hết học sinh thì thoát
-                        if ($currentStudentIndex >= $totalStudents) {
-                            break;
-                        }
+                // Lấy ngày hiện tại
+                $day = $daysOfWeek[$currentDayIndex];
 
-                        $roomCapacity = $phong['sucChua']; // Sức chứa của phòng học
-                        // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
-                        $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
+                // Lấy phòng học hiện tại
+                $phong = $listPhonghoc[$currentRoomIndex];
 
-                        // Tạo tên lớp, ví dụ: "Lớp MH101 - 1"
-                        $className = "Lớp " . $mon['code'] . " - " . $classCounter;
+                // Lấy ca học hiện tại
+                $classTime = $classTimes[$currentTimeIndex];
 
-                        // Tạo lớp cho môn học trong phòng này, ngày này, ca này
-                        $listLop[] = [
-                            "tenLop" => $className, // Tên lớp
-                            "monHoc" => $mon['code'],
-                            "phongHoc" => $phong['code'],
-                            "ngay" => $day['code'], // Ngày học
-                            "ca" => $classTime['code'], // Ca học
-                            // "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Danh sách học sinh trong lớp
-                        ];
+                // Sức chứa của phòng học
+                $roomCapacity = $phong['sucChua'];
 
-                        // Cập nhật chỉ số học sinh đã xếp vào lớp
-                        $currentStudentIndex += $classSize;
+                // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
+                $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
 
-                        // Tăng bộ đếm lớp cho môn học
-                        $classCounter++;
-                    }
-                    // Nếu đã xếp hết học sinh cho môn học này thì thoát khỏi vòng lặp phòng học
-                    if ($currentStudentIndex >= $totalStudents) {
-                        break;
-                    }
+                // Tạo tên lớp, ví dụ: "Lớp MH101 - 1"
+                $className = "Lớp " . $mon['code'] . " - " . $classCounter;
+
+                // Tạo lớp cho môn học trong phòng này, ngày này, ca này
+                $listLop[] = [
+                    "tenLop" => $className, // Tên lớp
+                    "monHoc" => $mon['code'],
+                    "phongHoc" => $phong['code'],
+                    "ngay" => $day['code'], // Ngày học
+                    "ca" => $classTime['code'], // Ca học
+                    "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Danh sách học sinh trong lớp
+                ];
+
+                // Cập nhật chỉ số học sinh đã xếp vào lớp
+                $currentStudentIndex += $classSize;
+
+                // Tăng bộ đếm lớp cho môn học
+                $classCounter++;
+
+                // Cập nhật chỉ số ca học
+                $currentTimeIndex++;
+
+                // Nếu đã hết các ca trong ngày, chuyển sang phòng học tiếp theo
+                if ($currentTimeIndex >= count($classTimes)) {
+                    $currentTimeIndex = 0;
+                    $currentRoomIndex++;
+                }
+
+                // Nếu đã hết các phòng trong ngày, chuyển sang ngày tiếp theo
+                if ($currentRoomIndex >= count($listPhonghoc)) {
+                    $currentRoomIndex = 0;
+                    $currentDayIndex++;
+                }
+
+                // Kiểm tra nếu đã hết các ngày trong tuần và thoát khỏi vòng lặp
+                if ($currentDayIndex >= count($daysOfWeek)) {
+                    break; // Dừng lại khi đã hết các ngày trong tuần
                 }
             }
         }
@@ -435,86 +482,25 @@ class CategoryController extends Controller
         return $listLop;
     }
 
-
-
-    // private function assignClasses($listHocSinh, $listPhonghoc, $listMonHoc, $daysOfWeek)
-    // {
-    //     $listLop = []; // Danh sách lớp học đã xếp
-    //     $classTimes = $this->generateClassTimes(); // Danh sách ca học
-
-    //     // Duyệt qua từng môn học
-    //     foreach ($listMonHoc as $mon) {
-    //         // Bộ đếm lớp học cho mỗi môn
-    //         $classCounter = 1;
-
-    //         // Lọc danh sách học sinh theo chuyên ngành của môn học
-    //         $studentsInClass = array_filter($listHocSinh, function ($hs) use ($mon) {
-    //             return $hs['chuyenNganh'] === $mon['chuyenNganh']; // Lọc theo chuyên ngành
-    //         });
-
-    //         $currentStudentIndex = 0; // Chỉ số học sinh hiện tại
-    //         $totalStudents = count($studentsInClass); // Tổng số học sinh cho môn này
-
-    //         // Duyệt qua từng ngày trong tuần
-    //         foreach ($daysOfWeek as $day) {
-    //             // Kiểm tra nếu đã xếp hết học sinh thì thoát
-    //             if ($currentStudentIndex >= $totalStudents) {
-    //                 break;
-    //             }
-
-    //             // Duyệt qua các ca học từ 1 đến 7
-    //             foreach ($classTimes as $classTime) {
-    //                 // Duyệt qua từng phòng học trong mỗi ca
-    //                 foreach ($listPhonghoc as $phong) {
-    //                     // Kiểm tra nếu đã xếp hết học sinh thì thoát
-    //                     if ($currentStudentIndex >= $totalStudents) {
-    //                         break;
-    //                     }
-
-    //                     $roomCapacity = $phong['sucChua']; // Sức chứa của phòng học
-    //                     // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
-    //                     $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
-
-    //                     // Tạo tên lớp, ví dụ: "Lớp MH101 - 1"
-    //                     $className = "Lớp " . $mon['code'] . " - " . $classCounter;
-
-    //                     // Tạo lớp cho môn học trong phòng này, ngày này, ca này
-    //                     $listLop[] = [
-    //                         "tenLop" => $className, // Tên lớp
-    //                         "monHoc" => $mon['code'],
-    //                         "phongHoc" => $phong['code'],
-    //                         "ngay" => $day['code'], // Ngày học
-    //                         "ca" => $classTime['code'], // Ca học
-    //                         // "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Danh sách học sinh trong lớp
-    //                     ];
-
-    //                     // Cập nhật chỉ số học sinh đã xếp vào lớp
-    //                     $currentStudentIndex += $classSize;
-
-    //                     // Tăng bộ đếm lớp cho môn học
-    //                     $classCounter++;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return $listLop;
-    // }
-
-
-
-
-
     private function generateClassTimes()
     {
-        return [
-            ["code" => "ca1", "name" => "Ca 1"],
-            ["code" => "ca2", "name" => "Ca 2"],
-            ["code" => "ca3", "name" => "Ca 3"],
-            ["code" => "ca4", "name" => "Ca 4"],
-            ["code" => "ca5", "name" => "Ca 5"],
-            ["code" => "ca6", "name" => "Ca 6"],
-            ["code" => "ca7", "name" => "Ca 7"]
-        ];
+        // return [
+        //     ["code" => "ca1", "name" => "Ca 1"],
+        //     ["code" => "ca2", "name" => "Ca 2"],
+        //     ["code" => "ca3", "name" => "Ca 3"],
+        //     ["code" => "ca4", "name" => "Ca 4"],
+        //     ["code" => "ca5", "name" => "Ca 5"],
+        //     ["code" => "ca6", "name" => "Ca 6"],
+        //     ["code" => "ca7", "name" => "Ca 7"]
+        // ];
+
+        $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
+        $classTimes = $sessions->map(function ($session) {
+            return [
+                'code' => $session->cate_code,
+                'name' => $session->cate_name
+            ];
+        })->toArray();
+        return $classTimes;
     }
 }
