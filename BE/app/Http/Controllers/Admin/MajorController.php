@@ -17,6 +17,7 @@ class MajorController extends Controller
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
+
         return response()->json([
             'message' => 'Không có chuyên ngành nào!',
         ], 404);
@@ -41,17 +42,19 @@ class MajorController extends Controller
             $search = $request->input('search');
             $data = Category::where('type', '=', 'major')
                                 ->when($search, function ($query, $search) {
+                                    
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
                                 })
                                 ->paginate(4);
             if ($data->isEmpty()) {
+
                 return $this->handleInvalidId();
             }
-            return response()->json([
-                'data' => $data
-            ],200);
+
+            return response()->json($data, 200);
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -84,6 +87,7 @@ class MajorController extends Controller
                 'data' => $params
             ]);
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -97,6 +101,7 @@ class MajorController extends Controller
         try {
             $major = Category::where('id', $id)->first();
             if (!$major) {
+
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
@@ -107,6 +112,7 @@ class MajorController extends Controller
                 ]);                
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -125,6 +131,7 @@ class MajorController extends Controller
 
             $major = Category::where('id', $id)->first();
             if (!$major) {
+
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
@@ -146,6 +153,7 @@ class MajorController extends Controller
                 ], 201);          
             }
         } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -158,6 +166,7 @@ class MajorController extends Controller
         try {
             $major = Category::where('id', $id)->first();
             if (!$major) {
+
                 return $this->handleInvalidId();
             } else {
                 $listMajor = Category::findOrFail($id);
@@ -171,6 +180,7 @@ class MajorController extends Controller
                 ], 200);            
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -190,6 +200,7 @@ class MajorController extends Controller
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }    
