@@ -80,10 +80,7 @@ class NotificationController extends Controller
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
+            return response()->json($params, 200);
         } catch (Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -104,10 +101,7 @@ class NotificationController extends Controller
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết thông báo = ' . $id,
-                    'data' => $data
-                ]);                
+                return response()->json($data, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -145,10 +139,7 @@ class NotificationController extends Controller
                 $params['image'] = $fileName;
                 $listNotification->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listNotification
-                ], 201);          
+                return response()->json($listNotification, 201);          
             }
         } catch (Throwable $th) {
 

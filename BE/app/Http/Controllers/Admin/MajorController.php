@@ -82,10 +82,7 @@ class MajorController extends Controller
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
+            return response()->json($params, 200);
         } catch (\Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -106,10 +103,7 @@ class MajorController extends Controller
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết danh muc = ' . $id,
-                    'data' => $data
-                ]);                
+                return response()->json($data, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -147,10 +141,7 @@ class MajorController extends Controller
                 $params['image'] = $fileName;
                 $listMajor->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listMajor
-                ], 201);          
+                return response()->json($listMajor, 201);          
             }
         } catch (Throwable $th) {
 
