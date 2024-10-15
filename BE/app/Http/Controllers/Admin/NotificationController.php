@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\SchoolRoom\StoreSchoolRoomRequest;
-use App\Http\Requests\SchoolRoom\UpdateSchoolRoomRequest;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Notification\StoreNotificationRequest;
+use App\Http\Requests\Notification\UpdateNotificationRequest;
 
-class SchoolRoomController extends Controller
+class NotificationController extends Controller
 {
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
         return response()->json([
-            'message' => 'Không có Phòng Học nào!',
+            'message' => 'Không có thông báo nào!',
         ], 404);
     }
 
@@ -35,24 +36,21 @@ class SchoolRoomController extends Controller
     public function index(Request $request)
     {
         try {
-
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'school_room')
+            $data = Category::where('type', '=', 'notification')
                                 ->when($search, function ($query, $search) {
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
                                 })
                                 ->paginate(4);
-            $data = Category::where('type', 'school_room')->paginate(20);
-
             if ($data->isEmpty()) {
                 return $this->handleInvalidId();
             }
             return response()->json([
                 'data' => $data
             ],200);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -60,17 +58,16 @@ class SchoolRoomController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSchoolRoomRequest $request)
+    public function store(StoreNotificationRequest $request)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'school_room')
+                                ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
             $params = $request->except('_token');
-
             if ($request->hasFile('image')) {
                 $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
@@ -84,7 +81,7 @@ class SchoolRoomController extends Controller
                 'message' => 'Tạo mới thành công',
                 'data' => $params
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -96,16 +93,16 @@ class SchoolRoomController extends Controller
     public function show(string $id)
     {
         try {
-            $schoolRoom = Category::where('id', $id)->first();
-            if (!$schoolRoom) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
 
                 return response()->json([
-                    'message' => 'Chi tiết phòng học = ' . $id,
+                    'message' => 'Chi tiết thông báo = ' . $id,
                     'data' => $data
-                ]);
+                ]);                
             }
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -115,38 +112,38 @@ class SchoolRoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSchoolRoomRequest $request, string $id)
+    public function update(UpdateNotificationRequest $request, string $id)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'school_room')
+                                ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $schoolRoom = Category::where('id', $id)->first();
-            if (!$schoolRoom) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listSchoolRoom = Category::findOrFail($id);
+                $listNotification = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
-                    if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
-                        Storage::disk('public')->delete($listSchoolRoom->image);
+                    if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
+                        Storage::disk('public')->delete($listNotification->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listSchoolRoom->image;
+                    $fileName = $listNotification->image;
                 }
                 $params['image'] = $fileName;
-                $listSchoolRoom->update($params);
+                $listNotification->update($params);
 
                 return response()->json([
                     'message' => 'Sửa thành công',
-                    'data' => $listSchoolRoom
-                ], 201);
+                    'data' => $listNotification
+                ], 201);          
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -157,21 +154,21 @@ class SchoolRoomController extends Controller
     public function destroy(string $id)
     {
         try {
-            $schoolRoom = Category::where('id', $id)->first();
-            if (!$schoolRoom) {
+            $notification = Category::where('id', $id)->first();
+            if (!$notification) {
                 return $this->handleInvalidId();
             } else {
-                $listSchoolRoom = Category::findOrFail($id);
-                if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
-                    Storage::disk('public')->delete($listSchoolRoom->image);
+                $listNotification = Category::findOrFail($id);
+                if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
+                    Storage::disk('public')->delete($listNotification->image);
                 }
-                $listSchoolRoom->delete($listSchoolRoom);
+                $listNotification->delete($listNotification);
 
                 return response()->json([
                     'message' => 'Xóa thành công'
-                ], 200);
+                ], 200);            
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -179,9 +176,9 @@ class SchoolRoomController extends Controller
     public function bulkUpdateType(Request $request)
     {
         try {
-            $activies = $request->input('is_active'); // Lấy dữ liệu từ request
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'is_active'
+                // Tìm category theo ID và cập nhật trường is_active
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();

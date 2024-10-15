@@ -37,12 +37,6 @@ class MajorController extends Controller
     public function index(Request $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của chuyên ngành cha
-            $parent = Category::whereNull('parrent_code')
-                                    ->where('type', '=', 'major')
-                                    ->select('cate_code', 'cate_name')
-                                    ->get();
-
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'major')
@@ -55,8 +49,7 @@ class MajorController extends Controller
                 return $this->handleInvalidId();
             }
             return response()->json([
-                'data' => $data, 
-                'parent' => $parent
+                'data' => $data
             ],200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -67,27 +60,33 @@ class MajorController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreMajorRequest $request)
-{
-    try {
-        $params = $request->except('_token');
+    {
+        try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
 
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/image', 'public');
-        } else {
-            $fileName = null;
+            $params = $request->except('_token');
+
+            if ($request->hasFile('image')) {
+                $fileName = $request->file('image')->store('uploads/image', 'public');
+            } else {
+                $fileName = null;
+            }
+
+            $params['image'] = $fileName;
+            Category::create($params);
+
+            return response()->json([
+                'message' => 'Tạo mới thành công',
+                'data' => $params
+            ]);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
         }
-
-        $params['image'] = $fileName;
-        Category::create($params);
-
-        return response()->json([
-            'message' => 'Tạo mới thành công',
-            'data' => $params
-        ]);
-    } catch (\Throwable $th) {
-        return $this->handleErrorNotDefine($th);
     }
-}
 
 
     /**
@@ -118,6 +117,12 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $id)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
             $major = Category::where('id', $id)->first();
             if (!$major) {
                 return $this->handleInvalidId();
@@ -162,7 +167,7 @@ class MajorController extends Controller
                 $listMajor->delete($listMajor);
 
                 return response()->json([
-                    'message' => 'Xoa thanh cong'
+                    'message' => 'Xóa thành công'
                 ], 200);            
             }
         } catch (\Throwable $th) {
@@ -175,14 +180,14 @@ class MajorController extends Controller
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'type'
+                // Tìm category theo ID và cập nhật trường 'is_active'
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();
             }
 
             return response()->json([
-                'message' => 'Loại đã được cập nhật thành công!'
+                'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
