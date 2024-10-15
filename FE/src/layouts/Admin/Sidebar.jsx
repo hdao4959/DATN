@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Sidebar = () => {
     return (
@@ -38,7 +38,6 @@ const Sidebar = () => {
                         </button>
                     </div>
                 </div>
-                {/* End Logo Header */}
             </div>
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
@@ -57,11 +56,11 @@ const Sidebar = () => {
                             <div className="collapse" id="dashboard">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../../demo1/index.html">
+                                        <NavLink href="../../demo1/index.html">
                                             <span className="sub-item">
                                                 Dashboard 1
                                             </span>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                 </ul>
                             </div>

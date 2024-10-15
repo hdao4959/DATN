@@ -10,7 +10,6 @@ import EditMajor from "./pages/admin/Major/EditMajor";
 import Signin from "./pages/admin/Auth/Signin";
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
-
 import EditSubject from "./pages/admin/Subject/EditSubject";
 import CreateAccount from "./pages/admin/Account/CreateAccount";
 import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
@@ -29,7 +28,9 @@ import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
 import ShowGrades from "./pages/admin/Grades/pages";
-
+import ScheduleForm from "./pages/admin/StudyCalenderCase/ScheduleManager";
+import ScheduleManager from "./pages/admin/StudyCalenderCase/StudyCelenderManager";
+import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 
 function App() {
     const router = createBrowserRouter([
@@ -97,7 +98,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroom />,
+                    element: <AddClassroomTest />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -137,12 +138,16 @@ function App() {
                 },
                 {
                     path: "schoolrooms/:id/edit",
-                    element: <EditSchoolRooms />
+                    element: <EditSchoolRooms />,
                 },
                 {
-                    path: 'grades',
-                    element: <ShowGrades />
-                }
+                    path: "grades",
+                    element: <ShowGrades />,
+                },
+                {
+                    path: "schedules/study/manager",
+                    element: <ScheduleManager />,
+                },
             ],
         },
     ]);
