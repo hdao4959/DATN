@@ -12,7 +12,6 @@ const AddSubject = () => {
   const { register, handleSubmit, formState: { errors }, reset, getValues } = useForm();
 
   const [major, set_major] = useState([]);
-  // const [narrow_major, set_narrow_major] = useState([]);
   const [selected_major, setSelectedMajor] = useState();
   const [narrow_major_code, set_narrow_major_code] = useState();
   const [filtered_narrow_major, setFilteredNarrowMajor] = useState([]);
@@ -28,11 +27,7 @@ const AddSubject = () => {
   useEffect(() => {
     if (categories) {
       try {
-        // const filtered_majors = categories.filter(category => category.type === 'major');
         set_major(categories);
-
-        // const filtered_narrow_majors = categories.filter(category => category.type === 'narrow_major');
-        // set_narrow_major(filtered_narrow_majors);
       } catch (error) {
         console.error('Error fetching majors:', error);
         toast.error("Lỗi khi tải danh sách chuyên ngành");
@@ -53,25 +48,6 @@ const AddSubject = () => {
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
     },
   });
-
-  // const handle_major_change = (event) => {
-  //   const selectedCode  = event.target.value;
-  //   set_selected_major(selectedCode);
-
-  //   const selectedMajor = major.find(m => m.cate_code === selectedCode);
-  //   if (selectedMajor) {
-  //     set_narrow_major(selectedMajor.listItem);
-  //     set_filtered_narrow_major(selectedMajor.listItem || []);
-  //   } else {
-  //     set_filtered_narrow_major([]);
-  //   }
-
-
-  //   reset({
-  //     ...getValues(),
-  //     narrow_major_code: "",
-  //   });
-  // };
 
   const handleMajorChange = (event) => {
     const selectedCode = event.target.value;
