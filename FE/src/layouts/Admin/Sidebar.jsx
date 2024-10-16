@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Sidebar = () => {
     return (
@@ -38,7 +38,6 @@ const Sidebar = () => {
                         </button>
                     </div>
                 </div>
-                {/* End Logo Header */}
             </div>
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
@@ -57,11 +56,11 @@ const Sidebar = () => {
                             <div className="collapse" id="dashboard">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../../demo1/index.html">
+                                        <NavLink href="../../demo1/index.html">
                                             <span className="sub-item">
                                                 Dashboard 1
                                             </span>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                 </ul>
                             </div>
@@ -265,16 +264,21 @@ const Sidebar = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a href="/admin/classrooms">
+                            <Link to="/admin/classrooms">
                                 <i className="fas fa-school" />
                                 <p>Classrooms</p>
-                                <span className="badge badge-info">1</span>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/admin/account/create">
+                            <Link to="/admin/grade-components">
+                                <i className="fas fa-th-list" />
+                                <p>Grade components</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/account">
                                 <i className="fas fa-user" />
-                                <p>Create Account</p>
+                                <p>Account Manager</p>
                                 <span className="badge badge-success">4</span>
                             </Link>
                         </li>

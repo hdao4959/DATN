@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
@@ -7,12 +6,11 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
 
-
 const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
 
-    const onModalVisible = () => setModalOpen(prev => !prev);
+    const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["LIST_SCHOOLROOMS"],
@@ -23,16 +21,15 @@ const RoomSchoolList = () => {
     });
 
     const { mutate, isLoading } = useMutation({
-
         mutationFn: (id) => api.delete(`/admin/schoolrooms/${id}`),
         onSuccess: () => {
-            toast.success('Xóa phòng học thành công');
+            toast.success("Xóa phòng học thành công");
             onModalVisible();
             refetch();
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi xóa phòng học');
-        }
+            toast.error("Có lỗi xảy ra khi xóa phòng học");
+        },
     });
     const handleDelete = (id) => {
         setSelectedSchoolRooms(id);
@@ -45,9 +42,7 @@ const RoomSchoolList = () => {
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
                 <Link to="/admin/schoolrooms/add">
-                    <button className="btn btn-primary">
-                        Thêm phòng học
-                    </button>
+                    <button className="btn btn-primary">Thêm phòng học</button>
                 </Link>
             </div>
 
@@ -132,16 +127,33 @@ const RoomSchoolList = () => {
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
                                                         {it.is_active == 1 ? (
-                                                            <i className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
+                                                            <i
+                                                                className="fas fa-check-circle fs-20 color-green"
+                                                                style={{
+                                                                    color: "green",
+                                                                    fontSize:
+                                                                        "25px",
+                                                                }}
+                                                            ></i>
                                                         ) : (
-                                                            <i className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
+                                                            <i
+                                                                className="fas fa-ban fs-20 color-danger"
+                                                                style={{
+                                                                    color: "red",
+                                                                    fontSize:
+                                                                        "25px",
+                                                                }}
+                                                            ></i>
                                                         )}
-
-
                                                     </td>
                                                     <td>
                                                         <img
-                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
+                                                            src={
+                                                                it.image
+                                                                    ? "http://localhost:8000/storage/" +
+                                                                      it.image
+                                                                    : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
+                                                            }
                                                             alt={it.name}
                                                             width={50}
                                                             height={50}
@@ -149,18 +161,23 @@ const RoomSchoolList = () => {
                                                     </td>
                                                     <td>
                                                         <div className="flex gap-x-2">
-                                                            <Link to={`/admin/schoolrooms/${it.id}/edit`}>
+                                                            <Link
+                                                                to={`/admin/schoolrooms/${it.id}/edit`}
+                                                            >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <i
                                                                 className="fas fa-trash ml-6"
-                                                                onClick={() => handleDelete(it.id)}
-                                                                disabled={isLoading}
-                                                            >
-
-                                                            </i>
-
+                                                                onClick={() =>
+                                                                    handleDelete(
+                                                                        it.id
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    isLoading
+                                                                }
+                                                            ></i>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -229,15 +246,15 @@ const RoomSchoolList = () => {
             </div>
 
             <Modal
-                title='Xoá phòng học'
-                description='Bạn có chắc chắn muốn xoá phòng học này?'
-                closeTxt='Huỷ'
-                okTxt='Xác nhận'
+                title="Xoá phòng học"
+                description="Bạn có chắc chắn muốn xoá phòng học này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
                 visible={modalOpen}
                 onVisible={onModalVisible}
                 onOk={() => mutate(selectedSchoolRooms)}
             />
         </>
     );
-}
-export default RoomSchoolList
+};
+export default RoomSchoolList;

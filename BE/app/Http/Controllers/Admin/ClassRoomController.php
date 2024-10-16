@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassRoom;
-use App\Http\Requests\Classroom\StoreClassroomRequest;
-use App\Http\Requests\Classroom\UpdateClassroomRequest;
+use App\Http\Requests\Classroom\StoreClassRoomRequest;
+use App\Http\Requests\Classroom\UpdateClassRoomRequest;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
@@ -54,7 +54,7 @@ class ClassRoomController extends Controller
         }
     }
 
-    public function renderScheduleForClassroom(StoreClassroomRequest $request)
+    public function renderScheduleForClassroom(StoreClassRoomRequest $request)
     {
         try {
             $data = $request->except('date_from');
@@ -145,7 +145,7 @@ class ClassRoomController extends Controller
     }
 
 
-    public function update(UpdateClassroomRequest $request, string $classCode)
+    public function update(UpdateClassRoomRequest $request, string $classCode)
     {
         try {
             $data = $request->all();

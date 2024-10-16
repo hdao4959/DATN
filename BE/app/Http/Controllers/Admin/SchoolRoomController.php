@@ -15,6 +15,7 @@ class SchoolRoomController extends Controller
     // Hàm trả về json khi id không hợp lệ
     public function handleInvalidId()
     {
+
         return response()->json([
             'message' => 'Không có Phòng Học nào!',
         ], 404);
@@ -35,24 +36,24 @@ class SchoolRoomController extends Controller
     public function index(Request $request)
     {
         try {
-
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'school_room')
                                 ->when($search, function ($query, $search) {
+
                                     return $query
                                             ->where('cate_name', 'like', "%{$search}%");
                                 })
                                 ->paginate(4);
-            $data = Category::where('type', 'school_room')->paginate(20);
-
             if ($data->isEmpty()) {
+
                 return $this->handleInvalidId();
             }
-            return response()->json([
-                'data' => $data
-            ],200);
-        } catch (\Throwable $th) {
+
+
+            return response()->json($data, 200);
+        } catch (Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -80,11 +81,9 @@ class SchoolRoomController extends Controller
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
+            return response()->json($params, 200);
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -98,16 +97,17 @@ class SchoolRoomController extends Controller
         try {
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
+
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết phòng học = ' . $id,
-                    'data' => $data
-                ]);
+
+                return response()->json($data, 200);
+
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -126,6 +126,7 @@ class SchoolRoomController extends Controller
 
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
+
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
@@ -141,12 +142,10 @@ class SchoolRoomController extends Controller
                 $params['image'] = $fileName;
                 $listSchoolRoom->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listSchoolRoom
-                ], 201);
+                return response()->json($listSchoolRoom, 201);
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -159,6 +158,7 @@ class SchoolRoomController extends Controller
         try {
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
+
                 return $this->handleInvalidId();
             } else {
                 $listSchoolRoom = Category::findOrFail($id);
@@ -172,6 +172,7 @@ class SchoolRoomController extends Controller
                 ], 200);
             }
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -191,6 +192,7 @@ class SchoolRoomController extends Controller
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
+
             return $this->handleErrorNotDefine($th);
         }
     }

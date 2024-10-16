@@ -1,54 +1,82 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import Spinner from "../../../components/Spinner/Spinner";
+import Modal from "../../../components/Modal/Modal";
 
-const ClassRoomsList = () => {
-    const { data, refetch } = useQuery({
-        queryKey: ["LIST_ROOMS"],
+const GradeComponentList = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedGradeComponent, setSelectedGradeComponent] = useState();
+
+    const onModalVisible = () => setModalOpen((prev) => !prev);
+
+    const { data, refetch, isFetching } = useQuery({
+        queryKey: ["GRADE_COMPONENTS"],
         queryFn: async () => {
-            const res = await api.get("/admin/classrooms");
-            return res.data;
+            const res = await api.get("/admin/pointheads");
+            return res.data.data ?? [];
         },
     });
-    const classrooms = data?.classrooms?.data || [];
 
-    const { mutate, isLoading } = useMutation({
-        mutationFn: (class_code) =>
-            api.delete(`/admin/classrooms/${class_code}`),
+    const { mutate } = useMutation({
+        mutationFn: (id) => api.delete(`/admin/pointheads/${id}`),
         onSuccess: () => {
-            alert("Xóa phòng học thành công");
+            toast.success("Xóa điểm thành phần thành công");
+            onModalVisible();
             refetch();
         },
         onError: () => {
-            alert("Có lỗi xảy ra khi xóa phòng học");
+            toast.error("Có lỗi xảy ra khi xóa điểm thành phần");
         },
     });
-    const handleDelete = (class_code) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa phòng học này không?")) {
-            mutate(class_code);
-        }
+    const handleDelete = (id) => {
+        setSelectedGradeComponent(id);
+        onModalVisible();
     };
 
-    if (!data) return <div>Loading...</div>;
+    if (isFetching && !data) return <Spinner />;
 
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/admin/grade-components/add">
                     <button className="btn btn-primary">
-                        Tạo lịch học mới
+                        Thêm điểm thành phần
                     </button>
                 </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Classrooms Management</h4>
+                    <h4 className="card-title">Grade Components Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
                         <div className="dataTables_wrapper container-fluid dt-bootstrap4">
                             <div className="row">
+                                <div className="col-sm-12 col-md-6">
+                                    <div
+                                        className="dataTables_length"
+                                        id="basic-datatables_length"
+                                    >
+                                        <label>
+                                            Show{" "}
+                                            <select
+                                                name="basic-datatables_length"
+                                                aria-controls="basic-datatables"
+                                                className="form-control form-control-sm"
+                                            >
+                                                <option value={10}>10</option>
+                                                <option value={25}>25</option>
+                                                <option value={50}>50</option>
+                                                <option value={100}>100</option>
+                                            </select>{" "}
+                                            entries
+                                        </label>
+                                    </div>
+                                </div>
                                 <div className="col-sm-12 col-md-6">
                                     <div
                                         id="basic-datatables_filter"
@@ -68,6 +96,7 @@ const ClassRoomsList = () => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
+                                    <i className="fa-solid fa-circle-check fs-20 color-green"></i>
                                     <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"
@@ -77,65 +106,41 @@ const ClassRoomsList = () => {
                                         <thead>
                                             <tr role="row">
                                                 <th>ID</th>
-                                                <th>Mã lớp học</th>
-                                                <th>Tên lớp</th>
-                                                <th>Mô tả</th>
-                                                <th>Số lượng sinh viên</th>
-                                                <th>Môn học</th>
-                                                <th>Trạng thái</th>
+                                                <th>Mã điểm TP</th>
+                                                <th>Tên điểm TP</th>
+                                                <th>Trọng số</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {classrooms.map((it, index) => (
+                                            {data.map((it, index) => (
                                                 <tr
                                                     role="row"
                                                     key={index}
-                                                    className="odd text-center"
+                                                    className="odd"
                                                 >
                                                     <td>{it.id}</td>
-                                                    <td>{it.class_code}</td>
-                                                    <td>{it.class_name}</td>
-                                                    <td>{it.description}</td>
-                                                    <td>30</td>
-                                                    <td>LTWE</td>
+                                                    <td>{it.cate_code}</td>
+                                                    <td>{it.cate_name}</td>
+                                                    <td>{it.value}%</td>
                                                     <td>
-                                                        {it.is_active == 1 ? (
-                                                            <i
-                                                                className="fas fa-check-circle"
-                                                                style={{
-                                                                    color: "green",
-                                                                }}
-                                                            ></i>
-                                                        ) : (
-                                                            <i
-                                                                className="fas fa-times-circle"
-                                                                style={{
-                                                                    color: "red",
-                                                                }}
-                                                            ></i>
-                                                        )}
-                                                    </td>
-
-                                                    <td>
-                                                        <div>
+                                                        <div className="flex gap-x-2">
                                                             <Link
-                                                                to={`/admin/classrooms/edit/${it.class_code}`}
+                                                                to={`/admin/grade-components/${it.id}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
-                                                            <i
-                                                                className="fas fa-trash ml-6"
+                                                            <div
                                                                 onClick={() =>
                                                                     handleDelete(
-                                                                        it.class_code
+                                                                        it.id
                                                                     )
                                                                 }
-                                                                disabled={
-                                                                    isLoading
-                                                                }
-                                                            ></i>
+                                                                className="cursor-pointer"
+                                                            >
+                                                                <i className="fas fa-trash ml-6"></i>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -145,12 +150,12 @@ const ClassRoomsList = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="col-sm-12 col-md-5">
+                                {/* <div className="col-sm-12 col-md-5">
                                     <div className="dataTables_info">
                                         Showing 1 to 10 of {data.length} entries
                                     </div>
-                                </div>
-                                <div className="col-sm-12 col-md-7">
+                                </div> */}
+                                <div className="col-sm-12 col-md-7 ml-auto">
                                     <div className="dataTables_paginate paging_simple_numbers">
                                         <ul className="pagination">
                                             <li className="paginate_button page-item previous disabled">
@@ -202,8 +207,18 @@ const ClassRoomsList = () => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                title="Xoá điểm thành phần"
+                description="Bạn có chắc chắn muốn xoá điểm thành phần này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={modalOpen}
+                onVisible={onModalVisible}
+                onOk={() => mutate(selectedGradeComponent)}
+            />
         </>
     );
 };
 
-export default ClassRoomsList;
+export default GradeComponentList;
