@@ -1,7 +1,6 @@
 <?php
 
 
-use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubjectController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\GradesController;
 
 use App\Http\Controllers\Admin\NotificationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -38,13 +38,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-
 Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('users', UserController::class);
-
-
-    //môn học
     Route::get('/subjects', [SubjectController::class, 'index']);
     Route::get('/subjects/{id}', [SubjectController::class, 'show']);
     Route::post('/subjects', [SubjectController::class, 'store']);
@@ -53,6 +49,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
 
     Route::apiResource('classrooms', ClassRoomController::class);
+
     Route::post('/classrooms/render_schedule', [ClassRoomController::class, 'renderScheduleForClassroom']);
 
     Route::apiResource('users', UserController::class);
@@ -83,3 +80,4 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('notifications', NotificationController::class);
 
 });
+

@@ -35,5 +35,5 @@ class ClassRoom extends Model
         'students' => 'json'
     ];
 
-   
+
 }

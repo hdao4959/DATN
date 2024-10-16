@@ -33,6 +33,7 @@ import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
 import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 
+
 function App() {
     const router = createBrowserRouter([
         {
@@ -40,6 +41,10 @@ function App() {
             element: <Signin />,
         },
 
+        {
+            path: "/signin",
+            element: <Signin />,
+        },
         {
             path: "/signin",
             element: <Signin />,
@@ -89,10 +94,13 @@ function App() {
                     element: <AddSubject />,
                 },
 
+
+
                 {
                     path: "subjects/:id/edit",
                     element: <EditSubject />,
                 },
+
                 {
                     path: "classrooms",
                     element: <ClassRoomsList />,
@@ -161,6 +169,7 @@ function App() {
                     path: "grade-components/:id/edit",
                     element: <UpdateGradeComponents />,
                 },
+
             ],
         },
     ]);

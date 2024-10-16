@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('room_code',255)->comment('Mã phòng học');
             $table->string('subject_code',255)->comment('Mã môn học');
             $table->foreignId('user_code')->comment('Giảng viên')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
         });

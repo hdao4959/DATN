@@ -10,6 +10,7 @@ use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
 
+
 class ClassRoomController extends Controller
 {
 
@@ -21,7 +22,6 @@ class ClassRoomController extends Controller
             'message' => 'Lớp học không tồn tại!',
         ], 404);
     }
-
 
     //  Hàm trả về json khi lỗi không xác định (500)
     public function handleErrorNotDefine($th)
@@ -36,6 +36,7 @@ class ClassRoomController extends Controller
     public function index()
     {
         try {
+
             $classrooms = ClassRoom::where('is_active', true)->paginate(10);
 
             if ($classrooms->isEmpty()) {
@@ -54,6 +55,7 @@ class ClassRoomController extends Controller
         }
     }
 
+
     public function renderScheduleForClassroom(StoreClassRoomRequest $request)
     {
         try {
@@ -61,7 +63,7 @@ class ClassRoomController extends Controller
             $date_from = new DateTime($request->date_from);
             $total_sessions = $data['total_sessions'];
             $list_study_dates = [];
-            
+
             do {
                 $date_from->add(new DateInterval('P1D'));
                 if (in_array($date_from->format('D'), $data['study_days'])) {
@@ -76,10 +78,12 @@ class ClassRoomController extends Controller
                 ], 200
             );
 
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
+
 
 
     public function store(Request $request)
@@ -88,7 +92,7 @@ class ClassRoomController extends Controller
         try {
             $data_request = $request->all();
             $list_study_dates = $request->list_study_dates;
-            
+
             if(!array($list_study_dates) || count($list_study_dates) == 0){
                 return response()->json(
                     ['message' => 'Lịch học không hợp lệ']
@@ -96,7 +100,7 @@ class ClassRoomController extends Controller
             }
 
 
-            $data = 
+            $data =
                 [
                     'class_code' => $data_request['class_code'],
                     'class_name' => $data_request['class_name'],
@@ -117,6 +121,7 @@ class ClassRoomController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
      *
@@ -126,6 +131,7 @@ class ClassRoomController extends Controller
     public function show(string $classCode)
     {
         try {
+
             $classroom = ClassRoom::where([
                 'class_code' =>  $classCode,
                 'is_active' => true
@@ -139,6 +145,7 @@ class ClassRoomController extends Controller
                 'classroom' => $classroom,
                 'message' => 'Lấy dữ liệu lớp học thành công!'
             ], 200);
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }

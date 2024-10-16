@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
@@ -131,3 +132,4 @@ const SubjectsList = () => {
 };
 
 export default SubjectsList;
+

@@ -58,7 +58,6 @@ class UserController extends Controller
     public function show(string $user_code)
     {
         try {
-        
             $user = User::where([
                 'user_code' => $user_code,
                 'is_active' => true
@@ -107,11 +106,11 @@ class UserController extends Controller
         }
     }
 
-    
+
     public function destroy(string $user_code)
     {
         try {
-           
+
             $user = User::where('user_code', $user_code)->first();
             if (!$user) {
                 return response()->json(
