@@ -1,26 +1,40 @@
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
-import "/Users/hanhd/DATN/FE/src/css/signin.css";
-
+import "/src/css/signin.css";
+import { toast } from "react-toastify";
 const Signin = () => {
+    const navigate = useNavigate();
+
     const { mutate } = useMutation({
         mutationFn: (data) => {
             return api.post("/login", data);
         },
-        onSuccess: () => {
-            alert("Đăng nhập thành công!");
-            window.location.href = "/admin";
+
+        onSuccess: (data) => {
+            const { user, token } = data.data;
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("token", JSON.stringify(token));
+
+            toast.success("Đăng nhập thành công!", {
+                autoClose: 3000,
+                closeOnClick: true,
+                draggable: true,
+            });
+            navigate("/admin");
         },
         onError: (error) => {
             if (!error.response) {
-                alert("Server chưa hoạt động. Vui lòng kiểm tra lại sau.");
+                toast.warning(
+                    "Server chưa hoạt động. Vui lòng kiểm tra lại sau."
+                );
             } else if (error.response.status === 500) {
-                alert("Lỗi máy chủ. Vui lòng thử lại sau.");
+                toast.warning("Lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
-                alert(error.response.data.message);
+                toast.warning(error.response.data.message);
+
             }
             console.log(error);
         },

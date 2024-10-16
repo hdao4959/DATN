@@ -1,17 +1,19 @@
+import { Link, NavLink } from "react-router-dom";
+
 const Sidebar = () => {
     return (
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
-                {/* Logo Header */}
                 <div className="logo-header" data-background-color="dark">
-                    <a href="../index.html" className="logo">
+                    <Link to={"/admin"} className="logo">
                         <img
-                            src="/assets/img/kaiadmin/logo_light.svg"
+                            src="https://ap.poly.edu.vn/images/whiteLogo.png"
+                            width={150}
                             alt="navbar brand"
                             className="navbar-brand"
                             height={20}
                         />
-                    </a>
+                    </Link>
                     <button
                         className="navbar-toggler sidenav-toggler ms-auto"
                         type="button"
@@ -36,7 +38,6 @@ const Sidebar = () => {
                         </button>
                     </div>
                 </div>
-                {/* End Logo Header */}
             </div>
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
@@ -55,11 +56,11 @@ const Sidebar = () => {
                             <div className="collapse" id="dashboard">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../../demo1/index.html">
+                                        <NavLink href="../../demo1/index.html">
                                             <span className="sub-item">
                                                 Dashboard 1
                                             </span>
-                                        </a>
+                                        </NavLink>
                                     </li>
                                 </ul>
                             </div>
@@ -263,18 +264,23 @@ const Sidebar = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a href="../calendar.html">
-                                <i className="far fa-calendar-alt" />
-                                <p>Calendar</p>
-                                <span className="badge badge-info">1</span>
-                            </a>
+                            <Link to="/admin/classrooms">
+                                <i className="fas fa-school" />
+                                <p>Classrooms</p>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a href="../widgets.html">
-                                <i className="fas fa-desktop" />
-                                <p>Widgets</p>
+                            <Link to="/admin/grade-components">
+                                <i className="fas fa-th-list" />
+                                <p>Grade components</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/account">
+                                <i className="fas fa-user" />
+                                <p>Account Manager</p>
                                 <span className="badge badge-success">4</span>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#submenu">

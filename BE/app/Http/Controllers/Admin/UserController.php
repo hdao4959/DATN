@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Dotenv\Exception\ValidationException;
 use Throwable;
@@ -17,7 +17,7 @@ class UserController extends Controller
     {
 
         try {
-            $list_user = User::paginate(20);
+            $list_user = User::where('is_active', true)->paginate(20);
 
             if ($list_user->isEmpty()) {
                 return response()->json(
@@ -58,8 +58,11 @@ class UserController extends Controller
     public function show(string $user_code)
     {
         try {
-        
-            $user = User::where('user_code', $user_code)->first();
+            $user = User::where([
+                'user_code' => $user_code,
+                'is_active' => true
+            ])->first();
+
             if (!$user) {
                 return response()->json([
                     'message' => "Tài khoản không tồn tại!"
@@ -103,11 +106,11 @@ class UserController extends Controller
         }
     }
 
-    
+
     public function destroy(string $user_code)
     {
         try {
-           
+
             $user = User::where('user_code', $user_code)->first();
             if (!$user) {
                 return response()->json(
