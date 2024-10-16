@@ -52,7 +52,7 @@ class SchoolRoomController extends Controller
 
 
             return response()->json($data, 200);
-        } catch (Throwable $th) {
+        } catch (\Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
         }
