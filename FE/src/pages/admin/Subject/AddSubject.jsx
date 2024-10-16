@@ -7,20 +7,20 @@ import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import CSS của toast
 
-const AddSubject = ({ }) => {
+const AddSubject = () => {
   const query_client = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset, getValues } = useForm();
 
   const [major, set_major] = useState([]);
-  const [narrow_major, set_narrow_major] = useState([]);
-  const [selected_major, set_selected_major] = useState();
+  // const [narrow_major, set_narrow_major] = useState([]);
+  const [selected_major, setSelectedMajor] = useState();
   const [narrow_major_code, set_narrow_major_code] = useState();
-  const [filtered_narrow_major, set_filtered_narrow_major] = useState([]);
+  const [filtered_narrow_major, setFilteredNarrowMajor] = useState([]);
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/category');
+      const response = await api.get('/admin/getListCategory/major');
       return response?.data;
     }
   });
@@ -28,11 +28,11 @@ const AddSubject = ({ }) => {
   useEffect(() => {
     if (categories) {
       try {
-        const filtered_majors = categories.filter(category => category.type === 'major');
-        set_major(filtered_majors);
+        // const filtered_majors = categories.filter(category => category.type === 'major');
+        set_major(categories);
 
-        const filtered_narrow_majors = categories.filter(category => category.type === 'narrow_major');
-        set_narrow_major(filtered_narrow_majors);
+        // const filtered_narrow_majors = categories.filter(category => category.type === 'narrow_major');
+        // set_narrow_major(filtered_narrow_majors);
       } catch (error) {
         console.error('Error fetching majors:', error);
         toast.error("Lỗi khi tải danh sách chuyên ngành");
@@ -54,20 +54,42 @@ const AddSubject = ({ }) => {
     },
   });
 
-  const handle_major_change = (event) => {
-    const selected_value = event.target.value;
-    set_selected_major(selected_value);
+  // const handle_major_change = (event) => {
+  //   const selectedCode  = event.target.value;
+  //   set_selected_major(selectedCode);
 
-    const updated_narrow_major = narrow_major.filter(narrow => narrow.parrent_code === selected_value);
-    set_filtered_narrow_major(updated_narrow_major);
+  //   const selectedMajor = major.find(m => m.cate_code === selectedCode);
+  //   if (selectedMajor) {
+  //     set_narrow_major(selectedMajor.listItem);
+  //     set_filtered_narrow_major(selectedMajor.listItem || []);
+  //   } else {
+  //     set_filtered_narrow_major([]);
+  //   }
 
-    set_narrow_major_code('');
+
+  //   reset({
+  //     ...getValues(),
+  //     narrow_major_code: "",
+  //   });
+  // };
+
+  const handleMajorChange = (event) => {
+    const selectedCode = event.target.value;
+    setSelectedMajor(selectedCode);
+
+    const selectedMajor = major.find(m => m.cate_code === selectedCode);
+    if (selectedMajor) {
+      setFilteredNarrowMajor(selectedMajor.listItem || []); // Hiển thị danh sách narrow major của major được chọn
+    } else {
+      setFilteredNarrowMajor([]); // Nếu không có major nào được chọn
+    }
 
     reset({
       ...getValues(),
-      narrow_major_code: "",
+      narrow_major_code: "", // Reset lại trường narrow major khi thay đổi major
     });
   };
+
 
   const on_submit_form = (data) => {
     const request_data = {
@@ -183,7 +205,7 @@ const AddSubject = ({ }) => {
                       <select
                         className="form-control"
                         value={selected_major}
-                        onChangeCapture={handle_major_change}
+                        onChangeCapture={handleMajorChange }
                         {...register('major_code', { required: true })}
                       >
                         <option value="">Chọn chuyên ngành</option>
