@@ -27,6 +27,12 @@ import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
 import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
+import ShowGrades from "./pages/admin/Grades/pages";
+import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
+import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
+import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
+import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
+
 
 function App() {
     const router = createBrowserRouter([
@@ -35,6 +41,10 @@ function App() {
             element: <Signin />,
         },
 
+        {
+            path: "/signin",
+            element: <Signin />,
+        },
         {
             path: "/signin",
             element: <Signin />,
@@ -52,7 +62,7 @@ function App() {
                     element: <Dashboard />,
                 },
                 {
-                    path: "account/list",
+                    path: "account",
                     element: <ListAccount />,
                 },
                 {
@@ -83,17 +93,21 @@ function App() {
                     path: "subjects/add",
                     element: <AddSubject />,
                 },
+
+
+
                 {
                     path: "subjects/:id/edit",
                     element: <EditSubject />,
                 },
+
                 {
                     path: "classrooms",
                     element: <ClassRoomsList />,
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroom />,
+                    element: <AddClassroomTest />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -112,15 +126,15 @@ function App() {
                     element: <EditSemester />,
                 },
                 {
-                    path: "time_slots",
+                    path: "timeslot",
                     element: <ListTimeslot />,
                 },
                 {
-                    path: "time_slots/add",
+                    path: "timeslot/add",
                     element: <AddTimeslot />,
                 },
                 {
-                    path: "time_slots/edit/:class_code",
+                    path: "timeslot/:id/edit",
                     element: <EditTimeslot />,
                 },
                 {
@@ -133,8 +147,29 @@ function App() {
                 },
                 {
                     path: "schoolrooms/:id/edit",
-                    element: <EditSchoolRooms />
-                }
+                    element: <EditSchoolRooms />,
+                },
+                {
+                    path: "grades",
+                    element: <ShowGrades />,
+                },
+                // {
+                //     path: "schedules/study/manager",
+                //     element: <ScheduleManager />,
+                // },
+                {
+                    path: "grade-components",
+                    element: <GradeComponentList />,
+                },
+                {
+                    path: "grade-components/add",
+                    element: <AddGradeComponents />,
+                },
+                {
+                    path: "grade-components/:id/edit",
+                    element: <UpdateGradeComponents />,
+                },
+
             ],
         },
     ]);

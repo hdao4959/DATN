@@ -11,11 +11,11 @@ const AddTimeslot = () => {
 
     const mutation = useMutation({
         mutationFn: async (data) => {
-            await api.post('/admin/time_slots', data);
+            await api.post('/admin/timeslot', data);
         },
         onSuccess: () => {
             toast.success("Thêm ca học thành công!");
-            queryClient.invalidateQueries(['time_slots']);
+            queryClient.invalidateQueries(['timeslot']);
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -32,13 +32,13 @@ const AddTimeslot = () => {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="card-title text-center">Quản lý Kỳ Học</div>
+                            <div className="card-title text-center">Quản lý Ca Học</div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/admin/time_slots">
+                <Link to="/admin/timeslot">
                     <button className="btn btn-primary">
                         <i className='fas fa-list'></i> Danh sách ca học
                     </button>

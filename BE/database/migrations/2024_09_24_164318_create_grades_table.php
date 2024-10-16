@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
-            $table->string('gradesCode',255);
+            $table->string('grades_code',255);
             $table->float('score')->default(0);
-            $table->string('userCode',255);
-            $table->string('userGradesCode',255);
-            $table->string('classCode',255);
-            $table->string('subjectCode',255);
+            $table->string('user_code',255);
+            $table->string('user_grades_code',255);
+            $table->string('class_code',255);
+            $table->string('subject_code',255);
             $table->date('date');
             $table->timestamps();
         });

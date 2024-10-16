@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Major extends Model
+class TimeSlot extends Model
 {
+    // ca học
     use HasFactory;
 
     protected $fillable = [
-        'major_code',
-        'title',
-        'is_active',
-        'description',
-        'image',
-        'parent_major_code',
-        'type'
+        "name",
+        "start_time",
+        "end_time"
     ];
 }

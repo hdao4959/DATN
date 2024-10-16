@@ -24,7 +24,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+
             'user_code' => 'required|unique:users,user_code,' . $this->route('user') . ',user_code',
+
             'full_name' => 'required',
             'email' => 'required|email|unique:users,email,' . $this->route('user') . ',user_code',
             'phone_number' => 'required|regex:/^(0[0-9]{9})$/',

@@ -146,6 +146,7 @@ const MajorList = () => {
                                                     {/* <td>{it.value}</td> */}
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
+
                                                         {it.is_active == 1 ? (
                                                             <i 
                                                             onClick={() => updateStatus(it.cate_code)}

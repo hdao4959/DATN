@@ -24,20 +24,20 @@ class StoreSubjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'subjectCode' => 'required|string|max:255',
-            'subjectName' => 'required|string|max:255',
+            'subject_code' => 'required|string|max:255',
+            'subject_name' => 'required|string|max:255',
             'tuition' => 'required|numeric',
-            'reStudyFee' => 'required|numeric',
-            'creditNumber' => 'required|integer',
-            'numberStudy' => 'required|integer',
-            'examDay' => 'required|string',
+            're_study_fee' => 'required|numeric',
+            'credit_number' => 'required|integer',
+            'number_study' => 'required|integer',
+            'exam_day' => 'required|string',
             'description' => 'nullable|string',
             'image' => 'nullable|string|max:1000',
-            'isActive' => 'required|boolean',
-            'isDelete' => 'required|boolean',
-            'semesterCode' => 'required|string|max:255',
-            'majorCode' => 'required|string|max:255',
-            'narrowMajorCode' => 'required|string|max:255',
+            'is_active' => 'boolean',
+            'is_delete' => 'boolean',
+            'semester_code' => 'required|string|max:255',
+            'major_code' => 'required|string|max:255',
+            'narrow_major_code' => 'required|string|max:255',
         ];
     }
 }

@@ -1,3 +1,4 @@
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -9,14 +10,14 @@ import { getImageUrl } from "../../../utils/getImageUrl";
 const EditMajor = () => {
     const { id } = useParams()
 
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const nav = useNavigate();
 
     const { data: listMajor } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/getListMajor/major");
-            return res.data;
+            const res = await api.get("/admin/major");
+            return res.data?.data;
         }
     });
 
@@ -58,7 +59,7 @@ const EditMajor = () => {
         formData.append('cate_code', data.cate_code);
         formData.append('cate_name', data.cate_name);
         formData.append('parrent_code', data.parrent_code);
-        formData.append('is_active', +data.is_active); // Chuyển đổi giá trị is_active
+        formData.append('is_active', data.is_active);
         formData.append('description', data.description);
         formData.append('value', data.value);
         formData.append("_method", "PUT")
@@ -84,35 +85,59 @@ const EditMajor = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
+
                                 <div className="card-title">Cập Nhật Chuyên Ngành</div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
-                                        <label htmlFor="cate_code">Mã chuyên ngành</label>
+                                        <label htmlFor="cate_code">
+                                            Mã chuyên ngành
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_code", { required: true })}
+                                            {...register("cate_code", { required: "Mã chuyên ngành là bắt buộc" })}
                                             placeholder="Nhập mã chuyên ngành"
                                         />
+                                        {errors.cate_code && (
+                                            <span className="text-danger">{errors.cate_code.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="cate_name">Tên chuyên ngành</label>
+                                        <label htmlFor="cate_name">
+                                            Tên chuyên ngành
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_name", { required: true })}
+                                            {...register("cate_name", { required: "Tên chuyên ngành là bắt buộc" })}
                                             placeholder="Nhập tên chuyên ngành"
                                         />
+                                        {errors.cate_name && (
+                                            <span className="text-danger">{errors.cate_name.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parrent_code">Chuyên ngành cha</label>
+                                        <label htmlFor="parrent_code">
+                                            Chuyên ngành cha
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <select
                                             className="form-select"
-                                            {...register("parrent_code")}
+                                            {...register("parrent_code", {
+                                                required: "Vui lòng chọn chuyên ngành cha"
+                                            })}
                                         >
                                             <option value="">-- Lựa chọn --</option>
                                             {listMajor?.map((element, index) => (
@@ -120,33 +145,52 @@ const EditMajor = () => {
                                                     {element.cate_name}
                                                 </option>
                                             ))}
-
                                         </select>
+
+                                        {errors.parrent_code && (
+                                            <span className="text-danger">{errors.parrent_code.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="value">Giá trị</label>
+                                        <label htmlFor="value">
+                                            Giá trị
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("value")}
+                                            {...register("value", {
+                                                required: "Vui lòng nhập giá trị"
+                                            })}
                                             placeholder="Nhập giá trị"
                                         />
+
+                                        {errors.value && (
+                                            <span className="text-danger">{errors.value.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="is_active">Trạng thái</label>
                                         <select
                                             className="form-select"
-                                            {...register("is_active")}
+                                            {...register("is_active", { required: "Trạng thái là bắt buộc" })}
                                         >
                                             <option value={1}>Công khai</option>
                                             <option value={0}>Ẩn</option>
                                         </select>
+                                        {errors.is_active && (
+                                            <span>{errors.is_active.message}</span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="image">Hình ảnh</label>
+                                        <label htmlFor="image">
+                                            Hình ảnh
+                                        </label>
                                         <input
                                             type="file"
                                             className="form-control"
@@ -163,15 +207,25 @@ const EditMajor = () => {
                                     )}
 
                                     <div className="form-group">
-                                        <label htmlFor="description">Mô tả</label>
+                                        <label htmlFor="description">
+                                            Mô tả
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description")}
+                                            {...register("description", {
+                                                required: "Vui lòng nhập mô tả"
+                                            })}
                                             placeholder="Nhập mô tả"
                                         />
-                                    </div>
 
+                                        {errors.description && (
+                                            <span className="text-danger">{errors.description.message}</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="card-action gap-x-3 flex">

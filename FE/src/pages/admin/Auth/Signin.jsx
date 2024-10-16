@@ -7,10 +7,12 @@ import "/src/css/signin.css";
 import { toast } from "react-toastify";
 const Signin = () => {
     const navigate = useNavigate();
+
     const { mutate } = useMutation({
         mutationFn: (data) => {
             return api.post("/login", data);
         },
+
         onSuccess: (data) => {
             const { user, token } = data.data;
             localStorage.setItem("user", JSON.stringify(user));
@@ -32,6 +34,7 @@ const Signin = () => {
                 toast.warning("Lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
                 toast.warning(error.response.data.message);
+
             }
             console.log(error);
         },

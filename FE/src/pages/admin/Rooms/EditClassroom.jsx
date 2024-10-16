@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const EditClassroom = () => {
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -37,7 +38,7 @@ const EditClassroom = () => {
 
     const onSubmit = (formData) => {
         axios
-            .patch(
+            .put(
                 `http://127.0.0.1:8000/api/admin/classrooms/${class_code}`,
                 formData
             )

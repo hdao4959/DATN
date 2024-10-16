@@ -3,51 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grades;
-use App\Http\Requests\StoreGradesRequest;
 use App\Http\Requests\UpdateGradesRequest;
+use App\Repositories\Contracts\GradeRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Throwable;
 
 class GradesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $gradeRepository;
+    public function __construct(GradeRepositoryInterface $gradeRepository){
+        $this->gradeRepository = $gradeRepository;
+    }
     public function index()
     {
-        //
+        $grade = Grades::all();
+        return response($grade);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreGradesRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreGradesRequest $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Grades  $grades
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Grades $grades)
     {
-        //
+
+    }
+
+    public function getByParam(Request $request){
+        try{
+            $grade = $this->gradeRepository->getByParam($request);
+
+            return response()->json($grade);
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message'=>'không tìm thấy bản ghi'],404);
+        }
+        catch(\Throwable $th){
+            return response()->json(['error'=>$th->getMessage()],500);
+        }
     }
 
     /**
@@ -56,31 +53,17 @@ class GradesController extends Controller
      * @param  \App\Models\Grades  $grades
      * @return \Illuminate\Http\Response
      */
-    public function edit(Grades $grades)
+
+    public function update(Request $request, $id)
     {
-        //
+        try{
+            $this->gradeRepository->update($request,$id);
+
+            return response()->json(['message'=>'cập nhật điểm thành công'],200);
+        }catch(\Throwable $th){
+            return response()->json(['error'=>$th->getMessage()],500);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateGradesRequest  $request
-     * @param  \App\Models\Grades  $grades
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateGradesRequest $request, Grades $grades)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Grades  $grades
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Grades $grades)
-    {
-        //
-    }
 }

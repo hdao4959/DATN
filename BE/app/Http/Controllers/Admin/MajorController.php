@@ -14,34 +14,48 @@ use App\Http\Requests\Major\UpdateMajorRequest;
 
 class MajorController extends Controller
 {
+    // Hàm trả về json khi id không hợp lệ
+    public function handleInvalidId()
+    {
+
+        return response()->json([
+            'message' => 'Không có chuyên ngành nào!',
+        ], 404);
+    }
+
+    //  Hàm trả về json khi lỗi không xác định (500)
+    public function handleErrorNotDefine($th)
+    {
+        Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+        return response()->json([
+            'message' => 'Lỗi không xác định!'
+        ], 500);
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $data = Category::where('type', '=', 'major')->paginate(20);
-            // $search = $request->input('search');
-            // $data = Category::where('type', '=', 'major')
-            //                     ->when($search, function ($query, $search) {
-            //                         return $query
-            //                                 ->where('cate_name', 'like', "%{$search}%");
-            //                                 // ->orwhere('ma_san_pham', 'like', "%{$search}%");
-            //                     })
-            //                     ->paginate(4);
+            // Tìm kiếm theo cate_name
+            $search = $request->input('search');
+            $data = Category::where('type', '=', 'major')
+                                ->when($search, function ($query, $search) {
+                                    
+                                    return $query
+                                            ->where('cate_name', 'like', "%{$search}%");
+                                })
+                                ->paginate(4);
             if ($data->isEmpty()) {
-                return response()->json(
-                    ['message' => 'Không có chuyên ngành nào!'],
-                    404
-                );
+
+                return $this->handleInvalidId();
             }
+
             return response()->json($data, 200);
         } catch (Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }
 
@@ -49,32 +63,31 @@ class MajorController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreMajorRequest $request)
-{
-    try {
-        $params = $request->except('_token');
+    {
+        try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
 
-        if ($request->hasFile('image')) {
-            $fileName = $request->file('image')->store('uploads/image', 'public');
-        } else {
-            $fileName = null;
+            $params = $request->except('_token');
+
+            if ($request->hasFile('image')) {
+                $fileName = $request->file('image')->store('uploads/image', 'public');
+            } else {
+                $fileName = null;
+            }
+
+            $params['image'] = $fileName;
+            Category::create($params);
+
+            return response()->json($params, 200);
+        } catch (\Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
         }
-
-        $params['image'] = $fileName;
-        Category::create($params);
-
-        return response()->json([
-            'message' => 'Tạo mới thành công',
-            'data' => $params
-        ]);
-    } catch (\Throwable $th) {
-        Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
-        return response()->json([
-            'message' => 'Lỗi không xác định',
-            'error' => $th->getMessage()
-        ], 500);
     }
-}
 
 
     /**
@@ -85,28 +98,16 @@ class MajorController extends Controller
         try {
             $major = Category::where('id', $id)->first();
             if (!$major) {
-                return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
-                ], 404);
+
+                return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
 
-                return response()->json([
-                    'message' => 'Chi tiết danh muc = ' . $id,
-                    'data' => $data
-                ]);                
+                return response()->json($data, 200);                
             }
         } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-            if ($th instanceof ModelNotFoundException) {
-                return response()->json([
-                    'message' => 'Không tồn tại id = ' . $id
-                ], 404);
-            } else {
-                return response()->json([
-                    'message' => 'Lỗi không xác định'
-                ], 500);
-            }
+
+            return $this->handleErrorNotDefine($th);
         }
     }
 
@@ -116,11 +117,16 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $id)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parrent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
             $major = Category::where('id', $id)->first();
             if (!$major) {
-                return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
-                ], 404);
+
+                return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
                 $listMajor = Category::findOrFail($id);
@@ -135,17 +141,11 @@ class MajorController extends Controller
                 $params['image'] = $fileName;
                 $listMajor->update($params);
 
-                return response()->json([
-                    'message' => 'Sửa thành công',
-                    'data' => $listMajor
-                ], 201);          
+                return response()->json($listMajor, 201);          
             }
         } catch (Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }
 
@@ -157,9 +157,8 @@ class MajorController extends Controller
         try {
             $major = Category::where('id', $id)->first();
             if (!$major) {
-                return response()->json([
-                    'message' => "Chuyên ngành không tồn tại!"
-                ], 404);
+
+                return $this->handleInvalidId();
             } else {
                 $listMajor = Category::findOrFail($id);
                 if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
@@ -168,58 +167,13 @@ class MajorController extends Controller
                 $listMajor->delete($listMajor);
 
                 return response()->json([
-                    'message' => 'Xoa thanh cong'
+                    'message' => 'Xóa thành công'
                 ], 200);            
             }
         } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
-    }
-
-    public function getAllMajor(string $type)
-    {
-        // dd($type);
-        $data = DB::table('categories')->where('type', '=', $type)->get();
-        return response()->json($data);
-    }
-
-    public function getListMajor(string $type)
-    {
-        // Lấy tất cả danh mục cha
-        // dd($type);
-        $categories = DB::table('categories')
-            ->where('type', '=', $type)
-            ->where('parrent_code', '=', "")
-            // ->whereNull('parrent_code')
-            ->get();
-        // dd($categories);
-        // return;
-
-        // Duyệt qua từng danh mục cha để lấy danh mục con
-        $data = $categories->map(function ($category) {
-            // Lấy danh mục con dựa trên parent_code
-            $subCategories = DB::table('categories')
-                ->where('parrent_code', '=', $category->cate_code)
-                ->get();
-
-            // Trả về cấu trúc dữ liệu theo yêu cầu
-            return [
-                'id' => $category->id,
-                'cate_code' => $category->cate_code,
-                'cate_name' => $category->cate_name,
-                'image' => $category->image,
-                'description' => $category->description,
-                'listItem'  => $subCategories
-            ];
-        });
-
-        //Cách 2
-
-        return response()->json($data);
     }
 
     public function bulkUpdateType(Request $request)
@@ -227,21 +181,53 @@ class MajorController extends Controller
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
             foreach ($activies as $id => $active) {
-                // Tìm category theo ID và cập nhật trường 'type'
+                // Tìm category theo ID và cập nhật trường 'is_active'
                 $category = Category::findOrFail($id);
                 $category->ia_active = $active;
                 $category->save();
             }
 
             return response()->json([
-                'message' => 'Loại đã được cập nhật thành công!'
+                'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }    
+
+    // public function getListMajor(string $type)
+    // {
+    //     // Lấy tất cả danh mục cha
+    //     // dd($type);
+    //     $categories = DB::table('categories')
+    //         ->where('type', '=', $type)
+    //         ->where('parrent_code', '=', "")
+    //         // ->whereNull('parrent_code')
+    //         ->get();
+    //     // dd($categories);
+    //     // return;
+
+    //     // Duyệt qua từng danh mục cha để lấy danh mục con
+    //     $data = $categories->map(function ($category) {
+    //         // Lấy danh mục con dựa trên parent_code
+    //         $subCategories = DB::table('categories')
+    //             ->where('parrent_code', '=', $category->cate_code)
+    //             ->get();
+
+    //         // Trả về cấu trúc dữ liệu theo yêu cầu
+    //         return [
+    //             'id' => $category->id,
+    //             'cate_code' => $category->cate_code,
+    //             'cate_name' => $category->cate_name,
+    //             'image' => $category->image,
+    //             'description' => $category->description,
+    //             'listItem'  => $subCategories
+    //         ];
+    //     });
+
+    //     //Cách 2
+
+    //     return response()->json($data);
+    // }
 }

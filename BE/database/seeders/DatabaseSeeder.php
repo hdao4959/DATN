@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(1)->create();
+        // \App\Models\User::factory(2000)->create();
 
         // \App\Models\User::factory(1000)->create([
         //     'user_code' => 'PH' . fake()->unique()->numberBetween(100, 999), // Tạo mã sinh viên ngẫu nhiên ST100 - ST999
