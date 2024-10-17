@@ -91,17 +91,16 @@ class NotificationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $cate_code)
     {
         try {
-            $notification = Category::where('id', $id)->first();
+            $notification = Category::where('cate_code', $cate_code)->first();
             if (!$notification) {
 
                 return $this->handleInvalidId();
             } else {
-                $data = Category::query()->findOrFail($id);
 
-                return response()->json($data, 200);                
+                return response()->json($notification, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -112,7 +111,7 @@ class NotificationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNotificationRequest $request, string $id)
+    public function update(UpdateNotificationRequest $request, string $cate_code)
     {
         try {
             // Lấy ra cate_code và cate_name của cha
@@ -121,13 +120,12 @@ class NotificationController extends Controller
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $notification = Category::where('id', $id)->first();
-            if (!$notification) {
+            $listNotification = Category::where('cate_code', $cate_code)->first();
+            if (!$listNotification) {
 
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
-                $listNotification = Category::findOrFail($id);
                 if ($request->hasFile('image')) {
                     if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
                         Storage::disk('public')->delete($listNotification->image);
@@ -150,15 +148,14 @@ class NotificationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $cate_code)
     {
         try {
-            $notification = Category::where('id', $id)->first();
-            if (!$notification) {
+            $listNotification = Category::where('cate_code', $cate_code)->first();
+            if (!$listNotification) {
 
                 return $this->handleInvalidId();
             } else {
-                $listNotification = Category::findOrFail($id);
                 if ($listNotification->image && Storage::disk('public')->exists($listNotification->image)) {
                     Storage::disk('public')->delete($listNotification->image);
                 }
@@ -178,9 +175,9 @@ class NotificationController extends Controller
     {
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
-            foreach ($activies as $id => $active) {
+            foreach ($activies as $cate_code => $active) {
                 // Tìm category theo ID và cập nhật trường is_active
-                $category = Category::findOrFail($id);
+                $category = Category::findOrFail($cate_code);
                 $category->ia_active = $active;
                 $category->save();
             }
