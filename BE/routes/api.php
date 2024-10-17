@@ -5,7 +5,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\SemesterController;
-use App\Http\Controllers\TimeSlotController;
+
 use App\Http\Controllers\Admin\MajorController;
 
 use App\Http\Controllers\Admin\ClassRoomController;
@@ -15,8 +15,9 @@ use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\GradesController;
 
 use App\Http\Controllers\Admin\NotificationController;
-use App\Http\Controllers\Api\CategoryController;
 
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\SessionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,17 +64,13 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
     Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
 
-    Route::apiResource('time_slots', TimeSlotController::class);
-
+    Route::apiResource('sessions', SessionController::class);
     Route::apiResource('semesters', SemesterController::class);
-
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 
     Route::apiResource('grades', GradesController::class);
     Route::get('grades', [GradesController::class, 'getByParam']);
     Route::patch('grades/{id}',[GradesController::class, 'update']);
-
-
 
     Route::apiResource('schoolrooms', SchoolRoomController::class);
     Route::apiResource('category', CategoryController::class);

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTimeSlotRequest extends FormRequest
+class UpdateSessionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class StoreTimeSlotRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start_time' => 'required',
-            'end_time' => 'required'
+            'cate_code' => 'required',
+            'cate_name' => 'required'
         ];
     }
 }

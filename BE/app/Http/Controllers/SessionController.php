@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTimeSlotRequest;
-use App\Http\Requests\UpdateTimeSlotRequest;
-use App\Repositories\Contracts\TimeSlotRepositoryInterface;
+use App\Http\Requests\StoreSessionRequest;
+use App\Http\Requests\UpdateSessionRequest;
+use App\Repositories\Contracts\SessionRepositoryInterface;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
-class TimeSlotController extends Controller
+class SessionController extends Controller
 {
-    public $timeslotRepository;
+    public $sessionRepository;
 
-    public function __construct(TimeSlotRepositoryInterface $timeslotRepository){
-        $this->timeslotRepository = $timeslotRepository;
+    public function __construct(SessionRepositoryInterface $sessionRepository){
+        $this->sessionRepository = $sessionRepository;
     }
 
     public function index(){
         try{
-            $timeSlot = $this->timeslotRepository->getAll();
-            return response()->json($timeSlot , 200);
+            $model = $this->sessionRepository->getAll();
+            return response()->json($model , 200);
         }catch(NotFoundHttpException $e){
             return response()->json(['message'=>$e->getMessage()],404);
         }
@@ -29,19 +29,18 @@ class TimeSlotController extends Controller
         }
     }
 
-    public function store(StoreTimeSlotRequest $request){
+    public function store(StoreSessionRequest $request){
         try{
-            $timeSlot = $this->timeslotRepository->create($request->toArray());
+            $model = $this->sessionRepository->create($request->toArray());
             return response()->json(["message"=> "thêm thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
         }
     }
 
-    public function update(UpdateTimeSlotRequest $request ,int $id){
-
+    public function update(UpdateSessionRequest $request ,int $id){
         try{
-            $timeSlot = $this->timeslotRepository->update($request->toArray() , $id);
+            $model = $this->sessionRepository->update($request->toArray() , $id);
             return response()->json(["message"=> "sửa thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
@@ -50,7 +49,8 @@ class TimeSlotController extends Controller
 
     public function destroy(int $id){
         try{
-            $timeSlot = $this->timeslotRepository->delete($id);
+            $model = $this->sessionRepository->delete($id);
+            return response()->json(["message"=> "xóa thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
         }
