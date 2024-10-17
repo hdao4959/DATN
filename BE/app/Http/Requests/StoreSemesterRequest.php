@@ -22,9 +22,9 @@ class StoreSemesterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>'required|string',
-            'start_date'=>'required',
-            'end_date'=>'required'
+            'cate_name'=>'required|string',
+            'cate_code'=>'required',
+            'type'=> 'required'
         ];
     }
 }

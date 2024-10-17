@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSemesterRequest;
 use App\Http\Requests\UpdateSemesterRequest;
+use App\Models\Category;
 use App\Models\Semester;
+use App\Repositories\Contracts\SemesterRepositoryInterface;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SemesterController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $semesterRepository;
+    public function __construct(SemesterRepositoryInterface $semesterRepository){
+        $this->semesterRepository = $semesterRepository;
+    }
     public function index()
     {
         try{
-           $model = Semester::all();
+          $model = $this->semesterRepository->getAll();
            return response()->json($model , 200);
         }catch(\Throwable $th){
             return response()->json(['message'=>$th->getMessage()]);
@@ -28,7 +32,7 @@ class SemesterController extends Controller
     public function store(StoreSemesterRequest $request)
     {
         try{
-            Semester::create($request->toArray());
+            $model = $this->semesterRepository->create($request->toArray());
             return response()->json(['message' => 'Thêm thành công'], 200);
         }catch(\Throwable $th){
             return response()->json(['message'=>$th->getMessage()]);
@@ -41,10 +45,13 @@ class SemesterController extends Controller
     public function update(UpdateSemesterRequest $request, int $id)
     {
         try{
-            $model = Semester::findOrFail($id);
-            $model->update($request->toArray());
+            $model = $this->semesterRepository->update($request->toArray(), $id);
             return response()->json(['message'=>'cập nhật thành công'],200);
-        }catch(\Throwable $th){
+        }
+        catch(NotFoundHttpException $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
+        catch(\Throwable $th){
             return response()->json(['message'=>$th->getMessage()]);
         }
     }
@@ -55,10 +62,13 @@ class SemesterController extends Controller
     public function destroy(int $id)
     {
         try{
-            $model = Semester::findOrFail($id);
-            $model->delete();
+            $model = $this->semesterRepository->delete($id);
             return response()->json(['message' => 'xóa thành công']);
-        }catch(\Throwable $th){
+        }
+        catch(NotFoundHttpException $e){
+            return response()->json(['message'=>$e->getMessage()]);
+        }
+        catch(\Throwable $th){
             return response()->json(['message'=>$th->getMessage()],200);
         }
     }

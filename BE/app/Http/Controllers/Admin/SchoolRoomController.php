@@ -97,7 +97,6 @@ class SchoolRoomController extends Controller
         try {
             $schoolRoom = Category::where('id', $id)->first();
             if (!$schoolRoom) {
-
                 return $this->handleInvalidId();
             } else {
                 $data = Category::query()->findOrFail($id);
