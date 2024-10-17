@@ -172,7 +172,7 @@ class CategoryController extends Controller
             ->where('type', '=', $type)
             ->where('parrent_code', '=', null)
             ->get();
-            // dd($categories);
+        // dd($categories);
         $data = $categories->map(function ($category) {
             // Lấy danh mục con dựa trên parent_code
             $subCategories = DB::table('categories')
@@ -190,7 +190,27 @@ class CategoryController extends Controller
         });
         return response()->json($data);
     }
-   
+
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            // Xử lý tên file
+            $fileName = $request->file('image')->store('uploads/image', 'public');
+            return response()->json([
+                'error' => false,
+                'url' => Storage::url($fileName),  // Trả về URL chính xác
+                'message' => 'Upload success'
+            ], 200);
+        }
+
+        return response()->json([
+            'error' => true,
+            'url' => null,
+            'message' => 'Upload failed'
+        ], 400);
+    }
+
+
 
     public function automaticClassroom()
     {
