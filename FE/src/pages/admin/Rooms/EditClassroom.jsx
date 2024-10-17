@@ -6,27 +6,37 @@ import { toast } from "react-toastify";
 
 const EditClassroom = () => {
     const navigate = useNavigate();
+    const { class_code } = useParams();
     const {
         register,
         handleSubmit,
         setValue,
         formState: { errors },
     } = useForm();
-    const { class_code } = useParams();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Fetch classroom data from the API
         axios
             .get(`http://127.0.0.1:8000/api/admin/classrooms/${class_code}`)
             .then((response) => {
                 const classroomData = response.data.classroom;
 
-                setValue("is_active", classroomData.is_active ? "1" : "0");
+                // Set form values with fetched data
+                setValue("id", classroomData.id); // Set ID
+                setValue("class_code", classroomData.class_code);
+                setValue("class_name", classroomData.class_name);
+                setValue("section", classroomData.section);
+                setValue(
+                    "study_schedule",
+                    classroomData.study_schedule.join(", ")
+                ); // Join array for display
+                setValue("description", classroomData.description);
+                setValue("is_active", classroomData.is_active.toString()); // Convert boolean to string for select
+                setValue("room_code", classroomData.room_code);
+                setValue("subject_code", classroomData.subject_code);
 
-                Object.keys(classroomData).forEach((key) => {
-                    setValue(key, classroomData[key]);
-                });
                 setLoading(false);
             })
             .catch((error) => {
@@ -37,13 +47,22 @@ const EditClassroom = () => {
     }, [class_code, setValue]);
 
     const onSubmit = (formData) => {
+        // Update classroom data via API
+        const updatedData = {
+            ...formData,
+            study_schedule: formData.study_schedule
+                .split(",")
+                .map((date) => date.trim()), // Split back into an array
+        };
+
         axios
             .put(
                 `http://127.0.0.1:8000/api/admin/classrooms/${class_code}`,
-                formData
+                updatedData
             )
             .then(() => {
                 toast.success("Lớp học đã được cập nhật thành công!");
+                navigate("/admin/classrooms"); // Navigate back to the classroom list
             })
             .catch((error) => {
                 console.error("Error updating classroom:", error);
@@ -118,46 +137,6 @@ const EditClassroom = () => {
                                 <div className="row">
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label>Ngày bắt đầu</label>
-                                            <input
-                                                type="date"
-                                                className="form-control"
-                                                {...register("date_from", {
-                                                    required:
-                                                        "Chọn ngày bắt đầu",
-                                                })}
-                                            />
-                                            {errors.date_from && (
-                                                <p className="text-danger">
-                                                    {errors.date_from.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label>Ngày kết thúc</label>
-                                            <input
-                                                type="date"
-                                                className="form-control"
-                                                {...register("date_to", {
-                                                    required:
-                                                        "Chọn ngày kết thúc",
-                                                })}
-                                            />
-                                            {errors.date_to && (
-                                                <p className="text-danger">
-                                                    {errors.date_to.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
                                             <label>Trạng thái</label>
                                             <select
                                                 className="form-select"
@@ -169,10 +148,10 @@ const EditClassroom = () => {
                                                 <option value="" hidden>
                                                     Chọn trạng thái lớp
                                                 </option>
-                                                <option value="0">
+                                                <option value="false">
                                                     Không hoạt động
                                                 </option>
-                                                <option value="1">
+                                                <option value="true">
                                                     Hoạt động
                                                 </option>
                                             </select>
@@ -186,19 +165,19 @@ const EditClassroom = () => {
 
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label>Mã giảng viên</label>
+                                            <label>Kì học</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                placeholder="Nhập mã giảng viên"
-                                                {...register("user_code", {
+                                                placeholder="Nhập kì học"
+                                                {...register("section", {
                                                     required:
-                                                        "Vui lòng nhập mã giảng viên",
+                                                        "Vui lòng nhập kì học",
                                                 })}
                                             />
-                                            {errors.user_code && (
+                                            {errors.section && (
                                                 <p className="text-danger">
-                                                    {errors.user_code.message}
+                                                    {errors.section.message}
                                                 </p>
                                             )}
                                         </div>
@@ -213,20 +192,14 @@ const EditClassroom = () => {
                                                 type="text"
                                                 className="form-control"
                                                 placeholder="Nhập mã phòng học"
-                                                {...register(
-                                                    "study_room_code",
-                                                    {
-                                                        required:
-                                                            "Vui lòng nhập mã phòng học",
-                                                    }
-                                                )}
+                                                {...register("room_code", {
+                                                    required:
+                                                        "Vui lòng nhập mã phòng học",
+                                                })}
                                             />
-                                            {errors.study_room_code && (
+                                            {errors.room_code && (
                                                 <p className="text-danger">
-                                                    {
-                                                        errors.study_room_code
-                                                            .message
-                                                    }
+                                                    {errors.room_code.message}
                                                 </p>
                                             )}
                                         </div>
@@ -278,84 +251,18 @@ const EditClassroom = () => {
 
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label>Danh sách sinh viên</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Nhập danh sách sinh viên"
-                                                {...register("students", {
-                                                    required:
-                                                        "Nhập danh sách sinh viên",
-                                                })}
-                                            />
-                                            {errors.students && (
-                                                <p className="text-danger">
-                                                    {errors.students.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label>Điểm thi</label>
+                                            <label>Lịch học</label>
                                             <textarea
                                                 className="form-control"
-                                                placeholder="Nhập điểm thi"
-                                                {...register("exam_score", {
-                                                    required: "Điểm thi",
-                                                })}
-                                            />
-                                            {errors.exam_score && (
-                                                <p className="text-danger">
-                                                    {errors.exam_score.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label>Lịch học</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
                                                 placeholder="Nhập lịch học"
-                                                {...register(
-                                                    "school_schedule",
-                                                    { required: "Lịch học" }
-                                                )}
-                                            />
-                                            {errors.school_schedule && (
-                                                <p className="text-danger">
-                                                    {
-                                                        errors.school_schedule
-                                                            .message
-                                                    }
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label>Lịch thi</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Nhập lịch thi"
-                                                {...register("exam_schedule", {
-                                                    required: "Lịch thi",
+                                                {...register("study_schedule", {
+                                                    required: "Nhập lịch học",
                                                 })}
                                             />
-                                            {errors.exam_schedule && (
+                                            {errors.study_schedule && (
                                                 <p className="text-danger">
                                                     {
-                                                        errors.exam_schedule
+                                                        errors.study_schedule
                                                             .message
                                                     }
                                                 </p>
@@ -375,6 +282,9 @@ const EditClassroom = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
+                                    onClick={() =>
+                                        navigate("/admin/classrooms")
+                                    } // Cancel button
                                 >
                                     Hủy
                                 </button>

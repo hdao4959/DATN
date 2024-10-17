@@ -66,8 +66,11 @@ const AddClassroomTest = () => {
             setShowPopup(true);
             toast.success("Lưu lịch học thành công !");
         },
-        onError: () => {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+        onError: (error) => {
+            const errorMessage =
+                error.response?.data?.message ||
+                "Đã xảy ra lỗi. Vui lòng thử lại.";
+            toast.error(errorMessage);
         },
     });
 
@@ -103,11 +106,10 @@ const AddClassroomTest = () => {
                         <div className="card">
                             <div className="card-header">
                                 <div className="card-title">
-                                    Tạo mới lớp học
+                                    Tạo lịch học mới
                                 </div>
                             </div>
                             <div className="card-body">
-                                {/* Ca học */}
                                 <div className="mb-3">
                                     <label className="form-label">
                                         Chọn ca học
@@ -145,20 +147,19 @@ const AddClassroomTest = () => {
                                     )}
                                 </div>
 
-                                {/* Ngày học */}
                                 <div className="mb-3">
                                     <label className="form-label">
                                         Chọn các ngày trong tuần
                                     </label>
                                     <div className="selectgroup selectgroup-pills">
                                         {[
-                                            "Mon",
-                                            "Tue",
-                                            "Wed",
-                                            "Thu",
-                                            "Fri",
-                                            "Sat",
-                                            "Sun",
+                                            { value: "Mon", label: "Thứ Hai" },
+                                            { value: "Tue", label: "Thứ Ba" },
+                                            { value: "Wed", label: "Thứ Tư" },
+                                            { value: "Thu", label: "Thứ Năm" },
+                                            { value: "Fri", label: "Thứ Sáu" },
+                                            { value: "Sat", label: "Thứ Bảy" },
+                                            { value: "Sun", label: "Chủ Nhật" },
                                         ].map((day, index) => (
                                             <label
                                                 className="selectgroup-item"
@@ -166,19 +167,26 @@ const AddClassroomTest = () => {
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    value={day}
-                                                    {...register("study_days")}
+                                                    value={day.value}
+                                                    {...register("study_days", {
+                                                        required:
+                                                            "Vui lòng chọn các ngày học",
+                                                    })}
                                                     className="selectgroup-input"
                                                 />
                                                 <span className="selectgroup-button">
-                                                    {day}
+                                                    {day.label}
                                                 </span>
                                             </label>
                                         ))}
                                     </div>
+                                    {errors.study_days && (
+                                        <p className="text-danger">
+                                            {errors.study_days.message}
+                                        </p>
+                                    )}
                                 </div>
 
-                                {/* Tên lớp và Mã lớp */}
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label className="form-label">
@@ -220,7 +228,6 @@ const AddClassroomTest = () => {
                                     </div>
                                 </div>
 
-                                {/* Số buổi học và Môn học */}
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label className="form-label">
@@ -283,7 +290,6 @@ const AddClassroomTest = () => {
                                     </div>
                                 </div>
 
-                                {/* Ngày bắt đầu và Phòng học */}
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label className="form-label">
@@ -348,8 +354,8 @@ const AddClassroomTest = () => {
                                     disabled={isLoading}
                                 >
                                     {isLoading
-                                        ? "Đang lưu lịch học..."
-                                        : "Lưu lịch học này"}
+                                        ? "Đang tạo lịch học..."
+                                        : "Tạo lịch học này"}
                                 </button>
                                 <button type="reset" className="btn btn-danger">
                                     Hủy

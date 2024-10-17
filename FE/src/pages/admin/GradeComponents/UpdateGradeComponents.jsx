@@ -33,7 +33,7 @@ const UpdateGradeComponents = () => {
         queryFn: async () => {
             const res = await api.get(`/admin/pointheads/${id}`);
 
-            return res.data?.data;
+            return res.data;
         },
     });
 
