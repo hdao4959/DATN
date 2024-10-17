@@ -357,7 +357,7 @@ const CreateAccount = () => {
                                                 Ảnh đại diện
                                             </label>
                                             <input
-                                                type="text"
+                                                type="file"
                                                 className="form-control"
                                                 {...register("avatar")}
                                             />
