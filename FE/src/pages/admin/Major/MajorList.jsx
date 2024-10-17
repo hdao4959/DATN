@@ -37,6 +37,23 @@ const MajorList = () => {
         onModalVisible();
     };
 
+    const updateStatusMutation = useMutation({
+        mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
+        onSuccess: () => {
+            toast.success('Cập nhật trạng thái thành công');
+            refetch(); // Lấy lại dữ liệu sau khi cập nhật
+        },
+        onError: () => {
+            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        }
+    });
+
+    const updateStatus = (code) => {
+        updateStatusMutation.mutate(code);
+    };
+
+    
+
     if (isFetching && !data) return <Spinner />;
 
     return (
@@ -131,9 +148,13 @@ const MajorList = () => {
                                                     <td>
 
                                                         {it.is_active == 1 ? (
-                                                            <i className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
+                                                            <i 
+                                                            onClick={() => updateStatus(it.cate_code)}
+                                                            disabled={isLoading} className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
                                                         ) : (
-                                                            <i className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
+                                                            <i 
+                                                            onClick={() => updateStatus(it.cate_code)}
+                                                            disabled={isLoading} className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
                                                         )}
 
 

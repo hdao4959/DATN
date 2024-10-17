@@ -1,7 +1,4 @@
 <?php
-
-
-use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubjectController;
@@ -18,6 +15,8 @@ use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\GradesController;
 
 use App\Http\Controllers\Admin\NotificationController;
+
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\SessionController;
 
 /*
@@ -73,6 +72,12 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::patch('grades/{id}',[GradesController::class, 'update']);
 
     Route::apiResource('schoolrooms', SchoolRoomController::class);
+    Route::apiResource('category', CategoryController::class);
+    Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
+    Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+    Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+    Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
+
     Route::apiResource('pointheads', PointHeadController::class);
     Route::apiResource('notifications', NotificationController::class);
 
