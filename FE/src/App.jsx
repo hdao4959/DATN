@@ -37,15 +37,6 @@ import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 function App() {
     const router = createBrowserRouter([
         {
-            path: "",
-            element: <Signin />,
-        },
-
-        {
-            path: "/signin",
-            element: <Signin />,
-        },
-        {
             path: "/signin",
             element: <Signin />,
         },

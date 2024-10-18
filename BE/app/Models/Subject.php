@@ -18,14 +18,26 @@ class Subject extends Model
         'tuition',
         're_study_fee',
         'credit_number',
-        'number_study',
+        'total_sessions',
         'exam_day',
         'description',
         'image',
         'is_active',
-        'is_delete',
         'semester_code',
         'major_code',
         'narrow_major_code',
     ];
+
+    public function major(){
+        return $this->belongsTo(Category::class, 'major_code', 'cate_code');
+    }
+
+    public function semester(){
+        return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
+    }
+
+    // public function course(){
+    //     return $this->belongsTo(Category::class, '')
+    // }
+
 }

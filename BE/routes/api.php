@@ -8,7 +8,7 @@ use App\Http\Controllers\SemesterController;
 
 use App\Http\Controllers\Admin\MajorController;
 
-use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 
@@ -48,7 +48,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
 
-    Route::apiResource('classrooms', ClassRoomController::class);
+    Route::apiResource('classrooms', ClassroomController::class);
 
     Route::post('/classrooms/render_schedule', [ClassRoomController::class, 'renderScheduleForClassroom']);
 
