@@ -15,7 +15,6 @@ import CreateAccount from "./pages/admin/Account/CreateAccount";
 import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
 import CheckRole from "./pages/admin/Auth/CheckRole";
 import ClassRoomsList from "./pages/admin/Rooms/ListRooms";
-import AddClassroom from "./pages/admin/Rooms/AddClassRoom";
 import EditClassroom from "./pages/admin/Rooms/EditClassroom";
 import ListAccount from "./pages/admin/Account/ListAccount";
 import ListSemester from "./pages/admin/Semester/ListSemester";
@@ -32,19 +31,11 @@ import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
 import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
+import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 
 
 function App() {
     const router = createBrowserRouter([
-        {
-            path: "",
-            element: <Signin />,
-        },
-
-        {
-            path: "/signin",
-            element: <Signin />,
-        },
         {
             path: "/signin",
             element: <Signin />,
@@ -114,6 +105,10 @@ function App() {
                     element: <EditClassroom />,
                 },
                 {
+                    path: "classrooms/view/:class_code",
+                    element: <ClassroomDetails />,
+                },
+                {
                     path: "semesters",
                     element: <ListSemester />,
                 },
@@ -153,10 +148,6 @@ function App() {
                     path: "grades",
                     element: <ShowGrades />,
                 },
-                // {
-                //     path: "schedules/study/manager",
-                //     element: <ScheduleManager />,
-                // },
                 {
                     path: "grade-components",
                     element: <GradeComponentList />,

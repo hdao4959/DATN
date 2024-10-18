@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MajorController;
 
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\ExamScoreController;
+
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 
@@ -49,9 +50,9 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
 
-    Route::apiResource('classrooms', ClassRoomController::class);
+    Route::apiResource('classrooms', ClassroomController::class);
 
-    Route::post('/classrooms/render_schedule', [ClassRoomController::class, 'renderScheduleForClassroom']);
+    Route::post('/classrooms/render_schedule', [ClassroomController::class, 'renderScheduleForClassroom']);
 
     Route::apiResource('users', UserController::class);
 
@@ -63,6 +64,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('category', CategoryController::class);
     Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
     Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+    Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
 
     Route::apiResource('sessions', SessionController::class);
     Route::apiResource('semesters', SemesterController::class);

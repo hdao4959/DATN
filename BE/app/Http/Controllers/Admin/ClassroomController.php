@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassRoom;
-use App\Http\Requests\Classroom\StoreClassRoomRequest;
-use App\Http\Requests\Classroom\UpdateClassRoomRequest;
-use App\Models\Category;
+
+use App\Models\Classroom;
+use App\Http\Requests\Classroom\StoreClassroomRequest;
+use App\Http\Requests\Classroom\UpdateClassroomRequest;
+use App\Models\Subject;
+use App\Models\User;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-
-class ClassRoomController extends Controller
+class ClassroomController extends Controller
 {
 
 
@@ -38,7 +40,7 @@ class ClassRoomController extends Controller
     {
         try {
 
-            $classrooms = ClassRoom::where('is_active', true)->paginate(10);
+            $classrooms = Classroom::where('is_active', true)->paginate(10);
 
             if ($classrooms->isEmpty()) {
                 return response()->json([
@@ -57,14 +59,19 @@ class ClassRoomController extends Controller
     }
 
 
-    public function renderScheduleForClassroom(StoreClassRoomRequest $request)
+    public function renderScheduleForClassroom(StoreClassroomRequest $request)
     {
         try {
             $data = $request->except('date_from');
             $date_from = new DateTime($request->date_from);
-            $total_sessions = $data['total_sessions'];
-            $list_study_dates = [];
+            $subject_code = $data['subject_code'];
+            $subject = Subject::where([
+                'is_active' => true,
+                'subject_code' => $subject_code
+            ])->select('total_sessions')->first();
+            $total_sessions = $subject->total_sessions;
 
+            $list_study_dates = [];
             do {
                 $date_from->add(new DateInterval('P1D'));
                 if (in_array($date_from->format('D'), $data['study_days'])) {
@@ -91,7 +98,23 @@ class ClassRoomController extends Controller
     {
 
         try {
+
             $data_request = $request->all();
+
+            $subject_code = $data_request['subject_code'];
+            $subject = Subject::with('major', 'semester')->where('subject_code', $subject_code)->first();
+            // $course_code = $subject->
+            // $major_code = $subject->major->cate_code;
+            // $semester_code = $subject->semester->cate_code;
+
+            $students = DB::table('users')->where(
+                [
+                    // 'course_code' => $course_code,
+                    // 'major_code' => $major_code,
+                    'is_active' => true
+            ])->select('user_code')->get();
+            // return response()->json($students);
+
             $list_study_dates = $request->list_study_dates;
 
             if(!array($list_study_dates) || count($list_study_dates) == 0){
@@ -112,7 +135,7 @@ class ClassRoomController extends Controller
                 ];
 
 
-            ClassRoom::create($data);
+            Classroom::create($data);
             return response()->json([
                 'message' => 'Tạo lớp thành công!'
             ], 201);
@@ -125,14 +148,14 @@ class ClassRoomController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ClassRoom  $classRoom
+     * @param  \App\Models\Classroom  $classRoom
      * @return \Illuminate\Http\Response
      */
     public function show(string $classCode)
     {
         try {
 
-            $classroom = ClassRoom::where([
+            $classroom = Classroom::where([
                 'class_code' =>  $classCode,
                 'is_active' => true
             ])->first();
@@ -152,37 +175,41 @@ class ClassRoomController extends Controller
     }
 
 
-    public function update(UpdateClassRoomRequest $request, string $classCode)
+    public function update(UpdateClassroomRequest $request, string $classCode)
     {
-        try {
-            $data = $request->all();
 
-            if ($request->has('is_active')) {
-                $data['is_active'] = true;
-            } else {
-                $data['is_active'] = false;
-            }
+        return response()->json($request->all());
+        // try {
+        //     $data = $request->all();
 
-            $classroom = Classroom::where('class_code', $classCode)->first();
+        //     return response()->json($data);
 
-            if (!$classroom) {
-                return $this->handleInvalidId();
-            }
+        //     if ($request->has('is_active')) {
+        //         $data['is_active'] = true;
+        //     } else {
+        //         $data['is_active'] = false;
+        //     }
 
-            $classroom->update($data);
-            return response()->json([
-                'message' => 'Cập nhật thông tin lớp học thành công!',
-                'classroom' => $classroom
-            ], 200);
-        } catch (\Throwable $th) {
-            return $this->handleErrorNotDefine($th);
-        }
+        //     $classroom = Classroom::where('class_code', $classCode)->first();
+
+        //     if (!$classroom) {
+        //         return $this->handleInvalidId();
+        //     }
+
+        //     $classroom->update($data);
+        //     return response()->json([
+        //         'message' => 'Cập nhật thông tin lớp học thành công!',
+        //         'classroom' => $classroom
+        //     ], 200);
+        // } catch (\Throwable $th) {
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
     public function destroy(string $classCode)
     {
         try {
-            $classroom = ClassRoom::where('class_code', $classCode)->first();
+            $classroom = Classroom::where('class_code', $classCode)->first();
 
             if (!$classroom) {
                 return $this->handleInvalidId();

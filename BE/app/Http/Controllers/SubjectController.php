@@ -11,7 +11,7 @@ use App\Repositories\SubjectRepository;
 class SubjectController extends Controller
 {
     protected $subjectRepository;
-
+ 
     public function __construct(SubjectRepositoryInterface $subjectRepository){
         $this->subjectRepository = $subjectRepository;
     }

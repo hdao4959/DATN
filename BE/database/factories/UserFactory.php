@@ -31,10 +31,11 @@ class UserFactory extends Factory
             'citizen_card_number' => fake()->numberBetween(100000000000,109999999999),
             'issue_date' => fake()->dateTimeThisCentury(),
             'place_of_grant' => fake()->city(),
-            'nation' => fake()->country(),
+            'nation' => 'Kinh',
             'avatar' => fake()->imageUrl(),
-            'majors_id' => null, 
-            'class_id' => null,
+            'major_code' => 'CN01', 
+            'course_code' => 'K01', 
+            'semester_code' => 'S01',
             'role' => 'student',
             'is_active' => true
         ];
