@@ -50,7 +50,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('classrooms', ClassroomController::class);
 
-    Route::post('/classrooms/render_schedule', [ClassRoomController::class, 'renderScheduleForClassroom']);
+    Route::post('/classrooms/render_schedule', [ClassroomController::class, 'renderScheduleForClassroom']);
 
     Route::apiResource('users', UserController::class);
 
