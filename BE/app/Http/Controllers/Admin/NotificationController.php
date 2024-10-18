@@ -65,7 +65,7 @@ class NotificationController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
+            $parent = Category::whereNull('parent_code')
                                 ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
@@ -115,7 +115,7 @@ class NotificationController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
+            $parent = Category::whereNull('parent_code')
                                 ->where('type', '=', 'notification')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
