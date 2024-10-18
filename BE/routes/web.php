@@ -20,6 +20,3 @@ Route::get('/', function () {
   
     return view('welcome');
 });
-
-    Route::get('/formCreateSchedule', [ClassRoomController::class, 'formCreateScheduleforClassroom']);
-Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderScheduleForClassroom'])->name('renderScheduleForClassroom');
