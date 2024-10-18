@@ -9,6 +9,7 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\Admin\MajorController;
 
 use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 
@@ -80,6 +81,11 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('pointheads', PointHeadController::class);
     Route::apiResource('notifications', NotificationController::class);
+
+    Route::get('examscore', [ExamScoreController::class,'getById']);
+    Route::post('examscore/{id}', [ExamScoreController::class,'create']);
+
+    Route::get('addstudents',[ExamScoreController::class, 'addStudent']);
 
 });
 

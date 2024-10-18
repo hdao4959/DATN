@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassRoom;
 use App\Http\Requests\Classroom\StoreClassRoomRequest;
 use App\Http\Requests\Classroom\UpdateClassRoomRequest;
+use App\Models\Category;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
@@ -98,7 +99,6 @@ class ClassRoomController extends Controller
                     ['message' => 'Lịch học không hợp lệ']
                 );
             }
-
 
             $data =
                 [
@@ -197,4 +197,5 @@ class ClassRoomController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
+
 }
