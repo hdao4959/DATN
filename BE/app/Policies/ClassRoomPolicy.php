@@ -6,7 +6,7 @@ use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ClassRoomPolicy
+class ClassroomPolicy
 {
     use HandlesAuthorization;
 

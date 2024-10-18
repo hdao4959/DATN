@@ -33,6 +33,9 @@ class User extends Authenticatable
         'nation',
         'avatar',
         'role',
+        'major_code',
+        'semester_code',
+        'course_code',
         'is_active'
     ];
 

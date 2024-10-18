@@ -29,15 +29,14 @@ class StoreSubjectRequest extends FormRequest
             'tuition' => 'required|numeric',
             're_study_fee' => 'required|numeric',
             'credit_number' => 'required|integer',
-            'number_study' => 'required|integer',
-            'exam_day' => 'required|string',
+            'total_sessions' => 'required|integer',
+            'exam_day' => 'string',
             'description' => 'nullable|string',
             'image' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
-            'is_delete' => 'boolean',
             'semester_code' => 'required|string|max:255',
             'major_code' => 'required|string|max:255',
-            'narrow_major_code' => 'required|string|max:255',
+            'narrow_major_code' => 'string|max:255',
         ];
     }
 }

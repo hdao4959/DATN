@@ -4,7 +4,7 @@ namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreClassRoomRequest  extends FormRequest
+class StoreClassroomRequest  extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,14 @@ class StoreClassRoomRequest  extends FormRequest
     public function rules()
     {
         return [
-            'class_code' => 'required|unique:class_rooms,class_code',
-            'class_name' => 'required|unique:class_rooms,class_name',
+            'class_code' => 'required|unique:classrooms,class_code',
+            'class_name' => 'required|unique:classrooms,class_name',
             'subject_code' => 'required',
             'section' => 'required',
             // 'description' => 'nullable',
             // 'date_to' => 'nullable',
             // 'students' => 'nullable',
             'study_days' => 'required',
-            'total_sessions' => 'required|integer|min:1',
             'date_from' => 'required|date|after_or_equal:today',
             'room_code' => 'required',
             // 'user_code' => 'nullable',
@@ -47,9 +46,6 @@ class StoreClassRoomRequest  extends FormRequest
             'class_name.unique' => 'Tên lớp học này đã tồn tại!',
             'section' => 'Bạn chưa chọn ca học!',
             'study_days.required' => "Bạn chưa chọn các ngày học trong tuần!",
-            'total_sessions.required' => 'Bạn chưa nhập tổng số buổi học!',
-            'total_sessions.integer' => 'Tổng sống buổi học không hợp lệ!',
-            'total_sessions.min' => 'Tổng sống buổi học tối thiểu là 1',
             // 'description.required' => 'Bạn chưa nhập mô tả lớp học',
             'date_from.required' => 'Bạn chưa nhập ngày bắt đầu!',
             'date_from.date' => 'Ngày bắt đầu không hợp lệ!',
