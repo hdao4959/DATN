@@ -66,7 +66,7 @@ class MajorController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
+            $parent = Category::whereNull('parent_code')
                                 ->where('type', '=', 'major')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
@@ -117,7 +117,7 @@ class MajorController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
+            $parent = Category::whereNull('parent_code')
                                 ->where('type', '=', 'major')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
@@ -199,8 +199,8 @@ class MajorController extends Controller
     //     // dd($type);
     //     $categories = DB::table('categories')
     //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
+    //         ->where('parent_code', '=', "")
+    //         // ->whereNull('parent_code')
     //         ->get();
     //     // dd($categories);
     //     // return;
@@ -209,7 +209,7 @@ class MajorController extends Controller
     //     $data = $categories->map(function ($category) {
     //         // Lấy danh mục con dựa trên parent_code
     //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
+    //             ->where('parent_code', '=', $category->cate_code)
     //             ->get();
 
     //         // Trả về cấu trúc dữ liệu theo yêu cầu
