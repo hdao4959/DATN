@@ -21,7 +21,7 @@ const RoomSchoolList = () => {
     });
 
     const { mutate, isLoading } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/schoolrooms/${id}`),
+        mutationFn: (cateCode) => api.delete(`/admin/schoolrooms/${cateCode}`),
         onSuccess: () => {
             toast.success("Xóa phòng học thành công");
             onModalVisible();
@@ -43,8 +43,8 @@ const RoomSchoolList = () => {
         }
     });
 
-    const handleDelete = (id) => {
-        setSelectedSchoolRooms(id);
+    const handleDelete = (cateCode) => {
+        setSelectedSchoolRooms(cateCode);
         onModalVisible();
     };
 
@@ -174,19 +174,17 @@ const RoomSchoolList = () => {
                                                         />
                                                     </td>
                                                     <td>
-                                                        <div className="flex gap-x-2">
+                                                        <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/schoolrooms/${it.id}/edit`}
+                                                                to={`/admin/schoolrooms/${it.cate_code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <i
-                                                                className="fas fa-trash ml-6"
+                                                                className="fas fa-trash ml-6 cursor-pointer"
                                                                 onClick={() =>
-                                                                    handleDelete(
-                                                                        it.id
-                                                                    )
+                                                                    handleDelete(it.cate_code)
                                                                 }
                                                                 disabled={
                                                                     isLoading

@@ -294,6 +294,12 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/admin/post/add">
+                                <i className="fas fa-th-list" />
+                                <p>Post</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/admin/account">
                                 <i className="fas fa-user" />
                                 <p>Account Manager</p>

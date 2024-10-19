@@ -35,7 +35,7 @@ const AddMajor = () => {
         const formData = new FormData();
         formData.append("cate_code", data.cate_code);
         formData.append("cate_name", data.cate_name);
-        formData.append("parrent_code", data.parrent_code);
+        formData.append("parent_code", data.parent_code);
         formData.append("is_active", data.is_active);
         formData.append("description", data.description);
         formData.append("value", data.value);
@@ -113,7 +113,7 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parrent_code">
+                                        <label htmlFor="parent_code">
                                             Chuyên ngành cha
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
@@ -121,7 +121,7 @@ const AddMajor = () => {
                                         </label>
                                         <select
                                             className="form-select"
-                                            {...register("parrent_code", {
+                                            {...register("parent_code", {
                                                 required:
                                                     "Vui lòng chọn chuyên ngành cha",
                                             })}
@@ -143,9 +143,9 @@ const AddMajor = () => {
                                             )}
                                         </select>
 
-                                        {errors.parrent_code && (
+                                        {errors.parent_code && (
                                             <span className="text-danger">
-                                                {errors.parrent_code.message}
+                                                {errors.parent_code.message}
                                             </span>
                                         )}
                                     </div>
