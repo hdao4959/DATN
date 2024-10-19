@@ -2,137 +2,199 @@
 
 namespace App\Http\Controllers\Api;
 
+use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Api\CategoryRequest;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
+    // CRUD chuyên mục
+
+    // Hàm trả về json khi id không hợp lệ
+    public function handleInvalidId()
+    {
+
+        return response()->json([
+            'message' => 'Không có chuyên mục nào!',
+        ], 404);
+    }
+
+    //  Hàm trả về json khi lỗi không xác định (500)
+    public function handleErrorNotDefine($th)
+    {
+        Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+        return response()->json([
+            'message' => 'Lỗi không xác định!'
+        ], 500);
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Category::get();
+        try {
+            // Tìm kiếm theo cate_name
+            $search = $request->input('search');
+            $data = Category::where('type', '=', 'category')
+                                ->when($search, function ($query, $search) {
+                                    
+                                    return $query
+                                            ->where('cate_name', 'like', "%{$search}%");
+                                })
+                                ->paginate(4);
+            if ($data->isEmpty()) {
 
-        return response()->json($data);
+                return $this->handleInvalidId();
+            }
+
+            return response()->json($data, 200);
+        } catch (Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CategoryRequest $request)
+    public function store(StoreCategoryRequest $request)
     {
-
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'category')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
             $params = $request->except('_token');
             if ($request->hasFile('image')) {
-                $fileName = $request->file('image')->store('uploads/category', 'public');
+                $fileName = $request->file('image')->store('uploads/image', 'public');
             } else {
                 $fileName = null;
             }
+
             $params['image'] = $fileName;
             Category::create($params);
 
-            return response()->json([
-                'message' => 'Tạo mới thành công',
-                'data' => $params
-            ]);
-        } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+            return response()->json($params, 200);
+        } catch (Throwable $th) {
 
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $cate_code)
     {
         try {
-            $data = Category::query()->findOrFail($id);
+            $category = Category::where('cate_code', $cate_code)->first();
+            if (!$category) {
 
-            return response()->json([
-                'message' => 'Chi tiết danh muc = ' . $id,
-                'data' => $data
-            ]);
-        } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-            if ($th instanceof ModelNotFoundException) {
-                return response()->json([
-                    'message' => 'Không tồn tại id = ' . $id
-                ], 404);
+                return $this->handleInvalidId();
             } else {
-                return response()->json([
-                    'message' => 'Lỗi không xác định'
-                ], 500);
+
+                return response()->json($category, 200);                
             }
+        } catch (\Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
         }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CategoryRequest $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $cate_code)
     {
         try {
-            $params = $request->except('_token', '_method');
-            $listCategory = Category::findOrFail($id);
-            if ($request->hasFile('image')) {
-                if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
-                    Storage::disk('public')->delete($listCategory->image);
-                }
-                $fileName = $request->file('image')->store('uploads/category', 'public');
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'Category')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
+
+            $listCategory = Category::where('cate_code', $cate_code)->first();
+            if (!$listCategory) {
+
+                return $this->handleInvalidId();
             } else {
-                $fileName = $listCategory->image;
+                $params = $request->except('_token', '_method');
+                if ($request->hasFile('image')) {
+                    if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
+                        Storage::disk('public')->delete($listCategory->image);
+                    }
+                    $fileName = $request->file('image')->store('uploads/image', 'public');
+                } else {
+                    $fileName = $listCategory->image;
+                }
+                $params['image'] = $fileName;
+                $listCategory->update($params);
+
+                return response()->json($listCategory, 201);          
             }
-            $params['image'] = $fileName;
-            $listCategory->update($params);
+        } catch (Throwable $th) {
 
-            return response()->json([
-                'message' => 'Sửa thành công',
-                'data' => $listCategory
-            ], 201);
-        } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $cate_code)
     {
         try {
-            $listCategory = Category::findOrFail($id);
-            if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
-                Storage::disk('public')->delete($listCategory->image);
+            $listCategory = Category::where('cate_code', $cate_code)->first();
+            if (!$listCategory) {
+
+                return $this->handleInvalidId();
+            } else {
+                if ($listCategory->image && Storage::disk('public')->exists($listCategory->image)) {
+                    Storage::disk('public')->delete($listCategory->image);
+                }
+                $listCategory->delete($listCategory);
+
+                return response()->json([
+                    'message' => 'Xóa thành công'
+                ], 200);            
             }
+        } catch (Throwable $th) {
 
-            $listCategory->update($params);
-
-            return response()->json([
-                'message' => 'Xóa thành công'
-            ], 200);
-        } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
-
-            return response()->json([
-                'message' => 'Lỗi không xác định'
-            ], 500);
+            return $this->handleErrorNotDefine($th);
         }
     }
+
+    public function bulkUpdateType(Request $request)
+    {
+        try {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
+            foreach ($activies as $cate_code => $active) {
+                // Tìm category theo ID và cập nhật trường is_active
+                $category = Category::findOrFail($cate_code);
+                $category->ia_active = $active;
+                $category->save();
+            }
+
+            return response()->json([
+                'message' => 'Trạng thái đã được cập nhật thành công!'
+            ], 200);
+        } catch (\Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
+        }
+    }    
+
+    // END CRUD chuyên mục
 
     public function updateActive(string $code)
     {
