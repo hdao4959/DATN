@@ -38,6 +38,11 @@ class MajorController extends Controller
     public function index(Request $request)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'major')
@@ -52,7 +57,10 @@ class MajorController extends Controller
                 return $this->handleInvalidId();
             }
 
-            return response()->json($data, 200);
+            return response()->json([
+                'parent' => $parent,
+                'data' => $data
+            ], 200);
         } catch (Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -65,12 +73,6 @@ class MajorController extends Controller
     public function store(StoreMajorRequest $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
