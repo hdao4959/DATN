@@ -96,13 +96,21 @@ class MajorController extends Controller
     public function show(string $cate_code)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
             $listMajor = Category::where('cate_code', $cate_code)->first();
             if (!$listMajor) {
 
                 return $this->handleInvalidId();
             } else {
 
-                return response()->json($listMajor, 200);                
+                return response()->json([
+                    'parent' => $parent,
+                    'listMajor' => $listMajor
+                ], 200);                
             }
         } catch (\Throwable $th) {
 
@@ -116,12 +124,6 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $cate_code)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
             $listMajor = Category::where('cate_code', $cate_code)->first();
             if (!$listMajor) {
 

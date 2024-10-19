@@ -20,7 +20,6 @@ class Category extends Model
         'is_active'
     ];
 
-    protected $primaryKey = 'cate_code';
     public $incrementing = false; // Nếu 'cate_code' không phải là số tự động tăng.
     protected $keyType = 'string'; // Nếu 'cate_code' là chuỗi.
     /**
