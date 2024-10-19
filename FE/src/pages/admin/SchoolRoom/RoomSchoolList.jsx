@@ -31,6 +31,18 @@ const RoomSchoolList = () => {
             toast.error("Có lỗi xảy ra khi xóa phòng học");
         },
     });
+
+    const { mutate: onUpdateRoomStt } = useMutation({
+        mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
+        onSuccess: () => {
+            toast.success('Cập nhật trạng thái thành công');
+            refetch();
+        },
+        onError: () => {
+            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        }
+    });
+
     const handleDelete = (id) => {
         setSelectedSchoolRooms(id);
         onModalVisible();
@@ -126,25 +138,27 @@ const RoomSchoolList = () => {
                                                     <td>{it.value}</td>
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        {it.is_active == 1 ? (
-                                                            <i
-                                                                className="fas fa-check-circle fs-20 color-green"
-                                                                style={{
-                                                                    color: "green",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        ) : (
-                                                            <i
-                                                                className="fas fa-ban fs-20 color-danger"
-                                                                style={{
-                                                                    color: "red",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        )}
+                                                        <div onClick={() => onUpdateRoomStt(it.cate_code)} className="cursor-pointer inline-block">
+                                                            {it.is_active == 1 ? (
+                                                                <i
+                                                                    className="fas fa-check-circle fs-20 color-green"
+                                                                    style={{
+                                                                        color: "green",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            ) : (
+                                                                <i
+                                                                    className="fas fa-ban fs-20 color-danger"
+                                                                    style={{
+                                                                        color: "red",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <img
