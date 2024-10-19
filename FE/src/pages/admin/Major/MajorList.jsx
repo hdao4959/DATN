@@ -168,14 +168,14 @@ const MajorList = () => {
                                                         />
                                                     </td>
                                                     <td>
-                                                        <div className="flex gap-x-2">
-                                                            <Link to={`/admin/major/${it.id}/edit`}>
+                                                        <div className="flex gap-x-2 items-center">
+                                                            <Link to={`/admin/major/${it.cate_code}/edit`}>
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <i
-                                                                className="fas fa-trash ml-6"
-                                                                onClick={() => handleDelete(it.id)}
+                                                                className="fas fa-trash ml-6 cursor-pointer"
+                                                                onClick={() => handleDelete(it.cate_code)}
                                                                 disabled={isLoading}
                                                             >
 

@@ -1,57 +1,35 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import api from "../../../config/axios";
-import { toast } from "react-toastify";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
 
-const AddMajor = () => {
+const AddPost = () => {
     const {
         register,
         handleSubmit,
-        reset,
         formState: { errors },
-    } = useForm(); // Lấy formState để xử lý lỗi
-    const nav = useNavigate();
-    const { data: listMajor } = useQuery({
-        queryKey: ["LIST_MAJOR"],
-        queryFn: async () => {
-            const res = await api.get("/admin/major");
-            return res.data?.data;
-        },
-    });
-    const { mutate } = useMutation({
-        mutationFn: (data) => api.post("/admin/major", data),
-        onSuccess: () => {
-            toast.success("Thêm chuyên ngành thành công");
-            reset();
-            nav("/admin/major");
-        },
-        onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
-        },
-    });
+    } = useForm();
+    const navigate = useNavigate();
 
-    const onSubmit = (data) => {
-        const formData = new FormData();
-        formData.append("cate_code", data.cate_code);
-        formData.append("cate_name", data.cate_name);
-        formData.append("parent_code", data.parent_code);
-        formData.append("is_active", data.is_active);
-        formData.append("description", data.description);
-        formData.append("value", data.value);
-        formData.append("type", "major");
+    // const { mutate } = useMutation({
+    //     mutationKey: ["ADD_GRADE_COMPONENTS"],
+    //     mutationFn: (data) => api.post("/admin/pointheads", data),
+    //     onSuccess: () => {
+    //         toast.success("Thêm điểm thành phần thành công");
+    //         navigate("/admin/grade-components");
+    //     },
+    //     onError: (error) => {
+    //         toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+    //     },
+    // });
 
-        // Thêm file vào FormData
-        formData.append("image", data.image[0]);
-
-        mutate(formData);
-    };
+    const onSubmit = () => {};
 
     return (
         <>
             <div className="mb-6 mt-2">
                 <Link to="/admin/major">
-                    <button className="btn btn-primary">DS chuyên ngành</button>
+                    <button className="btn btn-primary">DS bài viết</button>
                 </Link>
             </div>
 
@@ -60,15 +38,13 @@ const AddMajor = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">
-                                    Thêm Chuyên Ngành
-                                </div>
+                                <div className="card-title">Thêm bài viết</div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
                                         <label htmlFor="cate_code">
-                                            Mã chuyên ngành
+                                            Tiêu đề
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -77,10 +53,9 @@ const AddMajor = () => {
                                             type="text"
                                             className="form-control"
                                             {...register("cate_code", {
-                                                required:
-                                                    "Mã chuyên ngành là bắt buộc",
+                                                required: "Tiêu đề là bắt buộc",
                                             })}
-                                            placeholder="Nhập mã chuyên ngành"
+                                            placeholder="Nhập tiêu đề"
                                         />
                                         {errors.cate_code && (
                                             <span className="text-danger">
@@ -91,7 +66,7 @@ const AddMajor = () => {
 
                                     <div className="form-group">
                                         <label htmlFor="cate_name">
-                                            Tên chuyên ngành
+                                            Mã bài viết
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -101,9 +76,9 @@ const AddMajor = () => {
                                             className="form-control"
                                             {...register("cate_name", {
                                                 required:
-                                                    "Tên chuyên ngành là bắt buộc",
+                                                    "Mã bài viết là bắt buộc",
                                             })}
-                                            placeholder="Nhập tên chuyên ngành"
+                                            placeholder="Nhập mã bài viết"
                                         />
                                         {errors.cate_name && (
                                             <span className="text-danger">
@@ -113,60 +88,26 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parent_code">
-                                            Chuyên ngành cha
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-                                        <select
-                                            className="form-select"
-                                            {...register("parent_code", {
-                                                required:
-                                                    "Vui lòng chọn chuyên ngành cha",
-                                            })}
-                                        >
-                                            <option value="">
-                                                -- Lựa chọn --
-                                            </option>
-                                            {listMajor?.map(
-                                                (element, index) => (
-                                                    <option
-                                                        key={index}
-                                                        value={
-                                                            element.cate_code
-                                                        }
-                                                    >
-                                                        {element.cate_name}
-                                                    </option>
-                                                )
-                                            )}
-                                        </select>
-
-                                        {errors.parent_code && (
-                                            <span className="text-danger">
-                                                {errors.parent_code.message}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="form-group">
                                         <label htmlFor="value">
-                                            Giá trị
+                                            Vị trí sắp xếp
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
                                         </label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             className="form-control"
                                             {...register("value", {
                                                 required:
-                                                    "Vui lòng nhập giá trị",
+                                                    "Vị trí sắp xếp là bắt buộc",
+                                                min: {
+                                                    value: 0,
+                                                    message:
+                                                        "Giá trị không hợp lệ",
+                                                },
                                             })}
-                                            placeholder="Nhập giá trị"
+                                            placeholder="Nhập vị trí sắp xếp"
                                         />
-
                                         {errors.value && (
                                             <span className="text-danger">
                                                 {errors.value.message}
@@ -175,29 +116,27 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active">
-                                            Trạng thái
+                                        <label htmlFor="cate_name">
+                                            Tags
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
                                         </label>
-                                        <select
-                                            className="form-select"
-                                            {...register("is_active", {
-                                                required:
-                                                    "Trạng thái là bắt buộc",
-                                            })}
-                                        >
-                                            <option value={1}>Công khai</option>
-                                            <option value={0}>Ẩn</option>
-                                        </select>
-                                        {errors.is_active && (
-                                            <span>
-                                                {errors.is_active.message}
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Nhập tags bài viết"
+                                        />
+                                        {errors.cate_name && (
+                                            <span className="text-danger">
+                                                {errors.cate_name.message}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="image">
-                                            Hình ảnh
+                                            Ảnh đại diện
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -218,8 +157,23 @@ const AddMajor = () => {
                                     </div>
 
                                     <div className="form-group">
+                                        <label htmlFor="is_active">
+                                            Hiển thị
+                                        </label>
+                                        <select className="form-select">
+                                            <option value={1}>Hiển thị</option>
+                                            <option value={0}>Ẩn</option>
+                                        </select>
+                                        {errors.is_active && (
+                                            <span className="text-danger">
+                                                {errors.is_active.message}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="form-group">
                                         <label htmlFor="description">
-                                            Mô tả
+                                            Nội dung hiển thị
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -228,16 +182,62 @@ const AddMajor = () => {
                                             className="form-control"
                                             rows={5}
                                             {...register("description", {
-                                                required: "Vui lòng nhập mô tả",
+                                                required:
+                                                    "Vui lòng nhập nội dung hiển thị",
                                             })}
-                                            placeholder="Nhập mô tả"
+                                            placeholder="Nhập nội dung hiển thị"
                                         />
-
                                         {errors.description && (
                                             <span className="text-danger">
                                                 {errors.description.message}
                                             </span>
                                         )}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="is_active">
+                                            Ngày hết hạn
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            name=""
+                                            className="form-control"
+                                            id=""
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="is_active">
+                                            Danh mục
+                                        </label>
+                                        <select className="form-select">
+                                            <option value={1}>
+                                                Chọn danh mục
+                                            </option>
+                                            <option value={0}>
+                                                Danh mục 1
+                                            </option>
+                                            <option value={0}>
+                                                Danh mục 2
+                                            </option>
+                                        </select>
+                                        {errors.is_active && (
+                                            <span className="text-danger">
+                                                {errors.is_active.message}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="is_active">
+                                            Nội dung
+                                        </label>
+
+                                        <ReactQuill
+                                            theme="snow"
+                                            className="h-[300px] mb-10"
+                                            placeholder="Nhập nội dung bài viết"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -251,7 +251,7 @@ const AddMajor = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/major")}
+                                    onClick={() => navigate(-1)}
                                 >
                                     Hủy
                                 </button>
@@ -264,4 +264,4 @@ const AddMajor = () => {
     );
 };
 
-export default AddMajor;
+export default AddPost;

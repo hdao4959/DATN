@@ -37,7 +37,7 @@ const EditSchoolRooms = () => {
         queryFn: async () => {
             const res = await api.get(`/admin/schoolrooms/${id}`)
 
-            return res.data.data
+            return res.data
         }
     })
 
