@@ -60,7 +60,7 @@ class User extends Authenticatable
         // 'password' => 'hashed'
     ];
 
-    protected $primaryKey = 'user_code';
+    // protected $primaryKey = 'user_code';
     public $incrementing = false; // Nếu 'user_code' không phải là số tự động tăng.
     protected $keyType = 'string'; // Nếu 'user_code' là chuỗi.
 
