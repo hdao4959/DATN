@@ -17,14 +17,6 @@ const EditMajor = () => {
     } = useForm();
     const nav = useNavigate();
 
-    const { data: listMajor } = useQuery({
-        queryKey: ["LIST_MAJOR"],
-        queryFn: async () => {
-            const res = await api.get("/admin/major");
-            return res.data?.data;
-        },
-    });
-
     const { mutate } = useMutation({
         mutationFn: (data) => api.post(`/admin/major/${id}`, data),
         onSuccess: () => {
@@ -41,19 +33,19 @@ const EditMajor = () => {
         queryFn: async () => {
             const res = await api.get(`/admin/major/${id}`);
 
-            return res.data.listMajor;
+            return res.data;
         },
     });
 
     useEffect(() => {
         if (majorDetail) {
             reset({
-                cate_code: majorDetail.cate_code,
-                cate_name: majorDetail.cate_name,
-                parent_code: majorDetail.parent_code,
-                is_active: majorDetail.is_active,
-                value: majorDetail.value,
-                description: majorDetail.description,
+                cate_code: majorDetail.listMajor.cate_code,
+                cate_name: majorDetail.listMajor.cate_name,
+                parent_code: majorDetail.listMajor.parent_code,
+                is_active: majorDetail.listMajor.is_active,
+                value: majorDetail.listMajor.value,
+                description: majorDetail.listMajor.description,
             });
         }
     }, [majorDetail, reset]);
@@ -158,7 +150,7 @@ const EditMajor = () => {
                                             <option value="">
                                                 -- Lựa chọn --
                                             </option>
-                                            {listMajor?.map(
+                                            {majorDetail?.parent?.map(
                                                 (element, index) => (
                                                     <option
                                                         key={index}
