@@ -270,9 +270,27 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/admin/schoolrooms">
+                                <i className="fas fa-th-list" />
+                                <p>Room</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/major">
+                                <i className="fas fa-th-list" />
+                                <p>Major</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/admin/grade-components">
                                 <i className="fas fa-th-list" />
                                 <p>Grade components</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/student-wallet">
+                                <i className="fas fa-user" />
+                                <p>Student Wallet</p>
                             </Link>
                         </li>
                         <li className="nav-item">
