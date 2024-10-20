@@ -20,8 +20,8 @@ class Newsletter extends Model
         'order',
         'expiry_date',
         'is_active',
-        'author_id',
-        'category_id'
+        'user_code',
+        'cate_code'
     ];
 
     // Định nghĩa mối quan hệ với bảng 'categories'

@@ -23,9 +23,8 @@ class UpdateSchoolRoomRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id');
         return [
-            'cate_code' => 'required|unique:categories,id' . $id . ',id',
+            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('schoolrooms') . ',cate_code',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
