@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Classroom\RenderClassroomRequest;
 use App\Models\Classroom;
 use App\Http\Requests\Classroom\StoreClassroomRequest;
 use App\Http\Requests\Classroom\UpdateClassroomRequest;
@@ -40,7 +41,6 @@ class ClassroomController extends Controller
         try {
 
             $classrooms = Classroom::where('is_active', true)->paginate(10);
-
             if ($classrooms->isEmpty()) {
                 return response()->json([
                     'message' => 'Không tìm thấy lớp học nào!'
@@ -58,7 +58,7 @@ class ClassroomController extends Controller
     }
 
 
-    public function renderScheduleForClassroom(StoreClassroomRequest $request)
+    public function renderScheduleForClassroom(RenderClassroomRequest $request)
     {
         try {
             $data = $request->except('date_from');
@@ -93,21 +93,20 @@ class ClassroomController extends Controller
 
 
 
-    public function store(Request $request)
+    public function store(StoreClassroomRequest $request)
     {
 
         try {
 
             $data_request = $request->all();
-
             $subject_code = $data_request['subject_code'];
             $subject = Subject::with('major', 'semester')->where('subject_code', $subject_code)->first();
-            // $course_code = $subject->
+            $course_code = $subject->
             // $major_code = $subject->major->cate_code;
             // $semester_code = $subject->semester->cate_code;
 
             $students = DB::table('users')->where(
-                [
+                column: [
                     // 'course_code' => $course_code,
                     // 'major_code' => $major_code,
                     'is_active' => true

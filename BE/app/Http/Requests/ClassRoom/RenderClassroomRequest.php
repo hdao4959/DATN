@@ -4,14 +4,12 @@ namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreClassroomRequest  extends FormRequest
+class RenderClassroomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,9 +17,9 @@ class StoreClassroomRequest  extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, mixed>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'class_code' => 'required|unique:classrooms,class_code',
@@ -38,7 +36,6 @@ class StoreClassroomRequest  extends FormRequest
 
     public function messages(){
         return [
-
             'class_code.required' => 'Bạn chưa nhập mã lớp học!',
             'class_code.unique' => 'Mã lớp học này đã tồn tại!',
             'class_name.required' => 'Bạn chưa nhập tên lớp học!',

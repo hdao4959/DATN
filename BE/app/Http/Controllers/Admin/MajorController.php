@@ -38,6 +38,11 @@ class MajorController extends Controller
     public function index(Request $request)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'major')
@@ -52,7 +57,10 @@ class MajorController extends Controller
                 return $this->handleInvalidId();
             }
 
-            return response()->json($data, 200);
+            return response()->json([
+                'parent' => $parent,
+                'data' => $data
+            ], 200);
         } catch (Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -65,12 +73,6 @@ class MajorController extends Controller
     public function store(StoreMajorRequest $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
@@ -96,13 +98,21 @@ class MajorController extends Controller
     public function show(string $cate_code)
     {
         try {
+            // Lấy ra cate_code và cate_name của cha
+            $parent = Category::whereNull('parent_code')
+                                ->where('type', '=', 'major')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
             $listMajor = Category::where('cate_code', $cate_code)->first();
             if (!$listMajor) {
 
                 return $this->handleInvalidId();
             } else {
 
-                return response()->json($listMajor, 200);                
+                return response()->json([
+                    'parent' => $parent,
+                    'listMajor' => $listMajor
+                ], 200);                
             }
         } catch (\Throwable $th) {
 
@@ -116,12 +126,6 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $cate_code)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
             $listMajor = Category::where('cate_code', $cate_code)->first();
             if (!$listMajor) {
 
@@ -199,8 +203,8 @@ class MajorController extends Controller
     //     // dd($type);
     //     $categories = DB::table('categories')
     //         ->where('type', '=', $type)
-    //         ->where('parrent_code', '=', "")
-    //         // ->whereNull('parrent_code')
+    //         ->where('parent_code', '=', "")
+    //         // ->whereNull('parent_code')
     //         ->get();
     //     // dd($categories);
     //     // return;
@@ -209,7 +213,7 @@ class MajorController extends Controller
     //     $data = $categories->map(function ($category) {
     //         // Lấy danh mục con dựa trên parent_code
     //         $subCategories = DB::table('categories')
-    //             ->where('parrent_code', '=', $category->cate_code)
+    //             ->where('parent_code', '=', $category->cate_code)
     //             ->get();
 
     //         // Trả về cấu trúc dữ liệu theo yêu cầu

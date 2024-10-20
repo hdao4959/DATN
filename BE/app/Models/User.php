@@ -59,4 +59,12 @@ class User extends Authenticatable
         'is_active' => 'boolean',
         // 'password' => 'hashed'
     ];
+
+
+    // Định nghĩa mối quan hệ với bảng 'newsletters'
+    public function newsletters()
+    {
+        return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
+    }
+
 }

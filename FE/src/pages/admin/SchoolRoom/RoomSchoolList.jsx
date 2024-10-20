@@ -21,7 +21,7 @@ const RoomSchoolList = () => {
     });
 
     const { mutate, isLoading } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/schoolrooms/${id}`),
+        mutationFn: (cateCode) => api.delete(`/admin/schoolrooms/${cateCode}`),
         onSuccess: () => {
             toast.success("Xóa phòng học thành công");
             onModalVisible();
@@ -31,8 +31,20 @@ const RoomSchoolList = () => {
             toast.error("Có lỗi xảy ra khi xóa phòng học");
         },
     });
-    const handleDelete = (id) => {
-        setSelectedSchoolRooms(id);
+
+    const { mutate: onUpdateRoomStt } = useMutation({
+        mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
+        onSuccess: () => {
+            toast.success('Cập nhật trạng thái thành công');
+            refetch();
+        },
+        onError: () => {
+            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        }
+    });
+
+    const handleDelete = (cateCode) => {
+        setSelectedSchoolRooms(cateCode);
         onModalVisible();
     };
 
@@ -126,25 +138,27 @@ const RoomSchoolList = () => {
                                                     <td>{it.value}</td>
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        {it.is_active == 1 ? (
-                                                            <i
-                                                                className="fas fa-check-circle fs-20 color-green"
-                                                                style={{
-                                                                    color: "green",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        ) : (
-                                                            <i
-                                                                className="fas fa-ban fs-20 color-danger"
-                                                                style={{
-                                                                    color: "red",
-                                                                    fontSize:
-                                                                        "25px",
-                                                                }}
-                                                            ></i>
-                                                        )}
+                                                        <div onClick={() => onUpdateRoomStt(it.cate_code)} className="cursor-pointer inline-block">
+                                                            {it.is_active == 1 ? (
+                                                                <i
+                                                                    className="fas fa-check-circle fs-20 color-green"
+                                                                    style={{
+                                                                        color: "green",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            ) : (
+                                                                <i
+                                                                    className="fas fa-ban fs-20 color-danger"
+                                                                    style={{
+                                                                        color: "red",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <img
@@ -160,19 +174,17 @@ const RoomSchoolList = () => {
                                                         />
                                                     </td>
                                                     <td>
-                                                        <div className="flex gap-x-2">
+                                                        <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/schoolrooms/${it.id}/edit`}
+                                                                to={`/admin/schoolrooms/${it.cate_code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <i
-                                                                className="fas fa-trash ml-6"
+                                                                className="fas fa-trash ml-6 cursor-pointer"
                                                                 onClick={() =>
-                                                                    handleDelete(
-                                                                        it.id
-                                                                    )
+                                                                    handleDelete(it.cate_code)
                                                                 }
                                                                 disabled={
                                                                     isLoading

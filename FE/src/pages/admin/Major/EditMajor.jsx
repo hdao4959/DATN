@@ -17,14 +17,6 @@ const EditMajor = () => {
     } = useForm();
     const nav = useNavigate();
 
-    const { data: listMajor } = useQuery({
-        queryKey: ["LIST_MAJOR"],
-        queryFn: async () => {
-            const res = await api.get("/admin/major");
-            return res.data?.data;
-        },
-    });
-
     const { mutate } = useMutation({
         mutationFn: (data) => api.post(`/admin/major/${id}`, data),
         onSuccess: () => {
@@ -48,12 +40,12 @@ const EditMajor = () => {
     useEffect(() => {
         if (majorDetail) {
             reset({
-                cate_code: majorDetail.cate_code,
-                cate_name: majorDetail.cate_name,
-                parrent_code: majorDetail.parrent_code,
-                is_active: majorDetail.is_active,
-                value: majorDetail.value,
-                description: majorDetail.description,
+                cate_code: majorDetail.listMajor.cate_code,
+                cate_name: majorDetail.listMajor.cate_name,
+                parent_code: majorDetail.listMajor.parent_code,
+                is_active: majorDetail.listMajor.is_active,
+                value: majorDetail.listMajor.value,
+                description: majorDetail.listMajor.description,
             });
         }
     }, [majorDetail, reset]);
@@ -62,7 +54,7 @@ const EditMajor = () => {
         const formData = new FormData();
         formData.append("cate_code", data.cate_code);
         formData.append("cate_name", data.cate_name);
-        formData.append("parrent_code", data.parrent_code);
+        formData.append("parent_code", data.parent_code);
         formData.append("is_active", data.is_active);
         formData.append("description", data.description);
         formData.append("value", data.value);
@@ -142,7 +134,7 @@ const EditMajor = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="parrent_code">
+                                        <label htmlFor="parent_code">
                                             Chuyên ngành cha
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
@@ -150,7 +142,7 @@ const EditMajor = () => {
                                         </label>
                                         <select
                                             className="form-select"
-                                            {...register("parrent_code", {
+                                            {...register("parent_code", {
                                                 required:
                                                     "Vui lòng chọn chuyên ngành cha",
                                             })}
@@ -158,7 +150,7 @@ const EditMajor = () => {
                                             <option value="">
                                                 -- Lựa chọn --
                                             </option>
-                                            {listMajor?.map(
+                                            {majorDetail?.parent?.map(
                                                 (element, index) => (
                                                     <option
                                                         key={index}
@@ -172,9 +164,9 @@ const EditMajor = () => {
                                             )}
                                         </select>
 
-                                        {errors.parrent_code && (
+                                        {errors.parent_code && (
                                             <span className="text-danger">
-                                                {errors.parrent_code.message}
+                                                {errors.parent_code.message}
                                             </span>
                                         )}
                                     </div>

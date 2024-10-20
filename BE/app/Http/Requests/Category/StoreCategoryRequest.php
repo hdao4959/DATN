@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Notification;
+namespace App\Http\Requests\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateNotificationRequest extends FormRequest
+class StoreCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +23,8 @@ class UpdateNotificationRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id');
         return [
-            'cate_code' => 'required|unique:categories,id,' . $id . ',id',
+            'cate_code' => 'required|unique:categories,cate_code',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
@@ -36,11 +35,11 @@ class UpdateNotificationRequest extends FormRequest
     public function messages()
     {
         return [
-            'cate_code.required' => 'Bạn chưa nhập mã thông báo',
-            'cate_code.unique' => 'Mã thông báo đã được sử dụng',
-            'cate_name.required' => 'Bạn chưa nhập Tiêu đề thông báo',
-            'cate_name.max' => 'Tiêu đề thông báo không quá 255 kí tự',
-            'cate_name.regex' => 'Tiêu đề thông báo không chứa kí tự đặc biệt',
+            'cate_code.required' => 'Bạn chưa nhập mã chuyên mục',
+            'cate_code.unique' => 'Mã chuyên mục đã được sử dụng',
+            'cate_name.required' => 'Bạn chưa nhập Tiêu đề chuyên mục',
+            'cate_name.max' => 'Tiêu đề chuyên mục không quá 255 kí tự',
+            'cate_name.regex' => 'Tiêu đề chuyên mục không chứa kí tự đặc biệt',
             'value.regex' => 'Giá trị không chứa kí tự đặc biệt',
             'image.image' => 'File phải là ảnh',
             'image.mimes' => 'File ảnh phải có định dạng jpeg, png, jpg, gif, hoặc svg.',
