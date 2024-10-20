@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Throwable;
+use App\Models\Category;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Newsletter\StoreNewsletterRequest;
+use App\Http\Requests\Newsletter\UpdateNewsletterRequest;
 
 class NewsletterController extends Controller
 {
@@ -32,19 +38,36 @@ class NewsletterController extends Controller
     public function index(Request $request)
     {
         try {
-            $newsletters = Newsletter::with(['category', 'user'])->get()->map(function ($newsletter) {
-                return [
-                    'id' => $newsletter->id,
-                    'title' => $newsletter->title,
-                    'content' => $newsletter->content,
-                    'image' => $newsletter->image,
-                    'expiry_date' => $newsletter->expiry_date,
-                    'is_active' => $newsletter->is_active,
-                    'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
-                    'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
-                ];
-            });
+            // Lấy ra chuyên mục
+            $category = Category::where('type', '=', 'category')
+                                ->select('cate_code', 'cate_name')
+                                ->get();
 
+            $title = $request->input('title');
+            $type = $request->input('type');
+            $newsletters = Newsletter::with(['category', 'user'])
+                ->when($title, function ($query, $title) {
+                    return $query
+                            ->where('title', 'like', "%{$title}%");
+                })
+                ->when($type !== null, function ($query) use ($type) {
+                    return $query
+                            ->where('type', '=', $type);
+                })
+                ->get()->map(function ($newsletter) {
+                    return [
+                        'id' => $newsletter->id,
+                        'code' => $newsletter->code,
+                        'title' => $newsletter->title,
+                        'content' => $newsletter->content,
+                        'image' => $newsletter->image,
+                        'type' => $newsletter->type,
+                        'expiry_date' => $newsletter->expiry_date,
+                        'is_active' => $newsletter->is_active,
+                        'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
+                        'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
+                    ];
+                });                        
 
             if ($newsletters->isEmpty()) {
 
@@ -52,7 +75,8 @@ class NewsletterController extends Controller
             }
 
             return response()->json([
-                'newsletter' => $newsletters
+                'newsletter' => $newsletters,
+                'category' => $category
             ],200);
         } catch (Throwable $th) {
 
@@ -63,15 +87,9 @@ class NewsletterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMajorRequest $request)
+    public function store(StoreNewsletterRequest $request)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
@@ -81,7 +99,7 @@ class NewsletterController extends Controller
             }
 
             $params['image'] = $fileName;
-            Category::create($params);
+            Newsletter::create($params);
 
             return response()->json($params, 200);
         } catch (\Throwable $th) {
@@ -94,16 +112,34 @@ class NewsletterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $cate_code)
+    public function show(string $code)
     {
         try {
-            $listMajor = Category::where('cate_code', $cate_code)->first();
-            if (!$listMajor) {
+            $newsletters = Newsletter::where('code', $code)
+                ->with(['category', 'user'])
+                ->get()->map(function ($newsletter) {
+                            return [
+                                'id' => $newsletter->id,
+                                'code' => $newsletter->code,
+                                'title' => $newsletter->title,
+                                'tags' => $newsletter->tags,
+                                'content' => $newsletter->content,
+                                'image' => $newsletter->image,
+                                'description' => $newsletter->description,
+                                'type' => $newsletter->type,
+                                'order' => $newsletter->order,
+                                'expiry_date' => $newsletter->expiry_date,
+                                'is_active' => $newsletter->is_active,
+                                'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
+                                'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
+                            ];
+                        });    
+            if (!$newsletters) {
 
                 return $this->handleInvalidId();
             } else {
 
-                return response()->json($listMajor, 200);                
+                return response()->json($newsletters, 200);                
             }
         } catch (\Throwable $th) {
 
@@ -114,33 +150,27 @@ class NewsletterController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMajorRequest $request, string $cate_code)
+    public function update(UpdateNewsletterRequest $request, string $code)
     {
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parrent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-
-            $listMajor = Category::where('cate_code', $cate_code)->first();
-            if (!$listMajor) {
+            $newsletters = Newsletter::where('code', $code)->first();
+            if (!$newsletters) {
 
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
                 if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
+                    if ($newsletters->image && Storage::disk('public')->exists($newsletters->image)) {
+                        Storage::disk('public')->delete($newsletters->image);
                     }
                     $fileName = $request->file('image')->store('uploads/image', 'public');
                 } else {
-                    $fileName = $listMajor->image;
+                    $fileName = $newsletters->image;
                 }
                 $params['image'] = $fileName;
-                $listMajor->update($params);
+                $newsletters->update($params);
 
-                return response()->json($listMajor, 201);          
+                return response()->json($newsletters, 201);          
             }
         } catch (Throwable $th) {
 
@@ -151,18 +181,18 @@ class NewsletterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $cate_code)
+    public function destroy(string $code)
     {
         try {
-            $listMajor = Category::where('cate_code', $cate_code)->first();
-            if (!$listMajor) {
+            $newsletters = Category::where('code', $code)->first();
+            if (!$newsletters) {
 
                 return $this->handleInvalidId();
             } else {
-                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                    Storage::disk('public')->delete($listMajor->image);
+                if ($newsletters->image && Storage::disk('public')->exists($newsletters->image)) {
+                    Storage::disk('public')->delete($newsletters->image);
                 }
-                $listMajor->delete($listMajor);
+                $newsletters->delete($newsletters);
 
                 return response()->json([
                     'message' => 'Xóa thành công'
