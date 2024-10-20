@@ -19,7 +19,7 @@ return new class extends Migration
             $table->index('class_code');
             $table->string('class_name',255)->comment('Tên lớp');
             $table->integer('section')->comment('Ca học');
-            $table->json('exam_score')->comment('Json điểm thi')->nullable();
+            $table->json('score')->comment('Json điểm thi')->nullable();
             $table->json('study_schedule')->comment('Json lịch học');
             $table->json('exam_schedule')->comment('Json lịch thi')->nullable();
             $table->text('description')->comment('Mô tả')->nullable();

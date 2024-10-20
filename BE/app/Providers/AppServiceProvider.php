@@ -11,6 +11,8 @@ use App\Repositories\GradeRepository;
 use App\Repositories\SemesterRepository;
 use App\Repositories\SessionRepository;
 use App\Repositories\SubjectRepository;
+use BE\App\Repositories\Contracts\ScoreRepositoryInterface;
+use BE\App\Repositories\ScoreRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SessionRepositoryInterface::class , SessionRepository::class );
         $this->app->bind(GradeRepositoryInterface::class , GradeRepository::class );
         $this->app->bind(SemesterRepositoryInterface::class , SemesterRepository::class);
+        $this->app->bind(ScoreRepositoryInterface::class, ScoreRepository::class );
     }
 
     /**
