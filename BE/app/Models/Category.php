@@ -19,6 +19,9 @@ class Category extends Model
         'type',
         'is_active'
     ];
+
+    public $incrementing = false; // Nếu 'cate_code' không phải là số tự động tăng.
+    protected $keyType = 'string'; // Nếu 'cate_code' là chuỗi.
     /**
     * Quan hệ với các danh mục con.
     */
@@ -33,5 +36,11 @@ class Category extends Model
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_code', 'cate_code');
+    }
+
+    // Định nghĩa mối quan hệ với bảng 'newsletters'
+    public function newsletters()
+    {
+        return $this->hasMany(Newsletter::class, 'cate_code', 'cate_code');
     }
 }
