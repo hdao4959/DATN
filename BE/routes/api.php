@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\AssessmentItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GradesController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Admin\ScoreController;
+use App\Models\AssessmentItem;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,10 +78,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('newsletters', NewsletterController::class);
 
-    Route::get('examscore', [ScoreController::class,'getById']);
-    Route::post('examscore/{id}', [ScoreController::class,'create']);
 
-    Route::get('addstudents',[ScoreController::class, 'addStudent']);
-
+    Route::apiResource('assessment', AssessmentItemController::class);
 });
 

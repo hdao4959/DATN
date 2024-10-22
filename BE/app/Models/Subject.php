@@ -36,8 +36,9 @@ class Subject extends Model
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
-    // public function course(){
-    //     return $this->belongsTo(Category::class, '')
-    // }
+    public function assessmentItems()
+    {
+        return $this->belongsToMany(AssessmentItem::class, 'subject_assessment');
+    }
 
 }
