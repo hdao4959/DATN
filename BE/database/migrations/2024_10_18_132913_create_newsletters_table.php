@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('newsletters', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
+            $table->index('code');
             $table->string('title');
-            $table->string('tags')->nullable();
+            $table->json('tags')->nullable();
             $table->text('content');
             $table->string('image',1000)->nullable();
             $table->text('description')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->string('order')->nullable();
             $table->date('expiry_date')->nulllable();
             $table->boolean('is_active')->default(true);
+            $table->json('notification_object')->nullable();
             $table->string('user_code');
             $table->foreign('user_code')->references('user_code')->on('users')->cascadeOnDelete()->restrictOnUpdate();
             $table->string('cate_code');            

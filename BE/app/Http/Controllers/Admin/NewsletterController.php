@@ -130,8 +130,10 @@ class NewsletterController extends Controller
                                 'order' => $newsletter->order,
                                 'expiry_date' => $newsletter->expiry_date,
                                 'is_active' => $newsletter->is_active,
-                                'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
-                                'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
+                                'cate_code' => $newsletter->category ? $newsletter->category->cate_code : 'No Category',                                
+                                'cate_name' => $newsletter->category ? $newsletter->category->cate_name : 'No Category',
+                                'user_code' => $newsletter->user ? $newsletter->user->user_code : 'No User',
+                                'full_name' => $newsletter->user ? $newsletter->user->full_name : 'No User',
                             ];
                         });    
             if (!$newsletters) {
@@ -184,7 +186,7 @@ class NewsletterController extends Controller
     public function destroy(string $code)
     {
         try {
-            $newsletters = Category::where('code', $code)->first();
+            $newsletters = Newsletter::where('code', $code)->first();
             if (!$newsletters) {
 
                 return $this->handleInvalidId();
@@ -203,24 +205,28 @@ class NewsletterController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
-
-    public function bulkUpdateType(Request $request)
+    
+    public function copyNewsletter(string $code)
     {
         try {
-            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
-            foreach ($activies as $cate_code => $active) {
-                // Tìm category theo ID và cập nhật trường 'is_active'
-                $category = Category::where('cate_code', $cate_code)->first();
-                $category->ia_active = $active;
-                $category->save();
+            $newsletters = Newsletter::where('code', $code)->first();            
+            if (!$newsletters) {
+
+                return $this->handleInvalidId();
+            } else {
+                // Tạo bản sao bài viết
+                $newPost = $newsletters->replicate(); // Sao chép toàn bộ thuộc tính của bài viết
+                $newPost->code = $newsletters->code . '_copy'; // Thay đổi mã bài viết
+                $newPost->title = $newsletters->title . '_copy'; // Thay đổi tiêu đề
+                $newPost->created_at = now(); // Đặt lại thời gian tạo
+                $newPost->updated_at = now(); // Đặt lại thời gian cập nhật
+                $newPost->save(); // Lưu bài viết mới                
             }
 
-            return response()->json([
-                'message' => 'Trạng thái đã được cập nhật thành công!'
-            ], 200);
+            return response()->json($newPost, 200);
         } catch (\Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
         }
-    }    
+    }
 }

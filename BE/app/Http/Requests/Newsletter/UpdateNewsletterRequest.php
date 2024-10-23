@@ -33,6 +33,7 @@ class UpdateNewsletterRequest extends FormRequest
             'type' => 'required|regex:/^[^<>{}]*$/',
             'order' => 'regex:/^[^<>{}]*$/',
             'is_active' => 'regex:/^[^<>{}]*$/',
+            'notification_object' => 'regex:/^[^<>{}]*$/',
             'user_code' => 'regex:/^[^<>{}]*$/',
             'cate_code' => 'regex:/^[^<>{}]*$/'
         ];
@@ -57,6 +58,7 @@ class UpdateNewsletterRequest extends FormRequest
             'type.regex' => 'Kiểu bản tin không chứa kí tự đặc biệt',
             'order.regex' => 'Thứ tự bản tin không chứa kí tự đặc biệt',
             'is_active.regex' => 'Trạng thái bản tin không chứa kí tự đặc biệt',
+            'notification_object.regex' => 'Đối tượng bản tin không chứa kí tự đặc biệt',
             'user_code.regex' => 'Tên tác giả bản tin không chứa kí tự đặc biệt',
             'cate_code.regex' => 'Chuyên mục bản tin không chứa kí tự đặc biệt'
         ];

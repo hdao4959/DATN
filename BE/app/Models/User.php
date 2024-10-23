@@ -65,7 +65,7 @@ class User extends Authenticatable
     protected $keyType = 'string'; // Nếu 'user_code' là chuỗi.
 
     // Định nghĩa mối quan hệ với bảng 'newsletters'
-    public function newsletters()
+    public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
     }
