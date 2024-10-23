@@ -25,6 +25,11 @@ class Newsletter extends Model
         'cate_code'
     ];
 
+    protected $casts = [
+        'tags' => 'json',
+        'notification_object' => 'json'
+    ];
+
     // Định nghĩa mối quan hệ với bảng 'categories'
     public function category()
     {

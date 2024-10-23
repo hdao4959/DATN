@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Throwable;
 use App\Models\Category;
+use App\Models\Classroom;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -228,5 +229,20 @@ class NewsletterController extends Controller
 
             return $this->handleErrorNotDefine($th);
         }
+    }
+
+    public function showNewsletter() 
+    {
+        // Lấy user_code từ FE
+        $user = request()->user();
+        // $userCode = $user->user_code;
+
+        // Lấy ra student từ những lớp có mã lớp giống bên newsletters
+        // $listClass = Classroom::whereJsonContains('students', [['student_code' => $userCode]])->pluck('class_code');
+
+        // // Lấy ra các newsletters thuộc lớp học của user_code
+        // $newsletters = Newsletter::whereJsonContains('notification_object', $listClass->toArray())->get();
+
+        return response()->json($user, 200);
     }
 }
