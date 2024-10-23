@@ -20,6 +20,7 @@ class Newsletter extends Model
         'order',
         'expiry_date',
         'is_active',
+        'notification_object',
         'user_code',
         'cate_code'
     ];
