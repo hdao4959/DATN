@@ -80,6 +80,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('newsletters', NewsletterController::class);
     Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+    Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
 
 });
 
