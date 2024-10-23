@@ -288,7 +288,7 @@ class CategoryController extends Controller
 
     private function generateStudentList()
     {
-        $studentList = DB::table('users')->where('role', '=', "student")->where('is_active', '=', true)->get();
+        $studentList = DB::table('users')->where('role', '=', "student")->where('is_active', '=', 1)->get();
         $students = $studentList->map(function ($student) {
             return [
                 'maHS' => $student->user_code,
@@ -363,9 +363,11 @@ class CategoryController extends Controller
 
     private function assignClasses($listHocSinh, $listPhonghoc, $listMonHoc, $daysOfWeek, $semesters)
     {
+        // dd($semesters);
         $listLop = []; // Danh sách lớp học đã xếp
         $classTimes = $this->generateClassTimes(); // Danh sách ca học
-
+        $teachersInMajor = $this->generateTeacherList();
+        // dd($teachersInMajor);
         // Lưu trạng thái hiện tại của ngày, ca, và phòng cho mỗi môn
         $currentDayIndex = 0;
         $currentRoomIndex = 0;
@@ -377,7 +379,7 @@ class CategoryController extends Controller
         // Giữ phòng hiện tại của từng giảng viên
         $teacherRoom = [];
         // Duyệt qua từng môn học
-        foreach($semesters as $hocKy){
+        foreach ($semesters as $hocKy) {
             $hocKyHienTai = $hocKy['code'];
 
 
@@ -396,8 +398,9 @@ class CategoryController extends Controller
                     return $hs['chuyenNganh'] === $mon['chuyenNganh'] && $hs['hocKy'] === $hocKyHienTai;
                 });
 
+                dd($mon['chuyenNganh'],$hocKyHienTai);
                 // Lấy danh sách giảng viên theo chuyên ngành của môn học
-                $teachersInMajor = $this->generateTeacherList();
+
                 $teachersForClass = array_filter($teachersInMajor, function ($gv) use ($mon) {
                     return $gv['chuyenNganh'] === $mon['chuyenNganh']; // Lọc giảng viên theo chuyên ngành
                 });
@@ -410,12 +413,20 @@ class CategoryController extends Controller
                 // Chọn giảng viên
                 $currentTeacher = reset($teachersForClass);
 
-                // Nếu giảng viên đã có phòng, ưu tiên giữ nguyên phòng
-                if (isset($teacherRoom[$currentTeacher['maGV']])) {
-                    $currentRoomIndex = array_search($teacherRoom[$currentTeacher['maGV']], array_column($listPhonghoc, 'code'));
+                if (!$currentTeacher) {
+                    // Nếu không có giảng viên phù hợp, để trống thông tin giảng viên
+                    $currentTeacher = ['ten' => null];
+                    $currentTeacher = ['maGV' => null];
+                } else {
+
+                    // Nếu giảng viên đã có phòng, ưu tiên giữ nguyên phòng
+                    if (isset($teacherRoom[$currentTeacher['maGV']]) == true) {
+                        $currentRoomIndex = array_search($teacherRoom[$currentTeacher['maGV']], array_column($listPhonghoc, 'code'));
+                    }
                 }
 
-                $currentStudentIndex = 0; // Chỉ số học sinh hiện tại
+                // Tiếp tục vòng lặp qua các ngày, ca, và phòng học, bắt đầu từ trạng thái hiện tại
+                $currentStudentIndex = 0; // Chỉ số học sinh bắt đầu từ 0 cho mỗi môn học
                 $totalStudents = count($studentsInClass); // Tổng số học sinh cho môn này
 
                 // Tiếp tục vòng lặp qua các ngày, ca, và phòng học, bắt đầu từ trạng thái hiện tại
@@ -440,6 +451,13 @@ class CategoryController extends Controller
                     // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
                     $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
 
+                    // Kiểm tra nếu số học sinh còn lại để xếp lớp nhỏ hơn hoặc bằng 0
+                    // dd($classSize);
+                    if ($classSize <= 0) {
+
+                        break; // Thoát vòng lặp nếu không còn học sinh để xếp lớp
+                    }
+
                     // Tạo tên lớp, ví dụ: "Lớp MH101 - 1"
                     $className = "Lớp " . $mon['code'] . " - " . $classCounter;
 
@@ -450,13 +468,13 @@ class CategoryController extends Controller
                         "phongHoc" => $phong['code'],
                         "ngay" => $day['code'], // Ngày học
                         "ca" => $classTime['code'], // Ca học
-                        "giangVien" => $currentTeacher['ten'], // Giảng viên dạy
-                        "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Danh sách học sinh trong lớp
+                        "giangVien" => $currentTeacher['ten'] ?? 'Không có giảng viên', // Giảng viên dạy
+                        "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Lấy tiếp học sinh từ vị trí hiện tại
                     ];
 
                     // Cập nhật chỉ số học sinh đã xếp vào lớp
-                    $currentStudentIndex += $classSize;
-
+                    $currentStudentIndex += $classSize; // Tăng chỉ số học sinh để không bị lặp
+                    // dd($currentStudentIndex);
                     // Tăng số buổi dạy của giảng viên
                     if (!isset($teacherWorkload[$currentTeacher['maGV']])) {
                         $teacherWorkload[$currentTeacher['maGV']] = 0;

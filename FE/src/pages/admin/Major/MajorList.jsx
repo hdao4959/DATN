@@ -16,7 +16,9 @@ const MajorList = () => {
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
             const res = await api.get("/admin/major");
-            return res.data.data;
+            // var data1 = res.data;
+            // console.log(data1.data.data);
+            return res.data.data.data;
         },
     });
 
@@ -52,7 +54,7 @@ const MajorList = () => {
         updateStatusMutation.mutate(code);
     };
 
-    
+
 
     if (isFetching && !data) return <Spinner />;
 
@@ -134,58 +136,61 @@ const MajorList = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {data.map((it, index) => (
-                                                <tr
-                                                    role="row"
-                                                    key={index}
-                                                    className="odd"
-                                                >
-                                                    <td>{it.id}</td>
-                                                    <td>{it.cate_code}</td>
-                                                    <td>{it.cate_name}</td>
-                                                    {/* <td>{it.value}</td> */}
-                                                    {/* <td>{it.description}</td> */}
-                                                    <td>
+                                            {Array.isArray(data) && data.length > 0 ? (
+                                                data.map((it, index) => (
+                                                    <tr role="row" key={index} className="odd">
+                                                        <td>{it.id}</td>
+                                                        <td>{it.cate_code}</td>
+                                                        <td>{it.cate_name}</td>
+                                                        {/* <td>{it.value}</td> */}
+                                                        {/* <td>{it.description}</td> */}
+                                                        <td>
+                                                            {it.is_active == 1 ? (
+                                                                <i
+                                                                    onClick={() => updateStatus(it.cate_code)}
+                                                                    disabled={isLoading}
+                                                                    className="fas fa-check-circle fs-20 color-green"
+                                                                    style={{ color: 'green', fontSize: '25px' }}
+                                                                ></i>
+                                                            ) : (
+                                                                <i
+                                                                    onClick={() => updateStatus(it.cate_code)}
+                                                                    disabled={isLoading}
+                                                                    className="fas fa-ban fs-20 color-danger"
+                                                                    style={{ color: 'red', fontSize: '25px' }}
+                                                                ></i>
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            <img
+                                                                src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
+                                                                alt={it.name}
+                                                                width={50}
+                                                                height={50}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <div className="flex gap-x-2 items-center">
+                                                                <Link to={`/admin/major/${it.cate_code}/edit`}>
+                                                                    <i className="fas fa-edit"></i>
+                                                                </Link>
 
-                                                        {it.is_active == 1 ? (
-                                                            <i 
-                                                            onClick={() => updateStatus(it.cate_code)}
-                                                            disabled={isLoading} className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
-                                                        ) : (
-                                                            <i 
-                                                            onClick={() => updateStatus(it.cate_code)}
-                                                            disabled={isLoading} className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
-                                                        )}
-
-
-                                                    </td>
-                                                    <td>
-                                                        <img
-                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
-                                                            alt={it.name}
-                                                            width={50}
-                                                            height={50}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <div className="flex gap-x-2 items-center">
-                                                            <Link to={`/admin/major/${it.cate_code}/edit`}>
-                                                                <i className="fas fa-edit"></i>
-                                                            </Link>
-
-                                                            <i
-                                                                className="fas fa-trash ml-6 cursor-pointer"
-                                                                onClick={() => handleDelete(it.cate_code)}
-                                                                disabled={isLoading}
-                                                            >
-
-                                                            </i>
-
-                                                        </div>
-                                                    </td>
+                                                                <i
+                                                                    className="fas fa-trash ml-6 cursor-pointer"
+                                                                    onClick={() => handleDelete(it.cate_code)}
+                                                                    disabled={isLoading}
+                                                                ></i>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="6">No data available</td>
                                                 </tr>
-                                            ))}
+                                            )}
                                         </tbody>
+
                                     </table>
                                 </div>
                             </div>
