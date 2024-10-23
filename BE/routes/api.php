@@ -79,6 +79,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('pointheads', PointHeadController::class);
 
     Route::apiResource('newsletters', NewsletterController::class);
+    Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
 
 });
 
