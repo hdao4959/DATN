@@ -389,7 +389,6 @@ class CategoryController extends Controller
                     continue; // Bỏ qua nếu môn không thuộc học kỳ hiện tại
                 }
 
-
                 // Bộ đếm lớp học cho mỗi môn
                 $classCounter = 1;
 
@@ -398,7 +397,8 @@ class CategoryController extends Controller
                     return $hs['chuyenNganh'] === $mon['chuyenNganh'] && $hs['hocKy'] === $hocKyHienTai;
                 });
 
-                dd($mon['chuyenNganh'],$hocKyHienTai);
+                // dd($studentsInClass);
+                // dd($mon['chuyenNganh'],$hocKyHienTai);
                 // Lấy danh sách giảng viên theo chuyên ngành của môn học
 
                 $teachersForClass = array_filter($teachersInMajor, function ($gv) use ($mon) {
@@ -450,7 +450,10 @@ class CategoryController extends Controller
 
                     // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
                     $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
-
+                    // $dataStudents = $this->getListUserByClassRooms($phong['code'], $classTime['code'], $mon['code']);
+                    $dataStudents = $this->getListUserByClassRooms( $classTime['code']);
+                    // dd($phong['code'], $classTime['code'], $mon['code']);
+                    dd($dataStudents,$studentsInClass);
                     // Kiểm tra nếu số học sinh còn lại để xếp lớp nhỏ hơn hoặc bằng 0
                     // dd($classSize);
                     if ($classSize <= 0) {
@@ -661,15 +664,6 @@ class CategoryController extends Controller
 
     private function generateClassTimes()
     {
-        // return [
-        //     ["code" => "ca1", "name" => "Ca 1"],
-        //     ["code" => "ca2", "name" => "Ca 2"],
-        //     ["code" => "ca3", "name" => "Ca 3"],
-        //     ["code" => "ca4", "name" => "Ca 4"],
-        //     ["code" => "ca5", "name" => "Ca 5"],
-        //     ["code" => "ca6", "name" => "Ca 6"],
-        //     ["code" => "ca7", "name" => "Ca 7"]
-        // ];
 
         $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
         $classTimes = $sessions->map(function ($session) {
@@ -679,5 +673,21 @@ class CategoryController extends Controller
             ];
         })->toArray();
         return $classTimes;
+    }
+
+    private function getListUserByClassRooms($sectionCode)
+    {
+
+        // $classrooms = DB::table('classrooms')->where('room_code', '=', $roomCode)->where('subject_code', '=', $subjectCode)->where('section_code', '=', $sectionCode)->where('is_active', '=', true)->get();
+        $classrooms = DB::table('classrooms')->where('section_code', '=', $sectionCode)->where('is_active', '=', true)->get();
+        $class = $classrooms->map(function ($classroom) {
+            return [
+                'code' => $classroom->class_code,
+                'name' => $classroom->class_name,
+                'students' => $classroom->students,
+                'teacher' => $classroom->user_code,
+            ];
+        })->toArray();
+        return $class;
     }
 }
