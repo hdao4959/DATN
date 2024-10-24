@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const AddGradeComponents = () => {
     const {
@@ -20,7 +21,8 @@ const AddGradeComponents = () => {
             navigate("/admin/grade-components");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         },
     });
 
