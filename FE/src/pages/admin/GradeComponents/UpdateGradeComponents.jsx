@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const UpdateGradeComponents = () => {
     const {
@@ -24,7 +25,8 @@ const UpdateGradeComponents = () => {
             navigate("/admin/grade-components");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         },
     });
 
