@@ -34,6 +34,9 @@ import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
 import AddPost from "./pages/admin/Post/AddPost";
+import PostCategoryList from "./pages/admin/PostCategory/PostCategoryList";
+import AddPostCategory from "./pages/admin/PostCategory/AddPostCategory";
+import UpdatePostCategory from "./pages/admin/PostCategory/UpdatePostCategory";
 
 function App() {
     const router = createBrowserRouter([
@@ -165,8 +168,21 @@ function App() {
                 },
                 {
                     path: "post/add",
-                    element: <AddPost />
-                }
+                    element: <AddPost />,
+                },
+
+                {
+                    path: "post-category",
+                    element: <PostCategoryList />,
+                },
+                {
+                    path: "post-category/add",
+                    element: <AddPostCategory />,
+                },
+                {
+                    path: "post-category/:id/edit",
+                    element: <UpdatePostCategory />,
+                },
             ],
         },
     ]);
