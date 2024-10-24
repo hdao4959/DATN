@@ -18,7 +18,7 @@ class NewsletterSeeder extends Seeder
                 'code' => 'test1',
                 'title' => 'test1',
                 'content' => 'test1',
-                'type' => 'notification',
+                'type' => 'news',
                 'user_code' => 'AM533',
                 'cate_code' => 'CN01'
             ],
@@ -34,7 +34,17 @@ class NewsletterSeeder extends Seeder
                 'code' => 'test3',
                 'title' => 'test3',
                 'content' => 'test3',
-                'type' => 'news',
+                'type' => 'notification',
+                'notification_object' => ['CLS101'],
+                'user_code' => 'AM533',
+                'cate_code' => 'CN04'
+            ],
+            [
+                'code' => 'test4',
+                'title' => 'test4',
+                'content' => 'test4',
+                'type' => 'notification',
+                'notification_object' => ['CLS101'],
                 'user_code' => 'AM533',
                 'cate_code' => 'CN04'
             ]
