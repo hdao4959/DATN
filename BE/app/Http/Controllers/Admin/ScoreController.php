@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\ClassRoom;
-use BE\App\Repositories\Contracts\ScoreRepositoryInterface;
+use App\Repositories\Contracts\ScoreRepositoryInterface;
 
 class ScoreController extends Controller{
     protected $scoreRepository;
@@ -19,7 +19,7 @@ class ScoreController extends Controller{
 
     public function create($id){
         $score = $this->scoreRepository->create($id);
-        return response()->json(['message'=> 'cập nhật thành công']);
+        return response()->json($score);
     }
 
     public function addStudent()

@@ -1,5 +1,5 @@
 <?php
-namespace BE\App\Repositories\Contracts;
+namespace App\Repositories\Contracts;
 interface ScoreRepositoryInterface {
     public function getById(int $id);
 

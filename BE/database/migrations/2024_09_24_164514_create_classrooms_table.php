@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Subject;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -27,8 +28,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('room_code',191)->comment('Mã phòng học');
             $table->foreign('room_code')->references('cate_code')->on('categories')->restrictOnDelete();
-            $table->string('subject_code',191)->comment('Mã môn học');
-            $table->foreign('subject_code')->references('subject_code')->on('subjects')->restrictOnDelete();
+            $table->foreignIdFor(Subject::class)->comment('Môn học')->constrained()->onDelete('cascade');
             $table->string('user_code',191)->comment('Giảng viên')->nullable();
             $table->foreign('user_code')->references('user_code')->on('users')->nullOnDelete();
             $table->softDeletes();

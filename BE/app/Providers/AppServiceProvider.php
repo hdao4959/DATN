@@ -3,16 +3,17 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\GradeRepositoryInterface;
+use App\Repositories\Contracts\ScoreRepositoryInterface;
 use App\Repositories\Contracts\SemesterRepositoryInterface;
 use App\Repositories\Contracts\SessionRepositoryInterface;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 
 use App\Repositories\GradeRepository;
+use App\Repositories\ScoreRepository;
 use App\Repositories\SemesterRepository;
 use App\Repositories\SessionRepository;
 use App\Repositories\SubjectRepository;
-use BE\App\Repositories\Contracts\ScoreRepositoryInterface;
-use BE\App\Repositories\ScoreRepository;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

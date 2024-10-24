@@ -78,7 +78,8 @@ Route::prefix('/admin')->as('admin.')->group(function () {
 
     Route::apiResource('newsletters', NewsletterController::class);
 
-
     Route::apiResource('assessment', AssessmentItemController::class);
+
+    Route::get('score/{id}', [ScoreController::class,'create']);
 });
 
