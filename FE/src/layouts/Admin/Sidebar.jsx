@@ -300,7 +300,7 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/admin/post/add">
+                            <Link to="/admin/post">
                                 <i className="fas fa-th-list" />
                                 <p>Post</p>
                             </Link>
