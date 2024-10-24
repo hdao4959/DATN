@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../../config/axios';
 import { toast } from 'react-toastify';
+import { formatErrors } from '../../../utils/formatErrors';
 
 const AddSchoolRoom = () => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -16,7 +17,8 @@ const AddSchoolRoom = () => {
             nav("/admin/schoolrooms");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         }
     });
 
