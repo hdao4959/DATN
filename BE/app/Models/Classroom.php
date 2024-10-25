@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Classroom extends Model
+class ClassRoom extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -34,6 +34,10 @@ class Classroom extends Model
         'exam_schedule' => 'json',
         'students' => 'json'
     ];
+
+    public function subject(){
+        return $this->belongsTo(Subject::class);
+    }
 
 
 }

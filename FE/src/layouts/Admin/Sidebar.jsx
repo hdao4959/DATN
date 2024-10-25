@@ -284,7 +284,7 @@ const Sidebar = () => {
                         <li className="nav-item">
                             <Link to="/admin/grade-components">
                                 <i className="fas fa-th-list" />
-                                <p>Grade components</p>
+                                <p>Grade Components</p>
                             </Link>
                         </li>
                         <li className="nav-item">
@@ -294,7 +294,13 @@ const Sidebar = () => {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/admin/post/add">
+                            <Link to="/admin/post-category">
+                                <i className="fas fa-th-list" />
+                                <p>Post Category</p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/admin/post">
                                 <i className="fas fa-th-list" />
                                 <p>Post</p>
                             </Link>
