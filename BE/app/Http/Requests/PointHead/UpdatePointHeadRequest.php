@@ -24,7 +24,7 @@ class UpdatePointHeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('pointheads') . ',cate_code',
+            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('pointhead') . ',cate_code',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
