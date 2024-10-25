@@ -24,7 +24,7 @@ class UpdateNewsletterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|regex:/^[^<>{}]*$/|unique:newsletters,code,' . $this->route('newsletters') . ',code',
+            'code' => 'required|regex:/^[^<>{}]*$/|unique:newsletters,code,' . $this->route('newsletter') . ',code',
             'title' => 'required|max:255|regex:/^[^<>{}]*$/',
             'tags' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
