@@ -44,7 +44,7 @@ const PostList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/post/add">
+                <Link to="/post/add">
                     <button className="btn btn-primary">Thêm bài viết</button>
                 </Link>
             </div>
@@ -139,7 +139,7 @@ const PostList = () => {
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/post/${it.code}/edit`}
+                                                                to={`/post/${it.code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>

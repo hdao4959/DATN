@@ -1,33 +1,38 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import api from '../../../config/axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import api from "../../../config/axios";
+import { toast, ToastContainer } from "react-toastify";
 
 const EditSubject = () => {
     const queryClient = useQueryClient();
     const { id } = useParams();
     const navigate = useNavigate();
     const [major, setMajor] = useState([]);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
 
     const { data: subject, isLoading: loadingSubject } = useQuery({
-        queryKey: ['subject', id],
+        queryKey: ["subject", id],
         queryFn: async () => {
             const response = await api.get(`/admin/subjects/${id}`);
             return response?.data?.data;
-        }
+        },
     });
 
     const { data: majors, isLoading: loadingMajor } = useQuery({
-        queryKey: ['majors'],
+        queryKey: ["majors"],
         queryFn: async () => {
-            const response = await api.get('/admin/major');
+            const response = await api.get("/admin/major");
             console.log(response?.data?.data?.data);
-            
+
             return response?.data?.data?.data;
-        }
+        },
     });
 
     const mutation = useMutation({
@@ -36,8 +41,8 @@ const EditSubject = () => {
         },
         onSuccess: () => {
             toast.success("Cập nhật môn học thành công!");
-            queryClient.invalidateQueries(['subjects']);
-            navigate("/admin/subjects");
+            queryClient.invalidateQueries(["subjects"]);
+            navigate("/subjects");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -46,7 +51,9 @@ const EditSubject = () => {
 
     useEffect(() => {
         if (subject && majors) {
-            const filteredMajor = majors?.filter(major => major.cate_code === subject.major_code);
+            const filteredMajor = majors?.filter(
+                (major) => major.cate_code === subject.major_code
+            );
             setMajor(filteredMajor);
             reset(subject);
         }
@@ -72,15 +79,17 @@ const EditSubject = () => {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="card-title text-center">Quản lý Môn Học</div>
+                            <div className="card-title text-center">
+                                Quản lý Môn Học
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/admin/subjects">
+                <Link to="/subjects">
                     <button className="btn btn-primary">
-                        <i className='fas fa-list'> Danh sách môn học</i>
+                        <i className="fas fa-list"> Danh sách môn học</i>
                     </button>
                 </Link>
             </div>
@@ -89,7 +98,9 @@ const EditSubject = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Chỉnh Sửa Môn Học</div>
+                                <div className="card-title">
+                                    Chỉnh Sửa Môn Học
+                                </div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
@@ -99,9 +110,19 @@ const EditSubject = () => {
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                {...register('subject_code', { required: 'Mã môn không được để trống.' })}
+                                                {...register("subject_code", {
+                                                    required:
+                                                        "Mã môn không được để trống.",
+                                                })}
                                             />
-                                            {errors.subject_code && <span className="text-danger">{errors.subject_code.message}</span>}
+                                            {errors.subject_code && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.subject_code
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -109,9 +130,19 @@ const EditSubject = () => {
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                {...register('subject_name', { required: 'Tên môn không được để trống.' })}
+                                                {...register("subject_name", {
+                                                    required:
+                                                        "Tên môn không được để trống.",
+                                                })}
                                             />
-                                            {errors.subject_name && <span className="text-danger">{errors.subject_name.message}</span>}
+                                            {errors.subject_name && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.subject_name
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -119,16 +150,31 @@ const EditSubject = () => {
                                             <input
                                                 type="number"
                                                 className="form-control"
-                                                {...register('credit_number', { required: 'Số tín chỉ không được để trống.', min: { value: 1, message: 'Số tín chỉ phải lớn hơn 0.' } })}
+                                                {...register("credit_number", {
+                                                    required:
+                                                        "Số tín chỉ không được để trống.",
+                                                    min: {
+                                                        value: 1,
+                                                        message:
+                                                            "Số tín chỉ phải lớn hơn 0.",
+                                                    },
+                                                })}
                                             />
-                                            {errors.credit_number && <span className="text-danger">{errors.credit_number.message}</span>}
+                                            {errors.credit_number && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.credit_number
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
                                             <label>Mô Tả:</label>
                                             <textarea
                                                 className="form-control"
-                                                {...register('description')}
+                                                {...register("description")}
                                             />
                                         </div>
 
@@ -137,9 +183,16 @@ const EditSubject = () => {
                                             <input
                                                 type="number"
                                                 className="form-control"
-                                                {...register('tuition', { required: 'Học phí không được để trống.' })}
+                                                {...register("tuition", {
+                                                    required:
+                                                        "Học phí không được để trống.",
+                                                })}
                                             />
-                                            {errors.tuition && <span className="text-danger">{errors.tuition.message}</span>}
+                                            {errors.tuition && (
+                                                <span className="text-danger">
+                                                    {errors.tuition.message}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -147,9 +200,19 @@ const EditSubject = () => {
                                             <input
                                                 type="number"
                                                 className="form-control"
-                                                {...register('re_study_fee', { required: 'Học phí học lại không được để trống.' })}
+                                                {...register("re_study_fee", {
+                                                    required:
+                                                        "Học phí học lại không được để trống.",
+                                                })}
                                             />
-                                            {errors.re_study_fee && <span className="text-danger">{errors.re_study_fee.message}</span>}
+                                            {errors.re_study_fee && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.re_study_fee
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="col-md-6">
@@ -158,17 +221,32 @@ const EditSubject = () => {
                                             <select
                                                 className="form-control"
                                                 value={major[0].cate_code}
-                                                {...register('major_code', { required: true })}
-                                                onChangeCapture={handleMajorChange}
+                                                {...register("major_code", {
+                                                    required: true,
+                                                })}
+                                                onChangeCapture={
+                                                    handleMajorChange
+                                                }
                                             >
-                                                <option value={subject.major_code}>{major[0].cate_name}</option>
-                                                {majors?.map(major => (
-                                                    <option key={major.cate_code} value={major.cate_code}>
+                                                <option
+                                                    value={subject.major_code}
+                                                >
+                                                    {major[0].cate_name}
+                                                </option>
+                                                {majors?.map((major) => (
+                                                    <option
+                                                        key={major.cate_code}
+                                                        value={major.cate_code}
+                                                    >
                                                         {major.cate_name}
                                                     </option>
                                                 ))}
                                             </select>
-                                            {errors.major_code && <span className="text-danger">{errors.major_code.message}</span>}
+                                            {errors.major_code && (
+                                                <span className="text-danger">
+                                                    {errors.major_code.message}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -176,13 +254,28 @@ const EditSubject = () => {
                                             <select
                                                 className="form-control"
                                                 value=""
-                                                {...register('narrow_major_code')}
+                                                {...register(
+                                                    "narrow_major_code"
+                                                )}
                                             >
-                                                <option value="0">Chọn chuyên ngành hẹp</option>
-                                                <option value="1111">chuyên ngành hẹp 1</option>
-                                                <option value="2222">chuyên ngành hẹp 2</option>
+                                                <option value="0">
+                                                    Chọn chuyên ngành hẹp
+                                                </option>
+                                                <option value="1111">
+                                                    chuyên ngành hẹp 1
+                                                </option>
+                                                <option value="2222">
+                                                    chuyên ngành hẹp 2
+                                                </option>
                                             </select>
-                                            {errors.narrow_major_code && <span className="text-danger">{errors.narrow_major_code.message}</span>}
+                                            {errors.narrow_major_code && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.narrow_major_code
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -190,9 +283,19 @@ const EditSubject = () => {
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                {...register('semester_code', { required: 'Kì học không được để trống.' })}
+                                                {...register("semester_code", {
+                                                    required:
+                                                        "Kì học không được để trống.",
+                                                })}
                                             />
-                                            {errors.semester_code && <span className="text-danger">{errors.semester_code.message}</span>}
+                                            {errors.semester_code && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.semester_code
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -200,9 +303,24 @@ const EditSubject = () => {
                                             <input
                                                 type="number"
                                                 className="form-control"
-                                                {...register('number_study', { required: 'Số sinh viên không được để trống.', min: { value: 0, message: 'Số sinh viên phải lớn hơn hoặc bằng 0.' } })}
+                                                {...register("number_study", {
+                                                    required:
+                                                        "Số sinh viên không được để trống.",
+                                                    min: {
+                                                        value: 0,
+                                                        message:
+                                                            "Số sinh viên phải lớn hơn hoặc bằng 0.",
+                                                    },
+                                                })}
                                             />
-                                            {errors.number_study && <span className="text-danger">{errors.number_study.message}</span>}
+                                            {errors.number_study && (
+                                                <span className="text-danger">
+                                                    {
+                                                        errors.number_study
+                                                            .message
+                                                    }
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -210,9 +328,16 @@ const EditSubject = () => {
                                             <input
                                                 type="date"
                                                 className="form-control"
-                                                {...register('exam_day', { required: 'Ngày thi không được để trống.' })}
+                                                {...register("exam_day", {
+                                                    required:
+                                                        "Ngày thi không được để trống.",
+                                                })}
                                             />
-                                            {errors.exam_day && <span className="text-danger">{errors.exam_day.message}</span>}
+                                            {errors.exam_day && (
+                                                <span className="text-danger">
+                                                    {errors.exam_day.message}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
@@ -220,26 +345,48 @@ const EditSubject = () => {
                                             <input
                                                 type="file"
                                                 className="form-control"
-                                                {...register('image', { required: 'Ảnh không được để trống.' })}
+                                                {...register("image", {
+                                                    required:
+                                                        "Ảnh không được để trống.",
+                                                })}
                                             />
-                                            {errors.image && <span className="text-danger">{errors.image.message}</span>}
+                                            {errors.image && (
+                                                <span className="text-danger">
+                                                    {errors.image.message}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className="form-group">
                                             <label>Trạng Thái:</label>
-                                            <select className="form-control" {...register('is_active')}>
-                                                <option value="1">Công Khai</option>
+                                            <select
+                                                className="form-control"
+                                                {...register("is_active")}
+                                            >
+                                                <option value="1">
+                                                    Công Khai
+                                                </option>
                                                 <option value="0">Ẩn</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="card-action d-flex justify-content-end gap-x-3">
-                                    <button type="button" className="btn btn-danger" onClick={() => reset(subject)}>
-                                        <i className='fas fa-undo'> Reset</i>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger"
+                                        onClick={() => reset(subject)}
+                                    >
+                                        <i className="fas fa-undo"> Reset</i>
                                     </button>
-                                    <button type="submit" className="btn btn-success">
-                                        <i className='fas fa-upload'> Cập nhật</i>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-success"
+                                    >
+                                        <i className="fas fa-upload">
+                                            {" "}
+                                            Cập nhật
+                                        </i>
                                     </button>
                                 </div>
                             </div>

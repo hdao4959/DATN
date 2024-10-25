@@ -41,7 +41,7 @@ const GradeComponentList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/grade-components/add">
+                <Link to="/grade-components/add">
                     <button className="btn btn-primary">
                         Thêm điểm thành phần
                     </button>
@@ -126,14 +126,16 @@ const GradeComponentList = () => {
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/grade-components/${it.cate_code}/edit`}
+                                                                to={`/grade-components/${it.cate_code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <div
                                                                 onClick={() =>
-                                                                    handleDelete(it.cate_code)
+                                                                    handleDelete(
+                                                                        it.cate_code
+                                                                    )
                                                                 }
                                                                 className="cursor-pointer"
                                                             >

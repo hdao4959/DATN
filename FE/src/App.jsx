@@ -2,7 +2,7 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AdminLayout from "./layouts/Admin/AdminLayout";
+import Layout from "./layouts/Layout";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import MajorList from "./pages/admin/Major/MajorList";
 import AddMajor from "./pages/admin/Major/AddMajor";
@@ -47,10 +47,10 @@ function App() {
             element: <Signin />,
         },
         {
-            path: "admin",
+            path: "/",
             element: (
                 <CheckRole>
-                    <AdminLayout />
+                    <Layout />
                 </CheckRole>
             ),
             children: [

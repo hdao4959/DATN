@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.menu-item .active {
+    @apply bg-[#00000029];
+}
+
+.menu-item .active i {
+    @apply text-[#6861ce];
+}
+
+.sidebar_minimize .menu-item p {
+    display: none;
+}
+
+.sidebar_minimize_hover .menu-item p {
+    display: block;
+}

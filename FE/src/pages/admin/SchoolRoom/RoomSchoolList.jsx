@@ -35,12 +35,12 @@ const RoomSchoolList = () => {
     const { mutate: onUpdateRoomStt } = useMutation({
         mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
         onSuccess: () => {
-            toast.success('Cập nhật trạng thái thành công');
+            toast.success("Cập nhật trạng thái thành công");
             refetch();
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
-        }
+            toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
+        },
     });
 
     const handleDelete = (cateCode) => {
@@ -53,7 +53,7 @@ const RoomSchoolList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/schoolrooms/add">
+                <Link to="/schoolrooms/add">
                     <button className="btn btn-primary">Thêm phòng học</button>
                 </Link>
             </div>
@@ -138,8 +138,16 @@ const RoomSchoolList = () => {
                                                     <td>{it.value}</td>
                                                     {/* <td>{it.description}</td> */}
                                                     <td>
-                                                        <div onClick={() => onUpdateRoomStt(it.cate_code)} className="cursor-pointer inline-block">
-                                                            {it.is_active == 1 ? (
+                                                        <div
+                                                            onClick={() =>
+                                                                onUpdateRoomStt(
+                                                                    it.cate_code
+                                                                )
+                                                            }
+                                                            className="cursor-pointer inline-block"
+                                                        >
+                                                            {it.is_active ==
+                                                            1 ? (
                                                                 <i
                                                                     className="fas fa-check-circle fs-20 color-green"
                                                                     style={{
@@ -176,7 +184,7 @@ const RoomSchoolList = () => {
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/schoolrooms/${it.cate_code}/edit`}
+                                                                to={`/schoolrooms/${it.cate_code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
@@ -184,7 +192,9 @@ const RoomSchoolList = () => {
                                                             <i
                                                                 className="fas fa-trash ml-6 cursor-pointer"
                                                                 onClick={() =>
-                                                                    handleDelete(it.cate_code)
+                                                                    handleDelete(
+                                                                        it.cate_code
+                                                                    )
                                                                 }
                                                                 disabled={
                                                                     isLoading
