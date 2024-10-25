@@ -35,7 +35,7 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/classrooms/add">
                     <button className="btn btn-primary">
                         Tạo lịch học mới
                     </button>
@@ -64,7 +64,7 @@ const ClassRoomsList = () => {
                                 {classrooms.map((it, index) => (
                                     <tr key={index} className="odd text-center">
                                         <Link
-                                            to={`/admin/classrooms/view/${it.class_code}`}
+                                            to={`/classrooms/view/${it.class_code}`}
                                             style={{ display: "contents" }}
                                         >
                                             <td>{it.id}</td>
@@ -93,7 +93,7 @@ const ClassRoomsList = () => {
                                         <td>
                                             <div>
                                                 <Link
-                                                    to={`/admin/classrooms/edit/${it.class_code}`}
+                                                    to={`/classrooms/edit/${it.class_code}`}
                                                 >
                                                     <i className="fas fa-edit"></i>
                                                 </Link>

@@ -515,17 +515,16 @@ const AdminLayout = () => {
                                                     Account Setting
                                                 </a>
                                                 <div className="dropdown-divider" />
-                                                <a
+                                                <div
                                                     onClick={Signout}
-                                                    className="dropdown-item"
-                                                    href="#"
+                                                    className="dropdown-item cursor-pointer"
                                                 >
                                                     {user ? (
                                                         <b>Đăng xuất</b>
                                                     ) : (
                                                         ""
                                                     )}
-                                                </a>
+                                                </div>
                                             </li>
                                         </div>
                                     </ul>
