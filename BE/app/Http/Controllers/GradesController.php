@@ -44,7 +44,7 @@ class GradesController extends Controller
                             ['name' => 'Lab7', 'score' => 0, 'note' => ''],
                         ];
                     } else {
-                        $scores = []; 
+                        $scores = [];
                         foreach ($scoreArray as $scoreName => $scoreNumber) {
                             // dd(  $scoreNumber);
                             $scores = $scoreNumber['scores'];
@@ -58,8 +58,6 @@ class GradesController extends Controller
                         'scores' => $scores
                     ];
                 }
-
-
 
                 return response()->json([
                     'roomName' => $classRoom->class_name,
@@ -85,9 +83,7 @@ class GradesController extends Controller
     {
         //
     }
-
-
-
+    
     public function show(Grades $grades) {}
 
     // public function getByParam(Request $request){
