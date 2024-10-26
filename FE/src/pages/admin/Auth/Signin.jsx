@@ -18,7 +18,7 @@ const Signin = () => {
             localStorage.setItem("user", JSON.stringify(user));
             localStorage.setItem("token", JSON.stringify(token));
 
-            toast.success("Đăng nhập thành công!", {
+            toast.success(`Đăng nhập thành công, hello ${user.role}`, {
                 autoClose: 3000,
                 closeOnClick: true,
                 draggable: true,

@@ -34,7 +34,7 @@ const AdminLayout = () => {
             }
         } catch (error) {
             console.error("Lỗi khi gọi API:", error);
-            alert("Có lỗi xảy ra khi gọi API");
+            toast.error("Có lỗi xảy ra khi gọi API");
         }
     };
     return (
