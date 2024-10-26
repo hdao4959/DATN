@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -6,11 +6,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { formatErrors } from "../../../utils/formatErrors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputChip from "./InputChip";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
-const AddPost = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
+const UpdatePost = () => {
+    const { id } = useParams();
 
     const [content, setContent] = useState();
 
@@ -19,6 +20,7 @@ const AddPost = () => {
         handleSubmit,
         formState: { errors },
         control,
+        reset,
     } = useForm();
     const navigate = useNavigate();
 
@@ -30,11 +32,20 @@ const AddPost = () => {
         },
     });
 
+    const { data: postDetail } = useQuery({
+        queryKey: ["POST_DETAIL", id],
+        queryFn: async () => {
+            const res = await api.get(`/admin/newsletters/${id}`);
+
+            return res.data?.[0];
+        },
+    });
+
     const { mutate } = useMutation({
-        mutationKey: ["ADD_POST"],
-        mutationFn: (data) => api.post("/admin/newsletters", data),
+        mutationKey: ["UPDATE_POST"],
+        mutationFn: (data) => api.post(`/admin/newsletters/${id}`, data),
         onSuccess: () => {
-            toast.success("Thêm bài viết thành công");
+            toast.success("Cập nhật bài viết thành công");
             navigate("/post");
         },
         onError: (error) => {
@@ -42,6 +53,22 @@ const AddPost = () => {
             toast.error(msg || "Có lỗi xảy ra");
         },
     });
+
+    useEffect(() => {
+        if (postDetail) {
+            reset({
+                code: postDetail.code,
+                title: postDetail.title,
+                tags: postDetail.tags.split(","),
+                description: postDetail.description,
+                type: postDetail.type,
+                notification_object: postDetail.notification_object,
+                cate_code: postDetail.cate_code,
+            });
+
+            setContent(postDetail.content);
+        }
+    }, [postDetail]);
 
     const onSubmit = (values) => {
         if (content === "<p><br></p>") {
@@ -57,9 +84,12 @@ const AddPost = () => {
         formData.append("description", values.description);
         formData.append("type", values.type);
         formData.append("notification_object", values.notification_object);
-        formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-        formData.append("image", values.image[0]);
+        formData.append("_method", "PUT");
+
+        if (values.image && values.image.length > 0) {
+            formData.append("image", values.image[0]);
+        }
 
         mutate(formData);
     };
@@ -77,7 +107,9 @@ const AddPost = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Thêm bài viết</div>
+                                <div className="card-title">
+                                    Cập nhật bài viết
+                                </div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
@@ -193,17 +225,22 @@ const AddPost = () => {
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image", {
-                                                required:
-                                                    "Vui lòng chọn hình ảnh",
-                                            })}
                                         />
-                                        {errors.image && (
-                                            <span className="text-danger">
-                                                {errors.image.message}
-                                            </span>
-                                        )}
                                     </div>
+
+                                    {postDetail?.image && (
+                                        <div>
+                                            <label htmlFor="">Preview</label>
+
+                                            <img
+                                                src={getImageUrl(
+                                                    postDetail?.image
+                                                )}
+                                                alt="Preview"
+                                                className="mt-2 w-40 h-40 object-cover border rounded"
+                                            />
+                                        </div>
+                                    )}
 
                                     <div className="form-group">
                                         <label htmlFor="type">
@@ -367,4 +404,4 @@ const AddPost = () => {
     );
 };
 
-export default AddPost;
+export default UpdatePost;

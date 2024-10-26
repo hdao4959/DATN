@@ -232,13 +232,13 @@ class CategoryController extends Controller
         // dd($type);
         $categories = DB::table('categories')
             ->where('type', '=', $type)
-            ->where('parrent_code', '=', null)
+            ->where('parent_code', '=', null)
             ->get();
         // dd($categories);
         $data = $categories->map(function ($category) {
             // Lấy danh mục con dựa trên parent_code
             $subCategories = DB::table('categories')
-                ->where('parrent_code', '=', $category->cate_code)
+                ->where('parent_code', '=', $category->cate_code)
                 ->get();
             // Trả về cấu trúc dữ liệu theo yêu cầu
             return [

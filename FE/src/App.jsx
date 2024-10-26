@@ -2,7 +2,7 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AdminLayout from "./layouts/Admin/AdminLayout";
+import Layout from "./layouts/Layout";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import MajorList from "./pages/admin/Major/MajorList";
 import AddMajor from "./pages/admin/Major/AddMajor";
@@ -34,6 +34,11 @@ import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
 import AddPost from "./pages/admin/Post/AddPost";
+import PostCategoryList from "./pages/admin/PostCategory/PostCategoryList";
+import AddPostCategory from "./pages/admin/PostCategory/AddPostCategory";
+import UpdatePostCategory from "./pages/admin/PostCategory/UpdatePostCategory";
+import PostList from "./pages/admin/Post/PostList";
+import UpdatePost from "./pages/admin/Post/UpdatePost";
 
 function App() {
     const router = createBrowserRouter([
@@ -42,10 +47,10 @@ function App() {
             element: <Signin />,
         },
         {
-            path: "admin",
+            path: "/",
             element: (
                 <CheckRole>
-                    <AdminLayout />
+                    <Layout />
                 </CheckRole>
             ),
             children: [
@@ -163,10 +168,32 @@ function App() {
                     path: "student-wallet",
                     element: <StudentWalletList />,
                 },
+
+                {
+                    path: "post",
+                    element: <PostList />,
+                },
                 {
                     path: "post/add",
-                    element: <AddPost />
-                }
+                    element: <AddPost />,
+                },
+                {
+                    path: "post/:id/edit",
+                    element: <UpdatePost />,
+                },
+
+                {
+                    path: "post-category",
+                    element: <PostCategoryList />,
+                },
+                {
+                    path: "post-category/add",
+                    element: <AddPostCategory />,
+                },
+                {
+                    path: "post-category/:id/edit",
+                    element: <UpdatePostCategory />,
+                },
             ],
         },
     ]);

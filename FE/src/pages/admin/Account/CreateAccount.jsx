@@ -30,7 +30,7 @@ const CreateAccount = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/account">
+                <Link to="/account">
                     <button className="btn btn-primary">
                         Danh sách tài khoản
                     </button>

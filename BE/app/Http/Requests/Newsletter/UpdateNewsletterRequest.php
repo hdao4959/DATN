@@ -24,10 +24,9 @@ class UpdateNewsletterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|regex:/^[^<>{}]*$/|unique:newsletters,code,' . $this->route('newsletters') . ',code',
+            'code' => 'required|regex:/^[^<>{}]*$/|unique:newsletters,code,' . $this->route('newsletter') . ',code',
             'title' => 'required|max:255|regex:/^[^<>{}]*$/',
             'tags' => 'regex:/^[^<>{}]*$/',
-            'content' => 'required|regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'regex:/^[^<>{}]*$/',
             'type' => 'required|regex:/^[^<>{}]*$/',
@@ -49,8 +48,6 @@ class UpdateNewsletterRequest extends FormRequest
             'title.max' => 'Title bản tin không quá 255 kí tự',
             'title.regex' => 'Title bản tin không chứa kí tự đặc biệt',
             'tags.regex' => 'Nhãn bản tin không chứa kí tự đặc biệt',
-            'content.max' => 'Nội dung bản tin không quá 255 kí tự',
-            'content.regex' => 'Nội dung bản tin không chứa kí tự đặc biệt',
             'image.image' => 'File phải là ảnh',
             'image.mimes' => 'File ảnh phải có định dạng jpeg, png, jpg, gif, hoặc svg.',
             'description.regex' => 'Mô tả không chứa kí tự đặc biệt',

@@ -66,8 +66,8 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('semesters', SemesterController::class);
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 
-    Route::apiResource('grades', GradesController::class);
-    Route::get('grades', [GradesController::class, 'getByParam']);
+    // Route::apiResource('grades', GradesController::class);
+    Route::get('grades/{classCode}', [GradesController::class, 'index']);
     Route::patch('grades/{id}',[GradesController::class, 'update']);
 
     Route::apiResource('schoolrooms', SchoolRoomController::class);
