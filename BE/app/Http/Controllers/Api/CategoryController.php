@@ -294,9 +294,11 @@ class CategoryController extends Controller
                 'maHS' => $student->user_code,
                 'ten' => $student->full_name,
                 'chuyenNganh' => $student->major_code,
+                'chuyenNganhHep' => $student->narrow_major_code,
                 'hocKy' => $student->semester_code,
             ];
         })->toArray();
+        // return dd($students);
         return $students;
     }
 
@@ -308,6 +310,7 @@ class CategoryController extends Controller
                 'maGV' => $teacher->user_code,
                 'ten' => $teacher->full_name,
                 'chuyenNganh' => $teacher->major_code,
+                'chuyenNganhHep' => $teacher->narrow_major_code,
             ];
         })->toArray();
         return $teachers;
@@ -350,6 +353,7 @@ class CategoryController extends Controller
                 'hocKy' => $subject->semester_code,
             ];
         })->toArray();
+        return dd($subjectList);
         return $subjectList;
     }
 
@@ -394,15 +398,17 @@ class CategoryController extends Controller
 
                 // Lọc danh sách học sinh theo chuyên ngành và học kỳ của môn học
                 $studentsInClass = array_filter($listHocSinh, function ($hs) use ($mon, $hocKyHienTai) {
-                    return $hs['chuyenNganh'] === $mon['chuyenNganh'] && $hs['hocKy'] === $hocKyHienTai;
+                    return ($hs['chuyenNganh'] === $mon['chuyenNganh'] || $hs['chuyenNganhHep'] === $mon['chuyenNganh']) 
+                        && $hs['hocKy'] === $hocKyHienTai;
                 });
+                
 
                 // dd($studentsInClass);
                 // dd($mon['chuyenNganh'],$hocKyHienTai);
                 // Lấy danh sách giảng viên theo chuyên ngành của môn học
 
                 $teachersForClass = array_filter($teachersInMajor, function ($gv) use ($mon) {
-                    return $gv['chuyenNganh'] === $mon['chuyenNganh']; // Lọc giảng viên theo chuyên ngành
+                    return $gv['chuyenNganh'] === $mon['chuyenNganh'] || $gv['chuyenNganhHep'] === $mon['chuyenNganh']; // Lọc giảng viên theo chuyên ngành
                 });
 
                 // Sắp xếp giảng viên theo số buổi dạy hiện tại, ưu tiên những người có ít buổi dạy hơn
@@ -453,7 +459,7 @@ class CategoryController extends Controller
                     // $dataStudents = $this->getListUserByClassRooms($phong['code'], $classTime['code'], $mon['code']);
                     $dataStudents = $this->getListUserByClassRooms( $classTime['code']);
                     // dd($phong['code'], $classTime['code'], $mon['code']);
-                    dd($dataStudents,$studentsInClass);
+                    // dd($dataStudents,$studentsInClass);
                     // Kiểm tra nếu số học sinh còn lại để xếp lớp nhỏ hơn hoặc bằng 0
                     // dd($classSize);
                     if ($classSize <= 0) {

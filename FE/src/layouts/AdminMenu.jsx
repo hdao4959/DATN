@@ -18,7 +18,7 @@ const AdminMenu = () => {
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-school text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Classrooms</p>
+                    <p className="text-[#b9babf]">Quản lý lớp học</p>
                 </NavLink>
             </li>
             <li className="menu-item">
@@ -27,13 +27,13 @@ const AdminMenu = () => {
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Room</p>
+                    <p className="text-[#b9babf]">Quản lý phòng học</p>
                 </NavLink>
             </li>
             <li className="menu-item">
                 <NavLink to="/major" className={`${styles.menuItem} group`}>
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Major</p>
+                    <p className="text-[#b9babf]">Quản lý chuyên ngành</p>
                 </NavLink>
             </li>
             <li className="menu-item">
@@ -42,7 +42,7 @@ const AdminMenu = () => {
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Grade Components</p>
+                    <p className="text-[#b9babf]">Quản lý đầu điểm</p>
                 </NavLink>
             </li>
             <li className="menu-item">
@@ -51,7 +51,7 @@ const AdminMenu = () => {
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-user text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Student Wallet</p>
+                    <p className="text-[#b9babf]">Quản lý học phí</p>
                 </NavLink>
             </li>
             <li className="menu-item">
@@ -60,19 +60,19 @@ const AdminMenu = () => {
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Post Category</p>
+                    <p className="text-[#b9babf]">Danh mục</p>
                 </NavLink>
             </li>
             <li className="menu-item">
                 <NavLink to="/post" className={`${styles.menuItem} group`}>
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Post</p>
+                    <p className="text-[#b9babf]">Bài viết</p>
                 </NavLink>
             </li>
             <li className="menu-item">
                 <NavLink to="/account" className={`${styles.menuItem} group`}>
                     <i className="fas fa-user text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Account Manager</p>
+                    <p className="text-[#b9babf]">Quản lý sinh viên</p>
                 </NavLink>
             </li>
         </ul>
