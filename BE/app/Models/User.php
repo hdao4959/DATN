@@ -34,6 +34,7 @@ class User extends Authenticatable
         'avatar',
         'role',
         'major_code',
+        'narrow_major_code',
         'semester_code',
         'course_code',
         'is_active'

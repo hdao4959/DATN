@@ -477,12 +477,18 @@ const AdminLayout = () => {
                                                         <p className="text-muted">
                                                             {user.email}
                                                         </p>
-                                                        <a
+                                                        {/* <a
                                                             href="/admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
-                                                        </a>
+                                                        </a> */}
+                                                        <Link
+                                                            to={`account/details/${user.user_code}`}
+                                                            className="btn btn-xs btn-secondary btn-sm"
+                                                        >
+                                                            View Profile
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </li>
