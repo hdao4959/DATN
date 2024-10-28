@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\UserController;
 use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -21,5 +22,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-    Route::get('/formCreateSchedule', [ClassRoomController::class, 'formCreateScheduleforClassroom']);
-Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderScheduleForClassroom'])->name('renderScheduleForClassroom');
