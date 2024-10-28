@@ -25,9 +25,9 @@ return new class extends Migration
             $table->date('expiry_date')->nulllable();
             $table->boolean('is_active')->default(true);
             $table->json('notification_object')->nullable();
-            $table->string('user_code');
+            $table->string('user_code',20);
             $table->foreign('user_code')->references('user_code')->on('users')->cascadeOnDelete()->restrictOnUpdate();
-            $table->string('cate_code');            
+            $table->string('cate_code',40);            
             $table->foreign('cate_code')->references('cate_code')->on('categories')->cascadeOnDelete()->restrictOnUpdate();
             $table->softDeletes();
             $table->timestamps();

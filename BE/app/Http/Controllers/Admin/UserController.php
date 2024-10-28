@@ -17,15 +17,26 @@ class UserController extends Controller
     {
 
         try {
-            $list_user = User::where('is_active', true)->paginate(20);
-
-            if ($list_user->isEmpty()) {
+            $list_users = User::with([
+                'major' => function($query) {
+                    $query->select('cate_code', 'cate_name', 'parent_code');
+                },
+                'semester' => function($query){
+                    $query->select('cate_code', 'cate_name');
+                },
+                'course' => function($query) {
+                    $query->select('cate_code', 'cate_name');
+                }
+            ])
+              ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
+              ->paginate(20);
+            if ($list_users->isEmpty()) {
                 return response()->json(
                     ['message' => 'Không có tài khoản nào!'],
                     404
                 );
             }
-            return response()->json($list_user, 200);
+            return response()->json($list_users, 200);
         } catch (Throwable $th) {
             return response()->json(
                 [

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +14,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('user_code', 191)->unique()->comment('Mã tài khoản');
-            $table->index('user_code');
+            $table->string('user_code', 20)->unique()->comment('Mã tài khoản');
             $table->string('full_name', 50)->comment('Họ và tên');
             $table->string('email')->unique()->comment('Email');
             $table->timestamp('email_verified_at')->nullable();
@@ -28,17 +28,29 @@ return new class extends Migration
             $table->string('place_of_grant', 100)->comment('Nơi cấp');
             $table->string('nation', 50)->comment('Dân tộc');
             $table->string('avatar')->comment('Ảnh đại diện')->nullable();
-            $table->enum('role', ['student', 'teacher', 'admin', 'sub_admin']);
+
+            $table->enum('role', [0,1,2,3])->comment('Quyền');
+           
+
             $table->boolean('is_active')->default(true);
-            $table->string('major_code', 191)->comment('Mã ngành học');
-            $table->foreign('major_code')->references('cate_code')->on('categories')->restrictOnDelete()->restrictOnUpdate();
-            $table->string('narrow_major_code')->nullable()->comment('Mã chuyên ngành hẹp');
-            $table->foreign('narrow_major_code')->references('cate_code')->on('categories')->nullOnDelete();
-            $table->string('semester_code', 191)->comment('Mã kỳ học');
-            $table->foreign('semester_code')->references('cate_code')->on('categories')->restrictOnDelete()->restrictOnUpdate();
-            $table->string('course_code', 191)->comment('Mã khóa học');
-            $table->foreign('course_code')->references('cate_code')->on('categories')->restrictOnDelete()->restrictOnUpdate();
-            $table->index(['is_active','role', 'course_code', 'major_code', 'semester_code']);
+
+            $table->string('major_code', 40)->nullable()->comment('Mã ngành học');
+            $table->foreign('major_code')->references('cate_code')->on('categories')
+                    ->nullOnDelete()->cascadeOnUpdate();
+
+            $table->string('narrow_major_code',40)->nullable()->comment('Mã chuyên ngành hẹp');
+            $table->foreign('narrow_major_code')->references('cate_code')->on('categories')
+                    ->nullOnDelete()->cascadeOnUpdate();
+            
+            $table->string('semester_code', 40)->nullable()->comment('Mã kỳ học');
+            $table->foreign('semester_code')->references('cate_code')->on('categories')
+                    ->nullOnDelete()->cascadeOnUpdate();
+            
+            $table->string('course_code', 40)->nullable()->comment('Mã khóa học');
+            $table->foreign('course_code')->references('cate_code')->on('categories')
+                    ->nullOnDelete()->cascadeOnUpdate();
+           
+            $table->index(['is_active','role', 'course_code', 'major_code', 'semester_code'], 'idx_atv_role_course_major_smter');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

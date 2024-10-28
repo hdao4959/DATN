@@ -28,7 +28,7 @@ class RenderClassroomRequest extends FormRequest
             'section' => 'required|integer',
             'study_days' => 'required|array',
             'study_days.*' => 'in:Mon,Tue,Wed,Thir,Fri,Sat,Sun',
-            'date_from' => 'required|date|after_or_equal:today',
+            'date_from' => 'required|date|after_or_equal:tomorrow',
             'room_code' => 'required|exists:categories,cate_code',
             'user_code' => 'nullable|exists:users,user_code',
         ];

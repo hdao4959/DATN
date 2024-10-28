@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClassRoomController;
+use App\Http\Controllers\Admin\UserController;
 use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,4 @@ Route::get('/', function () {
   
     return view('welcome');
 });
+

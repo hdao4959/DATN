@@ -6,23 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ClassRoom extends Model
+class Classroom extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'class_code',
         'class_name',
-        'section',
         'exam_score',
-        'study_schedule',
         'exam_schedule',
         'description',
-        'date_from',
-        'date_to',
-        'students',
         'is_active',
-        'room_code',
         'subject_code',
         'user_code'
     ];
@@ -36,8 +30,20 @@ class ClassRoom extends Model
     ];
 
     public function subject(){
-        return $this->belongsTo(Subject::class);
+
+        return $this->belongsTo(Subject::class, 'subject_code', 'subject_code');
+    }
+
+    public function teacher(){
+        return $this->belongsTo(User::class, 'user_code', 'user_code');
     }
 
 
+    public function users(){
+        return $this->belongsToMany(User::class, 'classroom_user', 'class_code', 'user_code','class_code', 'user_code');
+    }
+
+    public function schedules(){
+        return $this->hasMany(Schedule::class, 'class_code', 'class_code');
+    }
 }
