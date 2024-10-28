@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const AddGradeComponents = () => {
     const {
@@ -17,10 +18,11 @@ const AddGradeComponents = () => {
         mutationFn: (data) => api.post("/admin/pointheads", data),
         onSuccess: () => {
             toast.success("Thêm điểm thành phần thành công");
-            navigate("/admin/grade-components");
+            navigate("/grade-components");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         },
     });
 
@@ -34,7 +36,7 @@ const AddGradeComponents = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/major">
                     <button className="btn btn-primary">
                         DS điểm thành phần
                     </button>

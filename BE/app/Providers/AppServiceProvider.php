@@ -3,14 +3,17 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\GradeRepositoryInterface;
+use App\Repositories\Contracts\ScoreRepositoryInterface;
 use App\Repositories\Contracts\SemesterRepositoryInterface;
 use App\Repositories\Contracts\SessionRepositoryInterface;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 
 use App\Repositories\GradeRepository;
+use App\Repositories\ScoreRepository;
 use App\Repositories\SemesterRepository;
 use App\Repositories\SessionRepository;
 use App\Repositories\SubjectRepository;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SessionRepositoryInterface::class , SessionRepository::class );
         $this->app->bind(GradeRepositoryInterface::class , GradeRepository::class );
         $this->app->bind(SemesterRepositoryInterface::class , SemesterRepository::class);
+        $this->app->bind(ScoreRepositoryInterface::class, ScoreRepository::class );
     }
 
     /**

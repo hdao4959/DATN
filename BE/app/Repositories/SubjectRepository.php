@@ -5,6 +5,7 @@ use App\Models\Subject;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class SubjectRepository implements SubjectRepositoryInterface {
 
@@ -14,15 +15,28 @@ class SubjectRepository implements SubjectRepositoryInterface {
     }
 
     public function getById($id){
-        return Subject::findOrFail($id);
+        return Subject::with('assessmentItems')->findOrFail($id);
     }
 
-    public function create(array $data){
-        return Subject::create($data);
+    public function create(Request $data){
+        $subject = Subject::create($data->except('assessment_items'));
+        return $subject->assessmentItems()->attach($data->assessment_items);
     }
 
     public function update($data, $id) {
-        return Subject::findOrFail($id)->update($data);
+        $subject = Subject::findOrFail($id); // Sử dụng findOrFail để đảm bảo tìm thấy
+
+        // Cập nhật thông tin môn học, loại bỏ 'assessment_items' ra khỏi dữ liệu
+        $subject->update($data->except('assessment_items'));
+
+        // Xóa tất cả các assessment_items hiện tại
+        $subject->assessmentItems()->detach();
+
+        // Thêm các assessment_items mới từ request nếu có
+        if ($data->has('assessment_items')) {
+            $subject->assessmentItems()->attach($data->assessment_items);
+        }
+
     }
 
     public function delete($id){

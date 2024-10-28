@@ -5,34 +5,37 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
 import Modal from "../../../components/Modal/Modal";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
-const GradeComponentList = () => {
+const PostList = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedGradeComponent, setSelectedGradeComponent] = useState();
+    const [selectedPost, setSelectedPost] = useState();
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: ["GRADE_COMPONENTS"],
+        queryKey: ["POST_LIST"],
         queryFn: async () => {
-            const res = await api.get("/admin/pointheads");
-            return res.data.data ?? [];
+            const res = await api.get("/admin/newsletters");
+            return res.data.newsletter ?? [];
         },
     });
 
+    console.log(data);
+
     const { mutate } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/pointheads/${id}`),
+        mutationFn: (id) => api.delete(`/admin/newsletters/${id}`),
         onSuccess: () => {
-            toast.success("Xóa điểm thành phần thành công");
+            toast.success("Xóa bài viết thành công");
             onModalVisible();
             refetch();
         },
         onError: () => {
-            toast.error("Có lỗi xảy ra khi xóa điểm thành phần");
+            toast.error("Có lỗi xảy ra khi xóa bài viết");
         },
     });
     const handleDelete = (id) => {
-        setSelectedGradeComponent(id);
+        setSelectedPost(id);
         onModalVisible();
     };
 
@@ -41,16 +44,14 @@ const GradeComponentList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/grade-components/add">
-                    <button className="btn btn-primary">
-                        Thêm điểm thành phần
-                    </button>
+                <Link to="/post/add">
+                    <button className="btn btn-primary">Thêm bài viết</button>
                 </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Grade Components Management</h4>
+                    <h4 className="card-title">Post Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
@@ -106,9 +107,11 @@ const GradeComponentList = () => {
                                         <thead>
                                             <tr role="row">
                                                 <th>ID</th>
-                                                <th>Mã điểm TP</th>
-                                                <th>Tên điểm TP</th>
-                                                <th>Trọng số</th>
+                                                <th>Mã bài viết</th>
+                                                <th>Ảnh bìa</th>
+                                                <th>Tiêu đề</th>
+                                                <th>Danh mục</th>
+                                                <th>Tác giả</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -120,20 +123,32 @@ const GradeComponentList = () => {
                                                     className="odd"
                                                 >
                                                     <td>{it.id}</td>
-                                                    <td>{it.cate_code}</td>
+                                                    <td>{it.code}</td>
+                                                    <td>
+                                                        <img
+                                                            src={getImageUrl(
+                                                                it.image
+                                                            )}
+                                                            alt="Thumbnail"
+                                                            className="w-24 h-24 object-cover border rounded"
+                                                        />
+                                                    </td>
+                                                    <td>{it.title}</td>
                                                     <td>{it.cate_name}</td>
-                                                    <td>{it.value}%</td>
+                                                    <td>{it.full_name}</td>
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/admin/grade-components/${it.cate_code}/edit`}
+                                                                to={`/post/${it.code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
 
                                                             <div
                                                                 onClick={() =>
-                                                                    handleDelete(it.cate_code)
+                                                                    handleDelete(
+                                                                        it.code
+                                                                    )
                                                                 }
                                                                 className="cursor-pointer"
                                                             >
@@ -207,16 +222,16 @@ const GradeComponentList = () => {
             </div>
 
             <Modal
-                title="Xoá điểm thành phần"
-                description="Bạn có chắc chắn muốn xoá điểm thành phần này?"
+                title="Xoá bài viết"
+                description="Bạn có chắc chắn muốn xoá bài viết này?"
                 closeTxt="Huỷ"
                 okTxt="Xác nhận"
                 visible={modalOpen}
                 onVisible={onModalVisible}
-                onOk={() => mutate(selectedGradeComponent)}
+                onOk={() => mutate(selectedPost)}
             />
         </>
     );
 };
 
-export default GradeComponentList;
+export default PostList;

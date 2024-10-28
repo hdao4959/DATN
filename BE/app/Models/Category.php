@@ -39,7 +39,7 @@ class Category extends Model
     }
 
     // Định nghĩa mối quan hệ với bảng 'newsletters'
-    public function newsletters()
+    public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'cate_code', 'cate_code');
     }

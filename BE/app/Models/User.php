@@ -34,6 +34,7 @@ class User extends Authenticatable
         'avatar',
         'role',
         'major_code',
+        'narrow_major_code',
         'semester_code',
         'course_code',
         'is_active'
@@ -62,7 +63,7 @@ class User extends Authenticatable
 
 
     // Định nghĩa mối quan hệ với bảng 'newsletters'
-    public function newsletters()
+    public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
     }

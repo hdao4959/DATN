@@ -26,8 +26,6 @@ class StoreSubjectRequest extends FormRequest
         return [
             'subject_code' => 'required|string|max:255',
             'subject_name' => 'required|string|max:255',
-            'tuition' => 'required|numeric',
-            're_study_fee' => 'required|numeric',
             'credit_number' => 'required|integer',
             'total_sessions' => 'required|integer',
             'exam_day' => 'string',

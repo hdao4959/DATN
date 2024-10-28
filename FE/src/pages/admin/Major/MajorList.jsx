@@ -10,27 +10,28 @@ const MajorList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedMajor, setSelectedMajor] = useState();
 
-    const onModalVisible = () => setModalOpen(prev => !prev);
+    const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
             const res = await api.get("/admin/major");
-            return res.data.data;
+            // var data1 = res.data;
+            // console.log(data1.data.data);
+            return res.data.data.data;
         },
     });
 
     const { mutate, isLoading } = useMutation({
-
         mutationFn: (id) => api.delete(`/admin/major/${id}`),
         onSuccess: () => {
-            toast.success('Xóa chuyên ngành thành công');
+            toast.success("Xóa chuyên ngành thành công");
             onModalVisible();
             refetch();
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi xóa chuyên ngành');
-        }
+            toast.error("Có lỗi xảy ra khi xóa chuyên ngành");
+        },
     });
     const handleDelete = (id) => {
         setSelectedMajor(id);
@@ -40,26 +41,24 @@ const MajorList = () => {
     const updateStatusMutation = useMutation({
         mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
         onSuccess: () => {
-            toast.success('Cập nhật trạng thái thành công');
+            toast.success("Cập nhật trạng thái thành công");
             refetch(); // Lấy lại dữ liệu sau khi cập nhật
         },
         onError: () => {
-            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
-        }
+            toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
+        },
     });
 
     const updateStatus = (code) => {
         updateStatusMutation.mutate(code);
     };
 
-    
-
     if (isFetching && !data) return <Spinner />;
 
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/major/add">
+                <Link to="/major/add">
                     <button className="btn btn-primary">
                         Thêm chuyên ngành
                     </button>
@@ -134,57 +133,100 @@ const MajorList = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {data.map((it, index) => (
-                                                <tr
-                                                    role="row"
-                                                    key={index}
-                                                    className="odd"
-                                                >
-                                                    <td>{it.id}</td>
-                                                    <td>{it.cate_code}</td>
-                                                    <td>{it.cate_name}</td>
-                                                    {/* <td>{it.value}</td> */}
-                                                    {/* <td>{it.description}</td> */}
-                                                    <td>
+                                            {Array.isArray(data) &&
+                                            data.length > 0 ? (
+                                                data.map((it, index) => (
+                                                    <tr
+                                                        role="row"
+                                                        key={index}
+                                                        className="odd"
+                                                    >
+                                                        <td>{it.id}</td>
+                                                        <td>{it.cate_code}</td>
+                                                        <td>{it.cate_name}</td>
+                                                        {/* <td>{it.value}</td> */}
+                                                        {/* <td>{it.description}</td> */}
+                                                        <td>
+                                                            {it.is_active ==
+                                                            1 ? (
+                                                                <i
+                                                                    onClick={() =>
+                                                                        updateStatus(
+                                                                            it.cate_code
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        isLoading
+                                                                    }
+                                                                    className="fas fa-check-circle fs-20 color-green"
+                                                                    style={{
+                                                                        color: "green",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            ) : (
+                                                                <i
+                                                                    onClick={() =>
+                                                                        updateStatus(
+                                                                            it.cate_code
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        isLoading
+                                                                    }
+                                                                    className="fas fa-ban fs-20 color-danger"
+                                                                    style={{
+                                                                        color: "red",
+                                                                        fontSize:
+                                                                            "25px",
+                                                                    }}
+                                                                ></i>
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            <img
+                                                                src={
+                                                                    it.image
+                                                                        ? "http://localhost:8000/storage/" +
+                                                                          it.image
+                                                                        : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
+                                                                }
+                                                                alt={it.name}
+                                                                width={50}
+                                                                height={50}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <div className="flex gap-x-2 items-center">
+                                                                <Link
+                                                                    to={`/major/${it.cate_code}/edit`}
+                                                                >
+                                                                    <i className="fas fa-edit"></i>
+                                                                </Link>
 
-                                                        {it.is_active == 1 ? (
-                                                            <i 
-                                                            onClick={() => updateStatus(it.cate_code)}
-                                                            disabled={isLoading} className="fas fa-check-circle fs-20 color-green" style={{ color: 'green', fontSize: '25px' }}></i>
-                                                        ) : (
-                                                            <i 
-                                                            onClick={() => updateStatus(it.cate_code)}
-                                                            disabled={isLoading} className="fas fa-ban fs-20 color-danger" style={{ color: 'red', fontSize: '25px' }}></i>
-                                                        )}
-
-
-                                                    </td>
-                                                    <td>
-                                                        <img
-                                                            src={it.image ? ("http://localhost:8000/storage/" + it.image) : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"}
-                                                            alt={it.name}
-                                                            width={50}
-                                                            height={50}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <div className="flex gap-x-2 items-center">
-                                                            <Link to={`/admin/major/${it.cate_code}/edit`}>
-                                                                <i className="fas fa-edit"></i>
-                                                            </Link>
-
-                                                            <i
-                                                                className="fas fa-trash ml-6 cursor-pointer"
-                                                                onClick={() => handleDelete(it.cate_code)}
-                                                                disabled={isLoading}
-                                                            >
-
-                                                            </i>
-
-                                                        </div>
+                                                                <i
+                                                                    className="fas fa-trash ml-6 cursor-pointer"
+                                                                    onClick={() =>
+                                                                        handleDelete(
+                                                                            it.cate_code
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        isLoading
+                                                                    }
+                                                                ></i>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan="6">
+                                                        No data available
                                                     </td>
                                                 </tr>
-                                            ))}
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -249,10 +291,10 @@ const MajorList = () => {
             </div>
 
             <Modal
-                title='Xoá chuyên ngành'
-                description='Bạn có chắc chắn muốn xoá chuyên ngành này?'
-                closeTxt='Huỷ'
-                okTxt='Xác nhận'
+                title="Xoá chuyên ngành"
+                description="Bạn có chắc chắn muốn xoá chuyên ngành này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
                 visible={modalOpen}
                 onVisible={onModalVisible}
                 onOk={() => mutate(selectedMajor)}

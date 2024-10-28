@@ -1,34 +1,73 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
+import { toast } from "react-toastify";
+import { formatErrors } from "../../../utils/formatErrors";
+import { useState } from "react";
+import InputChip from "./InputChip";
 
 const AddPost = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const [content, setContent] = useState();
+
     const {
         register,
         handleSubmit,
         formState: { errors },
+        control,
     } = useForm();
     const navigate = useNavigate();
 
-    // const { mutate } = useMutation({
-    //     mutationKey: ["ADD_GRADE_COMPONENTS"],
-    //     mutationFn: (data) => api.post("/admin/pointheads", data),
-    //     onSuccess: () => {
-    //         toast.success("Thêm điểm thành phần thành công");
-    //         navigate("/admin/grade-components");
-    //     },
-    //     onError: (error) => {
-    //         toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
-    //     },
-    // });
+    const { data: categories } = useQuery({
+        queryKey: ["POST_CATEGORY"],
+        queryFn: async () => {
+            const res = await api.get("/admin/category");
+            return res.data.data ?? [];
+        },
+    });
 
-    const onSubmit = () => {};
+    const { mutate } = useMutation({
+        mutationKey: ["ADD_POST"],
+        mutationFn: (data) => api.post("/admin/newsletters", data),
+        onSuccess: () => {
+            toast.success("Thêm bài viết thành công");
+            navigate("/post");
+        },
+        onError: (error) => {
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
+        },
+    });
+
+    const onSubmit = (values) => {
+        if (content === "<p><br></p>") {
+            toast.error("Vui lòng nhập nội dung bài viết");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("code", values.code);
+        formData.append("title", values.title);
+        formData.append("tags", values.tags.join(","));
+        formData.append("content", content);
+        formData.append("description", values.description);
+        formData.append("type", values.type);
+        formData.append("notification_object", values.notification_object);
+        formData.append("user_code", user.user_code);
+        formData.append("cate_code", values.cate_code);
+        formData.append("image", values.image[0]);
+
+        mutate(formData);
+    };
 
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/post">
                     <button className="btn btn-primary">DS bài viết</button>
                 </Link>
             </div>
@@ -43,7 +82,7 @@ const AddPost = () => {
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
-                                        <label htmlFor="cate_code">
+                                        <label htmlFor="title">
                                             Tiêu đề
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
@@ -52,20 +91,20 @@ const AddPost = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_code", {
+                                            {...register("title", {
                                                 required: "Tiêu đề là bắt buộc",
                                             })}
                                             placeholder="Nhập tiêu đề"
                                         />
-                                        {errors.cate_code && (
+                                        {errors.title && (
                                             <span className="text-danger">
-                                                {errors.cate_code.message}
+                                                {errors.title.message}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="cate_name">
+                                        <label htmlFor="code">
                                             Mã bài viết
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
@@ -74,20 +113,20 @@ const AddPost = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_name", {
+                                            {...register("code", {
                                                 required:
                                                     "Mã bài viết là bắt buộc",
                                             })}
                                             placeholder="Nhập mã bài viết"
                                         />
-                                        {errors.cate_name && (
+                                        {errors.code && (
                                             <span className="text-danger">
-                                                {errors.cate_name.message}
+                                                {errors.code.message}
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label htmlFor="value">
                                             Vị trí sắp xếp
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -113,30 +152,40 @@ const AddPost = () => {
                                                 {errors.value.message}
                                             </span>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="form-group">
-                                        <label htmlFor="cate_name">
+                                        <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
                                         </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Nhập tags bài viết"
+
+                                        <Controller
+                                            name="tags"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <InputChip
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                />
+                                            )}
+                                            rules={{
+                                                required: "Vui lòng nhập tags",
+                                            }}
                                         />
-                                        {errors.cate_name && (
+
+                                        {errors.tags && (
                                             <span className="text-danger">
-                                                {errors.cate_name.message}
+                                                {errors.tags.message}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="image">
-                                            Ảnh đại diện
+                                            Ảnh bìa
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -157,18 +206,24 @@ const AddPost = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active">
-                                            Hiển thị
+                                        <label htmlFor="type">
+                                            Loại bài viết
                                         </label>
-                                        <select className="form-select">
-                                            <option value={1}>Hiển thị</option>
-                                            <option value={0}>Ẩn</option>
+                                        <select
+                                            className="form-select"
+                                            id="type"
+                                            {...register("type")}
+                                        >
+                                            <option value="notification">
+                                                Thông báo
+                                            </option>
+                                            <option value="news">
+                                                Tin tức
+                                            </option>
+                                            <option value="article">
+                                                Bài viết
+                                            </option>
                                         </select>
-                                        {errors.is_active && (
-                                            <span className="text-danger">
-                                                {errors.is_active.message}
-                                            </span>
-                                        )}
                                     </div>
 
                                     <div className="form-group">
@@ -194,7 +249,7 @@ const AddPost = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label htmlFor="is_active">
                                             Ngày hết hạn
                                         </label>
@@ -204,26 +259,69 @@ const AddPost = () => {
                                             className="form-control"
                                             id=""
                                         />
+                                    </div> */}
+
+                                    <div className="form-group">
+                                        <label htmlFor="cate_code">
+                                            Danh mục
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
+                                        <select
+                                            className="form-select"
+                                            {...register("cate_code", {
+                                                required:
+                                                    "Vui lòng chọn danh mục bài viết",
+                                            })}
+                                        >
+                                            <option value="">
+                                                Chọn danh mục
+                                            </option>
+
+                                            {categories?.map((it) => (
+                                                <option
+                                                    key={it.id}
+                                                    value={it.cate_code}
+                                                >
+                                                    {it.cate_name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.cate_code && (
+                                            <span className="text-danger">
+                                                {errors.cate_code.message}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active">
-                                            Danh mục
+                                        <label htmlFor="notification_object">
+                                            Đối tượng
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
                                         </label>
-                                        <select className="form-select">
-                                            <option value={1}>
-                                                Chọn danh mục
-                                            </option>
-                                            <option value={0}>
-                                                Danh mục 1
-                                            </option>
-                                            <option value={0}>
-                                                Danh mục 2
-                                            </option>
-                                        </select>
-                                        {errors.is_active && (
+                                        <input
+                                            type="text"
+                                            placeholder="Nhập đối tượng"
+                                            className="form-control"
+                                            id="notification_object"
+                                            {...register(
+                                                "notification_object",
+                                                {
+                                                    required:
+                                                        "Vui lòng nhập đối tượng",
+                                                }
+                                            )}
+                                        />
+
+                                        {errors.notification_object && (
                                             <span className="text-danger">
-                                                {errors.is_active.message}
+                                                {
+                                                    errors.notification_object
+                                                        .message
+                                                }
                                             </span>
                                         )}
                                     </div>
@@ -231,12 +329,17 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="is_active">
                                             Nội dung
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
                                         </label>
 
                                         <ReactQuill
                                             theme="snow"
                                             className="h-[300px] mb-10"
                                             placeholder="Nhập nội dung bài viết"
+                                            value={content}
+                                            onChange={setContent}
                                         />
                                     </div>
                                 </div>

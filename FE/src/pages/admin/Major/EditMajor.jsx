@@ -5,6 +5,7 @@ import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const EditMajor = () => {
     const { id } = useParams();
@@ -24,7 +25,8 @@ const EditMajor = () => {
             nav("/admin/major");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         },
     });
 
@@ -71,7 +73,7 @@ const EditMajor = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/major">
                     <button className="btn btn-primary">DS chuyên ngành</button>
                 </Link>
             </div>

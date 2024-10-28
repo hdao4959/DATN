@@ -1,23 +1,21 @@
 <?php
+use App\Http\Controllers\AssessmentItemController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GradesController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SemesterController;
-
 use App\Http\Controllers\Auth\AuthController;
-
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
-
 use App\Http\Controllers\Api\CategoryController;
-
 use App\Http\Controllers\Admin\ClassroomController;
-
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\Admin\ScoreController;
+use App\Models\AssessmentItem;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,8 +66,8 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('semesters', SemesterController::class);
     Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 
-    Route::apiResource('grades', GradesController::class);
-    Route::get('grades', [GradesController::class, 'getByParam']);
+    // Route::apiResource('grades', GradesController::class);
+    Route::get('grades/{classCode}', [GradesController::class, 'index']);
     Route::patch('grades/{id}',[GradesController::class, 'update']);
 
     Route::apiResource('schoolrooms', SchoolRoomController::class);
@@ -79,6 +77,11 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('pointheads', PointHeadController::class);
 
     Route::apiResource('newsletters', NewsletterController::class);
+    Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+    Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
 
+    Route::apiResource('assessment', AssessmentItemController::class);
+
+    Route::get('score/{id}', [ScoreController::class,'create']);
 });
 

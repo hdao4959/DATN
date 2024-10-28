@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Classroom\RenderClassroomRequest;
+
 use App\Models\Classroom;
 use App\Http\Requests\Classroom\StoreClassroomRequest;
 use App\Http\Requests\Classroom\UpdateClassroomRequest;
@@ -65,7 +66,7 @@ class ClassroomController extends Controller
             $date_from = new DateTime($request->date_from);
             $subject_code = $data['subject_code'];
             $subject = Subject::where([
-                'is_active' => true, 
+                'is_active' => true,
                 'subject_code' => $subject_code
             ])->select('total_sessions')->first();
             $total_sessions = $subject->total_sessions;
@@ -101,7 +102,7 @@ class ClassroomController extends Controller
             $data_request = $request->all();
             $subject_code = $data_request['subject_code'];
             $subject = Subject::with('major', 'semester')->where('subject_code', $subject_code)->first();
-            $course_code = $subject->
+            // $course_code = $subject->
             // $major_code = $subject->major->cate_code;
             // $semester_code = $subject->semester->cate_code;
 
@@ -120,7 +121,6 @@ class ClassroomController extends Controller
                     ['message' => 'Lịch học không hợp lệ']
                 );
             }
-
 
             $data =
                 [
@@ -223,4 +223,5 @@ class ClassroomController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
+
 }

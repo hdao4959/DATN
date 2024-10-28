@@ -24,11 +24,13 @@ class UpdateSchoolRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('schoolrooms') . ',cate_code',
+            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('schoolroom') . ',cate_code',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'regex:/^[^<>{}]*$/',
+            'parent_code' => 'regex:/^[^<>{}]*$/',
+            'is_active' => 'regex:/^[^<>{}]*$/'
         ];
     }
 
@@ -42,7 +44,9 @@ class UpdateSchoolRoomRequest extends FormRequest
             'value.regex' => 'Giá trị không chứa kí tự đặc biệt',
             'image.image' => 'File phải là ảnh',
             'image.mimes' => 'File ảnh phải có định dạng jpeg, png, jpg, gif, hoặc svg.',
-            'description.regex' => 'Mô tả không chứa kí tự đặc biệt'
+            'description.regex' => 'Mô tả không chứa kí tự đặc biệt',
+            'parent_code.regex' => 'Không chứa kí tự đặc biệt',
+            'is_active.regex' => 'Trạng thái không chứa kí tự đặc biệt'
         ];
     }
 

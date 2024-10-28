@@ -1,11 +1,17 @@
-import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import api from '../../../config/axios';
-import { toast } from 'react-toastify';
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../../../config/axios";
+import { toast } from "react-toastify";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const AddSchoolRoom = () => {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
     const nav = useNavigate();
 
     const { mutate } = useMutation({
@@ -16,21 +22,22 @@ const AddSchoolRoom = () => {
             nav("/admin/schoolrooms");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
-        }
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
+        },
     });
 
     const onSubmit = (data) => {
         const formData = new FormData();
-        formData.append('cate_code', data.cate_code);
-        formData.append('cate_name', data.cate_name);
-        formData.append('is_active', data.is_active); // Chuyển đổi giá trị is_active
-        formData.append('description', data.description);
-        formData.append('value', data.value);
-        formData.append('type', 'school_room');
+        formData.append("cate_code", data.cate_code);
+        formData.append("cate_name", data.cate_name);
+        formData.append("is_active", data.is_active); // Chuyển đổi giá trị is_active
+        formData.append("description", data.description);
+        formData.append("value", data.value);
+        formData.append("type", "school_room");
 
         if (data.image && data.image.length > 0) {
-            formData.append('image', data.image[0]);
+            formData.append("image", data.image[0]);
         }
 
         mutate(formData);
@@ -39,7 +46,7 @@ const AddSchoolRoom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/schoolrooms">
+                <Link to="/schoolrooms">
                     <button className="btn btn-primary">DS phòng học</button>
                 </Link>
             </div>
@@ -63,11 +70,16 @@ const AddSchoolRoom = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_code", { required: "Mã phòng học là bắt buộc" })}
+                                            {...register("cate_code", {
+                                                required:
+                                                    "Mã phòng học là bắt buộc",
+                                            })}
                                             placeholder="Nhập mã phòng học"
                                         />
                                         {errors.cate_code && (
-                                            <span className="text-danger">{errors.cate_code.message}</span>
+                                            <span className="text-danger">
+                                                {errors.cate_code.message}
+                                            </span>
                                         )}
                                     </div>
 
@@ -81,11 +93,16 @@ const AddSchoolRoom = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("cate_name", { required: "Tên phòng học là bắt buộc" })}
+                                            {...register("cate_name", {
+                                                required:
+                                                    "Tên phòng học là bắt buộc",
+                                            })}
                                             placeholder="Nhập tên phòng học"
                                         />
                                         {errors.cate_name && (
-                                            <span className="text-danger">{errors.cate_name.message}</span>
+                                            <span className="text-danger">
+                                                {errors.cate_name.message}
+                                            </span>
                                         )}
                                     </div>
 
@@ -100,30 +117,43 @@ const AddSchoolRoom = () => {
                                             type="number"
                                             className="form-control"
                                             {...register("value", {
-                                                required: "Vui lòng nhập số lượng",
+                                                required:
+                                                    "Vui lòng nhập số lượng",
                                                 min: {
                                                     value: 1,
-                                                    message: "Số lượng không hợp lệ"
-                                                }
+                                                    message:
+                                                        "Số lượng không hợp lệ",
+                                                },
                                             })}
                                             placeholder="Nhập số lượng sinh viên"
                                         />
-                                         {errors.value && (
-                                            <span className="text-danger">{errors.value.message}</span>
+                                        {errors.value && (
+                                            <span className="text-danger">
+                                                {errors.value.message}
+                                            </span>
                                         )}
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="is_active">Trạng thái</label>
+                                        <label htmlFor="is_active">
+                                            Trạng thái
+                                        </label>
                                         <select
                                             className="form-select"
-                                            {...register("is_active", { required: "Trạng thái là bắt buộc" })}
+                                            {...register("is_active", {
+                                                required:
+                                                    "Trạng thái là bắt buộc",
+                                            })}
                                         >
                                             <option value={1}>Hoạt động</option>
-                                            <option value={0}>Không hoạt động</option>
+                                            <option value={0}>
+                                                Không hoạt động
+                                            </option>
                                         </select>
                                         {errors.is_active && (
-                                            <span className="text-danger">{errors.is_active.message}</span>
+                                            <span className="text-danger">
+                                                {errors.is_active.message}
+                                            </span>
                                         )}
                                     </div>
 
@@ -138,11 +168,14 @@ const AddSchoolRoom = () => {
                                             type="file"
                                             className="form-control"
                                             {...register("image", {
-                                                required: "Vui lòng chọn hình ảnh"
+                                                required:
+                                                    "Vui lòng chọn hình ảnh",
                                             })}
                                         />
-                                         {errors.image && (
-                                            <span className="text-danger">{errors.image.message}</span>
+                                        {errors.image && (
+                                            <span className="text-danger">
+                                                {errors.image.message}
+                                            </span>
                                         )}
                                     </div>
 
@@ -157,21 +190,30 @@ const AddSchoolRoom = () => {
                                             className="form-control"
                                             rows={5}
                                             {...register("description", {
-                                                required: "Vui lòng nhập mô tả"
+                                                required: "Vui lòng nhập mô tả",
                                             })}
                                             placeholder="Nhập mô tả"
                                         />
-                                         {errors.description && (
-                                            <span className="text-danger">{errors.description.message}</span>
+                                        {errors.description && (
+                                            <span className="text-danger">
+                                                {errors.description.message}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
                             <div className="card-action gap-x-3 flex">
-                                <button type="submit" className="btn btn-success">
+                                <button
+                                    type="submit"
+                                    className="btn btn-success"
+                                >
                                     Submit
                                 </button>
-                                <button type="button" className="btn btn-danger" onClick={() => nav("/admin/schoolrooms")}>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={() => nav("/admin/schoolrooms")}
+                                >
                                     Hủy
                                 </button>
                             </div>

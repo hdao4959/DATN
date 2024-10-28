@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { formatErrors } from "../../../utils/formatErrors";
 
 const UpdateGradeComponents = () => {
     const {
@@ -21,10 +22,11 @@ const UpdateGradeComponents = () => {
         mutationFn: (data) => api.put(`/admin/pointheads/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật điểm thành phần thành công");
-            navigate("/admin/grade-components");
+            navigate("/grade-components");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
         },
     });
 
@@ -57,7 +59,7 @@ const UpdateGradeComponents = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/major">
                     <button className="btn btn-primary">
                         DS điểm thành phần
                     </button>

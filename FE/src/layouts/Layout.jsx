@@ -477,12 +477,18 @@ const AdminLayout = () => {
                                                         <p className="text-muted">
                                                             {user.email}
                                                         </p>
-                                                        <a
+                                                        {/* <a
                                                             href="/admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
-                                                        </a>
+                                                        </a> */}
+                                                        <Link
+                                                            to={`account/details/${user.user_code}`}
+                                                            className="btn btn-xs btn-secondary btn-sm"
+                                                        >
+                                                            View Profile
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </li>
@@ -515,17 +521,16 @@ const AdminLayout = () => {
                                                     Account Setting
                                                 </a>
                                                 <div className="dropdown-divider" />
-                                                <a
+                                                <div
                                                     onClick={Signout}
-                                                    className="dropdown-item"
-                                                    href="#"
+                                                    className="dropdown-item cursor-pointer"
                                                 >
                                                     {user ? (
                                                         <b>Đăng xuất</b>
                                                     ) : (
                                                         ""
                                                     )}
-                                                </a>
+                                                </div>
                                             </li>
                                         </div>
                                     </ul>
