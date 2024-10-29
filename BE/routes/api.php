@@ -1,6 +1,6 @@
 <?php
-use App\Http\Controllers\AssessmentItemController;
 use Illuminate\Http\Request;
+use App\Models\AssessmentItem;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GradesController;
 use App\Http\Controllers\SessionController;
@@ -9,13 +9,14 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
+use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\AssessmentItemController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\PointHeadController;
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
-use App\Http\Controllers\Admin\ScoreController;
-use App\Models\AssessmentItem;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,5 +84,7 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('assessment', AssessmentItemController::class);
 
     Route::get('score/{id}', [ScoreController::class,'create']);
+
+    Route::apiResource('attendances', AttendanceController::class);
 });
 

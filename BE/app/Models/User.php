@@ -70,4 +70,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
     }
+    // Định nghĩa mối quan hệ với bảng 'attendance'
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'student_code', 'user_code');
+    }
 }

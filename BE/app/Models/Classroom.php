@@ -34,10 +34,17 @@ class ClassRoom extends Model
         'exam_schedule' => 'json',
         'students' => 'json'
     ];
+    
+    // Khai báo tên bảng
+    protected $table = 'classrooms';
 
     public function subject(){
         return $this->belongsTo(Subject::class);
     }
 
-
+    // Định nghĩa mối quan hệ với bảng 'attendance'
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'class_code', 'class_code');
+    }
 }
