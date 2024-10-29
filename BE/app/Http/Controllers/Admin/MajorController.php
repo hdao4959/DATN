@@ -40,32 +40,20 @@ class MajorController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::with(
+            $search = $request->input('search');
+            $majors = Category::with(
                 ['childrens' => function ($query) {
 $query->select('cate_code', 'cate_name', 'parent_code');
             }])->whereNull('parent_code')
                 ->where('type', '=', 'major')
-                ->select('cate_code', 'cate_name')
+                ->select('cate_code', 'cate_name')->when($search, function($query, $search){
+                    return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+                        $childQuerry->where('cate_name', 'like', "%$search%");
+                    });
+                })
                 ->get();
-
-            $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
-                                ->when($search, function ($query, $search) {
-                                    return $query
-                                            ->where('cate_name', 'like', "%{$search}%");
-                                })
-                                ->paginate(4);
-            if ($data->isEmpty()) {
-
-                return $this->handleInvalidId();
-            }
-
-            return response()->json([
-                'parent' => $parent,
-                'data' => $data
-            ], 200);
+            return response()->json($majors, 200);
         } catch (Throwable $th) {
-
             return $this->handleErrorNotDefine($th);
         }
     }

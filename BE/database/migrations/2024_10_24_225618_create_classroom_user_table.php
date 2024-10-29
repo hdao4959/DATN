@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('classroom_user', function (Blueprint $table) {
             $table->string('class_code', 40)->comment('Mã lớp học');
             $table->foreign('class_code')->references('class_code')->on('classrooms')
-            ->restrictOnDelete()->restrictOnUpdate();
+            ->cascadeOnDelete()->cascadeOnUpdate();
             
             $table->string('user_code',20)->comment('Mã sinh viên');
             $table->foreign('user_code')->references('user_code')->on('users')

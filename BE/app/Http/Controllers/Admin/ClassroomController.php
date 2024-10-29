@@ -127,19 +127,18 @@ class ClassroomController extends Controller
 
 
             // liệt kê danh sách id sinh viên tương ứng kỳ học + chuyên ngành + loại bỏ các học sinh đã được xếp lịch(Nếu có)
-            $room_slot = Category::where('cate_code' , $data_request['room_code'])->pluck('value')->first();
-
+            // $room_slot = Category::where('cate_code' , $data_request['room_code'])->pluck('value')->first();
             $list_student_codes = User::whereNotIn('user_code',$student_codes_hasbeenStudy)->where(
                 [
                     'major_code' => $major_code,
                     'is_active' => true,
-                    'semester_code' => $semester_code,
+                    // 'semester_code' => $semester_code,
                     'role' => '3',
                     'course_code' => $data_request['course_code']
                 ]
-            )->limit($room_slot)->pluck('user_code');
+            )->limit(30)->pluck('user_code');
 
-
+                // return response()->json($list_student_codes);
             if ($list_student_codes->isEmpty()) {
                 return response()->json(
                     [
