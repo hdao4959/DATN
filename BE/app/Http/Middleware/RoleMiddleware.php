@@ -16,11 +16,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // $user  = $request->user();
+        $user  = $request->user();
 
-        // if(!$user ||  !in_array( $user->role, $roles)){
-        //     return response()->json(['message' => 'Bạn không có quyền truy cập!'], 403);
-        // }
+        if(!$user ||  !in_array( $user->role, $roles)){
+            return response()->json(['message' => 'Bạn không có quyền truy cập!'], 403);
+        }
 
         return $next($request);
     }
