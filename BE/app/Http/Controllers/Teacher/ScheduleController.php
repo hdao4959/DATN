@@ -35,7 +35,6 @@ class ScheduleController extends Controller
 
             $list_classroom_codes = Classroom::where('user_code', $teacher_code)
                 ->pluck('class_code');
-
             $list_schedules = Schedule::with(['classroom','room','session'])
                 ->whereIn('class_code', $list_classroom_codes)
                 ->select('class_code', 'room_code' , 'session_code', 'date')
