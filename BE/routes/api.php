@@ -1,6 +1,6 @@
 <?php
-use App\Http\Controllers\AssessmentItemController;
 use Illuminate\Http\Request;
+use App\Models\AssessmentItem;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GradesController;
 use App\Http\Controllers\SessionController;
@@ -9,13 +9,14 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
+use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\AssessmentItemController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\PointHeadController;
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
-use App\Http\Controllers\Admin\ScoreController;
-use App\Models\AssessmentItem;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Models\User;
@@ -62,13 +63,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('classrooms', ClassroomController::class);
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
 
-    Route::apiResource('newsletters', NewsletterController::class);
-    Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
-    Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
+        Route::apiResource('newsletters', NewsletterController::class);
+        Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+        Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
 
-    Route::apiResource('assessment', AssessmentItemController::class);
+        Route::apiResource('assessment', AssessmentItemController::class);
 
-    Route::get('score/{id}', [ScoreController::class,'create']);
+        Route::get('score/{id}', [ScoreController::class,'create']);
 
         Route::apiResource('majors', MajorController::class);
         Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
@@ -95,6 +96,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('pointheads', PointHeadController::class);
 
         Route::apiResource('newsletters', NewsletterController::class);
+
+        Route::apiResource('attendances', AttendanceController::class);        
     });
 
 
@@ -106,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
         // Route::get('schedules', [ScheduleController::class, 'index']);
     });
+
 });
 
 

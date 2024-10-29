@@ -103,4 +103,9 @@ class User extends Authenticatable
     
     
 
+    // Định nghĩa mối quan hệ với bảng 'attendance'
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'student_code', 'user_code');
+    }
 }

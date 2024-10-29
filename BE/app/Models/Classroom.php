@@ -28,6 +28,9 @@ class Classroom extends Model
         'exam_schedule' => 'json',
         'students' => 'json'
     ];
+    
+    // Khai báo tên bảng
+    protected $table = 'classrooms';
 
     public function subject(){
 
@@ -45,5 +48,10 @@ class Classroom extends Model
 
     public function schedules(){
         return $this->hasMany(Schedule::class, 'class_code', 'class_code');
+    }
+    // Định nghĩa mối quan hệ với bảng 'attendance'
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'class_code', 'class_code');
     }
 }
