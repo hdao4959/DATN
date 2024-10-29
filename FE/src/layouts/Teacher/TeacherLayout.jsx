@@ -1,8 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
 import { toast } from "react-toastify";
+import TeacherMenu from "./TeacherMenu";
+import "/src/css/sidebar.css";
 
-const AdminLayout = () => {
+const TeacherLayout = () => {
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : null;
     const token = JSON.parse(localStorage.getItem("token"));
@@ -39,7 +40,7 @@ const AdminLayout = () => {
     };
     return (
         <div className="wrapper">
-            <Sidebar />
+            <TeacherMenu />
 
             <div className="main-panel">
                 <div className="main-header">
@@ -545,37 +546,9 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-                {/* <footer className="footer">
-                    <div className="container-fluid d-flex justify-content-between">
-                        <nav className="pull-left">
-                            <ul className="nav">
-                                <li className="nav-item">
-                                    <a
-                                        className="nav-link"
-                                        href="http://www.themekita.com"
-                                    >
-                                        ThemeKita
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">
-                                        {" "}
-                                        Help{" "}
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">
-                                        {" "}
-                                        Licenses{" "}
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </footer> */}
             </div>
         </div>
     );
 };
 
-export default AdminLayout;
+export default TeacherLayout;

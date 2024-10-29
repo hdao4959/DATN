@@ -17,23 +17,21 @@ const EditClassroom = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Fetch classroom data from the API
         axios
             .get(`http://127.0.0.1:8000/api/admin/classrooms/${class_code}`)
             .then((response) => {
                 const classroomData = response.data.classroom;
 
-                // Set form values with fetched data
-                setValue("id", classroomData.id); // Set ID
+                setValue("id", classroomData.id);
                 setValue("class_code", classroomData.class_code);
                 setValue("class_name", classroomData.class_name);
                 setValue("section", classroomData.section);
                 setValue(
                     "study_schedule",
                     classroomData.study_schedule.join(", ")
-                ); // Join array for display
+                );
                 setValue("description", classroomData.description);
-                setValue("is_active", classroomData.is_active.toString()); // Convert boolean to string for select
+                setValue("is_active", classroomData.is_active.toString());
                 setValue("room_code", classroomData.room_code);
                 setValue("subject_code", classroomData.subject_code);
 
@@ -47,12 +45,11 @@ const EditClassroom = () => {
     }, [class_code, setValue]);
 
     const onSubmit = (formData) => {
-        // Update classroom data via API
         const updatedData = {
             ...formData,
             study_schedule: formData.study_schedule
                 .split(",")
-                .map((date) => date.trim()), // Split back into an array
+                .map((date) => date.trim()),
         };
 
         axios
@@ -62,7 +59,7 @@ const EditClassroom = () => {
             )
             .then(() => {
                 toast.success("Lớp học đã được cập nhật thành công!");
-                navigate("/classrooms"); // Navigate back to the classroom list
+                navigate("/admin/classrooms");
             })
             .catch((error) => {
                 console.error("Error updating classroom:", error);
@@ -282,7 +279,9 @@ const EditClassroom = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => navigate("/classrooms")} // Cancel button
+                                    onClick={() =>
+                                        navigate("/admin/classrooms")
+                                    }
                                 >
                                     Hủy
                                 </button>

@@ -14,7 +14,7 @@ const AdminMenu = () => {
 
             <li className="menu-item">
                 <NavLink
-                    to="/classrooms"
+                    to="/admin/classrooms"
                     className={`${styles.menuItem} group`}
                 >
                     <i className="fas fa-school text-lg text-[#b9babf] group-hover:text-[#6861ce]" />

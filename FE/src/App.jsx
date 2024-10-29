@@ -39,15 +39,23 @@ import AddPostCategory from "./pages/admin/PostCategory/AddPostCategory";
 import UpdatePostCategory from "./pages/admin/PostCategory/UpdatePostCategory";
 import PostList from "./pages/admin/Post/PostList";
 import UpdatePost from "./pages/admin/Post/UpdatePost";
+import TeacherLayout from "./layouts/Teacher/TeacherLayout";
+import TeachSchedule from "./pages/teacher/TeachSchedule";
+import MyCalendar from "./pages/teacher/TeachSchedule";
+import MyClass from "./pages/teacher/myClass/MyClass";
 
 function App() {
     const router = createBrowserRouter([
+        {
+            path: "",
+            element: <Signin />,
+        },
         {
             path: "/signin",
             element: <Signin />,
         },
         {
-            path: "/",
+            path: "/admin",
             element: (
                 <CheckRole>
                     <Layout />
@@ -193,6 +201,20 @@ function App() {
                 {
                     path: "post-category/:id/edit",
                     element: <UpdatePostCategory />,
+                },
+            ],
+        },
+        {
+            path: "/teacher",
+            element: (
+                <CheckRole>
+                    <TeacherLayout />
+                </CheckRole>
+            ),
+            children: [
+                {
+                    path: "schedule",
+                    element: <TeachSchedule />,
                 },
             ],
         },

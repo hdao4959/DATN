@@ -14,16 +14,20 @@ const CheckRole = ({ children }) => {
                 navigate("/signin");
             }
         } else {
-            if (user.role === "student") {
+            if (user.role === "3") {
                 toast.info("Tính năng của sinh viên sẽ cập nhật sau");
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                navigate('/signin');
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                navigate("/signin");
+            } else if (user.role === "2") {
+                navigate('/teacher')
+            } else if (user.role === "0") {
+                navigate('/admin')
             }
         }
     }, [accessToken, user.role, navigate]);
 
-    if (accessToken && (user.role === "admin" || user.role === "teacher")) {
+    if (accessToken && (user.role === "0" || user.role == "2")) {
         return <div>{children}</div>;
     }
 
