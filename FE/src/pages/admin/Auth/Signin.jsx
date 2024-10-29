@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import "/src/css/signin.css";
 import { toast } from "react-toastify";
+
 const Signin = () => {
     const navigate = useNavigate();
 
@@ -18,13 +19,31 @@ const Signin = () => {
             localStorage.setItem("user", JSON.stringify(user));
             localStorage.setItem("token", JSON.stringify(token));
 
-            toast.success(`Đăng nhập thành công, hello ${user.role}`, {
+            toast.success(`Đăng nhập thành công !`, {
                 autoClose: 3000,
                 closeOnClick: true,
                 draggable: true,
             });
-            navigate("/");
+
+            switch (user.role) {
+                case "0":
+                    navigate("/admin");
+                    break;
+                case "2":
+                    navigate("/teacher");
+                    break;
+                case "3":
+                    navigate("/student");
+                    break;
+                default:
+                    toast.warning("Vai trò không xác định, vui lòng thử lại.");
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("token");
+                    navigate("/signin");
+                    break;
+            }
         },
+
         onError: (error) => {
             if (!error.response) {
                 toast.warning(
@@ -53,7 +72,7 @@ const Signin = () => {
         <section
             className="min-h-screen"
             style={{
-                backgroundImage: `url('https://iap-poly.s3.ap-southeast-1.amazonaws.com/wallpaper/hero1.JPG?fbclid=IwAR1rRUAoaHnTfDL2aff4wzf9OurJA2dSWhlmIRnYwarFZNOHCGGvvb3bJqo')`, // Example background image, update the path accordingly
+                backgroundImage: `url('https://iap-poly.s3.ap-southeast-1.amazonaws.com/wallpaper/hero1.JPG')`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

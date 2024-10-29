@@ -1,7 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
-import "/src/css/sidebar.css";
 
-const Sidebar = () => {
+const TeacherMenu = () => {
     return (
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
@@ -51,17 +50,17 @@ const Sidebar = () => {
                                 aria-expanded="false"
                             >
                                 <i className="fas fa-home" />
-                                <p>Dashboard</p>
+                                <p>Lịch dạy</p>
                                 <span className="caret" />
                             </a>
                             <div className="collapse" id="dashboard">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <NavLink href="../../demo1/index.html">
+                                        <Link to={"/teacher/schedule"}>
                                             <span className="sub-item">
-                                                Dashboard 1
+                                                Lịch dạy của tôi
                                             </span>
-                                        </NavLink>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -70,20 +69,20 @@ const Sidebar = () => {
                             <span className="sidebar-mini-icon">
                                 <i className="fa fa-ellipsis-h" />
                             </span>
-                            <h4 className="text-section">Components</h4>
+                            <h4 className="text-section">Quản lý chung</h4>
                         </li>
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#base">
                                 <i className="fas fa-layer-group" />
-                                <p>Base</p>
+                                <p>Lớp học của tôi</p>
                                 <span className="caret" />
                             </a>
                             <div className="collapse" id="base">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../components/avatars.html">
+                                        <a href="/teacher/class">
                                             <span className="sub-item">
-                                                Avatars
+                                                Danh sách lớp học
                                             </span>
                                         </a>
                                     </li>
@@ -214,144 +213,6 @@ const Sidebar = () => {
                                 </ul>
                             </div>
                         </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#maps">
-                                <i className="fas fa-map-marker-alt" />
-                                <p>Maps</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="maps">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <a href="../maps/googlemaps.html">
-                                            <span className="sub-item">
-                                                Google Maps
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../maps/jsvectormap.html">
-                                            <span className="sub-item">
-                                                Jsvectormap
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#charts">
-                                <i className="far fa-chart-bar" />
-                                <p>Charts</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="charts">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <a href="../charts/charts.html">
-                                            <span className="sub-item">
-                                                Chart Js
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../charts/sparkline.html">
-                                            <span className="sub-item">
-                                                Sparkline
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/admin/classrooms">
-                                <i className="fas fa-school" />
-                                <p>Classrooms</p>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/admin/grade-components">
-                                <i className="fas fa-th-list" />
-                                <p>Grade components</p>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/admin/account">
-                                <i className="fas fa-user" />
-                                <p>Account Manager</p>
-                                <span className="badge badge-success">4</span>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#submenu">
-                                <i className="fas fa-bars" />
-                                <p>Menu Levels</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="submenu">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <a
-                                            data-bs-toggle="collapse"
-                                            href="#subnav1"
-                                        >
-                                            <span className="sub-item">
-                                                Level 1
-                                            </span>
-                                            <span className="caret" />
-                                        </a>
-                                        <div className="collapse" id="subnav1">
-                                            <ul className="nav nav-collapse subnav">
-                                                <li>
-                                                    <a href="#">
-                                                        <span className="sub-item">
-                                                            Level 2
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">
-                                                        <span className="sub-item">
-                                                            Level 2
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <a
-                                            data-bs-toggle="collapse"
-                                            href="#subnav2"
-                                        >
-                                            <span className="sub-item">
-                                                Level 1
-                                            </span>
-                                            <span className="caret" />
-                                        </a>
-                                        <div className="collapse" id="subnav2">
-                                            <ul className="nav nav-collapse subnav">
-                                                <li>
-                                                    <a href="#">
-                                                        <span className="sub-item">
-                                                            Level 2
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <span className="sub-item">
-                                                Level 1
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -359,4 +220,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default TeacherMenu;
