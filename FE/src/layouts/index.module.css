@@ -1,0 +1,3 @@
+.menuItem {
+    @apply flex items-center px-6 gap-3 py-[10px] hover:bg-[#00000029];
+}

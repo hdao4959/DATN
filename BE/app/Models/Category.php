@@ -25,7 +25,7 @@ class Category extends Model
     /**
     * Quan hệ với các danh mục con.
     */
-    public function children()
+    public function childrens()
     {
         return $this->hasMany(Category::class, 'parent_code', 'cate_code');
     }
@@ -42,5 +42,9 @@ class Category extends Model
     public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'cate_code', 'cate_code');
+    }
+
+    public function semester(){
+        return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 }

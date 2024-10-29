@@ -62,7 +62,7 @@ const EditClassroom = () => {
             )
             .then(() => {
                 toast.success("Lớp học đã được cập nhật thành công!");
-                navigate("/admin/classrooms"); // Navigate back to the classroom list
+                navigate("/classrooms"); // Navigate back to the classroom list
             })
             .catch((error) => {
                 console.error("Error updating classroom:", error);
@@ -76,7 +76,7 @@ const EditClassroom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/classrooms">
+                <Link to="/classrooms">
                     <button className="btn btn-primary">
                         Danh sách lớp học
                     </button>
@@ -282,9 +282,7 @@ const EditClassroom = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() =>
-                                        navigate("/admin/classrooms")
-                                    } // Cancel button
+                                    onClick={() => navigate("/classrooms")} // Cancel button
                                 >
                                     Hủy
                                 </button>

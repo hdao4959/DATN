@@ -57,7 +57,7 @@ const PostCategoryTable = ({ data }) => {
                                     <td>
                                         <div className="flex gap-x-2 items-center">
                                             <Link
-                                                to={`/admin/post-category/${it.cate_code}/edit`}
+                                                to={`/post-category/${it.cate_code}/edit`}
                                             >
                                                 <i className="fas fa-edit"></i>
                                             </Link>

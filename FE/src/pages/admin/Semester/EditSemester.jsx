@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import api from '../../../config/axios';
-import { toast, ToastContainer } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import api from "../../../config/axios";
+import { toast, ToastContainer } from "react-toastify";
 
 const EditSemester = () => {
     const queryClient = useQueryClient();
     const { id } = useParams();
     const navigate = useNavigate();
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
 
     const { data: semester, isLoading: loadingSemester } = useQuery({
-        queryKey: ['semester', id],
+        queryKey: ["semester", id],
         queryFn: async () => {
             const response = await api.get(`/admin/semester/${id}`);
             return response?.data;
-        }
+        },
     });
 
     const mutation = useMutation({
@@ -25,8 +30,8 @@ const EditSemester = () => {
         },
         onSuccess: () => {
             toast.success("Cập nhật kỳ học thành công!");
-            queryClient.invalidateQueries(['semesters']);
-            navigate("/admin/semesters");
+            queryClient.invalidateQueries(["semesters"]);
+            navigate("/semesters");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -55,15 +60,17 @@ const EditSemester = () => {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="card-title text-center">Quản lý Kỳ Học</div>
+                            <div className="card-title text-center">
+                                Quản lý Kỳ Học
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/admin/semesters">
+                <Link to="/semesters">
                     <button className="btn btn-primary">
-                        <i className='fas fa-list'></i> Danh sách kỳ học
+                        <i className="fas fa-list"></i> Danh sách kỳ học
                     </button>
                 </Link>
             </div>
@@ -72,7 +79,9 @@ const EditSemester = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Chỉnh Sửa Kỳ Học</div>
+                                <div className="card-title">
+                                    Chỉnh Sửa Kỳ Học
+                                </div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
@@ -81,9 +90,16 @@ const EditSemester = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register('name', { required: 'Tên kỳ học không được để trống.' })}
+                                            {...register("name", {
+                                                required:
+                                                    "Tên kỳ học không được để trống.",
+                                            })}
                                         />
-                                        {errors.name && <span className="text-danger">{errors.name.message}</span>}
+                                        {errors.name && (
+                                            <span className="text-danger">
+                                                {errors.name.message}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="form-group">
@@ -91,26 +107,48 @@ const EditSemester = () => {
                                         <input
                                             type="date"
                                             className="form-control"
-                                            {...register('start_date', { required: 'Thời gian bắt đầu không được để trống.' })}
+                                            {...register("start_date", {
+                                                required:
+                                                    "Thời gian bắt đầu không được để trống.",
+                                            })}
                                         />
-                                        {errors.start_date && <span className="text-danger">{errors.start_date.message}</span>}
+                                        {errors.start_date && (
+                                            <span className="text-danger">
+                                                {errors.start_date.message}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="form-group">
                                         <label>Thời Gian Kết Thúc:</label>
                                         <input
                                             type="date"
                                             className="form-control"
-                                            {...register('end_date', { required: 'Ngày kết thúc không được để trống.' })}
+                                            {...register("end_date", {
+                                                required:
+                                                    "Ngày kết thúc không được để trống.",
+                                            })}
                                         />
-                                        {errors.end_date && <span className="text-danger">{errors.end_date.message}</span>}
+                                        {errors.end_date && (
+                                            <span className="text-danger">
+                                                {errors.end_date.message}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="card-action d-flex justify-content-end gap-x-3">
-                                    <button type="button" className="btn btn-danger" onClick={() => reset(semester)}>
-                                        <i className='fas fa-undo'></i> Reset
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger"
+                                        onClick={() => reset(semester)}
+                                    >
+                                        <i className="fas fa-undo"></i> Reset
                                     </button>
-                                    <button type="submit" className="btn btn-success">
-                                        <i className='fas fa-upload'></i> Cập nhật
+                                    <button
+                                        type="submit"
+                                        className="btn btn-success"
+                                    >
+                                        <i className="fas fa-upload"></i> Cập
+                                        nhật
                                     </button>
                                 </div>
                             </div>

@@ -76,4 +76,8 @@ class SubjectController extends Controller
             return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 400);
         }
     }
+
+    public function renderSubjectForClassroom(){
+       
+    }
 }

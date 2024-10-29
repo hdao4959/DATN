@@ -23,7 +23,7 @@ const Signin = () => {
                 closeOnClick: true,
                 draggable: true,
             });
-            navigate("/admin");
+            navigate("/");
         },
         onError: (error) => {
             if (!error.response) {
@@ -34,7 +34,6 @@ const Signin = () => {
                 toast.warning("Lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
                 toast.warning(error.response.data.message);
-
             }
             console.log(error);
         },

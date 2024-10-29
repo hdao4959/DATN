@@ -16,19 +16,20 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->string('subject_code',191)->unique()->comment('Mã môn học');
-            $table->index('subject_code');
-            $table->string('subject_name',255)->unique()->comment('Tên môn học');
-            $table->decimal('tuition', 8, 2)->nullable()->comment('Học phí');
-            $table->decimal('re_study_fee', 8, 2)->nullable()->comment('Phí học lại');
-            $table->integer('credit_number')->nullable()->comment("Số tín chỉ");
+            $table->string('subject_code',40)->unique()->comment('Mã môn học');
+            $table->string('subject_name',100)->unique()->comment('Tên môn học');
+            $table->integer('tuition')->comment('Học phí');
+            $table->integer('re_study_fee')->comment('Phí học lại');
+            $table->integer('credit_number')->comment("Số tín chỉ");
             $table->integer('total_sessions')->comment('Tổng số buổi học');
             $table->text('description')->nullable();
-            $table->string('image',1000)->nullable();
-            $table->string('semester_code',191)->comment('Mã kì học');
-            $table->foreign('semester_code')->references('cate_code')->on('categories')->restrictOnDelete()->restrictOnUpdate();
-            $table->string('major_code',191)->comment('Mã chuyên ngành');
-            $table->foreign('major_code')->references('cate_code')->on('categories')->restrictOnDelete()->restrictOnUpdate();
+            $table->string('image')->nullable();
+            $table->string('semester_code',40)->comment('Mã kì học');
+            $table->foreign('semester_code')->references('cate_code')->on('categories')
+            ->restrictOnDelete()->restrictOnUpdate();
+            $table->string('major_code',40)->comment('Mã chuyên ngành');
+            $table->foreign('major_code')->references('cate_code')->on('categories')
+            ->restrictOnDelete()->restrictOnUpdate();
             $table->boolean('is_active')->default(true);
             $table->index(['is_active', 'major_code', 'semester_code']);
             $table->softDeletes();
