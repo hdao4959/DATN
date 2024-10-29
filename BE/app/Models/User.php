@@ -58,16 +58,54 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
-        // 'password' => 'hashed'
+        'password' => 'hashed'
     ];
 
-    // protected $primaryKey = 'user_code';
-    public $incrementing = false; // Nếu 'user_code' không phải là số tự động tăng.
-    protected $keyType = 'string'; // Nếu 'user_code' là chuỗi.
 
     // Định nghĩa mối quan hệ với bảng 'newsletters'
     public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
+    }
+
+    public function major(){
+        return $this->belongsTo(Category::class, 'major_code', 'cate_code');
+    }
+
+    public function course(){
+        return $this->belongsTo(Category::class, 'course_code', 'cate_code');
+    }
+
+    public function semester(){
+        return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
+    }
+
+
+    public function isAdmin()
+    {
+        return $this->role === 0;
+    }
+
+    public function isTeacher()
+    {
+        return $this->role === '2';
+    }
+
+    public function isStudent()
+    {
+        return $this->role === '3';
+    }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code');
+    }
+    
+    
+
+    // Định nghĩa mối quan hệ với bảng 'attendance'
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'student_code', 'user_code');
     }
 }
