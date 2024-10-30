@@ -18,14 +18,28 @@ class Attendance extends Model
         'noted'
     ];
 
-    // Định nghĩa mối quan hệ với bảng 'users'
+    
+    // public function user()
+    // {
+    //     return $this->belongsToThrough(User::class, ClassroomUser::class, 'user_code', 'user_code', 'student_code', 'user_code');
+    // }
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_code', 'student_code');
+        return $this->belongsTo(User::class, 'student_code', 'user_code');
     }
-    // Định nghĩa mối quan hệ với bảng 'classrooms'
+    
     public function classroom()
     {
         return $this->belongsTo(Classroom::class, 'class_code', 'class_code');
+    }
+    
+    public function classroomUser()
+    {
+        return $this->belongsTo(ClassroomUser::class, 'class_code', 'class_code');
+    }
+    
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class, 'class_code', 'class_code');
     }
 }
