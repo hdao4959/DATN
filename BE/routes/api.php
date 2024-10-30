@@ -35,6 +35,8 @@ use App\Models\User;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
+// Route::apiResource('majors', MajorController::class);
+// Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -75,7 +77,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('majors', MajorController::class);
         Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-        Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
 
         Route::apiResource('category', CategoryController::class);
