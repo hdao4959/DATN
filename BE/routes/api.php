@@ -1,5 +1,4 @@
 <?php
-use App\Http\Controllers\Teacher\ScheduleController;
 use Illuminate\Http\Request;
 use App\Models\AssessmentItem;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +18,7 @@ use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
+use App\Http\Controllers\Teacher\ScheduleController;
 use App\Models\User;
 
 /*
@@ -103,13 +103,50 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-    Route::middleware('role:2')->prefix('/teacher')->as('teacher.')->group(function(){
+    Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function(){
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
-        Route::get('classrooms/{classcode}/students', [TeacherClassroomController::class, 'listStudents']);
-        Route::get('classrooms/{classcode}/schedules', [TeacherClassroomController::class, 'listSchedules']);
-        Route::get('schedules', [ScheduleController::class, 'index']);
+        Route::get('classrooms/{classcode}/list_students', [TeacherClassroomController::class, 'listStudents']);
+        Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
+        // Route::get('schedules', [ScheduleController::class, 'index']);
     });
 
 });
 
+
+Route::get('haha', function(){
+    // $array_student_id = User::where(
+    //     [
+    //         'major_code' => 'CN01',
+    //         'is_active' => true,
+    //         'semester_code' => 'S01',
+    //         'role' => 'student'
+    //     ]
+    // )->limit(3)->pluck('id');
+
+    // if ($array_student_id->isEmpty()) {
+    //     return response()->json(
+    //         [
+    //             'message' => 'Không có học sinh nào để có thể tạo lớp học!'
+    //         ], 422
+    //     );
+    // }
+
+    // $classroom = Classroom::create([
+    //     'class_code' => '1312' ,
+    //     'class_name' => 'Lớp 1',
+    //     'section' => 1, 
+    //     'subject_code' => 'php1', 
+    //     'user_code' => 'TC277'
+    // ]);
+    // $classroom->users()->attach($array_student_id);
+    // // $user = User::with('classrooms')->where('role', 'student')->first();
+    // return response()->json('OK');
+
+    // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
+
+    $user = User::with('classrooms')
+    ->where('users.user_code', 6917289)
+    ->get();
+    return response()->json($user);
+});

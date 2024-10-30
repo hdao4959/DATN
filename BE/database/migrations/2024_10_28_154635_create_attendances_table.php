@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->string('student_code')->index();
-            $table->foreign('student_code')->references('user_code')->on('users')->cascadeOnDelete()->restrictOnUpdate();
+            $table->foreign('student_code')->references('user_code')->on('classroom_user')->cascadeOnDelete()->restrictOnUpdate();
             $table->string('class_code')->index();
             $table->foreign('class_code')->references('class_code')->on('classrooms')->cascadeOnDelete()->restrictOnUpdate();
             $table->dateTime('date');
