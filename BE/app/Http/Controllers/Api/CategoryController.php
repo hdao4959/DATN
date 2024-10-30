@@ -282,13 +282,13 @@ class CategoryController extends Controller
         $daysOfWeek = $this->generateDaysOfWeek();
         $semester = $this->generateSemester();
 
-
+        // dd($listHocSinh);
         return response()->json($this->assignClasses($listHocSinh, $listPhonghoc, $listMonHoc, $daysOfWeek, $semester));
     }
 
     private function generateStudentList()
     {
-        $studentList = DB::table('users')->where('role', '=', "student")->where('is_active', '=', 1)->get();
+        $studentList = DB::table('users')->where('role', '=', '3')->where('is_active', '=', 1)->get();
         $students = $studentList->map(function ($student) {
             return [
                 'maHS' => $student->user_code,
@@ -304,7 +304,7 @@ class CategoryController extends Controller
 
     private function generateTeacherList()
     {
-        $teacherList = DB::table('users')->where('role', '=', "teacher")->where('is_active', '=', true)->get();
+        $teacherList = DB::table('users')->where('role', '=', '2')->where('is_active', '=', true)->get();
         $teachers = $teacherList->map(function ($teacher) {
             return [
                 'maGV' => $teacher->user_code,
@@ -326,6 +326,7 @@ class CategoryController extends Controller
                 'sucChua' => $room->value
             ];
         })->toArray();
+        // dd($classRooms);
         return $classRooms;
     }
 
@@ -353,7 +354,7 @@ class CategoryController extends Controller
                 'hocKy' => $subject->semester_code,
             ];
         })->toArray();
-        return dd($subjectList);
+        // return dd($subjectList);
         return $subjectList;
     }
 
@@ -368,6 +369,8 @@ class CategoryController extends Controller
     private function assignClasses($listHocSinh, $listPhonghoc, $listMonHoc, $daysOfWeek, $semesters)
     {
         // dd($semesters);
+        // dd($listHocSinh);
+
         $listLop = []; // Danh sách lớp học đã xếp
         $classTimes = $this->generateClassTimes(); // Danh sách ca học
         $teachersInMajor = $this->generateTeacherList();
@@ -398,10 +401,10 @@ class CategoryController extends Controller
 
                 // Lọc danh sách học sinh theo chuyên ngành và học kỳ của môn học
                 $studentsInClass = array_filter($listHocSinh, function ($hs) use ($mon, $hocKyHienTai) {
-                    return ($hs['chuyenNganh'] === $mon['chuyenNganh'] || $hs['chuyenNganhHep'] === $mon['chuyenNganh']) 
+                    return ($hs['chuyenNganh'] === $mon['chuyenNganh'] || $hs['chuyenNganhHep'] === $mon['chuyenNganh'])
                         && $hs['hocKy'] === $hocKyHienTai;
                 });
-                
+
 
                 // dd($studentsInClass);
                 // dd($mon['chuyenNganh'],$hocKyHienTai);
@@ -450,14 +453,44 @@ class CategoryController extends Controller
 
                     // Lấy ca học hiện tại
                     $classTime = $classTimes[$currentTimeIndex];
-
+                    $listUser = $this->getStudentsInSameClassOrSession($classTime['code']);
+                    // dd($listUser);
                     // Sức chứa của phòng học
                     $roomCapacity = $phong['sucChua'];
 
                     // Số lượng học sinh tối đa trong lớp là sức chứa của phòng hoặc số học sinh còn lại
                     $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
                     // $dataStudents = $this->getListUserByClassRooms($phong['code'], $classTime['code'], $mon['code']);
-                    $dataStudents = $this->getListUserByClassRooms( $classTime['code']);
+                    // $dataStudents = $this->getListUserByClassRooms($classTime['code']);
+                    // $validTimeIndex = $this->findValidClassTime($studentsInClass, $mon['code'], $day['code'], $currentTimeIndex, $classTimes);
+                    // dd($classSize);
+                    // $studentsToAdd = [];
+                    // foreach (array_slice($studentsInClass, $currentStudentIndex, $classSize) as $student) {
+                    //     $status = $this->checkStudentScheduleConflict(
+                    //         $student['maHS'],
+                    //         $mon['code'],
+                    //         $phong['code'],
+                    //         $classTime['code'],
+                    //         $day['code']
+                    //     );
+
+                    //     if ($status === 'Không trùng') {
+                    //         $studentsToAdd[] = $student;
+                    //     } elseif ($status === 'Trùng ca học') {
+                    //         $currentTimeIndex++;
+                    //         if ($currentTimeIndex >= count($classTimes)) {
+                    //             $currentTimeIndex = 0;
+                    //             $currentRoomIndex++;
+                    //             if ($currentRoomIndex >= count($listPhonghoc)) {
+                    //                 $currentRoomIndex = 0;
+                    //                 $currentDayIndex++;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    // if (empty($studentsToAdd)) break;
+
                     // dd($phong['code'], $classTime['code'], $mon['code']);
                     // dd($dataStudents,$studentsInClass);
                     // Kiểm tra nếu số học sinh còn lại để xếp lớp nhỏ hơn hoặc bằng 0
@@ -477,8 +510,8 @@ class CategoryController extends Controller
                         "phongHoc" => $phong['code'],
                         "ngay" => $day['code'], // Ngày học
                         "ca" => $classTime['code'], // Ca học
-                        "giangVien" => $currentTeacher['ten'] ?? 'Không có giảng viên', // Giảng viên dạy
-                        "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Lấy tiếp học sinh từ vị trí hiện tại
+                        "giangVien" => $currentTeacher['ten'] ?? Null, // Giảng viên dạy
+                        // "hocSinh" => array_slice($studentsInClass, $currentStudentIndex, $classSize), // Lấy tiếp học sinh từ vị trí hiện tại
                     ];
 
                     // Cập nhật chỉ số học sinh đã xếp vào lớp
@@ -521,6 +554,44 @@ class CategoryController extends Controller
             }
         }
         return $listLop;
+    }
+
+
+    public function getStudentsInSameClassOrSession($sessionCode)
+    {
+        $user =  DB::table('classroom_user as cu')
+            ->join('classrooms as c', 'cu.class_code', '=', 'c.class_code')
+            ->join('schedules as d', 'd.class_code', '=', 'c.class_code')
+            ->where('d.session_code', $sessionCode)
+            ->select('cu.user_code', 'cu.class_code','d.session_code','d.room_code')
+            ->distinct()
+            ->get();
+        return $user;
+    }
+
+
+    public function checkStudentScheduleConflict($userCode, $classCode, $roomCode, $sessionCode, $date)
+    {
+        // Kiểm tra xem sinh viên đã có mặt trong lớp này chưa
+        $alreadyEnrolled = DB::table('classroom_user')
+            ->where('class_code', $classCode)
+            ->where('user_code', $userCode)
+            ->exists();
+
+        if ($alreadyEnrolled) {
+            return 'Đã xếp lớp';
+        }
+
+        // Kiểm tra xem sinh viên có trùng ca học trong cùng ngày và phòng không
+        $scheduleConflict = DB::table('schedules')
+            ->join('classroom_user', 'schedules.class_code', '=', 'classroom_user.class_code')
+            ->where('classroom_user.user_code', $userCode)
+            ->where('schedules.room_code', $roomCode)
+            ->where('schedules.session_code', $sessionCode)
+            ->where('schedules.date', $date)
+            ->exists();
+
+        return $scheduleConflict ? 'Trùng ca học' : 'Không trùng';
     }
 
 
