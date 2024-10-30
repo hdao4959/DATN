@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Throwable;
+use App\Models\Classroom;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -36,25 +37,19 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         try {
-            $attendances = Attendance::with(['user', 'classroom'])->get()->map(function ($attendance) {
-                return [
-                    'id' => $attendance->id,
-                    'student_code' => $attendance->student_code,
-                    'full_name' => $attendance->user ? $attendance->user->full_name : null,                    
-                    'class_code' => $attendance->class_code,
-                    'class_name' => $attendance->classroom ? $attendance->classroom->class_name : null,                    
-                    'date' => $attendance->date,
-                    'status' => $attendance->status,
-                    'noted' => $attendance->noted
-                ];
-            });
-
-            if ($attendances->isEmpty()) {
+            $classCode = $request->input('search');
+            $classrooms = Classroom::query()
+                                    ->when($classCode, function ($query, $classCode) {
+                                        return $query
+                                                ->where('class_code', 'like', "%{$classCode}%");
+                                    })
+                                    ->paginate(4);
+            if ($classrooms->isEmpty()) {
 
                 return $this->handleInvalidId();
             }
 
-            return response()->json($attendances, 200);
+            return response()->json($classrooms, 200);
         } catch (Throwable $th) {
 
             return $this->handleErrorNotDefine($th);
@@ -82,10 +77,24 @@ class AttendanceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $classCode)
     {
         try {
-            $attendances = Attendance::where('id', $id)->first();
+            $attendances = Attendance::where('class_code', $classCode)
+                                        ->with('user')
+                                        ->get()
+                                        ->map(function ($attendance) {
+                                            return [
+                                                'id' => $attendance->id,
+                                                'student_code' => $attendance->student_code,
+                                                'full_name' => $attendance->user ? $attendance->user->full_name : null,
+                                                'class_code' => $attendance->class_code,
+                                                'date' => $attendance->date,
+                                                'status' => $attendance->status,
+                                                'noted' => $attendance->noted,
+                                            ];
+                                        });
+            // $attendances = Attendance::where('class_code', $classCode)->with('classroomUser')->get();
             if (!$attendances) {
 
                 return $this->handleInvalidId();

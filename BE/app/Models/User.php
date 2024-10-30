@@ -80,6 +80,16 @@ class User extends Authenticatable
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
+    // public function classroomUser()
+    // {
+    //     return $this->hasMany(ClassroomUser::class, 'user_code', 'student_code');
+    // }
+
+    // public function attendance()
+    // {
+    //     return $this->hasManyThrough(Attendance::class, ClassroomUser::class,  'class_code', 'class_code', 'user_code', 'student_code');
+    // }
+
 
     public function isAdmin()
     {
@@ -101,11 +111,4 @@ class User extends Authenticatable
         return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code');
     }
     
-    
-
-    // Định nghĩa mối quan hệ với bảng 'attendance'
-    public function attendance()
-    {
-        return $this->hasMany(Attendance::class, 'student_code', 'user_code');
-    }
 }
