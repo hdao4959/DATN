@@ -297,6 +297,7 @@ class CategoryController extends Controller
                 'chuyenNganh' => $student->major_code,
                 'chuyenNganhHep' => $student->narrow_major_code,
                 'hocKy' => $student->semester_code,
+                'khoaHoc' => $student->course_code,
             ];
         })->toArray();
         // return dd($students);
@@ -635,9 +636,9 @@ class CategoryController extends Controller
 
                                 $roomCapacity = $phong['sucChua'];
                                 $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
-
+                                // dd($studentsInClass[0]['khoaHoc']);
                                 $listLop[] = [
-                                    "tenLop" => "Lớp " . $mon['code'] . "." . $classCounter,
+                                    "tenLop" => "Lớp " . $mon['code'] ."." . (isset($studentsInClass[0]['khoaHoc']) ? $studentsInClass[0]['khoaHoc'] : '')  . "." . $classCounter,
                                     "maLop" => $mon['code'] . "." . $classCounter,
                                     "monHoc" => $mon['code'],
                                     "phongHoc" => $phong['code'],
@@ -664,20 +665,33 @@ class CategoryController extends Controller
                 }
             }
         }
+        $lopHocBD = $this->getListClassrooms();
         foreach ($listLop as $data) {
-            Classroom::create([
-                'class_code' => $data['maLop'],         
-                'class_name' => $data['tenLop'],  
-                'description' => "Lớp học cho môn {$data['monHoc']}",
-                'is_active' => true,                      
-                'subject_code' => $data['monHoc'],        
-                // 'user_code' => $data['giangVien']                      
-            ]);
+            $lop = array_filter($lopHocBD,function($classroom) use ($data){
+                return $classroom->class_code == $data['maLop'];
+            });
+            // $lop = reset($lop);
+            // dd($lop);
+            if (empty($lop)) {
+                Classroom::create([
+                    'class_code' => $data['maLop'],
+                    'class_name' => $data['tenLop'],
+                    'description' => "Lớp học cho môn {$data['monHoc']}",
+                    'is_active' => true,
+                    'subject_code' => $data['monHoc'],
+                    // 'user_code' => $data['giangVien']                      
+                ]);
+            }
+            // continue;
         }
-        
+
         return $listLop;
     }
 
+    public function getListClassrooms(){
+        $data = DB::table('classrooms')->where('is_active', true)->get()->toArray();
+        return $data;
+    }
 
     // public function getStudentsInSameClassOrSession($sessionCode)
     // {
