@@ -31,7 +31,7 @@ const EditSemester = () => {
         onSuccess: () => {
             toast.success("Cập nhật kỳ học thành công!");
             queryClient.invalidateQueries(["semesters"]);
-            navigate("/semesters");
+            navigate("/admin/semesters");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -68,7 +68,7 @@ const EditSemester = () => {
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/semesters">
+                <Link to="/admin/semesters">
                     <button className="btn btn-primary">
                         <i className="fas fa-list"></i> Danh sách kỳ học
                     </button>

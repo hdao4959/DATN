@@ -52,7 +52,7 @@ const AddSemester = () => {
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/semesters">
+                <Link to="/admin/semesters">
                     <button className="btn btn-primary">
                         <i className="fas fa-list"> Danh sách kỳ học</i>
                     </button>

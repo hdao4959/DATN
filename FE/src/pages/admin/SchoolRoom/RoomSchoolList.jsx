@@ -53,7 +53,7 @@ const RoomSchoolList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/schoolrooms/add">
+                <Link to="/admin/schoolrooms/add">
                     <button className="btn btn-primary">Thêm phòng học</button>
                 </Link>
             </div>
@@ -184,7 +184,7 @@ const RoomSchoolList = () => {
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link
-                                                                to={`/schoolrooms/${it.cate_code}/edit`}
+                                                                to={`/admin/schoolrooms/${it.cate_code}/edit`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>

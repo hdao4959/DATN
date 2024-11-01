@@ -73,7 +73,7 @@ const EditClassroom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/classrooms">
+                <Link to="/admin/classrooms">
                     <button className="btn btn-primary">
                         Danh sách lớp học
                     </button>

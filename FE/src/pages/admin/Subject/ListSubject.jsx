@@ -120,7 +120,7 @@ const SubjectsList = () => {
                         </div>
                         <div className="card-body">
                             <div className="mb-3 mt-2 flex items-center justify-between">
-                                <Link to={`/subjects/add`}>
+                                <Link to={`/admin/subjects/add`}>
                                     <button className="btn btn-success">
                                         <i className="fas fa-plus">
                                             {" "}
