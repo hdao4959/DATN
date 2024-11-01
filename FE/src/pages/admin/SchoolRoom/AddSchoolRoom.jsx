@@ -46,7 +46,7 @@ const AddSchoolRoom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/schoolrooms">
+                <Link to="/admin/schoolrooms">
                     <button className="btn btn-primary">DS phòng học</button>
                 </Link>
             </div>

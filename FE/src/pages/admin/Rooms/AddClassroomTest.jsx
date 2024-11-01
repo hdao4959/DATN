@@ -87,7 +87,7 @@ const AddClassroomTest = () => {
             .then(() => {
                 toast.success("Lớp học đã được lưu thành công!");
                 setShowPopup(false);
-                navigate("/classrooms");
+                navigate("/admin/classrooms");
             })
             .catch(() => {
                 toast.error("Đã xảy ra lỗi khi lưu lớp học.");
@@ -96,7 +96,7 @@ const AddClassroomTest = () => {
 
     return (
         <>
-            <Link to="/classrooms">
+            <Link to="/admin/classrooms">
                 <button className="btn btn-primary">Danh sách lớp học</button>
             </Link>
 

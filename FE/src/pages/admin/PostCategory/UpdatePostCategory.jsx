@@ -22,7 +22,7 @@ const UpdatePostCategory = () => {
         mutationFn: (data) => api.put(`/admin/category/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật danh mục bài viết thành công");
-            navigate("/post-category");
+            navigate("/admin/post-category");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -58,7 +58,7 @@ const UpdatePostCategory = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/post-category">
+                <Link to="/admin/post-category">
                     <button className="btn btn-primary">
                         DS danh mục bài viết
                     </button>

@@ -107,7 +107,7 @@ const AddSubject = () => {
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/subjects">
+                <Link to="/admin/subjects">
                     <button className="btn btn-primary">
                         <i className="fas fa-list"> Danh sách môn học</i>
                     </button>
