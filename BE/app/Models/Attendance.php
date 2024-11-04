@@ -19,14 +19,14 @@ class Attendance extends Model
     ];
 
     
-    // public function user()
-    // {
-    //     return $this->belongsToThrough(User::class, ClassroomUser::class, 'user_code', 'user_code', 'student_code', 'user_code');
-    // }
     public function user()
     {
-        return $this->belongsTo(User::class, 'student_code', 'user_code');
+        return $this->belongsToThrough(User::class, ClassroomUser::class, 'user_code', 'user_code', 'student_code', 'user_code');
     }
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class, 'student_code', 'user_code');
+    // }
     
     public function classroom()
     {
@@ -40,6 +40,6 @@ class Attendance extends Model
     
     public function schedule()
     {
-        return $this->belongsTo(Schedule::class, 'class_code', 'class_code');
+        return $this->belongsToThrough(Schedule::class, Classroom::class, 'class_code', 'class_code', 'class_code', 'class_code');
     }
 }
