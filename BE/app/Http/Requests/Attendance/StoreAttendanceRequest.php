@@ -24,10 +24,10 @@ class StoreAttendanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student_code' => 'required',
-            'class_code' => 'required',
-            'date' => 'required',
-            'noted' => 'regex:/^[^<>{}]*$/'
+            '*.student_code' => 'required',
+            '*.class_code' => 'required',
+            '*.status' => 'required',
+            '*.noted' => 'regex:/^[^<>{}]*$/'
         ];
     }
 
@@ -35,7 +35,6 @@ class StoreAttendanceRequest extends FormRequest
         return [
             'student_code.required' => 'Mã học sinh không được bỏ trống',
             'class_code.required' => 'Mã lớp không được bỏ trống',
-            'date.required' => 'Thời gian điểm danh không được bỏ trống',
             'note.regex' => 'Ghi chú không chứa ký tự <> {}'
         ];
     }

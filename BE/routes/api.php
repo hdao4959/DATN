@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Models\User;
@@ -108,10 +109,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms/{classcode}/list_students', [TeacherClassroomController::class, 'listStudents']);
         Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
         // Route::get('schedules', [ScheduleController::class, 'index']);
+
+        Route::get('/attendances', [TeacherAttendanceController::class, 'index']);  
+        Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);  
+        Route::post('/attendances/store/{classCode}', [TeacherAttendanceController::class, 'store']);  
+        Route::put('/attendances/update/{classCode}', [TeacherAttendanceController::class, 'update']);  
+        Route::delete('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);
     });
 
-});
-
+});  
 
 Route::get('haha', function(){
     // $array_student_id = User::where(
