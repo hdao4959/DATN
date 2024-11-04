@@ -638,8 +638,8 @@ class CategoryController extends Controller
                                 $classSize = min($roomCapacity, $totalStudents - $currentStudentIndex);
                                 // dd($studentsInClass[0]['khoaHoc']);
                                 $listLop[] = [
-                                    "tenLop" => "Lớp " . $mon['code'] ."." . (isset($studentsInClass[0]['khoaHoc']) ? $studentsInClass[0]['khoaHoc'] : '')  . "." . $classCounter,
-                                    "maLop" => $mon['code'] . "." . $classCounter,
+                                    "tenLop" => "Lớp " . $mon['code'] . "." . $classCounter,
+                                    "maLop" => (isset($studentsInClass[0]['khoaHoc']) ? $studentsInClass[0]['khoaHoc'] : '') . "_" . $mon['code'] . "." . $classCounter,
                                     "monHoc" => $mon['code'],
                                     "phongHoc" => $phong['code'],
                                     "ngay" => $day['code'],
@@ -667,7 +667,7 @@ class CategoryController extends Controller
         }
         $lopHocBD = $this->getListClassrooms();
         foreach ($listLop as $data) {
-            $lop = array_filter($lopHocBD,function($classroom) use ($data){
+            $lop = array_filter($lopHocBD, function ($classroom) use ($data) {
                 return $classroom->class_code == $data['maLop'];
             });
             // $lop = reset($lop);
@@ -688,9 +688,144 @@ class CategoryController extends Controller
         return $listLop;
     }
 
-    public function getListClassrooms(){
+    public function getListClassrooms()
+    {
         $data = DB::table('classrooms')->where('is_active', true)->get()->toArray();
         return $data;
+    }
+
+    public function getClassroomsWithDetails()
+    {
+        $data = DB::table('classrooms')
+            ->leftJoin('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
+            ->leftJoin('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
+            ->leftJoin('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code') // Join thêm bảng subjects
+            ->select(
+                'subjects.subject_code',
+                'subjects.subject_name', // Thêm tên môn học
+                'classrooms.class_code',
+                'classrooms.class_name',
+                'classrooms.user_code'
+            )
+            ->where('classrooms.is_active', true)
+            ->get()
+            ->groupBy('subject_code') // Nhóm theo mã môn học
+            ->map(function ($classes) {
+                return $classes->toArray(); // Chuyển từng nhóm lớp học thành mảng
+            })
+            ->toArray();
+
+        return $data;
+    }
+
+
+    public function getCategoriesWithClassrooms()
+    {
+        $data = DB::table('categories')->where('categories.is_active', true)
+            ->where('categories.type', 'major')
+            ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')->where('subjects.is_active', true)
+            ->leftJoin('classrooms', 'classrooms.subject_code', '=', 'subjects.subject_code')->where('classrooms.is_active', true)
+            ->leftJoin('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
+            ->leftJoin('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
+            ->select(
+                'categories.cate_code',
+                'categories.cate_name',
+                'categories.parent_code',
+                'classrooms.class_code',
+                'classrooms.class_name',
+                'classrooms.subject_code',
+                'classrooms.user_code'
+            )
+            ->get()
+            ->groupBy('cate_code') // Nhóm theo mã danh mục
+            ->map(function ($classrooms) {
+                $category = $classrooms->first(); // Lấy thông tin chung của category
+                $category->classrooms = $classrooms->map(function ($classroom) {
+                    return [
+                        'class_code' => $classroom->class_code,
+                        'class_name' => $classroom->class_name,
+                        'subject_code' => $classroom->subject_code,
+                        'user_code' => $classroom->user_code,
+                    ];
+                })->toArray();
+                return $category;
+            })
+            ->values()
+            ->toArray();
+
+        return $data;
+    }
+
+    public function getListStudentByMajor()
+    {
+        $data = DB::table('categories')
+            ->where('categories.is_active', true)
+            ->where('categories.type', 'major')
+            ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
+            ->where('subjects.is_active', true)
+            ->leftJoin('users as major_users', 'categories.cate_code', '=', 'major_users.major_code')
+            ->where('major_users.is_active', true)
+            ->where('major_users.role', '3')
+            ->leftJoin('users as narrow_major_users', 'categories.cate_code', '=', 'narrow_major_users.narrow_major_code')
+            ->where('narrow_major_users.is_active', true)
+            ->where('narrow_major_users.role', '3')
+            ->leftJoin('classroom_user', function ($join) {
+                $join->on('classroom_user.user_code', '=', 'major_users.user_code')
+                    ->orOn('classroom_user.user_code', '=', 'narrow_major_users.user_code');
+            })
+            ->whereNull('classroom_user.user_code') // Lọc học sinh chưa được xếp vào bảng classroom_user
+            ->select(
+                'categories.cate_code',
+                'categories.cate_name',
+                'subjects.subject_code',
+                'subjects.subject_name',
+                'subjects.semester_code as subject_semester_code',
+                'major_users.user_code as major_user_code',
+                'major_users.full_name as major_user_name',
+                'narrow_major_users.user_code as narrow_major_user_code',
+                'narrow_major_users.full_name as narrow_major_user_name',
+                'major_users.semester_code as major_semester_code',
+                'narrow_major_users.semester_code as narrow_semester_code'
+            )
+            // ->take(100)
+            ->get()
+        ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
+        ->map(function ($subjects, $cate_code) {
+            return [
+                'cate_code' => $cate_code,
+                'cate_name' => $subjects->first()->cate_name,
+                'subjects' => $subjects->groupBy('subject_code')->map(function ($students, $subject_code) {
+                    // Lấy danh sách học sinh duy nhất
+                    $uniqueStudents = collect();
+                    foreach ($students as $student) {
+                        // Chỉ lấy học sinh có kỳ học trùng với kỳ học của môn học
+                        if (($student->major_semester_code ?? $student->narrow_semester_code) === $student->subject_semester_code) {
+                            $uniqueStudents->push([
+                                'user_code' => $student->major_user_code ?? $student->narrow_major_user_code,
+                                'user_name' => $student->major_user_name ?? $student->narrow_major_user_name,
+                                'semester' => $student->major_semester_code ?? $student->narrow_semester_code,
+                            ]);
+                        }
+                    }
+                    // Sử dụng unique() để loại bỏ các bản sao
+                    return [
+                        'subject_code' => $subject_code,
+                        'subject_name' => $students->first()->subject_name,
+                        'students' => $uniqueStudents->unique('user_code')->values()->toArray() // Chỉ giữ lại bản ghi duy nhất theo user_code
+                    ];
+                })->values()->toArray() // Sắp xếp lại mảng chỉ số
+            ];
+        })->values()->toArray();
+    
+        return $data;
+    }
+    
+
+    public function addStudent()
+    {
+        $classRoom = $this->getCategoriesWithClassrooms();
+        $student = $this->getListStudentByMajor();
+        dd($classRoom);
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)

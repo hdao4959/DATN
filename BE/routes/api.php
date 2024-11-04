@@ -35,6 +35,7 @@ use App\Models\User;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
+Route::get('addStudent', [CategoryController::class, 'addStudent']);
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
