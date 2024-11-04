@@ -41,8 +41,8 @@ import PostList from "./pages/admin/Post/PostList";
 import UpdatePost from "./pages/admin/Post/UpdatePost";
 import TeacherLayout from "./layouts/Teacher/TeacherLayout";
 import TeachSchedule from "./pages/teacher/TeachSchedule";
-import MyCalendar from "./pages/teacher/TeachSchedule";
-import MyClass from "./pages/teacher/myClass/MyClass";
+// import MyCalendar from "./pages/teacher/TeachSchedule";
+// import MyClass from "./pages/teacher/myClass/MyClass";
 
 function App() {
     const router = createBrowserRouter([

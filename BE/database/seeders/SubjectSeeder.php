@@ -344,42 +344,43 @@ class SubjectSeeder extends Seeder
         //     ],
         // ]);
 
-        // Thêm 10 giáo viên
-        // for ($i = 10; $i <= 100; $i++) {
-        //     DB::table('users')->insert([
-        //         [
-        //             'user_code' => 'teacher' . sprintf('%02d', $i), // teacher01, teacher02, ...
-        //             'full_name' => 'Teacher ' . $i,
-        //             'email' => 'teacher' . $i . '@example.com',
-        //             'email_verified_at' => now(),
-        //             'password' => bcrypt('password123'),
-        //             'phone_number' => '01234567' . sprintf('%02d', $i),
-        //             'address' => '123 Teacher Street',
-        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
-        //             'birthday' => '1985-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
-        //             'citizen_card_number' => '12345678' . $i,
-        //             'issue_date' => '2020-01-01',
-        //             'place_of_grant' => 'Hà Nội',
-        //             'nation' => 'Kinh',
-        //             'avatar' => null,
-        //             'role' => 'teacher',
-        //             'is_active' => 1,
-        //             'major_code' => 'CNTT01',
-        //             'narrow_major_code' => null,
-        //             'semester_code' => 'S01',
-        //             'course_code' => 'k18',
-        //             'remember_token' => Str::random(10),
-        //             'deleted_at' => null,
-        //             'created_at' => Carbon::now(),
-        //             'updated_at' => Carbon::now(),
-        //         ],
-        //     ]);
-        // }
-
-        // Thêm 20 sinh viên
+        
         $majorCodes = ['CN01', 'CN03', 'CN04', 'CN0003'];
         $narrowMajorCodes = ['CN04', 'CNTT01'];
-        $semesterCodes = ['S01', 'S02', 'S03', 'S04','S05','S06','S07'];
+        $semesterCodes = ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07'];
+        // Thêm 10 giáo viên
+        for ($i = 1; $i <= 15; $i++) {
+            DB::table('users')->insert([
+                [
+                    'user_code' => 'teacher' . sprintf('%02d', $i), // teacher01, teacher02, ...
+                    'full_name' => 'Teacher ' . $i,
+                    'email' => 'teacher' . $i . '@example.com',
+                    'email_verified_at' => now(),
+                    'password' => bcrypt('password123'),
+                    'phone_number' => '01234567' . sprintf('%02d', $i),
+                    'address' => '123 Teacher Street',
+                    'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
+                    'birthday' => '1985-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
+                    'citizen_card_number' => '12345678' . $i,
+                    'issue_date' => '2020-01-01',
+                    'place_of_grant' => 'Hà Nội',
+                    'nation' => 'Kinh',
+                    'avatar' => null,
+                    'role' => '2',
+                    'is_active' => 1,
+                    'major_code' => $majorCodes[array_rand($majorCodes)], // Chọn ngẫu nhiên mã ngành
+                    'narrow_major_code' => $narrowMajorCodes[array_rand($narrowMajorCodes)], // Chọn ngẫu nhiên narrow_major_code
+                    'semester_code' => $semesterCodes[array_rand($semesterCodes)],
+                    'course_code' => 'k18',
+                    'remember_token' => Str::random(10),
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ]);
+        }
+
+        // Thêm 20 sinh viên
 
         // for ($i = 1; $i <= 30; $i++) {
         //     DB::table('subjects')->insert([
@@ -401,36 +402,36 @@ class SubjectSeeder extends Seeder
         //         ],
         //     ]);
         // }
-        
-        for ($i = 50; $i <= 1500; $i++) {
-            DB::table('users')->insert([
-                [
-                    'user_code' => 'student' . sprintf('%02d', $i), // student01, student02, ...
-                    'full_name' => 'Student ' . $i,
-                    'email' => 'student' . $i . '@example.com',
-                    'email_verified_at' => now(),
-                    'password' => bcrypt('password123'),
-                    'phone_number' => '01234567' . sprintf('%02d', $i),
-                    'address' => '123 Student Street',
-                    'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
-                    'birthday' => '2000-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
-                    'citizen_card_number' => '12345678' . $i,
-                    'issue_date' => '2020-01-01',
-                    'place_of_grant' => 'Hà Nội',
-                    'nation' => 'Kinh',
-                    'avatar' => null,
-                    'role' => 'student',
-                    'is_active' => 1,
-                    'major_code' => $majorCodes[array_rand($majorCodes)], // Chọn ngẫu nhiên mã ngành
-                    'narrow_major_code' => $narrowMajorCodes[array_rand($narrowMajorCodes)], // Chọn ngẫu nhiên narrow_major_code
-                    'semester_code' => $semesterCodes[array_rand($semesterCodes)],
-                    'course_code' => 'k18',
-                    'remember_token' => Str::random(10),
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-            ]);
-        }
+
+        // for ($i = 4; $i <= 150; $i++) {
+        //     DB::table('users')->insert([
+        //         [
+        //             'user_code' => 'student' . sprintf('%02d', $i), // student01, student02, ...
+        //             'full_name' => 'Student ' . $i,
+        //             'email' => 'student' . $i . '@example.com',
+        //             'email_verified_at' => now(),
+        //             'password' => bcrypt('password123'),
+        //             'phone_number' => '01234567' . sprintf('%02d', $i),
+        //             'address' => '123 Student Street',
+        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
+        //             'birthday' => '2000-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
+        //             'citizen_card_number' => '12345678' . $i,
+        //             'issue_date' => '2020-01-01',
+        //             'place_of_grant' => 'Hà Nội',
+        //             'nation' => 'Kinh',
+        //             'avatar' => null,
+        //             'role' => '3',
+        //             'is_active' => 1,
+        //             'major_code' => $majorCodes[array_rand($majorCodes)], // Chọn ngẫu nhiên mã ngành
+        //             'narrow_major_code' => $narrowMajorCodes[array_rand($narrowMajorCodes)], // Chọn ngẫu nhiên narrow_major_code
+        //             'semester_code' => $semesterCodes[array_rand($semesterCodes)],
+        //             'course_code' => 'k18',
+        //             'remember_token' => Str::random(10),
+        //             'deleted_at' => null,
+        //             'created_at' => Carbon::now(),
+        //             'updated_at' => Carbon::now(),
+        //         ],
+        //     ]);
+        // }
     }
 }

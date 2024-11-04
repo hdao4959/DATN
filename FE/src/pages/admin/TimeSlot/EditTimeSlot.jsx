@@ -31,7 +31,7 @@ const EditTimeslot = () => {
         onSuccess: () => {
             toast.success("Cập nhật ca học thành công!");
             queryClient.invalidateQueries(["timeslot"]);
-            navigate("/timeslot");
+            navigate("/admin/timeslot");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -64,7 +64,7 @@ const EditTimeslot = () => {
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/timeslot">
+                <Link to="/admin/timeslot">
                     <button className="btn btn-primary">
                         <i className="fas fa-list"></i> Danh sách ca học
                     </button>

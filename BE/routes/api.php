@@ -35,6 +35,9 @@ use App\Models\User;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
+// Route::apiResource('majors', MajorController::class);
+// Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -51,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
     Route::patch('grades/{id}',[GradesController::class, 'update']);
+
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
         Route::apiResource('users', UserController::class);
@@ -74,7 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('majors', MajorController::class);
         Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-        Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
 
         Route::apiResource('category', CategoryController::class);
@@ -92,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('schoolrooms', SchoolRoomController::class);
         Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
-        Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 
         Route::apiResource('pointheads', PointHeadController::class);
 

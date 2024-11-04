@@ -30,8 +30,6 @@ return new class extends Migration
             $table->string('avatar')->comment('Ảnh đại diện')->nullable();
 
             $table->enum('role', [0,1,2,3])->comment('Quyền');
-           
-
             $table->boolean('is_active')->default(true);
 
             $table->string('major_code', 40)->nullable()->comment('Mã ngành học');
