@@ -174,7 +174,8 @@ class AttendanceController extends Controller
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
             $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
-            $currentTime = Carbon::createFromFormat('H:i', '07:01');
+            $currentTime = Carbon::now(); // Lay gio hien tai
+            // $currentTime = Carbon::createFromFormat('H:i', '07:01'); // Fix cung gio hien tai
 
             if ($currentTime->diffInMinutes($startTime) <= 15) {
                 // Kiểm tra nếu dữ liệu là mảng và có dữ liệu
@@ -228,24 +229,5 @@ class AttendanceController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
-
-    public function bulkUpdateType(Request $request)
-    {
-        try {
-            $actives = $request->input('status'); // Lấy dữ liệu từ request            
-            foreach ($actives as $student_code => $active) {
-                // Tìm Attendance theo ID và cập nhật trường 'status'
-                $attendance = Attendance::findOrFail($student_code);
-                $attendance->status = $active;
-                $attendance->save();
-            }
-
-            return response()->json([
-                'message' => 'Trạng thái đã được cập nhật thành công!'
-            ], 200);
-        } catch (\Throwable $th) {
-
-            return $this->handleErrorNotDefine($th);
-        }
-    }
+    
 }
