@@ -33,14 +33,31 @@ class AttendanceController extends Controller
             'message' => 'Lỗi không xác định!'
         ], 500);
     }
+    //  Hàm trả về thời gian bắt đầu ca học
+    public function startTime($classCode)
+    {
+        $sessions = Schedule::where('class_code', $classCode)
+                            ->with('session')
+                            ->get()
+                            ->map(function ($session) {
+                                return [
+                                    'session' => $session->session ? $session->session->value : null
+                                ];
+                            });
+        $sessionData = json_decode($sessions[0]['session'], true);
+        $start = $sessionData['start'] ?? null;
+        return $start;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         try {
+            $teacher_code = $request->user()->user_code;
             $classCode = $request->input('search');
             $classrooms = Classroom::query()
+                                    ->where('user_code', $teacher_code)
                                     ->when($classCode, function ($query, $classCode) {
                                         return $query
                                                 ->where('class_code', 'like', "%{$classCode}%");
@@ -66,20 +83,8 @@ class AttendanceController extends Controller
         try {
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
-            // Lấy thời gian bắt đầu ca học
-            $sessions = Schedule::where('class_code', $classCode)
-                                ->with('session')
-                                ->get()
-                                ->map(function ($session) {
-                                    return [
-                                        'session' => $session->session ? $session->session->value : null
-                                    ];
-                                });
-            $sessionData = json_decode($sessions[0]['session'], true);
-            $start = $sessionData['start'] ?? null;
-            $startTime = Carbon::createFromFormat('H:i', $start);
+            $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
             $currentTime = Carbon::now();
-            // End
 
             if ($currentTime->diffInMinutes($startTime) <= 15) {
                 // Kiểm tra nếu dữ liệu là mảng và có dữ liệu
@@ -88,6 +93,7 @@ class AttendanceController extends Controller
                         Attendance::create([
                             'student_code' => $atd['student_code'],
                             'class_code' => $atd['class_code'],
+                            'date' => Carbon::now(),
                             'status' => $atd['status'],
                             'noted' => $atd['noted'],
                         ]);
@@ -117,40 +123,35 @@ class AttendanceController extends Controller
     public function show(string $classCode)
     {
         try {
-            // $date = Classroom::where('class_code', $classCode)->with('schedules')->pluck('date');
-            // dd($date);
-            // $date = 2024-11-01;
-            // $dateNow = Carbon::now()->toDateString(); // lấy ngày hiện tại
-
             $attendances = Classroom::where('class_code', $classCode)
-                                        ->with('users', 'schedules')
-                                        ->get()
-                                        ->map(function ($attendance) {
-                                            // Duyệt qua từng user để lấy các `student_code` và `full_name`
-                                            $users = $attendance->users->map(function ($user) {
-                                                return [
-                                                    'student_code' => $user->user_code,
-                                                    'full_name' => $user->full_name,
-                                                ];
-                                            });
-                                            
-                                            // Duyệt qua từng schedule để lấy `date`
-                                            $schedules = $attendance->schedules->map(function ($schedule) {
-                                                return $schedule->date;
-                                            });
-
-                                            if ($schedules == (Carbon::now()->toDateString())) {
-                                                
-                                                return [
-                                                    'users' => $users,
-                                                    'class_code' => $attendance->class_code,
-                                                    'schedules' => $schedules,
-                                                ];                                                
-                                            } else {
-
-                                                return $this->handleInvalidId();
-                                            }
+                                    ->with('users', 'schedules')
+                                    ->get()
+                                    ->map(function ($attendance) {
+                                        // Duyệt qua từng user để lấy các `student_code` và `full_name`
+                                        $users = $attendance->users->map(function ($user) {
+                                            return [
+                                                'student_code' => $user->user_code,
+                                                'full_name' => $user->full_name,
+                                            ];
                                         });
+                                        
+                                        // Duyệt qua từng schedule để lấy `date`
+                                        $schedules = $attendance->schedules->map(function ($schedule) {
+                                            return $schedule->date;
+                                        });
+
+                                        if ($schedules == (Carbon::now()->toDateString())) {
+                                            
+                                            return [
+                                                'users' => $users,
+                                                'class_code' => $attendance->class_code,
+                                                'schedules' => $schedules,
+                                            ];                                                
+                                        } else {
+
+                                            return $this->handleInvalidId();
+                                        }
+                                    });
             if (!$attendances) {
 
                 return $this->handleInvalidId();
@@ -172,31 +173,21 @@ class AttendanceController extends Controller
         try {
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
-            // Lấy thời gian bắt đầu ca học
-            $sessions = Schedule::where('class_code', $classCode)
-                                ->with('session')
-                                ->get()
-                                ->map(function ($session) {
-                                    return [
-                                        'session' => $session->session ? $session->session->value : null
-                                    ];
-                                });
-            $sessionData = json_decode($sessions[0]['session'], true);
-            $start = $sessionData['start'] ?? null;
-            $startTime = Carbon::createFromFormat('H:i', $start);
-            $currentTime = Carbon::now();
-            // End
+            $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
+            $currentTime = Carbon::createFromFormat('H:i', '07:01');
 
             if ($currentTime->diffInMinutes($startTime) <= 15) {
                 // Kiểm tra nếu dữ liệu là mảng và có dữ liệu
                 if (is_array($attendances) && count($attendances) > 0) {
                     foreach ($attendances as $atd) {
-                        Attendance::updateOrCreate([
-                            'student_code' => $atd['student_code'],
-                            'class_code' => $atd['class_code'],
-                            'status' => $atd['status'],
-                            'noted' => $atd['noted'],
-                        ]);
+                        Attendance::where('student_code', $atd['student_code'])
+                                    ->update([
+                                        'student_code' => $atd['student_code'],
+                                        'class_code' => $atd['class_code'],
+                                        'date' => Carbon::now(),
+                                        'status' => $atd['status'],
+                                        'noted' => $atd['noted'],
+                                    ]);
                     }
 
                     return response()->json($attendances, 200);                         
