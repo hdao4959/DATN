@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Classroom;
+use App\Models\ClassroomUser;
+use App\Models\Schedule;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
+use PHPUnit\Framework\Constraint\Count;
 
 class CategoryController extends Controller
 {
@@ -671,8 +676,8 @@ class CategoryController extends Controller
                 return $classroom->class_code == $data['maLop'];
             });
             // $lop = reset($lop);
-            // dd($lop);
             if (empty($lop)) {
+                // dd($lop);
                 Classroom::create([
                     'class_code' => $data['maLop'],
                     'class_name' => $data['tenLop'],
@@ -680,6 +685,20 @@ class CategoryController extends Controller
                     'is_active' => true,
                     'subject_code' => $data['monHoc'],
                     // 'user_code' => $data['giangVien']                      
+                ]);
+
+                // Schedule::create([
+                //     'class_code' => $data['maLop'],
+                //     'room_code' => $data['phongHoc'],
+                //     'session_code' => $data['ca'],
+                //     'date' => '2024-11-05',
+                // ]);
+
+                DB::table('schedules')->insert([
+                    'class_code' => $data['maLop'],
+                    'room_code' => $data['phongHoc'],
+                    'session_code' => $data['ca'],
+                    'date' => now()
                 ]);
             }
             // continue;
@@ -763,17 +782,12 @@ class CategoryController extends Controller
             ->where('categories.type', 'major')
             ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
             ->where('subjects.is_active', true)
-            ->leftJoin('users as major_users', 'categories.cate_code', '=', 'major_users.major_code')
+            ->leftJoin('users as major_users', function ($join) {
+                $join->on('categories.cate_code', '=', 'major_users.major_code')
+                    ->orOn('categories.cate_code', '=', 'major_users.narrow_major_code');
+            })
             ->where('major_users.is_active', true)
             ->where('major_users.role', '3')
-            ->leftJoin('users as narrow_major_users', 'categories.cate_code', '=', 'narrow_major_users.narrow_major_code')
-            ->where('narrow_major_users.is_active', true)
-            ->where('narrow_major_users.role', '3')
-            ->leftJoin('classroom_user', function ($join) {
-                $join->on('classroom_user.user_code', '=', 'major_users.user_code')
-                    ->orOn('classroom_user.user_code', '=', 'narrow_major_users.user_code');
-            })
-            ->whereNull('classroom_user.user_code') // Lọc học sinh chưa được xếp vào bảng classroom_user
             ->select(
                 'categories.cate_code',
                 'categories.cate_name',
@@ -782,50 +796,297 @@ class CategoryController extends Controller
                 'subjects.semester_code as subject_semester_code',
                 'major_users.user_code as major_user_code',
                 'major_users.full_name as major_user_name',
-                'narrow_major_users.user_code as narrow_major_user_code',
-                'narrow_major_users.full_name as narrow_major_user_name',
                 'major_users.semester_code as major_semester_code',
-                'narrow_major_users.semester_code as narrow_semester_code'
             )
-            // ->take(100)
             ->get()
-        ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
-        ->map(function ($subjects, $cate_code) {
-            return [
-                'cate_code' => $cate_code,
-                'cate_name' => $subjects->first()->cate_name,
-                'subjects' => $subjects->groupBy('subject_code')->map(function ($students, $subject_code) {
-                    // Lấy danh sách học sinh duy nhất
-                    $uniqueStudents = collect();
-                    foreach ($students as $student) {
-                        // Chỉ lấy học sinh có kỳ học trùng với kỳ học của môn học
-                        if (($student->major_semester_code ?? $student->narrow_semester_code) === $student->subject_semester_code) {
-                            $uniqueStudents->push([
-                                'user_code' => $student->major_user_code ?? $student->narrow_major_user_code,
-                                'user_name' => $student->major_user_name ?? $student->narrow_major_user_name,
-                                'semester' => $student->major_semester_code ?? $student->narrow_semester_code,
-                            ]);
+            ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
+            ->map(function ($subjects, $cate_code) {
+                return [
+                    'cate_code' => $cate_code,
+                    'cate_name' => $subjects->first()->cate_name,
+                    'subjects' => $subjects->groupBy('subject_code')->map(function ($students, $subject_code) {
+                        // Lấy danh sách học sinh duy nhất
+                        $uniqueStudents = collect();
+                        foreach ($students as $student) {
+                            // Chỉ lấy học sinh có kỳ học trùng với kỳ học của môn học
+                            if ($student->major_semester_code === $student->subject_semester_code) {
+                                $uniqueStudents->push([
+                                    'user_code' => $student->major_user_code,
+                                    'user_name' => $student->major_user_name,
+                                    'semester' => $student->major_semester_code,
+                                ]);
+                            }
                         }
-                    }
-                    // Sử dụng unique() để loại bỏ các bản sao
-                    return [
-                        'subject_code' => $subject_code,
-                        'subject_name' => $students->first()->subject_name,
-                        'students' => $uniqueStudents->unique('user_code')->values()->toArray() // Chỉ giữ lại bản ghi duy nhất theo user_code
-                    ];
-                })->values()->toArray() // Sắp xếp lại mảng chỉ số
-            ];
-        })->values()->toArray();
-    
+                        // Sử dụng unique() để loại bỏ các bản sao
+                        return [
+                            'subject_code' => $subject_code,
+                            'subject_name' => $students->first()->subject_name,
+                            'students' => $uniqueStudents->unique('user_code')->values()->toArray() // Chỉ giữ lại bản ghi duy nhất theo user_code
+                        ];
+                    })->values()->toArray() // Sắp xếp lại mảng chỉ số
+                ];
+            })->values()->toArray();
+
         return $data;
     }
-    
+
+    public function getClassrooms()
+    {
+        $data = DB::table('classrooms')->where('classrooms.is_active', true)
+            ->leftJoin('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
+            ->leftJoin('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
+            ->whereNull('classroom_user.class_code')
+            ->leftJoin('categories', 'schedules.room_code', '=', 'categories.cate_code')
+            ->where('categories.is_active', true)
+            ->where('classrooms.id', '>=', 281)
+            ->orderBy('categories.value', 'desc')
+            ->select(
+                'categories.cate_code',
+                'categories.cate_name',
+                'categories.value',
+                'classrooms.class_code',
+                'classrooms.class_name',
+                'classrooms.subject_code',
+                'classrooms.user_code'
+            )
+            ->get()
+            ->toArray();
+
+        return $data;
+    }
+
+    // public function getListStudentByMajor()
+    // {
+    //     $data = DB::table('categories')
+    //         ->where('categories.is_active', true)
+    //         ->where('categories.type', 'major')
+    //         ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
+    //         ->where('subjects.is_active', true)
+    //         ->leftJoin('users as major_users', 'categories.cate_code', '=', 'major_users.major_code')
+    //         ->where('major_users.is_active', true)
+    //         ->where('major_users.role', '3')
+    //         ->leftJoin('classroom_user', function ($join) {
+    //             $join->on('classroom_user.user_code', '=', 'major_users.user_code');
+    //         })
+    //         ->leftJoin('classrooms', 'subjects.subject_code', '=', 'classrooms.subject_code')
+    //         ->leftJoin('schedules', 'schedules.class_code', '=', 'classrooms.class_code')
+    //         ->leftJoin('categories as schoolrooms', 'schedules.room_code', '=', 'schoolrooms.cate_code')
+    //         ->whereNull('classroom_user.user_code') // Filter out students already assigned to a class
+    //         ->whereRaw('(
+    //             SELECT COUNT(*) FROM classroom_user 
+    //             WHERE classroom_user.class_code = classrooms.class_code
+    //         ) <= schoolrooms.value') // Check classroom capacity
+    //         ->select(
+    //             'categories.cate_code',
+    //             'categories.cate_name',
+    //             'subjects.subject_code',
+    //             'subjects.subject_name',
+    //             'subjects.semester_code as subject_semester_code',
+    //             'major_users.user_code as major_user_code',
+    //             'major_users.full_name as major_user_name',
+    //             'major_users.semester_code as major_semester_code',
+    //             'classrooms.class_code',
+    //             'classrooms.class_name',
+    //             'schoolrooms.value as room_value'
+    //         )
+    //         ->get()
+    //         ->groupBy('cate_code')
+    //         ->map(function ($subjects, $cate_code) {
+    //             return [
+    //                 'cate_code' => $cate_code,
+    //                 'cate_name' => $subjects->first()->cate_name,
+    //                 'subjects' => $subjects->groupBy('subject_code')->map(function ($students, $subject_code) {
+    //                     $classrooms = [];
+    //                     $classroomInfo = [
+    //                         'class_code' => $students->first()->class_code,
+    //                         'class_name' => $students->first()->class_name,
+    //                         'room_value' => $students->first()->room_value,
+    //                     ];
+
+    //                     $currentClassroom = $classroomInfo;
+    //                     $currentStudents = collect();
+    //                     foreach ($students as $student) {
+    //                         if (($student->major_semester_code ?? $student->narrow_semester_code) === $student->subject_semester_code) {
+    //                             // Kiểm tra và lưu phòng nếu đã đủ số lượng sinh viên
+    //                             if ($currentStudents->count() >= $currentClassroom['room_value']) {
+    //                                 // Lưu thông tin vào `classroom_user`
+    //                                 if ($currentStudents->isNotEmpty()) {
+    //                                     // Thay thế vòng lặp insert như sau:
+    //                                     foreach ($currentStudents as $user) {
+    //                                         ClassroomUser::firstOrCreate([
+    //                                             'class_code' => $currentClassroom['class_code'],
+    //                                             'user_code' => $user['user_code'],
+    //                                         ]);
+    //                                     }
+
+
+    //                                     $classrooms[] = [
+    //                                         'classroom' => $currentClassroom,
+    //                                         'students' => $currentStudents->unique('user_code')->values()->toArray(),
+    //                                     ];
+    //                                 }
+    //                                 $currentStudents = collect();
+    //                             }
+
+    //                             $currentStudents->push([
+    //                                 'user_code' => $student->major_user_code,
+    //                                 'user_name' => $student->major_user_name,
+    //                                 'semester' => $student->major_semester_code ?? $student->narrow_semester_code,
+    //                             ]);
+    //                         }
+    //                     }
+
+    //                     return [
+    //                         'subject_code' => $subject_code,
+    //                         'subject_name' => $students->first()->subject_name,
+    //                         'classrooms' => $classrooms,
+    //                     ];
+    //                 })->values()->toArray()
+    //             ];
+    //         })->values()->toArray();
+    //     return $data;
+    // }
 
     public function addStudent()
+{
+    $classRooms = $this->getClassrooms();  // Lấy danh sách lớp học
+    $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
+    $classRoomIndex = 0; // Chỉ số lớp học hiện tại, để bắt đầu từ lớp tiếp theo khi chuyển qua môn khác
+
+    // Duyệt qua từng chuyên ngành
+    foreach ($students as $major) {
+        foreach ($major['subjects'] as $subject) {
+            foreach ($subject['students'] as $student) {
+                $assigned = false;
+
+                // Bắt đầu từ lớp hiện tại, không phải từ đầu danh sách lớp
+                while ($classRoomIndex < count($classRooms)) {
+                    $classRoom = $classRooms[$classRoomIndex];
+
+                    // Đếm số lượng sinh viên hiện tại trong lớp
+                    $currentStudentCount = DB::table('classroom_user')
+                        ->where('class_code', $classRoom->class_code)
+                        ->count();
+
+                    // Nếu lớp còn chỗ trống thì gán sinh viên vào lớp này
+                    if ($currentStudentCount < intval($classRoom->value)) {
+                        if ($this->canAssignStudentToClass($student, $classRoom)) {
+                            DB::table('classroom_user')->insert([
+                                'class_code' => $classRoom->class_code,
+                                'user_code' => $student['user_code']
+                            ]);
+
+                            $this->updateClassroomForSubject($classRoom, $subject);
+                            $assigned = true;
+                            break;
+                        }
+                    } else {
+                        // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
+                        $classRoomIndex++;
+                    }
+                }
+
+                // Nếu không có lớp nào phù hợp cho sinh viên này, tiếp tục với sinh viên tiếp theo
+                if (!$assigned) {
+                    continue;
+                }
+            }
+
+            // Sau khi xong môn học, tăng chỉ số lớp học để bắt đầu từ lớp tiếp theo
+            $classRoomIndex++;
+        }
+    }
+
+    return response()->json(['message' => 'Students assigned to classrooms successfully']);
+}
+
+
+    public function updateClassroomForSubject($classRoom, $subject)
     {
-        $classRoom = $this->getCategoriesWithClassrooms();
-        $student = $this->getListStudentByMajor();
-        dd($classRoom);
+        // Cập nhật lớp học cho môn học sau khi sinh viên được phân bổ vào lớp học
+        DB::table('classrooms')
+            ->where('class_code', $classRoom->class_code)
+            ->update([
+                'subject_code' => $subject['subject_code'],  // Cập nhật môn học cho lớp
+                'class_name' => $classRoom->class_name,  // Cập nhật tên lớp học (nếu cần)
+            ]);
+    }
+
+    public function canAssignStudentToClass($student, $classRoom)
+    {
+        // Lấy thông tin lịch học của lớp học từ bảng schedules
+        $classSchedule = DB::table('schedules')
+            ->where('room_code', $classRoom->class_code) // Lấy lịch học của lớp
+            ->get();
+
+
+        // Kiểm tra lịch học của sinh viên đã có từ bảng classroom_user
+        // dd($student['user_code']);
+        $studentSchedules = DB::table('classroom_user')
+            ->join('schedules', 'classroom_user.class_code', '=', 'schedules.room_code')
+            ->where('classroom_user.user_code', $student['user_code']) // Lấy lịch học của sinh viên
+            ->get();
+
+        // Duyệt qua từng lịch học của lớp học
+        foreach ($classSchedule as $schedule) {
+            // Kiểm tra nếu sinh viên đã có lịch học trùng với ca học và ngày học của lớp này
+            foreach ($studentSchedules as $studentSchedule) {
+                if ($studentSchedule->date == $schedule->date && $studentSchedule->session_code == $schedule->session_code) {
+                    // Nếu sinh viên đã có lịch học trùng với lớp học này thì không thể gán
+                    return false;
+                }
+            }
+        }
+
+        // Nếu không có lịch học trùng, có thể gán sinh viên vào lớp học
+        return true;
+    }
+
+
+
+    public function getListClassByRoomAndSession(Request $request)
+    {
+        $startDates = $request->input('startDates');
+        if (!$startDates || !is_array($startDates)) {
+            return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
+        }
+        $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
+        $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
+        $index = 1;
+        $createdClassrooms = [];
+        foreach ($schoolRoom as $room) {
+            foreach ($sessions as $session) {
+                foreach ($startDates as $startDate) {
+                    try {
+                        $date = Carbon::parse($startDate);
+                        $dayOfWeek = $date->dayOfWeek;
+                    } catch (\Exception $e) {
+                        return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
+                    }
+
+                    $classroom = Classroom::firstOrCreate([
+                        'class_code' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
+                        'class_name' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
+                        'is_active' => true
+                    ]);
+
+                    $createdClassrooms[] = $classroom;
+
+                    Schedule::firstOrCreate([
+                        'class_code' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
+                        'room_code' => $room->cate_code,
+                        'session_code' => $session->cate_code,
+                        'date' => $date->format('Y-m-d')
+                    ]);
+                }
+            }
+            $index++;
+        }
+
+        return response()->json([
+            'count' => count($createdClassrooms),
+            'startDates' => $startDates
+        ]);
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)

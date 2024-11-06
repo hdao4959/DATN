@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import AdminMenu from "./AdminMenu";
 import StudentMenu from "./StudentMenu";
 
-const fakeRole = "admin";
+const fakeRole = "1";
 
 const Sidebar = () => {
     return (
@@ -45,9 +45,9 @@ const Sidebar = () => {
             </div>
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
-                    {fakeRole === "admin" && <AdminMenu />}
-                    {fakeRole === "teacher" && <TeacherMenu />}
-                    {fakeRole === "student" && <StudentMenu />}
+                    {fakeRole === "1" && <AdminMenu />}
+                    {fakeRole === "2" && <TeacherMenu />}
+                    {fakeRole === "3" && <StudentMenu />}
                 </div>
             </div>
         </div>
