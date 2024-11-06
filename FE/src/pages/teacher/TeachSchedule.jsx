@@ -4,6 +4,7 @@ import moment from "moment";
 import "/src/css/modalCalender.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getToken } from "../../utils/getToken";
 
 const localizer = momentLocalizer(moment);
 
@@ -28,8 +29,7 @@ const MyCalendar = () => {
     useEffect(() => {
         const fetchSchedules = async () => {
             try {
-                const token = JSON.parse(localStorage.getItem("token"));
-                const accessToken = token?.access_token;
+                const accessToken = getToken();
 
                 if (!accessToken) {
                     setErrorMessage("Vui lòng đăng nhập để xem lịch trình.");
