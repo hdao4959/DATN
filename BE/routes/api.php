@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
+use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Models\User;
 
 /*
@@ -104,8 +105,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('attendances', AttendanceController::class);        
     });
 
-
-
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function(){
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
@@ -118,6 +117,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);  
         Route::put('/attendances/{classCode}', [TeacherAttendanceController::class, 'update']);
         Route::delete('/attendances/{classCode}', [TeacherAttendanceController::class, 'destroy']);
+    });
+
+    Route::middleware('role:3')->prefix('student')->as('student.')->group(function(){
+        Route::apiResource('attendances', StudentAttendanceController::class);
     });
 
 });  

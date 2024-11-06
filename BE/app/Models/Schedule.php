@@ -29,20 +29,21 @@ class Schedule extends Model
     }
 
     public function toArray()
-{
-    return [
-        'class_code' => $this->class_code,
-        'date' => $this->date,
-        'classroom' => [
-            'class_name' => $this->classroom->class_name ?? null,
-        ],
-        'room' => [
-            'cate_name' => $this->room->cate_name ?? null,
-        ],
-        'session' => [
-            'cate_name' => $this->session->cate_name ?? null,
-            'value' => $this->session->value ?? null,
-        ]
-    ];
-}
+    {
+        return [
+            'class_code' => $this->class_code,
+            'date' => $this->date,
+            'classroom' => [
+                'class_name' => $this->classroom->class_name ?? null,
+            ],
+            'room' => [
+                'cate_name' => $this->room->cate_name ?? null,
+            ],
+            'session' => [
+                'cate_code' => $this->session->cate_code ?? null,
+                'cate_name' => $this->session->cate_name ?? null,
+                'value' => $this->session->value ?? null,
+            ]
+        ];
+    }
 }
