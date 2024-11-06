@@ -46,7 +46,7 @@ const TeacherMenu = () => {
                             <a
                                 data-bs-toggle="collapse"
                                 href="#dashboard"
-                                className="collapsed"
+                                className="collapsed show"
                                 aria-expanded="false"
                             >
                                 <i className="fas fa-home" />
@@ -57,7 +57,7 @@ const TeacherMenu = () => {
                                 <ul className="nav nav-collapse">
                                     <li>
                                         <Link to={"/teacher/schedule"}>
-                                            <span className="sub-item">
+                                            <span className="sub-item active">
                                                 Lịch dạy của tôi
                                             </span>
                                         </Link>
@@ -80,67 +80,11 @@ const TeacherMenu = () => {
                             <div className="collapse" id="base">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="/teacher/class">
+                                        <Link to={"/teacher/class"}>
                                             <span className="sub-item">
                                                 Danh sách lớp học
                                             </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/buttons.html">
-                                            <span className="sub-item">
-                                                Buttons
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/gridsystem.html">
-                                            <span className="sub-item">
-                                                Grid System
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/panels.html">
-                                            <span className="sub-item">
-                                                Panels
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/notifications.html">
-                                            <span className="sub-item">
-                                                Notifications
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/sweetalert.html">
-                                            <span className="sub-item">
-                                                Sweet Alert
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/font-awesome-icons.html">
-                                            <span className="sub-item">
-                                                Font Awesome Icons
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/simple-line-icons.html">
-                                            <span className="sub-item">
-                                                Simple Line Icons
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../components/typography.html">
-                                            <span className="sub-item">
-                                                Typography
-                                            </span>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -170,13 +114,13 @@ const TeacherMenu = () => {
                                 </ul>
                             </div>
                         </li>
-                        <li className="nav-item active submenu">
+                        <li className="nav-item  submenu">
                             <a data-bs-toggle="collapse" href="#forms">
                                 <i className="fas fa-pen-square" />
                                 <p>Forms</p>
                                 <span className="caret" />
                             </a>
-                            <div className="collapse show" id="forms">
+                            <div className="collapse" id="forms">
                                 <ul className="nav nav-collapse">
                                     <li className="active">
                                         <a href="../forms/forms.html">
