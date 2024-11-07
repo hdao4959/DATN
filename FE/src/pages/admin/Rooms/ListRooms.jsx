@@ -1,12 +1,20 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
+import { getToken } from "../../../utils/getToken";
 
 const ClassRoomsList = () => {
+    const accessToken = getToken();
+
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ROOMS"],
         queryFn: async () => {
-            const res = await api.get("/admin/classrooms");
+            const res = await api.get("/admin/classrooms", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
             return res.data;
         },
     });
@@ -14,7 +22,12 @@ const ClassRoomsList = () => {
 
     const { mutate, isLoading } = useMutation({
         mutationFn: (class_code) =>
-            api.delete(`/admin/classrooms/${class_code}`),
+            api.delete(`/admin/classrooms/${class_code}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }),
         onSuccess: () => {
             alert("Xóa phòng học thành công");
             refetch();

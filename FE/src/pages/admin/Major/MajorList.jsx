@@ -3,12 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import Spinner from "../../../components/Spinner/Spinner";
 import MajorTable from "./MajorTable";
+import { getToken } from "../../../utils/getToken";
 
 const MajorList = () => {
+    const accessToken = getToken();
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["LIST_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/majors");
+            const res = await api.get("/admin/majors", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
             // var data1 = res.data;
             // console.log(data1.data.data);
             return res.data;
@@ -105,9 +112,9 @@ const MajorList = () => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12 col-md-5">
-                                    <div className="dataTables_info">
+                                    {/* <div className="dataTables_info">
                                         Showing 1 to 10 of {data.length} entries
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div className="col-sm-12 col-md-7">
                                     <div className="dataTables_paginate paging_simple_numbers">
