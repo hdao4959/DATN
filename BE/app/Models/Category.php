@@ -43,4 +43,10 @@ class Category extends Model
     {
         return $this->hasMany(Newsletter::class, 'cate_code', 'cate_code');
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'semester_code', 'cate_code');
+    }
+
 }

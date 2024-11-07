@@ -377,7 +377,7 @@ class SubjectSeeder extends Seeder
         // }
 
         // Thêm 20 sinh viên
-        $majorCodes = ['CN01', 'CN03', 'CN04', 'CN0003'];
+        $majorCodes = ['CN01', 'CN03', 'CN04'];
         $narrowMajorCodes = ['CN04', 'CNTT01'];
         $semesterCodes = ['S01', 'S02', 'S03', 'S04','S05','S06','S07'];
 
@@ -386,8 +386,8 @@ class SubjectSeeder extends Seeder
                 [
                     'subject_code' => 'MH' . sprintf('%03d', $i),
                     'subject_name' => 'Môn học ' . $i,
-                    'tuition' => rand(5000000, 7000000), // Học phí ngẫu nhiên trong khoảng từ 5-7 triệu
-                    're_study_fee' => rand(2000000, 3000000), // Phí học lại ngẫu nhiên
+                    'tuition' => rand(50000, 70000), // Học phí ngẫu nhiên trong khoảng từ 5-7 triệu
+                    're_study_fee' => rand(20000, 30000), // Phí học lại ngẫu nhiên
                     'credit_number' => rand(3, 5), // Số tín chỉ ngẫu nhiên từ 3 đến 5
                     'total_sessions' => rand(15, 20), // Tổng số buổi học ngẫu nhiên
                     'description' => 'Mô tả môn học ' . $i,
@@ -401,7 +401,7 @@ class SubjectSeeder extends Seeder
                 ],
             ]);
         }
-        
+
         // for ($i = 50; $i <= 1500; $i++) {
         //     DB::table('users')->insert([
         //         [

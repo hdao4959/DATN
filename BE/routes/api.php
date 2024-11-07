@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Admin\ScoreController;
+use App\Http\Controllers\FeeController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WalletController;
 use App\Models\AssessmentItem;
 
 /*
@@ -83,5 +86,11 @@ Route::prefix('/admin')->as('admin.')->group(function () {
     Route::apiResource('assessment', AssessmentItemController::class);
 
     Route::get('score/{id}', [ScoreController::class,'create']);
+
+    Route::apiResource('fees', FeeController::class);
+    Route::apiResource('transaction', TransactionController::class);
+    Route::apiResource('wallet', WalletController::class);
+
+
 });
 

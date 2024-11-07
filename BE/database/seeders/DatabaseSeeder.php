@@ -14,12 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(1000)->create();
+
 
         User::create([
-            'user_code' => 'AM' . fake()->unique()->numberBetween(100, 999), // Tạo mã sinh viên ngẫu nhiên ST100 - ST999
+            'user_code' => 'BM', // Tạo mã sinh viên ngẫu nhiên ST100 - ST999
             'full_name' => fake()->name,
-            'email' => 'admin@gmail.com',
+            'email' => 'loctqph42545@fpt.edu.vn',
             'password' => bcrypt('password'), // Mật khẩu mẫu
             'phone_number' => fake()->phoneNumber(),
             'address' => fake()->address(),
@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => 1,
         ]);
 
-      
-    
+
+
     }
 }

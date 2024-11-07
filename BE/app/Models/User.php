@@ -60,13 +60,18 @@ class User extends Authenticatable
         // 'password' => 'hashed'
     ];
 
-    // protected $primaryKey = 'user_code';
-    public $incrementing = false; // Nếu 'user_code' không phải là số tự động tăng.
-    protected $keyType = 'string'; // Nếu 'user_code' là chuỗi.
+
 
     // Định nghĩa mối quan hệ với bảng 'newsletters'
     public function newsletter()
     {
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
     }
+
+    public function semester(){
+        return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
+    }
+
+
+
 }

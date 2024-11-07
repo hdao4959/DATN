@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('subject_code',191)->unique()->comment('Mã môn học');
             $table->index('subject_code');
             $table->string('subject_name',255)->unique()->comment('Tên môn học');
-            $table->decimal('tuition', 8, 2)->nullable()->comment('Học phí');
+            $table->decimal('tuition', 12, 2)->nullable()->comment('Học phí');
             $table->decimal('re_study_fee', 8, 2)->nullable()->comment('Phí học lại');
             $table->integer('credit_number')->nullable()->comment("Số tín chỉ");
             $table->integer('total_sessions')->comment('Tổng số buổi học');
