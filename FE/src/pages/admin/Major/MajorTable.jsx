@@ -27,7 +27,7 @@ const MajorTable = ({ data = [], refetch }) => {
     };
 
     const { mutate, isLoading } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/major/${id}`),
+        mutationFn: (id) => api.delete(`/admin/majors/${id}`),
         onSuccess: () => {
             toast.success("Xóa chuyên ngành thành công");
             onModalVisible();
