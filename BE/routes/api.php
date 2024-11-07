@@ -83,7 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
 
 
-        Route::apiResource('category', CategoryController::class);
+        Route::apiResource('categories', CategoryController::class);
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
@@ -162,3 +162,4 @@ Route::get('haha', function(){
     ->get();
     return response()->json($user);
 });
+
