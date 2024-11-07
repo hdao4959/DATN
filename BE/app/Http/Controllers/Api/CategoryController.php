@@ -48,17 +48,19 @@ class CategoryController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'category')
+            $data = Category::with(['childrens' => function($query){
+                $query->select('cate_code', 'cate_name', 'is_active');
+            }])->select('cate_code', 'cate_name', 'image', 'parent_code', 'is_active')
+            ->whereNull('parent_code')
+            ->where('type', '=', 'category')
                 ->when($search, function ($query, $search) {
-
                     return $query
-                        ->where('cate_name', 'like', "%{$search}%");
+                        ->where('cate_name', 'like', "%{$search}%")
+                        ->orWhereHas('childrens', function($childrenQuery) use ($search){
+                            return $childrenQuery->where('cate_name', 'like', "%$search%");
+                        });
                 })
                 ->paginate(4);
-            if ($data->isEmpty()) {
-
-                return $this->handleInvalidId();
-            }
 
             return response()->json($data, 200);
         } catch (Throwable $th) {
