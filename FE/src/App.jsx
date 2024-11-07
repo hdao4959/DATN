@@ -44,6 +44,7 @@ import TeachSchedule from "./pages/teacher/TeachSchedule";
 import ClassList from "./pages/teacher/MyClass/ClassList";
 import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
 import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
+import NotFound from "./pages/NotFound";
 
 function App() {
     const router = createBrowserRouter([
@@ -230,6 +231,10 @@ function App() {
                     element: <ClassSchedules />,
                 },
             ],
+        },
+        {
+            path: "*",
+            element: <NotFound />,
         },
     ]);
 
