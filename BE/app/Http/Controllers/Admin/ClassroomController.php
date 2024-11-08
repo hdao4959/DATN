@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Classroom\HandleStep1;
 use App\Http\Requests\Classroom\RenderClassroomRequest;
 
 use App\Models\Classroom;
@@ -12,6 +13,8 @@ use App\Models\Category;
 use App\Models\Schedule;
 use App\Models\Subject;
 use App\Models\User;
+use DateInterval;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -60,6 +63,7 @@ class ClassroomController extends Controller
 
 
 
+
     // public function renderScheduleForStoreClassroom(RenderClassroomRequest $request)
     // {
     //     try {
@@ -99,6 +103,24 @@ class ClassroomController extends Controller
     // }
 
     
+    public function handle_step1(HandleStep1 $request){
+        $data = $request->validated();
+        $subject = Subject::firstWhere('subject_code', $data['subject_code']);
+        $dateFrom = $data['date_from'];
+        $studyDays = $data['study_days'];
+        $study_dates = [];
+        
+        $curentDate = new DateTime($dateFrom);  
+        do {
+            if(in_array($curentDate->format('N'), $studyDays)){
+                $study_dates[] = $curentDate->format('Y-m-d');
+             }
+            $curentDate->add(new DateInterval('P1D'));
+        } while (count($study_dates) < $subject['total_sessions']);
+        return response()->json($study_dates);
+    }
+
+
 
     public function store(StoreClassroomRequest $request)
     {
