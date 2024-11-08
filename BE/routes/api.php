@@ -84,6 +84,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('categories', CategoryController::class);
+        Route::controller(CategoryController::class)->group(function(){
+            Route::get('/listParentCategories', 'listParentCategories');
+        });
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
@@ -111,7 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/list_students', [TeacherClassroomController::class, 'listStudents']);
         Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
-        // Route::get('schedules', [ScheduleController::class, 'index']);
+        Route::get('schedules', [ScheduleController::class, 'index']);
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);  
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);  
@@ -163,3 +166,13 @@ Route::get('haha', function(){
     return response()->json($user);
 });
 
+
+Route::apiResource('classrooms', ClassroomController::class);
+Route::controller(ClassroomController::class)->group(function(){
+    Route::post('classrooms/handle_step1', 'handle_step1');
+});
+
+Route::controller(CategoryController::class)->group(function(){
+    Route::get('/listParentCategories', 'listParentCategories');
+    Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
+});
