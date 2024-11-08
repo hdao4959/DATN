@@ -86,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categories', CategoryController::class);
         Route::controller(CategoryController::class)->group(function(){
             Route::get('/listParentCategories', 'listParentCategories');
+            Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
         });
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
@@ -172,7 +173,3 @@ Route::controller(ClassroomController::class)->group(function(){
     Route::post('classrooms/handle_step1', 'handle_step1');
 });
 
-Route::controller(CategoryController::class)->group(function(){
-    Route::get('/listParentCategories', 'listParentCategories');
-    Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
-});
