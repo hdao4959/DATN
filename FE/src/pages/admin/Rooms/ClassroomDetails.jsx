@@ -2,14 +2,21 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
+import { getToken } from "../../../utils/getToken";
 
 const ClassRoomDetails = () => {
     const { class_code } = useParams();
+    const accessToken = getToken();
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["CLASSROOM_DETAIL", class_code],
         queryFn: async () => {
-            const res = await api.get(`/admin/classrooms/${class_code}`);
+            const res = await api.get(`/admin/classrooms/${class_code}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
             return res.data;
         },
     });

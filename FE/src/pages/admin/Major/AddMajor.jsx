@@ -16,12 +16,12 @@ const AddMajor = () => {
     const { data: listMajor } = useQuery({
         queryKey: ["LIST_PARENT_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/major");
+            const res = await api.get("/admin/majors");
             return res.data?.parent;
         },
     });
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post("/admin/major", data),
+        mutationFn: (data) => api.post("/admin/majors", data),
         onSuccess: () => {
             toast.success("Thêm chuyên ngành thành công");
             reset();

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getToken } from "../../../utils/getToken";
 
 const EditClassroom = () => {
     const navigate = useNavigate();
@@ -15,10 +16,16 @@ const EditClassroom = () => {
     } = useForm();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const accessToken = getToken();
 
     useEffect(() => {
         axios
-            .get(`http://127.0.0.1:8000/api/admin/classrooms/${class_code}`)
+            .get(`http://127.0.0.1:8000/api/admin/classrooms/${class_code}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            })
             .then((response) => {
                 const classroomData = response.data.classroom;
 

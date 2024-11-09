@@ -72,4 +72,6 @@ class SemesterController extends Controller
             return response()->json(['message'=>$th->getMessage()],200);
         }
     }
+
+    
 }

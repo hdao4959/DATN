@@ -43,8 +43,7 @@ class Classroom extends Model
 
 
     public function users(){
-        return $this->belongsToMany(User::class, 'classroom_user', 'class_code', 'user_code','class_code', 'user_code');
-    }
+        return $this->belongsToMany(User::class, 'classroom_user', 'class_code', 'user_code','class_code', 'user_code');    }
 
     public function schedules(){
         return $this->hasMany(Schedule::class, 'class_code', 'class_code');

@@ -41,8 +41,10 @@ import PostList from "./pages/admin/Post/PostList";
 import UpdatePost from "./pages/admin/Post/UpdatePost";
 import TeacherLayout from "./layouts/Teacher/TeacherLayout";
 import TeachSchedule from "./pages/teacher/TeachSchedule";
-// import MyCalendar from "./pages/teacher/TeachSchedule";
-// import MyClass from "./pages/teacher/myClass/MyClass";
+import ClassList from "./pages/teacher/MyClass/ClassList";
+import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
+import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
+import NotFound from "./pages/NotFound";
 
 function App() {
     const router = createBrowserRouter([
@@ -216,7 +218,23 @@ function App() {
                     path: "schedule",
                     element: <TeachSchedule />,
                 },
+                {
+                    path: "class",
+                    element: <ClassList />,
+                },
+                {
+                    path: "class/:class_code/students",
+                    element: <ClassroomStudents />,
+                },
+                {
+                    path: "class/:class_code/schedules",
+                    element: <ClassSchedules />,
+                },
             ],
+        },
+        {
+            path: "*",
+            element: <NotFound />,
         },
     ]);
 
