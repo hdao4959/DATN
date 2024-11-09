@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\UsersExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Imports\UsersImport;
 use App\Models\User;
 use Dotenv\Exception\ValidationException;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 
@@ -142,5 +146,15 @@ class UserController extends Controller
                 ],500
             );
         }
+    }
+
+
+    public function import(Request $request){
+        Excel::import(new UsersImport(), $request->file('file'));
+        return response()->json('Import thành công');
+    }
+
+    public function export(){
+            return Excel::download(new UsersExport, 'users.xlsx');
     }
 }

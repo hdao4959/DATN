@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Classroom\HandleStep1;
+use App\Http\Requests\Classroom\HandleStep2;
+use App\Http\Requests\Classroom\HandleStep3;
 use App\Http\Requests\Classroom\RenderClassroomRequest;
 
 use App\Models\Classroom;
 use App\Http\Requests\Classroom\StoreClassroomRequest;
 use App\Http\Requests\Classroom\UpdateClassroomRequest;
 use App\Models\Category;
+use App\Models\ClassroomUser;
 use App\Models\Schedule;
 use App\Models\Subject;
 use App\Models\User;
@@ -103,7 +106,7 @@ class ClassroomController extends Controller
     // }
 
     
-    public function handle_step1(HandleStep1 $request){
+    public function handleStep1(HandleStep1 $request){
         $data = $request->validated();
         $subject = Subject::firstWhere('subject_code', $data['subject_code']);
         $dateFrom = $data['date_from'];
@@ -121,47 +124,115 @@ class ClassroomController extends Controller
     }
 
 
+    public function handleStep2(HandleStep2 $request){
+        $data = $request->validated();
+        $major_code = Subject::where([
+            'is_active' => true, 
+            'subject_code' => $data['subject_code']
+        ])->value('major_code');
+
+        $schedules_invalid = Schedule::whereIn('date', $data['list_study_dates'])
+        ->where('session_code', $data['session_code'])
+        ->select('class_code','room_code', 'session_code')->get();
+
+        $rooms_invalid = $schedules_invalid->pluck('room_code');
+
+        $rooms_valid = Category::where([
+            'type' => 'school_room',
+            'is_active' => true
+        ])->whereNotIn('cate_code', $rooms_invalid)
+        ->select('cate_code', 'cate_name', 'value')->get();
+        
+        $teachers_invalid = Classroom::whereIn('class_code', $schedules_invalid->select('class_code'))
+        ->pluck('user_code');
+        $teachers_valid = User::whereNotIn('user_code', $teachers_invalid)->where([
+            'role' => '2',
+            'is_active' => true,
+            'major_code' => 'CN01'
+        ])->select('user_code', 'full_name')->get();
+
+        return response()->json([
+            'rooms' => $rooms_valid,
+            'teachers' => $teachers_valid
+        ]);
+    }
+
+    public function handleStep3(HandleStep3 $request){
+
+        try {
+            $data = $request->validated();
+            $classrooms = Classroom::where('class_code', 'LIKE', $data['course_code'] . '_' . $data['subject_code'].  '%')
+            ->select('class_code', 'subject_code')->get();
+            $subject = Subject::where([
+                'is_active' => true,
+                'subject_code' => $data['subject_code']
+            ])->select('subject_code', 'semester_code', 'major_code')->first();
+            $room_slot = Category::where([
+                'is_active' => true,
+                'type' => 'school_room',
+                'cate_code' => $data['room_code']
+            ])->value('value');
+    
+            $student_codes_invalid = ClassroomUser::whereIn('class_code', $classrooms->pluck('class_code'))
+            ->pluck('user_code');
+            
+            $students_valid = User::whereNotIn('user_code', $student_codes_invalid)
+            ->where([
+                'is_active' => true,
+                'major_code' => $subject['major_code'],
+                'semester_code' => $subject['semester_code'],
+                'course_code' => $data['course_code'],
+                'role' => '3',
+            ])->select('user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'birthday', 'nation', 'avatar')
+            ->limit($room_slot)->get();
+            return response()->json($students_valid);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+       
+    }
+
+
 
     public function store(StoreClassroomRequest $request)
     {
 
         try {
             DB::beginTransaction();
-            $data_request = $request->validated();
-
-            $subject_code = $data_request['subject_code'];
+            $data = $request->validated();
+            $subject_code = $data['subject_code'];
             
-            // Lấy tất cả id lớp học dạy môn học này
-            $classroom_codes_with_subject = Classroom::where('subject_code', $subject_code)
-            ->pluck('class_code');
+            // // Lấy tất cả id lớp học dạy môn học này
+            // $classroom_codes_with_subject = Classroom::where('subject_code', $subject_code)
+            // ->pluck('class_code');
             
-            $student_codes_hasbeenStudy = [];
-            // Lấy tất cả id của học sinh đang học môn này
-            if($classroom_codes_with_subject->isNotEmpty()){
-                $student_codes_hasbeenStudy = DB::table("classroom_user")
-                ->whereIn('class_code', $classroom_codes_with_subject)
-                ->pluck('user_code');
-            }
+            // $student_codes_hasbeenStudy = [];
+            // // Lấy tất cả id của học sinh đang học môn này
+            // if($classroom_codes_with_subject->isNotEmpty()){
+            //     $student_codes_hasbeenStudy = DB::table("classroom_user")
+            //     ->whereIn('class_code', $classroom_codes_with_subject)
+            //     ->pluck('user_code');
+            // }
             // Lấy thông tin của môn học (Ngành, kỳ học)
             $subject = Subject::with('major', 'semester')->where('subject_code', $subject_code)->select('subject_code','total_sessions', 'semester_code', 'major_code')->first();
             $major_code = $subject->major->cate_code;
             $semester_code = $subject->semester_code;
 
 
-            // liệt kê danh sách id sinh viên tương ứng kỳ học + chuyên ngành + loại bỏ các học sinh đã được xếp lịch(Nếu có)
+            // // liệt kê danh sách id sinh viên tương ứng kỳ học + chuyên ngành + loại bỏ các học sinh đã được xếp lịch(Nếu có)
             // $room_slot = Category::where('cate_code' , $data_request['room_code'])->pluck('value')->first();
-            $list_student_codes = User::whereNotIn('user_code',$student_codes_hasbeenStudy)->where(
-                [
-                    'major_code' => $major_code,
-                    'is_active' => true,
-                    // 'semester_code' => $semester_code,
-                    'role' => '3',
-                    'course_code' => $data_request['course_code']
-                ]
-            )->limit(30)->pluck('user_code');
+            // $list_student_codes = User::whereNotIn('user_code',$student_codes_hasbeenStudy)->where(
+            //     [
+            //         'major_code' => $major_code,
+            //         'is_active' => true,
+            //         'semester_code' => $semester_code,
+            //         'role' => '3',
+            //         'course_code' => $data_request['course_code']
+            //     ]
+            // )->limit($room_slot)->pluck('user_code');
 
                 // return response()->json($list_student_codes);
-            if ($list_student_codes->isEmpty()) {
+            if (empty($data['student_codes'])) {
                 return response()->json(
                     [
                         'message' => 'Không có học sinh nào để có thể tạo lớp học!'
@@ -170,24 +241,35 @@ class ClassroomController extends Controller
             }
 
             // Dữ liệu để thÊm trực tiếp vào bảng classroom
+            $current_classcode = Classroom::where('class_code', 'LIKE', $data['course_code'] . "_" . $data['subject_code'] . ".%" )
+            ->orderBy('class_code', 'desc')->pluck('class_code')->first();
+            
+            if($current_classcode){
+               $dot_position = strrpos($current_classcode, '.');
+               $number = (int) substr($current_classcode, $dot_position + 1) +1;
+            }else{
+                $number = 1;
+            }
             $data_for_classrooms_table =  [
-                "class_code"  => $data_request['class_code'], 
-                "class_name"  => $data_request['class_name'], 
-                "subject_code"  => $data_request['subject_code'], 
-                "user_code"  => $data_request['user_code'] ?? null, //Mã giảng viên
+                "class_code"  => $data['course_code'] . "_" . $data['subject_code'] . "." . $number , 
+                "class_name"  => $data['class_name'],
+                "subject_code"  => $data['subject_code'], 
+                "user_code"  => $data['user_code'] ?? null, //Mã giảng viên
             ];
+
             $classroom = Classroom::create($data_for_classrooms_table);
-            $classroom->users()->attach($list_student_codes , ['class_code' => $classroom->class_code]);
+            $classroom->users()->attach($data['student_codes'] , ['class_code' => $classroom->class_code]);
             
             $data_to_insert_schedules_table = [];
-            foreach($data_request['list_study_dates'] as $date){
+            foreach($data['list_study_dates'] as $date){
                 $data_to_insert_schedules_table[] = [
                     'class_code' => $classroom->class_code,
-                    'session_code' => $data_request['session_code'], 
-                    'room_code' => $data_request['room_code'],
+                    'session_code' => $data['session_code'], 
+                    'room_code' => $data['room_code'],
                     'date' => $date,
                 ];
             }
+
             // Thêm dữ liệu vào bảng lịch 
             Schedule::insert($data_to_insert_schedules_table);
 

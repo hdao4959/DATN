@@ -24,10 +24,9 @@ class HandleStep1 extends FormRequest
         return [
             'class_name' => 'required',
             'course_code' => 'required|exists:categories,cate_code',
-            'semester_code' => 'required|exists:categories,cate_code',
             'major_code' => 'required|exists:categories,cate_code',
             'subject_code' => 'required|exists:subjects,subject_code',
-            'session_code' => 'required|exists:categories,cate_code',
+            
             'study_days' => 'required|array',
             'study_days.*' => 'in:1,2,3,4,5,6,7',
             'date_from' => 'required|date|after_or_equal:tomorrow',
