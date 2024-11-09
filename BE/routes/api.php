@@ -21,6 +21,7 @@ use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceContro
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
+use App\Models\Category;
 use App\Models\User;
 
 /*
@@ -52,8 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
 
-
-
+    
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
     Route::patch('grades/{id}',[GradesController::class, 'update']);
@@ -61,6 +61,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
         Route::apiResource('users', UserController::class);
+        Route::controller(UserController::class)->group(function(){
+            Route::post('users/data/import', 'import');
+            Route::get('users/data/export', 'export');
+        });
+
         Route::get('/subjects', [SubjectController::class, 'index']);
         Route::get('/subjects/{id}', [SubjectController::class, 'show']);
         Route::post('/subjects', [SubjectController::class, 'store']);
@@ -111,11 +116,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function(){
+        Route::get('schedules', [ScheduleController::class, 'index']);
+        
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/list_students', [TeacherClassroomController::class, 'listStudents']);
         Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
-        Route::get('schedules', [ScheduleController::class, 'index']);
+        
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);  
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);  
@@ -170,6 +177,15 @@ Route::get('haha', function(){
 
 Route::apiResource('classrooms', ClassroomController::class);
 Route::controller(ClassroomController::class)->group(function(){
-    Route::post('classrooms/handle_step1', 'handle_step1');
+    Route::post('classrooms/handle_step1', 'handleStep1');
+    Route::post('classrooms/handle_step2', 'handleStep2');
+    Route::post('classrooms/handle_step3', 'handleStep3');
 });
 
+// Route::get('/huhu', function(){
+//     $room = Category::with('schedules')->where([
+//         'type' => 'school_room',
+//         'cate_code' => 'P101'
+//     ])->get();
+//     return response()->json($room);
+// });

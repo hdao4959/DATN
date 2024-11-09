@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -32,6 +33,12 @@ class UsersImport implements ToModel, WithHeadingRow
 
         $newCode =  'FE' . str_pad($this->number, 5, 0, STR_PAD_LEFT);
         $password = 'password';
+        $birthday = Carbon::createFromFormat('d/m/Y', $row['birthday'])->format('Y-m-d');
+        $issueDate = Carbon::createFromFormat('d/m/Y', $row['issue_date'])->format('Y-m-d');
+        $existingUser = User::where('email', $row['email'])->first();
+        if ($existingUser) {
+            return null; 
+        }
 
         return new User([
             'user_code' => $newCode,
@@ -41,9 +48,9 @@ class UsersImport implements ToModel, WithHeadingRow
             'phone_number' => $row['phone_number'],
             'address' => $row['address'],
             'sex' => $row['sex'],
-            'birthday' => $row['birthday'],
+            'birthday' => $birthday,
             'citizen_card_number' => $row['citizen_card_number'],
-            'issue_date' => $row['issue_date'],
+            'issue_date' => $issueDate,
             'place_of_grant' => $row['place_of_grant'],
             'nation' => $row['nation'],
             'role' => $row['role'],

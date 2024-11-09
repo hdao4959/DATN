@@ -22,11 +22,15 @@ class HandleStep2 extends FormRequest
     public function rules(): array
     {
         return [
-           'subject_code' => 'required|exists:subjects,subject_code',
-           'date_from' => 'required|date|after_or_equal:tomorrow',
-           'study_days' => 'required|array',
-           'study_days.*' => 'in:1,2,3,4,5,6,7',
-           'session_code' => 'required|exists:categories,cate_code'
+        //    'subject_code' => 'required|exists:subjects,subject_code',
+        //    'date_from' => 'required|date|after_or_equal:tomorrow',
+        //    'study_days' => 'required|array',
+        //    'study_days.*' => 'in:1,2,3,4,5,6,7',
+        //    'session_code' => 'required|exists:categories,cate_code'
+        'list_study_dates' => 'required|array',
+        'list_study_dates.*' => 'date|after_or_equal:tomorrow',
+        'session_code' => 'required|exists:categories,cate_code',
+        'subject_code' => 'required|exists:subjects,subject_code',
         ];
     }
 }
