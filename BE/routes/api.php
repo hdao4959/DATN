@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\GetDataForFormController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
@@ -140,6 +142,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
         Route::apiResource('attendances', StudentAttendanceController::class);
     });
+
+
+
+});
+
+Route::controller(GetDataForFormController::class)->group(function(){
+    Route::get('/listCoursesForFrom', 'listCoursesForFrom');
+    Route::get('/listSemestersForForm', 'listSemestersForForm');
+    Route::get('/listMajorsForForm', 'listMajorsForForm');
+    Route::get('/listSessionsForForm', 'listSessionsForForm');
+    Route::get('/listRoomsForForm', 'listRoomsForForm');
+    Route::get('/listSubjectsForForm', 'listSubjectsForForm');
 });
 
 Route::get('haha', function () {
@@ -173,19 +187,4 @@ Route::get('haha', function () {
 
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
 
-    $user = User::with('classrooms')
-        ->where('users.user_code', 6917289)
-        ->get();
-    return response()->json($user);
 });
-
-
-
-
-// Route::get('/huhu', function(){
-//     $room = Category::with('schedules')->where([
-//         'type' => 'school_room',
-//         'cate_code' => 'P101'
-//     ])->get();
-//     return response()->json($room);
-// });
