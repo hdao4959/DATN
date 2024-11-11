@@ -26,7 +26,7 @@ import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
 import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
-import ShowGrades from "./pages/admin/Grades/pages";
+import ShowGrades from "./pages/admin/Grades/pages.jsx";
 import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
@@ -45,6 +45,13 @@ import ClassList from "./pages/teacher/MyClass/ClassList";
 import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
 import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
 import NotFound from "./pages/NotFound";
+// import MyCalendar from "./pages/teacher/TeachSchedule";
+// import MyClass from "./pages/teacher/myClass/MyClass";
+import ShowAttendance from "./pages/admin/Attendance/pages.jsx";
+import ShowStudentAttendance from "./pages/admin/Attendance/attStupages.jsx";
+import StudentGrades from "./pages/admin/Grades/graStupages.jsx";
+import GradeManagement from "./pages/admin/Grades/graTeapages.jsx";
+import AttendanceManagement from "./pages/admin/Attendance/attTeapages.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -57,11 +64,11 @@ function App() {
             element: <Signin />,
         },
         {
-            path: "/admin",
+            path: "admin",
             element: (
-                <CheckRole>
+                // <CheckRole>
                     <Layout />
-                </CheckRole>
+                // </CheckRole>
             ),
             children: [
                 {
@@ -204,6 +211,26 @@ function App() {
                     path: "post-category/:id/edit",
                     element: <UpdatePostCategory />,
                 },
+                {
+                    path: 'gradesStudent',
+                    element: <StudentGrades />
+                },
+                {
+                    path: 'gradesTeacher',
+                    element: <GradeManagement />
+                },
+                {
+                    path: 'attendance',
+                    element: <ShowAttendance />
+                },
+                {
+                    path: 'attendanceStudent',
+                    element: <ShowStudentAttendance />
+                },
+                {
+                    path: 'attendanceTeacher',
+                    element: <AttendanceManagement />
+                },
             ],
         },
         {
@@ -229,6 +256,10 @@ function App() {
                 {
                     path: "class/:class_code/schedules",
                     element: <ClassSchedules />,
+                },
+                {
+                    path: 'attendances',
+                    element: <AttendanceManagement />
                 },
             ],
         },
