@@ -89,6 +89,7 @@ const TeacherMenu = () => {
                                 </ul>
                             </div>
                         </li>
+
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#sidebarLayouts">
                                 <i className="fas fa-th-list" />

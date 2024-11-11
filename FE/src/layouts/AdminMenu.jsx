@@ -252,6 +252,24 @@ const AdminMenu = () => {
                     <p className="text-[#b9babf]">Quản lý sinh viên</p>
                 </NavLink>
             </li>
+            <li className="menu-item">
+                <NavLink to="/admin/subjects" className={`${styles.menuItem} group`}>
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý môn học</p>
+                </NavLink>
+            </li>
+            <li className="menu-item">
+                <NavLink to="/admin/grades" className={`${styles.menuItem} group`}>
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm số</p>
+                </NavLink>
+            </li>
+            <li className="menu-item">
+                <NavLink to="/admin/attendance" className={`${styles.menuItem} group`}>
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm danh</p>
+                </NavLink>
+            </li>
         </ul>
     );
 };

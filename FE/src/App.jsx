@@ -26,7 +26,7 @@ import EditTimeslot from "./pages/admin/TimeSlot/EditTimeSlot";
 import AddSchoolRoom from "./pages/admin/SchoolRoom/AddSchoolRoom";
 import RoomSchoolList from "./pages/admin/SchoolRoom/RoomSchoolList";
 import EditSchoolRooms from "./pages/admin/SchoolRoom/EditSchoolRooms";
-import ShowGrades from "./pages/admin/Grades/pages";
+import ShowGrades from "./pages/admin/Grades/pages.jsx";
 import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
@@ -45,6 +45,11 @@ import ClassList from "./pages/teacher/MyClass/ClassList";
 import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
 import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
 import NotFound from "./pages/NotFound";
+// import MyCalendar from "./pages/teacher/TeachSchedule";
+// import MyClass from "./pages/teacher/myClass/MyClass";
+import AttendanceManagement from "./pages/admin/Attendance/page.jsx";
+import AttendanceTeacher from "./pages/teacher/Attendance/page.jsx";
+import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -57,7 +62,7 @@ function App() {
             element: <Signin />,
         },
         {
-            path: "/admin",
+            path: "admin",
             element: (
                 <CheckRole>
                     <Layout />
@@ -204,6 +209,10 @@ function App() {
                     path: "post-category/:id/edit",
                     element: <UpdatePostCategory />,
                 },
+                {
+                    path: "attendance",
+                    element: <AttendanceManagement />,
+                },
             ],
         },
         {
@@ -229,6 +238,20 @@ function App() {
                 {
                     path: "class/:class_code/schedules",
                     element: <ClassSchedules />,
+                },
+                {
+                    path: "attendances",
+                    element: <AttendanceTeacher />,
+                },
+            ],
+        },
+        {
+            path: "/student",
+            element: <CheckRole>{/* <StudentLayout /> */}</CheckRole>,
+            children: [
+                {
+                    path: "attendances",
+                    element: <ShowStudentAttendance />,
                 },
             ],
         },
