@@ -15,7 +15,7 @@ const AddPostCategory = () => {
 
     const { mutate } = useMutation({
         mutationKey: ["ADD_POST_CATEGORY"],
-        mutationFn: (data) => api.post("/admin/category", data),
+        mutationFn: (data) => api.post("/admin/categories", data),
         onSuccess: () => {
             toast.success("Thêm danh mục bài viết thành công");
             navigate("/admin/post-category");
