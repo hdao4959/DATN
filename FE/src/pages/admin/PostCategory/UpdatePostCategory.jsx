@@ -19,7 +19,7 @@ const UpdatePostCategory = () => {
 
     const { mutate } = useMutation({
         mutationKey: ["UPDATE_POST_CATEGORY", id],
-        mutationFn: (data) => api.put(`/admin/category/${id}`, data),
+        mutationFn: (data) => api.put(`/admin/categories/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật danh mục bài viết thành công");
             navigate("/admin/post-category");
@@ -33,7 +33,7 @@ const UpdatePostCategory = () => {
     const { data } = useQuery({
         queryKey: ["POST_CATEGORY", id],
         queryFn: async () => {
-            const res = await api.get(`/admin/category/${id}`);
+            const res = await api.get(`/admin/categories/${id}`);
 
             return res.data;
         },

@@ -465,7 +465,7 @@ const AdminLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src={user.avatar}
+                                                            src={user?.avatar}
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />

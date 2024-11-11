@@ -64,9 +64,9 @@ function App() {
         {
             path: "admin",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <Layout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {
@@ -210,8 +210,8 @@ function App() {
                     element: <UpdatePostCategory />,
                 },
                 {
-                    path: 'attendance',
-                    element: <AttendanceManagement />
+                    path: "attendance",
+                    element: <AttendanceManagement />,
                 },
             ],
         },
@@ -240,22 +240,18 @@ function App() {
                     element: <ClassSchedules />,
                 },
                 {
-                    path: 'attendances',
-                    element: <AttendanceTeacher />
+                    path: "attendances",
+                    element: <AttendanceTeacher />,
                 },
             ],
         },
         {
             path: "/student",
-            element: (
-                <CheckRole>
-                    {/* <StudentLayout /> */}
-                </CheckRole>
-            ),
+            element: <CheckRole>{/* <StudentLayout /> */}</CheckRole>,
             children: [
                 {
-                    path: 'attendances',
-                    element: <ShowStudentAttendance />
+                    path: "attendances",
+                    element: <ShowStudentAttendance />,
                 },
             ],
         },
