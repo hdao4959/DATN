@@ -261,7 +261,7 @@ const AdminMenu = () => {
             <li className="menu-item">
                 <NavLink to="/admin/grades" className={`${styles.menuItem} group`}>
                     <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                    <p className="text-[#b9babf]">Quản lý điểm số Admin</p>
+                    <p className="text-[#b9babf]">Quản lý điểm số</p>
                 </NavLink>
             </li>
             <li className="menu-item">

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 
-const AttendanceManagement = () => {
+const AttendanceTeacher = () => {
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [attendanceStudentDetails, setAttendanceStudentDetails] = useState([]);
@@ -274,4 +274,4 @@ const AttendanceManagement = () => {
     );
 };
 
-export default AttendanceManagement;
+export default AttendanceTeacher;

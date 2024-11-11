@@ -47,11 +47,9 @@ import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
 import NotFound from "./pages/NotFound";
 // import MyCalendar from "./pages/teacher/TeachSchedule";
 // import MyClass from "./pages/teacher/myClass/MyClass";
-import ShowAttendance from "./pages/admin/Attendance/pages.jsx";
-import ShowStudentAttendance from "./pages/admin/Attendance/attStupages.jsx";
-import StudentGrades from "./pages/admin/Grades/graStupages.jsx";
-import GradeManagement from "./pages/admin/Grades/graTeapages.jsx";
-import AttendanceManagement from "./pages/admin/Attendance/attTeapages.jsx";
+import AttendanceManagement from "./pages/admin/Attendance/page.jsx";
+import AttendanceTeacher from "./pages/teacher/Attendance/page.jsx";
+import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -212,23 +210,7 @@ function App() {
                     element: <UpdatePostCategory />,
                 },
                 {
-                    path: 'gradesStudent',
-                    element: <StudentGrades />
-                },
-                {
-                    path: 'gradesTeacher',
-                    element: <GradeManagement />
-                },
-                {
                     path: 'attendance',
-                    element: <ShowAttendance />
-                },
-                {
-                    path: 'attendanceStudent',
-                    element: <ShowStudentAttendance />
-                },
-                {
-                    path: 'attendanceTeacher',
                     element: <AttendanceManagement />
                 },
             ],
@@ -259,7 +241,21 @@ function App() {
                 },
                 {
                     path: 'attendances',
-                    element: <AttendanceManagement />
+                    element: <AttendanceTeacher />
+                },
+            ],
+        },
+        {
+            path: "/student",
+            element: (
+                <CheckRole>
+                    {/* <StudentLayout /> */}
+                </CheckRole>
+            ),
+            children: [
+                {
+                    path: 'attendances',
+                    element: <ShowStudentAttendance />
                 },
             ],
         },
