@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\AssessmentItem;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\GradesController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SubjectController;
@@ -12,20 +15,19 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Admin\CategoryNewsletter;
 use App\Http\Controllers\AssessmentItemController;
+use App\Http\Controllers\GetDataForFormController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\GetDataForFormController;
-use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
-use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\ScheduleController;
+use App\Http\Controllers\Student\ScoreController as StudentScoreController;
+use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
-use App\Models\Category;
-use App\Models\User;
+use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +123,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('newsletters', NewsletterController::class);
 
         Route::apiResource('attendances', AttendanceController::class);
+
+        Route::apiResource('categorynewsletters', CategoryNewsletter::class);
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -141,6 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
         Route::apiResource('attendances', StudentAttendanceController::class);
+        Route::apiResource('scores', StudentScoreController::class);    
     });
 
 
