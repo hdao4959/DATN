@@ -17,7 +17,8 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        try {
+        // try {
+
             $data = $request->validated();   
             $user = User::firstWhere('email',$data['email']);
 
@@ -39,12 +40,12 @@ class AuthController extends Controller
                 ], 200);
 
 
-        } catch (\Throwable $th) {
+        // } catch (\Throwable $th) {
 
-                return response([
-                    'message' => "Lỗi không xác định"
-                ], 500);
-            }
+        //         return response([
+        //             'message' => "Lỗi không xác định"
+        //         ], 500);
+        //     }
     }
 
     public function logout(Request $request)

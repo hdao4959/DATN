@@ -13,7 +13,7 @@ const PostCategoryTable = ({ data }) => {
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { mutate } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/category/${id}`),
+        mutationFn: (id) => api.delete(`/admin/categories/${id}`),
         onSuccess: () => {
             toast.success("Xóa điểm thành phần thành công");
             onModalVisible();

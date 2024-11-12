@@ -15,7 +15,7 @@ const ViewMyAccount = () => {
         queryKey: ["user", user_code],
         queryFn: async () => {
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/admin/users/${user_code}`
+                `/admin/users/${user_code}`
             );
             return response.data;
         },

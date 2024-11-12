@@ -90,7 +90,7 @@ const TeacherMenu = () => {
                             </div>
                         </li>
                         <li className="menu-item">
-                            <NavLink to="/admin/attendances" className={`${styles.menuItem} group`}>
+                            <NavLink to="/admin/attendances" >
                                 <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                                 <p className="text-[#b9babf]">Quản lý điểm danh</p>
                             </NavLink>

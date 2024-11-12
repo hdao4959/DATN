@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::post('users/data/import', 'import');
             Route::get('users/data/export', 'export');
+            Route::get('students', 'getListSudent');
         });
 
         Route::get('/subjects', [SubjectController::class, 'index']);
@@ -118,7 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('pointheads', PointHeadController::class);
 
-        Route::apiResource('newsletters', NewsletterController::class);
+        // Route::apiResource('newsletters', NewsletterController::class);
 
         Route::apiResource('attendances', AttendanceController::class);
     });

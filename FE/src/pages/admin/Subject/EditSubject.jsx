@@ -81,7 +81,7 @@ const EditSubject = () => {
         </div>
       </div>
       <div className="mb-6 mt-2">
-        <Link to="admin/subjects">
+        <Link to="/admin/subjects">
           <button className="btn btn-primary">
             <i className='fas fa-list'></i> Danh sách môn học
           </button>
