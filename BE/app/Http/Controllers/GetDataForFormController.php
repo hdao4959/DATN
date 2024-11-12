@@ -68,6 +68,33 @@ class GetDataForFormController extends Controller
         }
     }
 
+    public function listParentMajorsForForm(){
+        try {
+            $parentMajors = Category::whereNull('parent_code')->where([
+                'is_active' => true,
+                'type' => 'major'
+            ])->select('cate_code', 'cate_name', 'is_active')->get();
+            return response()->json($parentMajors);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+
+    }
+
+    public function listChildrenMajorsForForm(string $parent_code){
+        try {
+            $childrenMajors = Category::where([
+                'parent_code' => $parent_code,
+                'is_active' => true,
+                'type' =>'major'
+            ])->select('cate_code', 'cate_name', 'is_active')->get();
+            return response()->json($childrenMajors);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);   
+        }
+
+    }
+
     public function listSessionsForForm(){
         try {
             $sessions = Category::where([
@@ -99,6 +126,18 @@ class GetDataForFormController extends Controller
             return response()->json($subjects);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
+        }
+    }
+
+    public function listSubjectsToMajorForForm(string $major_code){
+        try {
+            $subjects = Subject::where([
+                'is_active' => true,
+                'major_code' => $major_code
+            ])->select('subject_code', 'subject_name', 'tuition', 're_study_fee', 'credit_number', 'total_sessions', 'semester_code', 'major_code')->get();
+            return response()->json($subjects);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);   
         }
     }
 }
