@@ -124,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('attendances', AttendanceController::class);
 
-        Route::apiResource('categorynewsletters', CategoryNewsletter::class);
+        Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -144,8 +144,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
-        Route::apiResource('attendances', StudentAttendanceController::class);
-        Route::apiResource('scores', StudentScoreController::class);    
+        Route::get('attendances', [StudentAttendanceController::class, 'index']);
+
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
+          
     });
 
 
