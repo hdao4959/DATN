@@ -24,16 +24,11 @@ use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Teacher\ScheduleController;
-use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
-use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
-<<<<<<< Updated upstream
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
-=======
+use App\Http\Controllers\Student\ScoreController as StudentScoreController;
+use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
-use App\Models\Category;
-use App\Models\User;
->>>>>>> Stashed changes
 
 /*
 |--------------------------------------------------------------------------
@@ -132,7 +127,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('attendances', AttendanceController::class);
 
-        Route::apiResource('categorynewsletters', CategoryNewsletter::class);
+        Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -152,13 +147,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
-        Route::apiResource('attendances', StudentAttendanceController::class);
-<<<<<<< Updated upstream
-        Route::apiResource('scores', StudentScoreController::class);    
-=======
         Route::get('/classrooms', [StudentClassroomController::class, 'classrooms']);
         Route::get('/classrooms/{class_code}/schedules', [StudentClassroomController::class, 'schedulesOfClassroom']);
->>>>>>> Stashed changes
+        
+        Route::get('attendances', [StudentAttendanceController::class, 'index']);
+
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
+          
     });
 });
 
