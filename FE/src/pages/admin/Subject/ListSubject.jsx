@@ -71,7 +71,7 @@ const SubjectsList = () => {
               return `
               <div className="whitespace-nowrap">
                   <button>
-                    <a href="/subjects/${row.id}/edit">
+                    <a href="/admin/subjects/${row.id}/edit">
                       <i class='fas fa-edit hover:text-blue-500'></i>
                     </a>
                   </button>
@@ -119,7 +119,7 @@ const SubjectsList = () => {
               ) : (
                 <>
                   <div className="mb-3 mt-2 flex items-center justify-between">
-                    <Link to={`admin/subjects/add`}>
+                    <Link to={`/admin/subjects/add`}>
                       <button className="btn btn-success">
                         <i className='fas fa-plus'> Thêm môn học</i>
                       </button>

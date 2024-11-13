@@ -22,18 +22,54 @@ class UserController extends Controller
 
         try {
             $list_users = User::with([
-                'major' => function($query) {
+                'major' => function ($query) {
                     $query->select('cate_code', 'cate_name', 'parent_code');
                 },
-                'semester' => function($query){
+                'semester' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
-                'course' => function($query) {
+                'course' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 }
             ])
-              ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
-              ->paginate(20);
+                ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
+                ->paginate(20);
+            if ($list_users->isEmpty()) {
+                return response()->json(
+                    ['message' => 'Không có tài khoản nào!'],
+                    404
+                );
+            }
+            return response()->json($list_users, 200);
+        } catch (Throwable $th) {
+            return response()->json(
+                [
+                    'message' => 'Đã xảy ra lỗi không xác định',
+                    'error' => env('APP_DEBUG') ? $th->getMessage() : "Đã xảy ra lỗi!"
+                ],
+                500
+            );
+        }
+    }
+
+    public function getListSudent()
+    {
+
+        try {
+            $list_users = User::with([
+                'major' => function ($query) {
+                    $query->select('cate_code', 'cate_name', 'parent_code');
+                },
+                'semester' => function ($query) {
+                    $query->select('cate_code', 'cate_name');
+                },
+                'course' => function ($query) {
+                    $query->select('cate_code', 'cate_name');
+                }
+            ])->where('role', '3')
+                ->orderBy('id', 'desc')
+                ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
+                ->paginate(20);
             if ($list_users->isEmpty()) {
                 return response()->json(
                     ['message' => 'Không có tài khoản nào!'],
@@ -143,18 +179,21 @@ class UserController extends Controller
                 [
                     'message' => 'Đã xảy ra lỗi không xác định',
                     'error' => env('APP_DEBUG') ? $th->getMessage() : 'Lỗi không xác định'
-                ],500
+                ],
+                500
             );
         }
     }
 
 
-    public function import(Request $request){
+    public function import(Request $request)
+    {
         Excel::import(new UsersImport(), $request->file('file'));
         return response()->json('Import thành công');
     }
 
-    public function export(){
-            return Excel::download(new UsersExport, 'users.xlsx');
+    public function export()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
     }
 }

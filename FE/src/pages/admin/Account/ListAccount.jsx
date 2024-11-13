@@ -1,32 +1,43 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
-
+import Modal from "../../../components/Modal/Modal";
+import { useState } from "react";
+import { toast } from "react-toastify";
 const ListAccount = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedGradeComponent, setSelectedGradeComponent] = useState();
+
+    const onModalVisible = () => setModalOpen((prev) => !prev);
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ACCOUNT"],
         queryFn: async () => {
-            const res = await api.get("/admin/users");
+            const res = await api.get("/admin/students");
             return res.data;
         },
     });
     const users = data?.data || [];
     console.log(users);
 
-    const { mutate, isLoading } = useMutation({
+    const { mutate, isLoading } = useMutation({        
         mutationFn: (user_code) => api.delete(`/admin/users/${user_code}`),
         onSuccess: () => {
-            alert("Xóa tài khoản thành công");
+            toast.success("Xóa tài khoản thành công");
+            onModalVisible();
             refetch();
         },
         onError: () => {
-            alert("Có lỗi xảy ra khi xóa tài khoản");
+            toast.error("Có lỗi xảy ra khi xóa tài khoản");
         },
     });
     const handleDelete = (user_code) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
-            mutate(user_code);
-        }
+        console.log('user_code', user_code);
+
+        // if (window.confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
+        //     mutate(user_code);
+        // }
+            setSelectedGradeComponent(user_code);
+            onModalVisible();
     };
 
     if (!data) return <div>Loading...</div>;
@@ -78,8 +89,7 @@ const ListAccount = () => {
                                                 <th>Mã người dùng</th>
                                                 <th>Họ và tên</th>
                                                 <th>Email</th>
-                                                <th>Ngày sinh</th>
-                                                <th>Quyền</th>
+                                                <th>Khóa học</th>
                                                 <th>Trạng thái</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -95,8 +105,7 @@ const ListAccount = () => {
                                                     <td>{it.user_code}</td>
                                                     <td>{it.full_name}</td>
                                                     <td>{it.email}</td>
-                                                    <td>{it.birthday}</td>
-                                                    <td>{it.role}</td>
+                                                    <td>{it.course?.cate_name}</td>
                                                     <td>
                                                         {it.is_active == 1 ? (
                                                             <i
@@ -118,7 +127,7 @@ const ListAccount = () => {
                                                     <td>
                                                         <div>
                                                             <Link
-                                                                to={`/admin/classrooms/edit/${it.class_code}`}
+                                                                to={`/admin/classrooms/edit/${it.user_code}`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
@@ -127,7 +136,7 @@ const ListAccount = () => {
                                                                 className="fas fa-trash ml-6"
                                                                 onClick={() =>
                                                                     handleDelete(
-                                                                        it.class_code
+                                                                        it.user_code
                                                                     )
                                                                 }
                                                                 disabled={
@@ -200,6 +209,15 @@ const ListAccount = () => {
                     </div>
                 </div>
             </div>
+            <Modal
+                title="Xóa sinh viên"
+                description="Bạn có chắc chắn muốn xoá sinh viên này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={modalOpen}
+                onVisible={onModalVisible}
+                onOk={() => mutate(selectedGradeComponent)}
+            />
         </>
     );
 };

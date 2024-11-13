@@ -24,10 +24,11 @@ use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\Teacher\ScheduleController;
-use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
-use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
+use App\Http\Controllers\Student\ScoreController as StudentScoreController;
+use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
+use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +42,7 @@ use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceContro
 */
 
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
@@ -57,8 +58,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
 
-
-
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
     Route::patch('grades/{id}', [GradesController::class, 'update']);
@@ -69,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::post('users/data/import', 'import');
             Route::get('users/data/export', 'export');
+            Route::get('students', 'getListSudent');
         });
 
         Route::get('/subjects', [SubjectController::class, 'index']);
@@ -99,10 +99,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('categories', CategoryController::class);
+
+
         Route::controller(CategoryController::class)->group(function () {
             Route::get('/listParentCategories', 'listParentCategories');
             Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
         });
+
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
@@ -120,7 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('pointheads', PointHeadController::class);
 
-        Route::apiResource('newsletters', NewsletterController::class);
+        // Route::apiResource('newsletters', NewsletterController::class);
 
         Route::apiResource('attendances', AttendanceController::class);
 
@@ -144,20 +147,24 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
+        Route::get('/classrooms', [StudentClassroomController::class, 'classrooms']);
+        Route::get('/classrooms/{class_code}/schedules', [StudentClassroomController::class, 'schedulesOfClassroom']);
+        
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
           
     });
-
-
-
 });
 
-Route::controller(GetDataForFormController::class)->group(function(){
-    Route::get('/listCoursesForFrom', 'listCoursesForFrom');
+// Các route phục vụ cho form
+Route::controller(GetDataForFormController::class)->group(function () {
+    Route::get('/listCoursesForForm', 'listCoursesForFrom');
     Route::get('/listSemestersForForm', 'listSemestersForForm');
     Route::get('/listMajorsForForm', 'listMajorsForForm');
+    Route::get('/listParentMajorsForForm', 'listParentMajorsForForm');
+    Route::get('/listChildrenMajorsForForm/{parent_code}', 'listChildrenMajorsForForm');
+    Route::get('/listSubjectsToMajorForForm/{major_code}',  'listSubjectsToMajorForForm');
     Route::get('/listSessionsForForm', 'listSessionsForForm');
     Route::get('/listRoomsForForm', 'listRoomsForForm');
     Route::get('/listSubjectsForForm', 'listSubjectsForForm');
