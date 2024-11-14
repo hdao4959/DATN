@@ -44,7 +44,7 @@ class SchoolRoomController extends Controller
                         ->where('cate_name', 'like', "%{$search}%");
                 })
                 ->orderBy('id', 'desc')
-                ->paginate(4);
+                ->paginate(10);
             if ($data->isEmpty()) {
 
                 return $this->handleInvalidId();

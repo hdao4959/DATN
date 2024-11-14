@@ -45,6 +45,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
+Route::controller(UserController::class)->group(function () {
+    Route::post('users/data/import', 'import');
+    Route::get('users/data/export', 'export');
+    Route::get('students', 'getListSudent');
+});
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 

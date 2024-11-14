@@ -39,8 +39,8 @@ const ShowAttendance = () => {
     useEffect(() => {
         if (classes) {
             $('#classesTable').DataTable({
-                serverSide: true,
-                processing: true,
+                // serverSide: true,
+                // processing: true,
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {

@@ -1,18 +1,21 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import Modal from "./Modal";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
-
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
+import 'datatables.net';
+import { useNavigate } from 'react-router-dom';
 const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
-
+    const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
-    const { data, refetch, isFetching } = useQuery({
+    const { data: roomSchool, refetch, isFetching } = useQuery({
         queryKey: ["LIST_SCHOOLROOMS"],
         queryFn: async () => {
             const res = await api.get("/admin/schoolrooms");
@@ -48,7 +51,88 @@ const RoomSchoolList = () => {
         onModalVisible();
     };
 
-    if (isFetching && !data) return <Spinner />;
+    useEffect(() => {
+        if (roomSchool) {
+            $('#dataTable').DataTable({
+                data: roomSchool,
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const result = response.data;
+
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
+                columns: [
+                    { title: "Mã phòng học", data: "cate_code" },
+                    { title: "Tên phòng học", data: "cate_name" },
+                    {
+                        title: "Sinh viên",
+                        className: "text-center",
+                        data: "value"
+                    },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        className: "text-center",
+                        render: (data, type, row) => {
+                            return data === true
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
+                        }
+                    },
+                    {
+                        title: "Hành động",
+                        data: null,
+                        render: (data, type, row) => {
+                            return `
+                                <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.cate_code}" id="edit_${row.cate_code}"></i>
+                                    <i class="fas fa-trash" 
+                                        style="cursor: pointer; color: red; font-size: 20px;" 
+                                        data-id="${row.cate_code}" 
+                                        id="delete_${row.cate_code}"></i>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
+                    search: 'Tìm kiếm:'
+                },
+                destroy: true,
+                createdRow: (row, data, dataIndex) => {
+                    // Gắn sự kiện xóa sau khi bảng được vẽ
+                    $(row).find('.fa-trash').on('click', function () {
+                        const classCode = $(this).data('id');
+                        handleDelete(classCode);
+                    });
+
+                    $(row).find('.fa-edit').on('click', function () {
+                        const classCode = $(this).data('id');
+                        console.log(classCode);
+
+                        navigate(`/admin/data/edit/${classCode}`);
+
+                    });
+                }
+            })
+        }
+    }, [roomSchool]);
+
+    if (isFetching && !roomSchool) return <Spinner />;
 
     return (
         <>
@@ -65,7 +149,7 @@ const RoomSchoolList = () => {
                 <div className="card-body">
                     <div className="table-responsive">
                         <div className="dataTables_wrapper container-fluid dt-bootstrap4">
-                            <div className="row">
+                            {/* <div className="row">
                                 <div className="col-sm-12 col-md-6">
                                     <div
                                         className="dataTables_length"
@@ -103,11 +187,12 @@ const RoomSchoolList = () => {
                                         </label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="row">
                                 <div className="col-sm-12">
                                     <i className="fa-solid fa-circle-check fs-20 color-green"></i>
-                                    <table
+                                    <table id="dataTable" className="display"></table>
+                                    {/* <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"
                                         role="grid"
@@ -119,7 +204,6 @@ const RoomSchoolList = () => {
                                                 <th>Mã phòng học</th>
                                                 <th>Tên phòng học</th>
                                                 <th>Sinh viên</th>
-                                                {/* <th>Mô tả</th> */}
                                                 <th>Trạng thái</th>
                                                 <th>Hình ảnh</th>
                                                 <th>Actions</th>
@@ -136,7 +220,6 @@ const RoomSchoolList = () => {
                                                     <td>{it.cate_code}</td>
                                                     <td>{it.cate_name}</td>
                                                     <td>{it.value}</td>
-                                                    {/* <td>{it.description}</td> */}
                                                     <td>
                                                         <div
                                                             onClick={() =>
@@ -205,10 +288,10 @@ const RoomSchoolList = () => {
                                                 </tr>
                                             ))}
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                 </div>
                             </div>
-                            <div className="row">
+                            {/* <div className="row">
                                 <div className="col-sm-12 col-md-5">
                                     <div className="dataTables_info">
                                         Showing 1 to 10 of {data.length} entries
@@ -261,7 +344,7 @@ const RoomSchoolList = () => {
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
