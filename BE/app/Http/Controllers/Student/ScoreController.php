@@ -16,8 +16,8 @@ class ScoreController extends Controller
     public function bangDiemTheoKy(Request $request)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'student04';
+            $userCode = $request->user()->user_code;
+            // $userCode = 'student04';
             $semesterCode = $request->input('search');
             $listSemester = Category::where('type', 'semester')
                                     ->where('is_active', '1')
