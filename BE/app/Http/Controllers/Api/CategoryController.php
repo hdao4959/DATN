@@ -48,7 +48,7 @@ class CategoryController extends Controller
         try {
 
             $search = $request->input('search');
-            $data = Category::with(['childrens' => function($query){
+            $categories = Category::with(['childrens' => function($query){
                 $query->select('cate_code', 'cate_name', 'is_active');
             }])->select('cate_code', 'cate_name', 'image', 'parent_code', 'is_active')
             ->whereNull('parent_code')
@@ -62,7 +62,47 @@ class CategoryController extends Controller
                 })
                 ->paginate(4);
 
-            return response()->json($data, 200);
+//             // Tìm kiếm theo cate_name
+//             $search = $request->input('search');
+//             // $data = Category::with([
+//             //     'childrens' => query
+//             // ]
+//             // )->where('type', '=', 'category')
+//             //     ->when($search, function ($query, $search) {
+//             //         return $query
+//             //             ->where('cate_name', 'like', "%{$search}%");
+//             //     })
+//             //     ->paginate(4);
+
+
+//                 $categories = Category::with(
+//                     ['childrens' => function ($query) {
+//     $query->select('cate_code', 'cate_name', 'parent_code', 'is_active');
+//                 }])
+//                 ->whereNull('parent_code')
+//                 ->where('type', '=', 'major')
+//                 ->select('cate_code', 'cate_name', 'is_active')
+//                 ->when($search, function($query, $search){
+//                         return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+//                             $childQuerry->where('cate_name', 'like', "%$search%");
+//                         });
+//                     })
+//                     ->get();
+
+
+            // Tìm kiếm theo cate_name
+            $search = $request->input('search');
+            // $data = Category::with([
+            //     'childrens' => query
+            // ]
+            // )->where('type', '=', 'category')
+            //     ->when($search, function ($query, $search) {
+            //         return $query
+            //             ->where('cate_name', 'like', "%{$search}%");
+            //     })
+            //     ->paginate(4);
+
+            return response()->json($categories, 200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
