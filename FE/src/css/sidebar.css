@@ -1,0 +1,12 @@
+.collapse {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease, visibility 0.3s ease;
+}
+
+.collapse.show {
+    visibility: visible;
+    height: auto;
+    overflow: visible;
+}

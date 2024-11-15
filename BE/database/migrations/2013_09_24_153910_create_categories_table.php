@@ -15,14 +15,16 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('cate_code',191)->unique();
+            $table->string('cate_code',40)->unique();
             $table->index('cate_code');
-            $table->string('cate_name',100)->unique();
+            $table->string('cate_name',50)->unique();
             $table->text('value')->nullable();
-            $table->string('image',1000)->nullable();
+            $table->string('image')->nullable();
             $table->text('description')->nullable();
-            $table->string('parent_code',191)->index()->nullable();
-            $table->foreign('parent_code')->references('cate_code')->on('categories')->cascadeOnDelete()->restrictOnUpdate();
+            $table->string('parent_code',40)->index()->nullable();
+            $table->foreign('parent_code')->references('cate_code')->on('categories')
+                    ->restrictOnDelete()->cascadeOnUpdate();
+                    
             $table->string('type');
             $table->boolean('is_active')->default(true);
             $table->softDeletes();

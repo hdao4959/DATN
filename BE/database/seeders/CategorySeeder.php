@@ -19,7 +19,7 @@ class CategorySeeder extends Seeder
         DB::table('categories')->insert([
             // Khoá học
             [
-                'cate_code' => 'K01',
+                'cate_code' => '1',
                 'cate_name' => '2022-2025',
                 'type' => 'course',
                 'value' => null

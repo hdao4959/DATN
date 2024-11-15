@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Major\StoreMajorRequest;
 use App\Http\Requests\Major\UpdateMajorRequest;
+use App\Models\User;
 
 class MajorController extends Controller
 {
@@ -39,30 +40,19 @@ class MajorController extends Controller
     {
         try {
             // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
-            // Tìm kiếm theo cate_name
             $search = $request->input('search');
-            $data = Category::where('type', '=', 'major')
-                                ->when($search, function ($query, $search) {
-                                    
-                                    return $query
-                                            ->where('cate_name', 'like', "%{$search}%");
-                                })
-                                ->paginate(4);
-            if ($data->isEmpty()) {
-
-                return $this->handleInvalidId();
-            }
-
-            return response()->json([
-                'parent' => $parent,
-                'data' => $data
-            ], 200);
+            $majors = Category::with(
+                ['childrens' => function ($query) {
+            $query->select('cate_code', 'cate_name', 'image','parent_code', 'is_active');
+            }])->whereNull('parent_code')
+                ->where('type', '=', 'major')
+                ->select('cate_code', 'cate_name','image','is_active')->when($search, function($query, $search){
+                    return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+                        $childQuerry->where('cate_name', 'like', "%$search%");
+                    });
+                })->get();
+            return response()->json($majors, 200);
         } catch (Throwable $th) {
-
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -100,9 +90,9 @@ class MajorController extends Controller
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'major')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
+                ->where('type', '=', 'major')
+                ->select('cate_code', 'cate_name')
+                ->get();
             $listMajor = Category::where('cate_code', $cate_code)->first();
             if (!$listMajor) {
 
@@ -112,7 +102,7 @@ class MajorController extends Controller
                 return response()->json([
                     'parent' => $parent,
                     'listMajor' => $listMajor
-                ], 200);                
+                ], 200);
             }
         } catch (\Throwable $th) {
 
@@ -143,7 +133,7 @@ class MajorController extends Controller
                 $params['image'] = $fileName;
                 $listMajor->update($params);
 
-                return response()->json($listMajor, 201);          
+                return response()->json($listMajor, 201);
             }
         } catch (Throwable $th) {
 
@@ -169,7 +159,7 @@ class MajorController extends Controller
 
                 return response()->json([
                     'message' => 'Xóa thành công'
-                ], 200);            
+                ], 200);
             }
         } catch (\Throwable $th) {
 
@@ -195,7 +185,7 @@ class MajorController extends Controller
 
             return $this->handleErrorNotDefine($th);
         }
-    }    
+    }
 
     // public function getListMajor(string $type)
     // {
@@ -231,4 +221,27 @@ class MajorController extends Controller
 
     //     return response()->json($data);
     // }
+
+
+
+    // Không được xoá của Hải! Cái này liên quan đến classroom
+    public function renderTeachersAvailable(string $major_code)
+    {
+        try {
+            $teachers = User::where([
+                'is_active' => true,
+                'role' => 'teacher',
+                'major_code' => $major_code
+            ])->select('full_name', 'user_code')->get();
+
+            if ($teachers->isEmpty()) {
+                return response()->json([
+                    'message' => 'Không có giảng viên nào hợp lệ'
+                ], 404);
+            }
+            return response()->json($teachers, 200);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 }

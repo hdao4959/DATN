@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -12,31 +15,21 @@ use Validator;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         try {
-            $request->validate(
-                [
-                    'email' => "required|email",
-                    'password' => 'required|min:6'
-                ],
-                [
-                    'email.required' => 'Bạn chưa nhập email',
-                    'password.required' => "Bạn chưa nhập password",
-                    'email.email' => 'Email không hợp lệ',
-                    'password.min' => "Mật khẩu phải tối thiểu 6 kí tự"
-                ]
-            );
-            
-            $data = [
-                'email' => $request->email,
-                'password' => $request->password
-            ];
-            // Kiểm tra sự tồn tại của tài khoản
-            if (Auth::attempt($data)) {
-                $user = Auth::user();
+            $data = $request->validated();   
+            $user = User::firstWhere('email',$data['email']);
+
+            if(!$user || !Hash::check($data['password'], $user['password'])){
+                return response()->json([
+                    'message' => 'Tài khoản hoặc mật khẩu không chính xác'
+                ], 401);
+            }
+
                 // Tạo token khi tài khoản đúng
                 $token = $user->createToken($user->id)->plainTextToken;
+                
                 return response()->json([
                     'user' => $user,
                     'token' => [
@@ -44,25 +37,14 @@ class AuthController extends Controller
                         'type_token' => 'Bearer'
                     ]
                 ], 200);
-            }
-            // Trường hợp dữ liệu nhập và là hợp lệ nhưng không khớp với db
-            return response()->json([
-                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
-            ], 401);
+
 
         } catch (\Throwable $th) {
-            // Trường hợp dữ liệu nhập vào không hợp lệ
-            if ($th instanceof ValidationException) {
-                return response([
-                    'message' => $th->validator->errors()->first()
-                ], 422);
-            } else {
-                // Trường hợp lỗi không xác định
+
                 return response([
                     'message' => "Lỗi không xác định"
                 ], 500);
             }
-        }
     }
 
     public function logout(Request $request)

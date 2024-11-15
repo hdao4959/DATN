@@ -36,8 +36,7 @@ class UserFactory extends Factory
             'major_code' => 'CN01', 
             'course_code' => 'K01', 
             'semester_code' => 'S01',
-            'role' => 'student',
-            'is_active' => true
+            'role' => '3',
         ];
     }
 

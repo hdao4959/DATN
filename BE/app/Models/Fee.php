@@ -18,4 +18,8 @@ class Fee extends Model
         'due_date',
         'status'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

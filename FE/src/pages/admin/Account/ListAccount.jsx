@@ -34,7 +34,7 @@ const ListAccount = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/account/create">
+                <Link to="/admin/account/create">
                     <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>
@@ -118,7 +118,7 @@ const ListAccount = () => {
                                                     <td>
                                                         <div>
                                                             <Link
-                                                                to={`/classrooms/edit/${it.class_code}`}
+                                                                to={`/admin/classrooms/edit/${it.class_code}`}
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
