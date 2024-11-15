@@ -98,7 +98,7 @@ const GradeComponentList = () => {
                         const cate_code = $(this).data('id');
                         console.log(cate_code);
                         
-                        navigate(`/admin/grade-components/edit/${cate_code}`);
+                        navigate(`/admin/grade-components/${cate_code}/edit`);
 
                     });
                 }

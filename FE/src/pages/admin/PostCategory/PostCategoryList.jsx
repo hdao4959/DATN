@@ -87,7 +87,7 @@ const PostCategoryList = () => {
                         const cate_code = $(this).data('id');
                         console.log(cate_code);
 
-                        navigate(`/admin/grade-components/edit/${cate_code}`);
+                        navigate(`/admin/post-category/${cate_code}/edit`);
 
                     });
                 }

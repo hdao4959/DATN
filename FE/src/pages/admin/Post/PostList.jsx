@@ -1,13 +1,20 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
 import Modal from "../../../components/Modal/Modal";
 import { getImageUrl } from "../../../utils/getImageUrl";
-
+import { getToken } from "../../../utils/getToken";
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
+import 'datatables.net';
+import { useNavigate } from 'react-router-dom';
 const PostList = () => {
+    const accessToken = getToken();
+    const navigate = useNavigate();
+
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedPost, setSelectedPost] = useState();
 
@@ -38,7 +45,98 @@ const PostList = () => {
         setSelectedPost(id);
         onModalVisible();
     };
+    useEffect(() => {
+        if (data) {
+            $('#classroomsTable').DataTable({
 
+                data: data,
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/newsletters`, {
+                            params: { page, per_page: data.length },
+                        });
+
+                        const result = response.data;
+
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
+                columns: [
+                    { title: "Mã bài viết", data: "code" },
+                    { title: "Tiêu đề", data: "title" },
+                    {
+                        title: "Hình ảnh",
+                        data: "image",
+                        render: (data, type, row) => {
+                            return data != null ?
+                                `<img src='${getImageUrl(row.image)}' alt="${row.title}" style=" height: 40px;display: block !important;">` :
+                                `<img src='https://media.istockphoto.com/id/1128826884/vector/no-image-vector-symbol-missing-available-icon-no-gallery-for-this-moment.jpg?s=612x612&w=0&k=20&c=390e76zN_TJ7HZHJpnI7jNl7UBpO3UP7hpR2meE1Qd4=' style=" height: 40px;display: block;" alt="${row.title}">`
+                        }
+
+                    },
+                    { title: "Danh mục", data: "cate_name" },
+                    { title: "Tác giả", data: "full_name" },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        className: "text-center",
+                        render: (data, type, row) => {
+                            return data === true
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
+                        }
+                    },
+                    {
+                        title: "Hành động",
+                        data: null,
+                        render: (data, type, row) => {
+                            return `
+                                <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.code}" id="edit_${row.code}"></i>
+                                    <i class="fas fa-trash" 
+                                        style="cursor: pointer; color: red; font-size: 20px;" 
+                                        data-id="${row.code}" 
+                                        id="delete_${row.code}"></i>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
+                    search: 'Tìm kiếm:'
+                },
+                destroy: true,
+                createdRow: (row, data, dataIndex) => {
+                    // Gắn sự kiện xóa sau khi bảng được vẽ
+                    $(row).find('.fa-trash').on('click', function () {
+                        const classCode = $(this).data('id');
+                        handleDelete(classCode);
+                    });
+
+                    $(row).find('.fa-edit').on('click', function () {
+                        const classCode = $(this).data('id');
+                        console.log(classCode);
+
+                        navigate(`/admin/post/${classCode}/edit`);
+
+                    });
+                }
+            })
+        }
+    }, [data]);
     if (isFetching && !data) return <Spinner />;
 
     return (
@@ -55,7 +153,8 @@ const PostList = () => {
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
-                        <div className="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <table id="classroomsTable" className="display"></table>
+                        {/* <div className="dataTables_wrapper container-fluid dt-bootstrap4">
                             <div className="row">
                                 <div className="col-sm-12 col-md-6">
                                     <div
@@ -163,11 +262,6 @@ const PostList = () => {
                                 </div>
                             </div>
                             <div className="row">
-                                {/* <div className="col-sm-12 col-md-5">
-                                    <div className="dataTables_info">
-                                        Showing 1 to 10 of {data.length} entries
-                                    </div>
-                                </div> */}
                                 <div className="col-sm-12 col-md-7 ml-auto">
                                     <div className="dataTables_paginate paging_simple_numbers">
                                         <ul className="pagination">
@@ -216,7 +310,7 @@ const PostList = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
