@@ -37,8 +37,110 @@ const ShowGrades = () => {
         const modal = new window.bootstrap.Modal(document.getElementById('gradesModal'));
         modal.show();
         setIdSelected(class_code);
-        const response = await api.get(`/admin/grades/cls102`);
-        setSelectedGrade(response?.data);
+        // const response = await api.get(`/admin/grades/cls102`);
+        const response = {
+            "roomName": "Lớp Kỹ Thuật Phần Mềm 2",
+            "students": [
+                {
+                    "name": "Nguyen Van A",
+                    "student_code": "SV001",
+                    "scores": [
+                        {
+                            "name": "Lab1",
+                            "note": "abc",
+                            "score": 7,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab2",
+                            "note": "123",
+                            "score": 9,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab3",
+                            "note": "",
+                            "score": 6,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab4",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab5",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab6",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab7",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        }
+                    ]
+                },
+                {
+                    "name": "Le Thi B",
+                    "student_code": "SV002",
+                    "scores": [
+                        {
+                            "name": "Lab1",
+                            "note": "",
+                            "score": 7,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab2",
+                            "note": "",
+                            "score": 9,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab3",
+                            "note": "",
+                            "score": 6,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab4",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab5",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab6",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        },
+                        {
+                            "name": "Lab7",
+                            "note": "",
+                            "score": 0,
+                            "value": 4,
+                        }
+                    ]
+                }
+            ],
+            "error": false
+        }
+        setSelectedGrade(response);
     };
 
     const handleSaveClick = () => {
@@ -148,7 +250,7 @@ const ShowGrades = () => {
                     { title: "Tên SV", data: "student_name", className: "text-center" },
                     ...selectedGrade?.students[0]?.scores.map((exam, index) => ([
                         {
-                            title: `${exam.name} (${(exam.value) ? ((exam.value / totalValue) * 100).toFixed(2) : 0}%)`,
+                            title: `${exam.name} (${(exam.value) ? ((exam.value / totalValue) * 100).toFixed(2) : 0})`,
                             data: null,
                             render: function (data, type, row) {
                                 const scoreData = row.exam_scores[index]?.score || 0;
@@ -206,11 +308,7 @@ const ShowGrades = () => {
                     <h4 className="card-title">Quản lý Điểm số</h4>
                 </div>
                 <div className="card-body">
-                    {isLoadingClasses ? (
-                        <div className="loading-spinner">
-                            <p>Đang tải dữ liệu...</p>
-                        </div>
-                    ) : (
+                    { (
                         <div className="table-responsive">
                             <table id="classesTable" className="display"></table>
                             <div className="modal fade" id="gradesModal" tabIndex="-1" aria-labelledby="gradesModalLabel" aria-hidden="true">

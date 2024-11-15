@@ -53,7 +53,7 @@ const RoomSchoolList = () => {
 
     useEffect(() => {
         if (roomSchool) {
-            $('#dataTable').DataTable({
+            $('#roomSchoolTable').DataTable({
                 data: roomSchool,
                 ajax: async (data, callback) => {
                     try {
@@ -191,7 +191,7 @@ const RoomSchoolList = () => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <i className="fa-solid fa-circle-check fs-20 color-green"></i>
-                                    <table id="dataTable" className="display"></table>
+                                    <table id="roomSchoolTable" className="display"></table>
                                     {/* <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"

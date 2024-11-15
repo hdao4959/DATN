@@ -215,7 +215,7 @@ const ShowGradesTeacher = () => {
                     info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
                     search: 'Tìm kiếm:'
                 },
-                destroy: true,
+                destroy: true,                
                 data: selectedGrade?.students?.map((student, index) => {
                     let totalScore = student.scores.reduce((sum, scoreSm) => {
                         const studentPoint = scoreSm?.score || 0;
@@ -236,9 +236,9 @@ const ShowGradesTeacher = () => {
                     { title: "STT", data: "stt", className: "text-center" },
                     { title: "Mã SV", data: "user_code", className: "text-center" },
                     { title: "Tên SV", data: "student_name", className: "text-center" },
-                    ...selectedGrade?.students[0]?.scores.map((exam, index) => ([
+                    ...selectedGrade?.students?.scores.map((exam, index) => ([
                         {
-                            title: `${exam.name} (${(exam.value) ? ((exam.value / totalValue) * 100).toFixed(2) : 0}%)`,
+                            title: `${exam.name} (${(exam.value) ? ((exam.value / totalValue) * 100).toFixed(2) : 0})`,
                             data: null,
                             render: function (data, type, row) {
                                 const scoreData = row.exam_scores[index]?.score || 0;

@@ -27,10 +27,17 @@ const ShowAttendance = () => {
         },
         enabled: false 
     });
-
+    useEffect(() => {
+        if (idSelected) {
+            fetchAttendanceData();
+        }
+    }, [idSelected]);
+    
     const handleViewDetails = async (class_code) => {
+        console.log(class_code);
+        
         setIdSelected(class_code);
-        await fetchAttendanceData();
+        // fetchAttendanceData();
 
         const modal = new window.bootstrap.Modal(document.getElementById('attendanceModal'));
         modal.show();
