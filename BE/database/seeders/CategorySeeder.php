@@ -29,43 +29,43 @@ class CategorySeeder extends Seeder
                 'cate_code' => 'S01',
                 'cate_name' => "Kỳ 1",
                 'type' => 'semester',
-                'value' => null
+                'value' => 1
             ],
             [
                 'cate_code' => 'S02',
                 'cate_name' => "Kỳ 2",
                 'type' => 'semester',
-                'value' => null
+                'value' => 2
             ],
             [
                 'cate_code' => 'S03',
                 'cate_name' => "Kỳ 3",
                 'type' => 'semester',
-                'value' => null
+                'value' => 3
             ],
             [
                 'cate_code' => 'S04',
                 'cate_name' => "Kỳ 4",
                 'type' => 'semester',
-                'value' => null
+                'value' => 4
             ],
             [
                 'cate_code' => 'S05',
                 'cate_name' => "Kỳ 5",
                 'type' => 'semester',
-                'value' => null
+                'value' => 5
             ],
             [
                 'cate_code' => 'S06',
                 'cate_name' => "Kỳ 6",
                 'type' => 'semester',
-                'value' => null
+                'value' => 6
             ],
             [
                 'cate_code' => 'S07',
                 'cate_name' => "Kỳ 7",
                 'type' => 'semester',
-                'value' => null
+                'value' => 7
             ],
 
             // Chuyên ngành
@@ -101,7 +101,7 @@ class CategorySeeder extends Seeder
             ],
 
             // Ca học
-           
+
             [
                 'cate_code' => 'TS1',
                 'cate_name' => "Ca 1",
@@ -152,20 +152,20 @@ class CategorySeeder extends Seeder
                 'type' => 'session',
             ]
 
-           
 
-   
+
+
 
         ]);
 
         for ($floor = 1; $floor <= 4; $floor++) {
             for ($room = 1; $room <= 10; $room++) {
                 $roomNumber = sprintf("P%d%02d", $floor, $room);
-        
+
                 Category::create([
                     'cate_code' => $roomNumber,
                     'cate_name' => $roomNumber,
-                    'value' => 40, 
+                    'value' => 40,
                     'type' => 'school_room'
                 ]);
             }

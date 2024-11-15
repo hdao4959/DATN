@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Fee;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,13 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('feedback', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Fee::class)->constrained();
-            $table->date('payment_date');
-            $table->decimal('amount_paid',12,2);
-            $table->enum('payment_method',['transfer','cash']);
-            $table->string('receipt_number');
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->enum('type',['reward','feedback']);
+            $table->text('content');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('feedback');
     }
 };

@@ -44,9 +44,11 @@ class Category extends Model
         return $this->hasMany(Newsletter::class, 'cate_code', 'cate_code');
     }
 
+
     public function semester(){
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
+
 
 
     // // Mối quan hệ giữa phòng học và lịch
@@ -57,4 +59,5 @@ class Category extends Model
     // public function sessionSchedules(){
     //     return $this->hasMany(Schedule::class, 'session_code', 'cate_code');
     // }
+
 }

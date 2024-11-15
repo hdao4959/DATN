@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         \App\Models\User::factory(1000)->create();
 
         // User::create([
@@ -30,7 +31,7 @@ class DatabaseSeeder extends Seeder
         //     'place_of_grant' => fake()->city,
         //     'nation' => 'Kinh',
         //     'avatar' => fake()->imageUrl(200, 200, 'people'), // URL avatar ngẫu nhiên
-        //     'role' => '0', 
+        //     'role' => '0',
         // ]);
 
         // User::create([
@@ -47,9 +48,10 @@ class DatabaseSeeder extends Seeder
         //     'place_of_grant' => fake()->city,
         //     'nation' => 'Kinh',
         //     'avatar' => fake()->imageUrl(200, 200, 'people'), // URL avatar ngẫu nhiên
-        //     'role' => '2',  
+        //     'role' => '2',
         //     'major_code' => 'CN01',
         // ]);
-    
+
+
     }
 }

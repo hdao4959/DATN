@@ -23,12 +23,18 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\FeeController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
         Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
 
+
         Route::apiResource('assessment', AssessmentItemController::class);
 
         Route::get('score/{id}', [ScoreController::class, 'create']);
@@ -132,7 +139,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('attendances', AttendanceController::class);
 
+
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -142,7 +151,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/list_students', [TeacherClassroomController::class, 'listStudents']);
         Route::get('classrooms/{classcode}/list_schedules', [TeacherClassroomController::class, 'listSchedules']);
-
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);
@@ -154,13 +162,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
         Route::get('/classrooms', [StudentClassroomController::class, 'classrooms']);
         Route::get('/classrooms/{class_code}/schedules', [StudentClassroomController::class, 'schedulesOfClassroom']);
-        
+
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
-        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
-          
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
+
     });
 });
+
 
 // Các route phục vụ cho form
 Route::controller(GetDataForFormController::class)->group(function () {
@@ -196,8 +205,8 @@ Route::get('haha', function () {
     // $classroom = Classroom::create([
     //     'class_code' => '1312' ,
     //     'class_name' => 'Lớp 1',
-    //     'section' => 1, 
-    //     'subject_code' => 'php1', 
+    //     'section' => 1,
+    //     'subject_code' => 'php1',
     //     'user_code' => 'TC277'
     // ]);
     // $classroom->users()->attach($array_student_id);
@@ -207,3 +216,11 @@ Route::get('haha', function () {
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
 
 });
+
+Route::apiResource('fees', FeeController::class);
+Route::apiResource('transaction', TransactionController::class);
+Route::apiResource('wallet', WalletController::class);
+Route::apiResource('feedback',FeedbackController::class);
+
+
+
