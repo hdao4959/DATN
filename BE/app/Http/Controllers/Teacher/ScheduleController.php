@@ -39,9 +39,7 @@ class ScheduleController extends Controller
                 ->whereIn('class_code', $list_classroom_codes)
                 ->select('class_code', 'room_code' , 'session_code', 'date')
                 ->get();
-                return response()->json($list_schedules);
-
-
+                return response()->json($list_schedules,200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);  
         }

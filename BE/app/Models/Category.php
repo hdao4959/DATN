@@ -49,4 +49,15 @@ class Category extends Model
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
+
+
+    // // Mối quan hệ giữa phòng học và lịch
+    // public function roomSchedules(){
+    //     return $this->hasMany(Schedule::class, 'room_code', 'cate_code');
+    // }
+    // // Mối quan hệ giữa ca học và lịch
+    // public function sessionSchedules(){
+    //     return $this->hasMany(Schedule::class, 'session_code', 'cate_code');
+    // }
+
 }

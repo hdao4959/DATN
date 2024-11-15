@@ -25,16 +25,16 @@ class StoreClassroomRequest  extends FormRequest
     {
         return [
             'course_code' => 'required|exists:categories,cate_code',
-            'class_code' => 'required|unique:classrooms,class_code',
             'class_name' => 'required|unique:classrooms,class_name',
             'subject_code' => 'required|exists:subjects,subject_code',
             'session_code' => 'required|exists:categories,cate_code',
-            // 'study_days' => 'required|array',
-            // 'study_days.*' => 'in:Mon,Tue,Wed,Thir,Fri,Sat,Sun',
             'room_code' => 'required|exists:categories,cate_code',
             'user_code' => 'nullable|exists:users,user_code',
             'list_study_dates' => 'required|array',
-            'list_study_dates.*' => 'date|after_or_equal:tomorrow|date_format:Y-m-d'
+            'list_study_dates.*' => 'date|after_or_equal:tomorrow|date_format:Y-m-d',
+            'date_from' => 'required|date|after_or_equal:tomorrow',
+            'student_codes' => 'required|array',
+            
         ];
     }
 

@@ -5,12 +5,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "/src/css/popup.css";
+import { getToken } from "../../../utils/getToken";
 
 const AddClassroomTest = () => {
     const navigate = useNavigate();
     const [responseData, setResponseData] = useState(null);
     const [studyDates, setStudyDates] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
+    const accessToken = getToken();
 
     const {
         register,
@@ -27,7 +29,13 @@ const AddClassroomTest = () => {
         queryKey: ["schoolrooms"],
         queryFn: async () => {
             const response = await axios.get(
-                "http://127.0.0.1:8000/api/admin/schoolrooms"
+                "http://127.0.0.1:8000/api/admin/schoolrooms",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
             );
             return response.data.data;
         },

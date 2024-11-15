@@ -19,7 +19,7 @@ const EditMajor = () => {
     const nav = useNavigate();
 
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post(`/admin/major/${id}`, data),
+        mutationFn: (data) => api.post(`/admin/majors/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật chuyên ngành thành công");
             nav("/admin/major");
@@ -33,7 +33,7 @@ const EditMajor = () => {
     const { data: majorDetail } = useQuery({
         queryKey: ["MAJOR_DETAIL", id],
         queryFn: async () => {
-            const res = await api.get(`/admin/major/${id}`);
+            const res = await api.get(`/admin/majors/${id}`);
 
             return res.data;
         },

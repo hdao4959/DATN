@@ -21,7 +21,8 @@ class NewsletterController extends Controller
 
         return response()->json([
             'message' => 'Không có newsletter nào!',
-        ], 404);
+            'error' => true
+        ]);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)
@@ -30,7 +31,8 @@ class NewsletterController extends Controller
         Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
         return response()->json([
-            'message' => 'Lỗi không xác định!'
+            'message' => 'Lỗi không xác định!',
+            'error' => true
         ], 500);
     }
     /**
@@ -90,7 +92,7 @@ class NewsletterController extends Controller
      */
     public function store(StoreNewsletterRequest $request)
     {
-        try {
+        // try {
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
@@ -103,10 +105,10 @@ class NewsletterController extends Controller
             Newsletter::create($params);
 
             return response()->json($params, 200);
-        } catch (\Throwable $th) {
+        // } catch (\Throwable $th) {
 
-            return $this->handleErrorNotDefine($th);
-        }
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
 

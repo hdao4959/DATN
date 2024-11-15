@@ -22,9 +22,9 @@ class HandleStep3 extends FormRequest
     public function rules(): array
     {
         return [
-            'list_study_dates' => 'required|array',
-            'list_study_dates.*' => 'date|after_or_equal:tomorrow',
-            'session_code' => 'required|exists:categories,cate_code'
+            'room_code' => 'required|exists:categories,cate_code',
+            'subject_code' => 'required|exists:subjects,subject_code',
+            'course_code' => 'required|exists:categories,cate_code',
         ];
     }
 }

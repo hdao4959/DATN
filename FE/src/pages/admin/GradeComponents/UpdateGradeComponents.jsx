@@ -125,12 +125,12 @@ const UpdateGradeComponents = () => {
 
                                     <div className="form-group">
                                         <label htmlFor="value">
-                                            Trọng số (%)
+                                            Trọng số
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
                                         </label>
-                                        <input
+                                        {/* <input
                                             type="number"
                                             className="form-control"
                                             {...register("value", {
@@ -148,7 +148,30 @@ const UpdateGradeComponents = () => {
                                                 },
                                             })}
                                             placeholder="Nhập trọng số"
-                                        />
+                                        /> */
+                                        <input
+                                                type="number"
+                                                className="form-control"
+                                                {...register("value", {
+                                                    required: "Trọng số là bắt buộc",
+                                                    min: {
+                                                        value: 0,
+                                                        message: "Giá trị không hợp lệ",
+                                                    },
+                                                    max: {
+                                                        value: 100,
+                                                        message: "Trọng số phải nhỏ hơn 100%",
+                                                    },
+                                                    pattern: {
+                                                        value: /^(100(\.0{1})?|[0-9]?[0-9](\.[0-9]{1})?)$/,
+                                                        message: "Giá trị phải là số nguyên hoặc số thập phân với một chữ số sau dấu phẩy",
+                                                    },
+                                                    valueAsNumber: true, // Ensures value is stored as a number
+                                                })}
+                                                placeholder="Nhập trọng số"
+                                                step="0.1"  // Cho phép nhập giá trị thập phân, ví dụ 1, 1.1, 1.2...
+                                            />
+                                        }
                                         {errors.value && (
                                             <span className="text-danger">
                                                 {errors.value.message}

@@ -46,9 +46,9 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         try {
-            // Tìm kiếm theo cate_name
+
             $search = $request->input('search');
-            $data = Category::with(['childrens' => function($query){
+            $categories = Category::with(['childrens' => function($query){
                 $query->select('cate_code', 'cate_name', 'is_active');
             }])->select('cate_code', 'cate_name', 'image', 'parent_code', 'is_active')
             ->whereNull('parent_code')
@@ -62,13 +62,79 @@ class CategoryController extends Controller
                 })
                 ->paginate(4);
 
-            return response()->json($data, 200);
-        } catch (Throwable $th) {
+//             // Tìm kiếm theo cate_name
+//             $search = $request->input('search');
+//             // $data = Category::with([
+//             //     'childrens' => query
+//             // ]
+//             // )->where('type', '=', 'category')
+//             //     ->when($search, function ($query, $search) {
+//             //         return $query
+//             //             ->where('cate_name', 'like', "%{$search}%");
+//             //     })
+//             //     ->paginate(4);
 
+
+//                 $categories = Category::with(
+//                     ['childrens' => function ($query) {
+//     $query->select('cate_code', 'cate_name', 'parent_code', 'is_active');
+//                 }])
+//                 ->whereNull('parent_code')
+//                 ->where('type', '=', 'major')
+//                 ->select('cate_code', 'cate_name', 'is_active')
+//                 ->when($search, function($query, $search){
+//                         return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+//                             $childQuerry->where('cate_name', 'like', "%$search%");
+//                         });
+//                     })
+//                     ->get();
+
+
+            // Tìm kiếm theo cate_name
+            $search = $request->input('search');
+            // $data = Category::with([
+            //     'childrens' => query
+            // ]
+            // )->where('type', '=', 'category')
+            //     ->when($search, function ($query, $search) {
+            //         return $query
+            //             ->where('cate_name', 'like', "%{$search}%");
+            //     })
+            //     ->paginate(4);
+
+            return response()->json($categories, 200);
+        } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
 
+    public function listParentCategories(){
+        try {
+            $parent_category = Category::select('cate_code', 'cate_name')
+            ->where([
+                'type' =>  'category', 
+                'is_active' => true
+            ])->whereNull('parent_code')->get();
+    
+            return response()->json($parent_category);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+        
+    }
+
+    public function listChildrenCategories(string $parent_code){
+        try {
+            $children_categories = Category::where([
+                'parent_code' => $parent_code,
+                'type' => 'category',
+                'is_active' => true
+            ])->select('cate_code', 'cate_name')->get();
+            return response()->json($children_categories,200);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
     /**
      * Store a newly created resource in storage.
      */

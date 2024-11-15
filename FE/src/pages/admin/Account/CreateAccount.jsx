@@ -13,7 +13,7 @@ const CreateAccount = () => {
 
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
         mutationFn: (data) => {
-            return axios.post("http://127.0.0.1:8000/api/admin/users", data);
+            return axios.post("/admin/users", data);
         },
         onSuccess: () => {
             alert("Tạo tài khoản thành công!");
@@ -42,7 +42,7 @@ const CreateAccount = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Create Account</div>
+                                <div className="card-title">Tạo tài khoản</div>
                             </div>
                             <div className="card-body">
                                 {/* Dòng 1 */}
@@ -366,13 +366,13 @@ const CreateAccount = () => {
 
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label>IsActive</label>
+                                            <label>Trạng thái</label>
                                             <select
                                                 className="form-select"
                                                 {...register("is_active")}
                                             >
-                                                <option value="0">0</option>
-                                                <option value="1">1</option>
+                                                <option value="0">Đang sử dụng</option>
+                                                <option value="1">Khóa tài khoản</option>
                                             </select>
                                         </div>
                                     </div>
@@ -389,13 +389,13 @@ const CreateAccount = () => {
                                                 className="form-select"
                                                 {...register("role")}
                                             >
-                                                <option value={"admin"}>
+                                                <option value={"1"}>
                                                     Admin
                                                 </option>
-                                                <option value={"teacher"}>
+                                                <option value={"2"}>
                                                     Giảng viên
                                                 </option>
-                                                <option value={"student"}>
+                                                <option value={"3"}>
                                                     Sinh viên
                                                 </option>
                                             </select>
@@ -425,14 +425,19 @@ const CreateAccount = () => {
                                 >
                                     {isLoading
                                         ? "Đang tạo tài khoản..."
-                                        : "Create Account"}
+                                        : "Thêm mới tài khoản"}
                                 </button>
-                                <button
+                                {/* <button
                                     type="button"
                                     className="btn btn-danger"
                                 >
-                                    Cancel
-                                </button>
+                                    Quay lại danh sách
+                                </button> */}
+                                <Link to="/admin/account">
+                                    <button className="btn btn-primary">
+                                        Quay lại danh sách
+                                    </button>
+                                </Link>
                             </div>
 
                             {isError && (

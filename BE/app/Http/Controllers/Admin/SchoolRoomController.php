@@ -39,12 +39,12 @@ class SchoolRoomController extends Controller
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
             $data = Category::where('type', '=', 'school_room')
-                                ->when($search, function ($query, $search) {
-
-                                    return $query
-                                            ->where('cate_name', 'like', "%{$search}%");
-                                })
-                                ->paginate(4);
+                ->when($search, function ($query, $search) {
+                    return $query
+                        ->where('cate_name', 'like', "%{$search}%");
+                })
+                ->orderBy('id', 'desc')
+                ->paginate(10);
             if ($data->isEmpty()) {
 
                 return $this->handleInvalidId();
@@ -66,9 +66,9 @@ class SchoolRoomController extends Controller
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'school_room')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
+                ->where('type', '=', 'school_room')
+                ->select('cate_code', 'cate_name')
+                ->get();
 
             $params = $request->except('_token');
 
@@ -116,9 +116,9 @@ class SchoolRoomController extends Controller
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
-                                ->where('type', '=', 'school_room')
-                                ->select('cate_code', 'cate_name')
-                                ->get();
+                ->where('type', '=', 'school_room')
+                ->select('cate_code', 'cate_name')
+                ->get();
 
             $listSchoolRoom = Category::where('cate_code', $cate_code)->first();
             if (!$listSchoolRoom) {

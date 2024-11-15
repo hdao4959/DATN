@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -61,7 +62,10 @@ class User extends Authenticatable
         'password' => 'hashed'
     ];
 
-
+    public function setPasswordAttribute($value) {
+        $this->attributes['password'] = Hash::make($value);
+    }
+    
     // Định nghĩa mối quan hệ với bảng 'newsletters'
     public function newsletter()
     {
@@ -111,7 +115,8 @@ class User extends Authenticatable
 
     public function classrooms()
     {
-        return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code');
+        return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code')
+        ->withPivot('user_code');
     }
 
     public function fees(){

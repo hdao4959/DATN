@@ -37,7 +37,9 @@ const GradeComponentList = () => {
     };
 
     if (isFetching && !data) return <Spinner />;
-
+    if (data.error) {
+        toast.error(data.message);
+    }
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
@@ -122,7 +124,7 @@ const GradeComponentList = () => {
                                                     <td>{it.id}</td>
                                                     <td>{it.cate_code}</td>
                                                     <td>{it.cate_name}</td>
-                                                    <td>{it.value}%</td>
+                                                    <td className="text-center">{it.value}</td>
                                                     <td>
                                                         <div className="flex gap-x-2 items-center">
                                                             <Link

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +18,8 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        try {
+        // try {
+
             $data = $request->validated();   
             $user = User::firstWhere('email',$data['email']);
 
@@ -39,12 +41,12 @@ class AuthController extends Controller
                 ], 200);
 
 
-        } catch (\Throwable $th) {
+        // } catch (\Throwable $th) {
 
-                return response([
-                    'message' => "Lỗi không xác định"
-                ], 500);
-            }
+        //         return response([
+        //             'message' => "Lỗi không xác định"
+        //         ], 500);
+        //     }
     }
 
     public function logout(Request $request)

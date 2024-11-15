@@ -31,6 +31,16 @@ const StudentMenu = () => {
                     <p className="text-[#b9babf]">Post Category</p>
                 </NavLink>
             </li>
+
+            <li className="menu-item">
+                <NavLink
+                    to="student/attendances"
+                    className={`${styles.menuItem} group`}
+                >
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Post Category</p>
+                </NavLink>
+            </li>
         </ul>
     );
 };
