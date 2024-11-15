@@ -30,6 +30,8 @@ use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -158,7 +160,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
-          
+        
     });
 });
 
