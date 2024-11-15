@@ -9,6 +9,7 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
 import { useNavigate } from 'react-router-dom';
+
 const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
@@ -58,6 +59,9 @@ const RoomSchoolList = () => {
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/schoolrooms`, {
+                            params: { page, per_page: data.length },
+                        });
                         const result = response.data;
 
                         callback({

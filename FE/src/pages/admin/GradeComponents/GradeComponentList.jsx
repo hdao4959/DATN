@@ -1,15 +1,20 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
 import Modal from "../../../components/Modal/Modal";
-
+import { getToken } from "../../../utils/getToken";
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
+import 'datatables.net';
+import { useNavigate } from 'react-router-dom';
 const GradeComponentList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedGradeComponent, setSelectedGradeComponent] = useState();
-
+    const accessToken = getToken();
+    const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
     const { data, refetch, isFetching } = useQuery({
@@ -36,6 +41,71 @@ const GradeComponentList = () => {
         onModalVisible();
     };
 
+    useEffect(() => {
+
+        if (data) {
+            
+            $('#classroomsTable').DataTable({
+                
+                data: data,
+                columns: [
+                    { title: "Mã điểm", data: "cate_code" },
+                    { title: "Tên điểm", data: "cate_name" },
+                    { title: "Trọng số", data: "value" },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        className: "text-center",
+                        render: (data, type, row) => {
+                            return data === true
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
+                        }
+                    },
+                    {
+                        title: "Hành động",
+                        data: null,
+                        render: (data, type, row) => {
+                            return `
+                                <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.cate_code}" id="edit_${row.cate_code}"></i>
+                                    <i class="fas fa-trash" 
+                                        style="cursor: pointer; color: red; font-size: 20px;" 
+                                        data-id="${row.cate_code}" 
+                                        id="delete_${row.cate_code}"></i>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
+                    search: 'Tìm kiếm:'
+                },
+                destroy: true,
+                createdRow: (row, data, dataIndex) => {
+                    // Gắn sự kiện xóa sau khi bảng được vẽ
+                    $(row).find('.fa-trash').on('click', function () {
+                        const cate_code = $(this).data('id');
+                        handleDelete(cate_code);
+                    });
+
+                    $(row).find('.fa-edit').on('click', function () {
+                        const cate_code = $(this).data('id');
+                        console.log(cate_code);
+                        
+                        navigate(`/admin/grade-components/edit/${cate_code}`);
+
+                    });
+                }
+            })
+        }
+    }, [data]);
+
     if (isFetching && !data) return <Spinner />;
     if (data.error) {
         toast.error(data.message);
@@ -57,7 +127,8 @@ const GradeComponentList = () => {
                 <div className="card-body">
                     <div className="table-responsive">
                         <div className="dataTables_wrapper container-fluid dt-bootstrap4">
-                            <div className="row">
+                        <table id="classroomsTable" className="display"></table>
+                            {/* <div className="row">
                                 <div className="col-sm-12 col-md-6">
                                     <div
                                         className="dataTables_length"
@@ -150,13 +221,8 @@ const GradeComponentList = () => {
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                            <div className="row">
-                                {/* <div className="col-sm-12 col-md-5">
-                                    <div className="dataTables_info">
-                                        Showing 1 to 10 of {data.length} entries
-                                    </div>
-                                </div> */}
+                            </div> */}
+                            {/* <div className="row">
                                 <div className="col-sm-12 col-md-7 ml-auto">
                                     <div className="dataTables_paginate paging_simple_numbers">
                                         <ul className="pagination">
@@ -204,7 +270,7 @@ const GradeComponentList = () => {
                                         </ul>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
