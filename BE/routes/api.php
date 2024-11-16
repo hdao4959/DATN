@@ -141,6 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('attendances', AttendanceController::class);
 
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+        Route::apiResource('fees', FeeController::class);
 
     });
 
@@ -230,7 +231,6 @@ Route::get('haha', function () {
 
 });
 
-Route::apiResource('fees', FeeController::class);
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
 Route::apiResource('feedback',FeedbackController::class);
