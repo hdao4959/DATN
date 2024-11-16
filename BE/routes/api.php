@@ -25,7 +25,7 @@ use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\Teacher\ScheduleController;
+use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\TeacherGradesController;
@@ -37,6 +37,7 @@ use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
+use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,7 +146,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
-        Route::get('schedules', [ScheduleController::class, 'index']);
+        Route::get('schedules', [TeacherScheduleController::class, 'index']);
+        Route::get('schedules/{classCode}', [TeacherScheduleController::class, 'show']);
 
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
@@ -179,6 +181,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']); 
 
         Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+
+        Route::get('schedules', [StudentScheduleController::class, 'index']);
         
     });
 });
