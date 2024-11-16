@@ -29,12 +29,14 @@ use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\TeacherGradesController;
+use App\Http\Controllers\Teacher\NewsletterController as TeacherNewsletterController;
 use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
 use App\Http\Controllers\StudentGradesController;
+use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,7 +101,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('newsletters', NewsletterController::class);
         Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
-        Route::get('showNewsletter', [NewsletterController::class, 'showNewsletter']);
 
 
         Route::apiResource('assessment', AssessmentItemController::class);
@@ -160,6 +161,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
         Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);
         Route::put('/grades/{id}', [TeacherGradesController::class, 'update']);
+        
+        Route::apiResource('newsletters', TeacherNewsletterController::class);
+        Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
+     
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -170,8 +175,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/grades', [StudentGradesController::class, 'index']);
 
-        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
+        Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']); 
 
+        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+        
     });
 });
 

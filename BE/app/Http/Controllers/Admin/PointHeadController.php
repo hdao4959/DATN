@@ -120,7 +120,7 @@ class PointHeadController extends Controller
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $listPointHead = Category::where('cate_code', $cate_code)->first();
+            $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listPointHead) {
 
                 return $this->handleInvalidId();
@@ -151,7 +151,7 @@ class PointHeadController extends Controller
     public function destroy(string $cate_code)
     {
         try {
-            $listPointHead = Category::where('cate_code', $cate_code)->first();
+            $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listPointHead) {
 
                 return $this->handleInvalidId();
