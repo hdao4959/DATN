@@ -454,6 +454,18 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
+            <li className="menu-item">
+                <NavLink to="/admin/gradesStudent" className={`${styles.menuItem} group`}>
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm số Student</p>
+                </NavLink>
+            </li>
+            <li className="menu-item">
+                <NavLink to="/admin/gradesTeacher" className={`${styles.menuItem} group`}>
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm số teacher</p>
+                </NavLink>
+            </li>
         </ul>
     );
 };

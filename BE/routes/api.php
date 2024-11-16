@@ -28,13 +28,13 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
+use App\Http\Controllers\TeacherGradesController;
 use App\Http\Controllers\Student\ScoreController as StudentScoreController;
 use App\Http\Controllers\Student\AttendanceController as StudentAttendanceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\Student\ClassroomController as StudentClassroomController;
-
-
+use App\Http\Controllers\StudentGradesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,7 +139,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('attendances', AttendanceController::class);
 
-
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
 
     });
@@ -157,6 +156,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);
         Route::put('/attendances/{classCode}', [TeacherAttendanceController::class, 'update']);
         Route::delete('/attendances/{classCode}', [TeacherAttendanceController::class, 'destroy']);
+
+        Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
+        Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);
+        Route::put('/grades/{id}', [TeacherGradesController::class, 'update']);
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -164,6 +167,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/classrooms/{class_code}/schedules', [StudentClassroomController::class, 'schedulesOfClassroom']);
 
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
+
+        Route::get('/grades', [StudentGradesController::class, 'index']);
 
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
 
