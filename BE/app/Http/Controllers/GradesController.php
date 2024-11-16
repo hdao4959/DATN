@@ -19,19 +19,22 @@ class GradesController extends Controller
     //     $this->gradeRepository = $gradeRepository;
     // }
     public function index($classCode)
-    {
+    {$classRoom = DB::table('classrooms')->where([
+        'class_code' => $classCode,
+        'is_active' => true
+    ])->select('class_name', 'score')->first();
         // dd($classCode);
         try {
             $classRoom = DB::table('classrooms')->where([
                 'class_code' => $classCode,
                 'is_active' => true
-            ])->select('class_name', 'score', 'students')->first();
-            if ($classRoom) {
+            ])->select('class_name', 'score')->first();
+                if ($classRoom) {
                 $scoreJson = $classRoom->score;
                 $scoreArray = json_decode($scoreJson, true);
-                $studentArray = json_decode($classRoom->students, true);
-                foreach ($studentArray as $student) {
-                    $studentCode = $student['student_code'];
+                // $studentArray = json_decode($classRoom->students, true);
+                // foreach ($studentArray as $student) {
+                //     $studentCode = $student['student_code'];
 
                     if (!$scoreArray) {
                         $scores = [
@@ -50,30 +53,31 @@ class GradesController extends Controller
                             $scores = $scoreNumber['scores'];
                         }
                     }
+                    
 
                     // Thêm thông tin sinh viên vào mảng kết quả
                     $studentScores[] = [
-                        'name' => $student['name'],
-                        'student_code' => $studentCode,
+                        // 'name' => $student['name'],
+                        // 'student_code' => $studentCode,
                         'scores' => $scores
                     ];
-                }
+                // }
 
                 return response()->json([
-                    'roomName' => $classRoom->class_name,
-                    'students' => $studentScores,
+                    'className' => $classRoom->class_name,
+                    // 'students' => $studentScores,
                     'error' => false
                 ]);
             } else {
                 return response()->json([
                     'message' => 'Không tìm thấy lớp học',
-                    'error' => true
+                    'error' => true,
                 ]);
             }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Có lỗi xảy ra',
-                'error' => true
+                'error' => true,
             ]);
         }
     }
@@ -106,16 +110,30 @@ class GradesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    // public function update(Request $request, $id)
-    // {
-    //     try{
-    //         $this->gradeRepository->update($request,$id);
+    public function update(Request $request, $classCode)
+    {
+        try {
+            $studentsData = $request->all(); 
+                DB::table('classrooms')
+                    ->where('class_code', $classCode)
+                    ->update([
+                        'score' => json_encode($scores), 
+                        'updated_at' => now(),
+                    ]);
+    
+            return response()->json([
+                'message' => 'Cập nhật điểm thành công',
+                'error' => false,
+                'abc' => $studentsData
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
+                'error' => true,
+            ]);
+        }
+    }
+    }
 
-    //         return response()->json(['message'=>'cập nhật điểm thành công'],200);
-    //     }catch(\Throwable $th){
-    //         return response()->json(['error'=>$th->getMessage()],500);
-    //     }
-    // }
 
 
-}

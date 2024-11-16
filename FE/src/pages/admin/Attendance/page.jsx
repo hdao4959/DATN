@@ -4,12 +4,11 @@ import $ from 'jquery';
 import 'datatables.net';
 import { toast } from 'react-toastify';
 import api from '../../../config/axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 const ShowAttendance = () => {
     const [idSelected, setIdSelected] = useState(null);
     const [attendanceState, setAttendanceState] = useState([]);
-    const queryClient = useQueryClient();
 
     const { data: classes, isLoading: isLoadingClasses } = useQuery({
         queryKey: ["LIST_CLASSES"],
@@ -81,7 +80,7 @@ const ShowAttendance = () => {
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Mã môn", data: "subject_code" },
                     { title: "Tên lớp", data: "class_name" },
-                    { title: "Giảng viên", data: "user_code" },
+                    // { title: "Giảng viên", data: "user_code" },
                     {
                         title: "Điểm danh",
                         data: null,
@@ -205,8 +204,6 @@ const ShowAttendance = () => {
             } else {
                 changedRecords.push({ student_code: studentCode, date: updatedDate, status: newStatus });
             }
-
-            console.log("Changed records:", changedRecords);
         });
 
     }, [attendanceState]);
