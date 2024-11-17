@@ -135,7 +135,7 @@ class CategoryNewsletter extends Controller
                 ->select('cate_code', 'cate_name')
                 ->get();
 
-            $listCategory = Category::where('cate_code', $cate_code)->first();
+            $listCategory = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listCategory) {
 
                 return $this->handleInvalidId();
@@ -166,7 +166,7 @@ class CategoryNewsletter extends Controller
     public function destroy(string $cate_code)
     {
         try {
-            $listCategory = Category::where('cate_code', $cate_code)->first();
+            $listCategory = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listCategory) {
 
                 return $this->handleInvalidId();

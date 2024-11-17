@@ -1,9 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
-import TeacherMenu from "./TeacherMenu";
+import StudentMenu from "./StudentMenu";
 import "/src/css/sidebar.css";
 
-const TeacherLayout = () => {
+const StudentLayout = () => {
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : null;
     const token = JSON.parse(localStorage.getItem("token"));
@@ -40,7 +40,7 @@ const TeacherLayout = () => {
     };
     return (
         <div className="wrapper">
-            <TeacherMenu />
+            <StudentMenu />
 
             <div className="main-panel">
                 <div className="main-header">
@@ -551,4 +551,4 @@ const TeacherLayout = () => {
     );
 };
 
-export default TeacherLayout;
+export default StudentLayout;

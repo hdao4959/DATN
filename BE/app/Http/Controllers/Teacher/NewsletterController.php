@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Teacher;
 
 use Throwable;
 use App\Models\Category;
-use App\Models\Classroom;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,8 +20,7 @@ class NewsletterController extends Controller
 
         return response()->json([
             'message' => 'Không có newsletter nào!',
-            'error' => true
-        ]);
+        ], 404);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)
@@ -31,8 +29,7 @@ class NewsletterController extends Controller
         Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
         return response()->json([
-            'message' => 'Lỗi không xác định!',
-            'error' => true
+            'message' => 'Lỗi không xác định!'
         ], 500);
     }
     /**
@@ -45,10 +42,11 @@ class NewsletterController extends Controller
             $category = Category::where('type', '=', 'category')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
-
+            $userCode = $request->user()->user_code;
             $title = $request->input('title');
             $type = $request->input('type');
-            $newsletters = Newsletter::with(['category', 'user'])
+            $newsletters = Newsletter::where('user_code', $userCode)
+                ->with(['category', 'user'])
                 ->when($title, function ($query, $title) {
                     return $query
                             ->where('title', 'like', "%{$title}%");
@@ -92,7 +90,7 @@ class NewsletterController extends Controller
      */
     public function store(StoreNewsletterRequest $request)
     {
-        // try {
+        try {
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
@@ -105,20 +103,20 @@ class NewsletterController extends Controller
             Newsletter::create($params);
 
             return response()->json($params, 200);
-        // } catch (\Throwable $th) {
+        } catch (\Throwable $th) {
 
-        //     return $this->handleErrorNotDefine($th);
-        // }
+            return $this->handleErrorNotDefine($th);
+        }
     }
 
 
     /**
      * Display the specified resource.
      */
-    public function show(string $code)
+    public function show(Request $request, string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)
+            $newsletters = Newsletter::where('user_code', $userCode)->where('code', $code)
                 ->with(['category', 'user'])
                 ->get()->map(function ($newsletter) {
                             return [
@@ -158,7 +156,8 @@ class NewsletterController extends Controller
     public function update(UpdateNewsletterRequest $request, string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
+            $userCode = $request->input('user_code');
+            $newsletters = Newsletter::where('user_code', $userCode)->where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
 
                 return $this->handleInvalidId();
@@ -186,10 +185,10 @@ class NewsletterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $code)
+    public function destroy(Request $request, string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
+            $newsletters = Newsletter::where('user_code', $userCode)->where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
 
                 return $this->handleInvalidId();
@@ -209,10 +208,10 @@ class NewsletterController extends Controller
         }
     }
     
-    public function copyNewsletter(string $code)
+    public function copyNewsletter(Request $request, string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
+            $newsletters = Newsletter::where('user_code', $userCode)->where('code', $code)->lockForUpdate()->first();
         
             if (!$newsletters) {
                 return $this->handleInvalidId();

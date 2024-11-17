@@ -15,53 +15,46 @@ class FeeController extends Controller
 
     protected $feeRepository;
 
-    public function __construct(FeeRepositoryInterface $feeRepository) {
+    public function __construct(FeeRepositoryInterface $feeRepository)
+    {
         $this->feeRepository = $feeRepository;
     }
 
 
     public function index(Request $request)
     {
-        try{
+        try {
             $status = $request['status'];
             $email  = $request['email'];
-            $data = $this->feeRepository->getAll( $email, $status);
+            $data = $this->feeRepository->getAll($email, $status);
             return response()->json($data);
-        }catch(Throwable $th){
-            return response()->json(['message' => $th],404);
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th], 404);
         }
-
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-
-        try{
+        try {
             $this->feeRepository->createAll();
-            return response()->json(['message'=>'tao fee thanh cong']);
-        }catch(Throwable $th){
-            return response()->json(['message' => $th],404);
+            return response()->json(['message' => 'tao fee thanh cong']);
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th], 404);
         }
-
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Fee $fee)
-    {
-    }
+    public function show(Fee $fee) {}
 
     /**
      * Show the form for editing the specified resource.

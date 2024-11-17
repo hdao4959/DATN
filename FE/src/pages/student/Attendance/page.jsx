@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
+import api from '../../../config/axios';
 
 const ShowStudentAttendance = () => {
     const [semesterCode, setSemesterCode] = useState(''); 
@@ -10,8 +11,8 @@ const ShowStudentAttendance = () => {
 
     const fetchAttendances = async () => {
         try {
-            setLoading(true);
-            const response = await axios.get('/api/attendance', {
+            // setLoading(true);
+            const response = await api.get('/student/attendances', {
                 params: { search: semesterCode }
             });
             setAttendanceData(response?.data?.attendances);
@@ -19,7 +20,7 @@ const ShowStudentAttendance = () => {
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
 
@@ -87,7 +88,9 @@ const ShowStudentAttendance = () => {
                         </select>
                     </div>
                 </div>
-
+                {attendanceData ? (
+                    <div className='text-center'>Chưa có dữ liệu</div>
+                ): ('')}
                 <div className="">
                     {attendanceData.map((classData, index) => (
                         <div key={index} className="attendance-table table-striped card-body border-spacing-3"
