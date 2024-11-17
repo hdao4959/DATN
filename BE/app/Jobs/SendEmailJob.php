@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Mail\SendEmailFee;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SendEmailJob implements ShouldQueue
 {
@@ -29,6 +30,9 @@ class SendEmailJob implements ShouldQueue
     public function handle(): void
     {
         $email = new SendEmailFee($this->data);
+        Log::info('User data:', $this->data);
+
+        // Mail::to($this->data['user']['email'])->send($email);
         Mail::to($this->data['email'])->send($email);
     }
 }

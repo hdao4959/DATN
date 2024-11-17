@@ -25,7 +25,12 @@ use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FeedbackController;
+
+
+use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
+
+
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\TeacherGradesController;
@@ -164,10 +169,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
         Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);
         Route::put('/grades/{id}', [TeacherGradesController::class, 'update']);
-        
+
+
         Route::apiResource('newsletters', TeacherNewsletterController::class);
         Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
-     
+
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -178,13 +184,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/grades', [StudentGradesController::class, 'index']);
 
-        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']); 
-        Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']); 
+
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
+        Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
 
         Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
 
         Route::get('schedules', [StudentScheduleController::class, 'index']);
-        
+
+
+        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
+        Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
+
+        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+
+        Route::get('schedules', [StudentScheduleController::class, 'index']);
+
     });
 });
 
@@ -238,6 +253,9 @@ Route::get('haha', function () {
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
 Route::apiResource('feedback',FeedbackController::class);
+
+
+Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 
 
 
