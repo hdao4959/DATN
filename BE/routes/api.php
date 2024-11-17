@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
@@ -221,6 +222,9 @@ Route::apiResource('fees', FeeController::class);
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
 Route::apiResource('feedback',FeedbackController::class);
+
+
+Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 
 
 

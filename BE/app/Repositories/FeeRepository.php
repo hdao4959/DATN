@@ -31,14 +31,13 @@ class FeeRepository implements FeeRepositoryInterface {
 
     public function createAll(){
 
-        Transaction::query()->delete();
-        Fee::query()->delete();
         $students = User::with(['semester' => function ($query) {
             $query->select('cate_code', 'value'); // chỉ lấy cate_code và name từ bảng categories
         }])
         ->select('id', 'full_name','user_code', 'semester_code')
         ->get();
 
+        
         foreach ($students as $stu) {
 
             $nextSemester = $stu->semester->value + 1;
@@ -49,8 +48,8 @@ class FeeRepository implements FeeRepositoryInterface {
             ->with(['semester' => function ($query) {
                 $query->select('cate_code', 'value', 'id');
             }])
-
             ->get();
+
 
             $totalTuition = $subjects->sum('tuition');
 
@@ -66,13 +65,15 @@ class FeeRepository implements FeeRepositoryInterface {
 
             $fee = Fee::create($feeData);
 
-            $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');
+
+            // $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');
 
 
-             Wallet::query()
-            ->where('user_id',$fee->user_id)
-            ->update(['total'=>$totalFees]);
+            //  Wallet::query()
+            // ->where('user_id',$fee->user_id)
+            // ->update(['total'=>$totalFees]);
         }
+
     }
 
     public function sendEmailToUsers (array $user = []){
