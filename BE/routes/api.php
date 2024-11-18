@@ -256,6 +256,7 @@ Route::apiResource('feedback',FeedbackController::class);
 
 
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
+Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
 
 

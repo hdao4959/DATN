@@ -69,9 +69,9 @@ function App() {
         {
             path: "admin",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <Layout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {
@@ -231,9 +231,9 @@ function App() {
         {
             path: "/teacher",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <TeacherLayout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {
@@ -265,9 +265,9 @@ function App() {
         {
             path: "/student",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <StudentLayout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {

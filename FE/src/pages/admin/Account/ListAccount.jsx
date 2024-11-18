@@ -50,25 +50,25 @@ const ListAccount = () => {
         if (users) {
             $('#usersTable').DataTable({
                 data: users,
-                ajax: async (data, callback) => {
-                    try {
-                        const page = data.start / data.length + 1;
-                        const response = await api.get(`/admin/students`, {
-                            params: { page, per_page: data.length },
-                        });
+                // ajax: async (data, callback) => {
+                //     try {
+                //         const page = data.start / data.length + 1;
+                //         const response = await api.get(`/admin/students`, {
+                //             params: { page, per_page: data.length },
+                //         });
 
-                        const result = response.data;
+                //         const result = response.data;
 
-                        callback({
-                            draw: data.draw,
-                            recordsTotal: result.total,
-                            recordsFiltered: result.total,
-                            data: result.data,
-                        });
-                    } catch (error) {
-                        console.error("Error fetching data:", error);
-                    }
-                },
+                //         callback({
+                //             draw: data.draw,
+                //             recordsTotal: result.total,
+                //             recordsFiltered: result.total,
+                //             data: result.data,
+                //         });
+                //     } catch (error) {
+                //         console.error("Error fetching data:", error);
+                //     }
+                // },
                 columns: [
                     { title: "Mã sinh viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
