@@ -18,10 +18,10 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'student04';
-            // $semesterCode = $request->input('search');
-            $semesterCode = 'S01';
+            $userCode = $request->user()->user_code;
+            // $userCode = 'student04';
+            $semesterCode = $request->input('search');
+            // $semesterCode = 'S01';
             $listSemester = Category::where('type', 'semester')
                                     ->where('is_active', '1')
                                     ->select('cate_code', 'cate_name')
@@ -39,8 +39,7 @@ class AttendanceController extends Controller
                                     }, 'classroom.teacher' => function ($query) {
                                         $query->select('user_code', 'full_name');
 
-                                    }, 'classroom.schedules.session' => function ($query) {
-                                        $query->select('cate_code', 'cate_name');
+                                    }, 'classroom.schedules' => function ($query) {
 
                                     }])
                                     ->get(['id', 'student_code', 'class_code', 'status', 'noted']);
@@ -53,12 +52,11 @@ class AttendanceController extends Controller
                     'subject_name' => $firstAttendance->classroom->subject->subject_name,
                     'attendance' => $classGroup->map(function ($attendance) {
                         return [
-                            'attendance_id' => $attendance->id,
-                            'student_code' => $attendance->student_code,
-                            'status' => $attendance->status,
-                            'noted' => $attendance->noted,
+                            'date' => $attendance->classroom->schedules->first()->date ?? null,
+                            'session_cate_name' => $attendance->classroom->schedules->first()->session->cate_name ?? null, // Lấy cate_name đầu tiên                               
                             'teacher_name' => $attendance->classroom->teacher->full_name,
-                            'session_cate_name' => $attendance->classroom->schedules->first()->session->cate_name ?? null, // Lấy cate_name đầu tiên                                    
+                            'status' => $attendance->status,
+                            'noted' => $attendance->noted,     
                         ];
                     })->values()->all()     
                 ];
@@ -72,8 +70,7 @@ class AttendanceController extends Controller
 
             return response()->json([
                 'semesters' => $listSemester,
-                'attendances' => $result,
-                'abc' => $attendances
+                'attendances' => $result
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
