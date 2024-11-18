@@ -70,9 +70,9 @@ function App() {
         {
             path: "admin",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <Layout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {
@@ -224,21 +224,21 @@ function App() {
                     element: <AttendanceManagement />,
                 },
                 {
-                    path: 'gradesStudent',
-                    element: <StudentGradesA />
+                    path: "gradesStudent",
+                    element: <StudentGradesA />,
                 },
                 {
-                    path: 'gradesTeacher',
-                    element: <ShowGradesTeacherA />
+                    path: "gradesTeacher",
+                    element: <ShowGradesTeacherA />,
                 },
             ],
         },
         {
             path: "/teacher",
             element: (
-                // <CheckRole>
+                <CheckRole>
                     <TeacherLayout />
-                // </CheckRole>
+                </CheckRole>
             ),
             children: [
                 {
@@ -271,7 +271,7 @@ function App() {
             path: "/student",
             element: (
                 // <CheckRole>
-                    <StudentLayout />
+                <StudentLayout />
                 // </CheckRole>
             ),
             children: [

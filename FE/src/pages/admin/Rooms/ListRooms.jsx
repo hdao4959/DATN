@@ -138,7 +138,7 @@ const ClassRoomsList = () => {
             <div className="mb-3 mt-2 flex items-center justify-between">
                 <Link to="/admin/classrooms/step">
                     <button className="btn btn-primary">
-                        Tạo lịch học mới
+                        Tạo lớp học mới
                     </button>
                 </Link>
             </div>

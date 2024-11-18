@@ -447,7 +447,7 @@ const AdminLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user.avatar}
+                                                src={user?.avatar}
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -455,7 +455,7 @@ const AdminLayout = () => {
                                         <span className="profile-username">
                                             <span className="op-7">Hi, </span>
                                             <span className="fw-bold">
-                                                {user.full_name}
+                                                {user?.full_name || ""}
                                             </span>
                                         </span>
                                     </a>
@@ -465,17 +465,21 @@ const AdminLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src={user?.avatar}
+                                                            src={
+                                                                user?.avatar ||
+                                                                ""
+                                                            }
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />
                                                     </div>
                                                     <div className="u-text">
                                                         <h4>
-                                                            {user.full_name}
+                                                            {user?.full_name ||
+                                                                ""}
                                                         </h4>
                                                         <p className="text-muted">
-                                                            {user.email}
+                                                            {user?.email || ""}
                                                         </p>
                                                         {/* <a
                                                             href="/admin/account/details/:user_code"
@@ -484,7 +488,10 @@ const AdminLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${user.user_code}`}
+                                                            to={`account/details/${
+                                                                user?.user_code ||
+                                                                ""
+                                                            }`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -495,7 +502,9 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${user.user_code}`}
+                                                    to={`account/details/${
+                                                        user?.user_code || ""
+                                                    }`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
@@ -545,34 +554,6 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-                {/* <footer className="footer">
-                    <div className="container-fluid d-flex justify-content-between">
-                        <nav className="pull-left">
-                            <ul className="nav">
-                                <li className="nav-item">
-                                    <a
-                                        className="nav-link"
-                                        href="http://www.themekita.com"
-                                    >
-                                        ThemeKita
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">
-                                        {" "}
-                                        Help{" "}
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#">
-                                        {" "}
-                                        Licenses{" "}
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </footer> */}
             </div>
         </div>
     );
