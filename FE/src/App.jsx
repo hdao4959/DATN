@@ -55,6 +55,7 @@ import ShowGradesTeacherA from "./pages/admin/Grades/graTeapages.jsx";
 import StudentLayout from "./layouts/Student/StudentLayout.jsx";
 import StudentGrades from "./pages/student/Grade/page.jsx";
 import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
+import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -131,6 +132,10 @@ function App() {
                 {
                     path: "classrooms/view/:class_code",
                     element: <ClassroomDetails />,
+                },
+                {
+                    path: "classrooms/step",
+                    element: <MultiStepForm />,
                 },
                 {
                     path: "semesters",
