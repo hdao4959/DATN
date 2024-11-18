@@ -89,10 +89,12 @@ const TeacherMenu = () => {
                                 </ul>
                             </div>
                         </li>
-                        <li className="menu-item">
-                            <NavLink to="/admin/attendances" >
+                        <li className="nav-item">
+                            <NavLink to="/teacher/attendances">
                                 <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                                <p className="text-[#b9babf]">Quản lý điểm danh</p>
+                                <p className="text-[#b9babf]">
+                                    Quản lý điểm danh
+                                </p>
                             </NavLink>
                         </li>
                         <li className="nav-item">
