@@ -55,6 +55,7 @@ class UserController extends Controller
     public function getListSudent(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', 10);
             $list_users = User::with([
                 'major' => function ($query) {
                     $query->select('cate_code', 'cate_name', 'parent_code');
@@ -68,7 +69,7 @@ class UserController extends Controller
             ])->where('role', '3')
                 ->orderBy('id', 'desc')
                 ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
-                ->paginate(10);
+                ->paginate($perPage);
 
             if ($list_users->isEmpty()) {
                 return response()->json(
