@@ -19,7 +19,7 @@ const ListAccount = () => {
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ACCOUNT"],
         queryFn: async () => {
-            const res = await api.get("/admin/students");
+            const res = await api.get("/admin/ListSudents");
             return res.data;
         },
     });
@@ -50,25 +50,27 @@ const ListAccount = () => {
         if (users) {
             $('#usersTable').DataTable({
                 data: users,
-                // ajax: async (data, callback) => {
-                //     try {
-                //         const page = data.start / data.length + 1;
-                //         const response = await api.get(`/admin/students`, {
-                //             params: { page, per_page: data.length },
-                //         });
+                processing: true,
+                serverSide: true, 
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/ListSudents`, {
+                            params: { page, per_page: data.length },
+                        });
 
-                //         const result = response.data;
+                        const result = response.data;
 
-                //         callback({
-                //             draw: data.draw,
-                //             recordsTotal: result.total,
-                //             recordsFiltered: result.total,
-                //             data: result.data,
-                //         });
-                //     } catch (error) {
-                //         console.error("Error fetching data:", error);
-                //     }
-                // },
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
                 columns: [
                     { title: "Mã sinh viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
@@ -133,6 +135,51 @@ const ListAccount = () => {
             })
         }
     }, [users]);
+    const handleExport = async () => {
+        try {
+            const response = await api.get("/admin/users/data/export", {
+                responseType: "blob", // Đảm bảo nhận dữ liệu dạng nhị phân (blob)
+            });
+
+            // Tạo URL từ blob và kích hoạt tải file
+            const url = URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "exported_data.xlsx"); // Đặt tên file mong muốn
+            document.body.appendChild(link);
+            link.click();
+
+            // Dọn dẹp sau khi tải
+            link.parentNode.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error exporting data:", error);
+            alert("Failed to export data. Please try again later.");
+        }
+    };
+    const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("data", file);  // Gửi file dưới dạng 'data'
+
+        api.post("/admin/users/data/import", formData)
+            .then((response) => {
+                console.log(response);
+
+                toast.success("Import thành công");
+                refetch();
+            })
+            .catch((error) => {
+                toast.error("Có lỗi xảy ra khi import dữ liệu");
+                console.error(error);
+            });
+    };
+
+
+
+
 
     if (!data) return <div>Loading...</div>;
 
@@ -145,8 +192,23 @@ const ListAccount = () => {
             </div>
 
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
                     <h4 className="card-title">Account Management</h4>
+                    <div>
+                        <i class="fa export-excel-user fa-file-excel fs-2 text-success mr-2" onClick={handleExport} style={{ cursor: "pointer" }} ></i>
+                        <input
+                            type="file"
+                            accept=".xlsx"
+                            onChange={handleImport}
+                            style={{ display: 'none' }}
+                            id="importFile"
+                        />
+                        <i
+                            className="fa fa-file-import import-excel-user fa-file-excel fs-2 text-Secondary mr-2"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => document.getElementById('importFile').click()}
+                        ></i>
+                    </div>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">

@@ -266,9 +266,9 @@ function App() {
         {
             path: "/student",
             element: (
-                <CheckRole>
+                //<CheckRole>
                     <StudentLayout />
-                </CheckRole>
+                //</CheckRole>
             ),
             children: [
                 {

@@ -87,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::post('users/data/import', 'import');
             Route::get('users/data/export', 'export');
-            Route::get('students', 'getListSudent');
+            Route::get('ListSudents', 'getListSudent');
         });
 
         Route::get('/subjects', [SubjectController::class, 'index']);
