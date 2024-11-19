@@ -54,23 +54,41 @@ const ListAccount = () => {
                 serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
+                        // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
+                
+                        // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/ListSudents`, {
-                            params: { page, per_page: data.length },
+                            params: {
+                                page: page, // Trang hiện tại
+                                per_page: data.length, // Số bản ghi mỗi trang
+                                search: data.search.value || '', // Từ khóa tìm kiếm
+                                order_column: data.order[0].column, // Cột được sắp xếp
+                                order_dir: data.order[0].dir, // Hướng sắp xếp
+                            },
                         });
-
+                
+                        // Dữ liệu trả về từ API
                         const result = response.data;
-
+                
+                        // Gọi callback để DataTables hiển thị dữ liệu
                         callback({
-                            draw: data.draw,
-                            recordsTotal: result.total,
-                            recordsFiltered: result.total,
-                            data: result.data,
+                            draw: data.draw, // ID của lần gọi này
+                            recordsTotal: result.total, // Tổng số bản ghi (trong DB)
+                            recordsFiltered: result.filtered || result.total, // Tổng số bản ghi sau khi lọc
+                            data: result.data, // Dữ liệu bản ghi
                         });
                     } catch (error) {
                         console.error("Error fetching data:", error);
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: 0,
+                            recordsFiltered: 0,
+                            data: [],
+                        });
                     }
                 },
+                
                 columns: [
                     { title: "Mã sinh viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
@@ -108,7 +126,7 @@ const ListAccount = () => {
                         }
                     }
                 ],
-                pageLength: 10,
+                // pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {
                     paginate: { previous: 'Trước', next: 'Tiếp theo' },
