@@ -67,6 +67,7 @@ const ListAccount = () => {
                                 order_column: data.order[0].column, // Cột được sắp xếp
                                 order_dir: data.order[0].dir, // Hướng sắp xếp
                             },
+                        })
                         // Dữ liệu trả về từ API
                         const result = response.data;
                 

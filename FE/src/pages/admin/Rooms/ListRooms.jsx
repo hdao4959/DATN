@@ -52,8 +52,9 @@ const ClassRoomsList = () => {
     useEffect(() => {
         if (classrooms) {
             $('#classroomsTable').DataTable({
-                
                 data: classrooms,
+                processing: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
