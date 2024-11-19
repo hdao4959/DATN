@@ -16,11 +16,13 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
+
             $table->string('subject_code',40)->unique()->comment('Mã môn học');
             $table->string('subject_name',100)->unique()->comment('Tên môn học');
             $table->integer('tuition')->comment('Học phí');
             $table->integer('re_study_fee')->comment('Phí học lại');
             $table->integer('credit_number')->comment("Số tín chỉ");
+
             $table->integer('total_sessions')->comment('Tổng số buổi học');
             $table->text('description')->nullable();
             $table->string('image')->nullable();

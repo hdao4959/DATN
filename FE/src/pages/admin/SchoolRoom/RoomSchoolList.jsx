@@ -9,6 +9,7 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
 import { useNavigate } from 'react-router-dom';
+
 const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedSchoolRooms, setSelectedSchoolRooms] = useState();
@@ -53,11 +54,14 @@ const RoomSchoolList = () => {
 
     useEffect(() => {
         if (roomSchool) {
-            $('#dataTable').DataTable({
+            $('#roomSchoolTable').DataTable({
                 data: roomSchool,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/schoolrooms`, {
+                            params: { page, per_page: data.length },
+                        });
                         const result = response.data;
 
                         callback({
@@ -191,7 +195,7 @@ const RoomSchoolList = () => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <i className="fa-solid fa-circle-check fs-20 color-green"></i>
-                                    <table id="dataTable" className="display"></table>
+                                    <table id="roomSchoolTable" className="display"></table>
                                     {/* <table
                                         id="basic-datatables"
                                         className="display table table-striped table-hover dataTable"

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import AdminMenu from "./AdminMenu";
-import StudentMenu from "./StudentMenu";
+import StudentMenu from "./Student/StudentMenu";
 
 const fakeRole = "1";
 

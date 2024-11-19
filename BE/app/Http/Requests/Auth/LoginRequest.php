@@ -35,4 +35,6 @@ class LoginRequest extends FormRequest
                     'password.min' => "Mật khẩu phải tối thiểu 6 kí tự"
         ];
     }
+
+    protected $stopOnFirstFailure = true;
 }

@@ -19,6 +19,8 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+
     protected $fillable = [
         'user_code',
         'full_name',
@@ -47,8 +49,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        
         'password',
         'remember_token',
+       
     ];
 
     /**
@@ -72,17 +76,23 @@ class User extends Authenticatable
         return $this->hasMany(Newsletter::class, 'user_code', 'user_code');
     }
 
+
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
-
+     
+    public function narrow_major(){
+        return $this->belongsTo(Category::class, 'narrow_major_code', 'cate_code');
+    }
     public function course(){
         return $this->belongsTo(Category::class, 'course_code', 'cate_code');
     }
 
+
     public function semester(){
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
+
 
     // public function classroomUser()
     // {
@@ -115,5 +125,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code')
         ->withPivot('user_code');
     }
-    
+
+    public function fees(){
+        return $this->hasMany(Fee::class);
+    }
+
+
 }

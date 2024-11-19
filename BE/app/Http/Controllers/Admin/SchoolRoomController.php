@@ -120,7 +120,7 @@ class SchoolRoomController extends Controller
                 ->select('cate_code', 'cate_name')
                 ->get();
 
-            $listSchoolRoom = Category::where('cate_code', $cate_code)->first();
+            $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
 
                 return $this->handleInvalidId();
@@ -151,7 +151,7 @@ class SchoolRoomController extends Controller
     public function destroy(string $cate_code)
     {
         try {
-            $listSchoolRoom = Category::where('cate_code', $cate_code)->first();
+            $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
 
                 return $this->handleInvalidId();

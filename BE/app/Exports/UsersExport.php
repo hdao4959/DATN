@@ -29,13 +29,13 @@ class UsersExport implements FromCollection, WithHeadings, WithColumnWidths, Wit
             'issue_date',
             'place_of_grant',
             'nation',
-            'role',
-            'is_active',
+            // 'role',
+            // 'is_active',
             'major_code',
             'narrow_major_code',
             'semester_code',
             'course_code'
-        )->get();
+        )->where('role', "3")->get();
     }
 
     public function headings(): array
@@ -52,8 +52,8 @@ class UsersExport implements FromCollection, WithHeadings, WithColumnWidths, Wit
             'Issue Date',
             'Place of Grant',
             'Nation',
-            'Role',
-            'Is Active',
+            // 'Role',
+            // 'Is Active',
             'Major Code',
             'Narrow Major Code',
             'Semester Code',
@@ -74,13 +74,13 @@ class UsersExport implements FromCollection, WithHeadings, WithColumnWidths, Wit
             'H' => 20,
             'I' => 10,
             'J' => 20,
-            'K' => 5,
-            'L' => 5,
-            'M' => 5,
-            'N' => 5,
-            'O' => 5,
-            'P' => 5,
-            'Q' => 5,
+            'K' => 10,
+            'L' => 10,
+            'M' => 10,
+            'N' => 10,
+            'O' => 10,
+            'P' => 10,
+            'Q' => 10,
         ];
     }
 

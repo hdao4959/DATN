@@ -114,7 +114,7 @@ class AttendanceController extends Controller
     public function update(UpdateAttendanceRequest $request, string $id)
     {
         try {
-            $attendances = Attendance::where('id', $id)->first();
+            $attendances = Attendance::where('id', $id)->lockForUpdate()->first();
             if (!$attendances) {
 
                 return $this->handleInvalidId();
@@ -137,7 +137,7 @@ class AttendanceController extends Controller
     public function destroy(string $id)
     {
         try {
-            $attendances = Attendance::where('id', $id)->first();
+            $attendances = Attendance::where('id', $id)->lockForUpdate()->first();
             if (!$attendances) {
 
                 return $this->handleInvalidId();

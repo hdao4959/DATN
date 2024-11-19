@@ -116,7 +116,7 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, string $cate_code)
     {
         try {
-            $listMajor = Category::where('cate_code', $cate_code)->first();
+            $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listMajor) {
 
                 return $this->handleInvalidId();
@@ -147,7 +147,7 @@ class MajorController extends Controller
     public function destroy(string $cate_code)
     {
         try {
-            $listMajor = Category::where('cate_code', $cate_code)->first();
+            $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listMajor) {
 
                 return $this->handleInvalidId();

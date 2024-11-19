@@ -344,7 +344,7 @@ class SubjectSeeder extends Seeder
         //     ],
         // ]);
 
-        
+
         $majorCodes = ['CNTT01', 'CNTT02', 'CNTT03', 'CNTT04'];
         $narrowMajorCodes = ['CN04', 'CNTT01'];
         $semesterCodes = ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07'];

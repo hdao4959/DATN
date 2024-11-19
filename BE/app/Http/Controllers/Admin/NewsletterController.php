@@ -21,7 +21,8 @@ class NewsletterController extends Controller
 
         return response()->json([
             'message' => 'Không có newsletter nào!',
-        ], 404);
+            'error' => true
+        ]);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)
@@ -30,7 +31,8 @@ class NewsletterController extends Controller
         Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
         return response()->json([
-            'message' => 'Lỗi không xác định!'
+            'message' => 'Lỗi không xác định!',
+            'error' => true
         ], 500);
     }
     /**
@@ -90,7 +92,7 @@ class NewsletterController extends Controller
      */
     public function store(StoreNewsletterRequest $request)
     {
-        try {
+        // try {
             $params = $request->except('_token');
 
             if ($request->hasFile('image')) {
@@ -103,10 +105,10 @@ class NewsletterController extends Controller
             Newsletter::create($params);
 
             return response()->json($params, 200);
-        } catch (\Throwable $th) {
+        // } catch (\Throwable $th) {
 
-            return $this->handleErrorNotDefine($th);
-        }
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
 
@@ -156,7 +158,7 @@ class NewsletterController extends Controller
     public function update(UpdateNewsletterRequest $request, string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->first();
+            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
 
                 return $this->handleInvalidId();
@@ -187,7 +189,7 @@ class NewsletterController extends Controller
     public function destroy(string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->first();
+            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
 
                 return $this->handleInvalidId();
@@ -210,44 +212,30 @@ class NewsletterController extends Controller
     public function copyNewsletter(string $code)
     {
         try {
-            $newsletters = Newsletter::where('code', $code)->first();            
+            $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
+        
             if (!$newsletters) {
-
                 return $this->handleInvalidId();
-            } else {
-                // Tạo bản sao bài viết
-                $newPost = $newsletters->replicate(); // Sao chép toàn bộ thuộc tính của bài viết
-                $newPost->code = $newsletters->code . '_copy'; // Thay đổi mã bài viết
-                $newPost->title = $newsletters->title . '_copy'; // Thay đổi tiêu đề
-                $newPost->created_at = now(); // Đặt lại thời gian tạo
-                $newPost->updated_at = now(); // Đặt lại thời gian cập nhật
-                $newPost->save(); // Lưu bài viết mới                
             }
+    
+            // Tìm bản copy có số thứ tự lớn nhất
+            $maxCopyNumber = Newsletter::where('code', 'LIKE', "{$code}_copy%")
+                ->selectRaw('MAX(CAST(SUBSTRING(code, LENGTH(?) + 6) AS UNSIGNED)) as max_copy_number', [$code])
+                ->value('max_copy_number');
+    
+            // Gán số thứ tự tiếp theo
+            $nextCopyNumber = $maxCopyNumber ? $maxCopyNumber + 1 : 1;
+            $newCode = "{$code}_copy$nextCopyNumber";
+    
+            // Tạo bản sao bài viết
+            $newPost = $newsletters->replicate();
+            $newPost->code = $newCode;
+            $newPost->title = $newsletters->title . '_copy';
+            $newPost->created_at = now();
+            $newPost->updated_at = now();
+            $newPost->save();
 
             return response()->json($newPost, 200);
-        } catch (\Throwable $th) {
-
-            return $this->handleErrorNotDefine($th);
-        }
-    }
-
-    public function showNewsletter(Request $request) 
-    {
-        try {
-            // Lấy user_code từ FE
-            $userCode = $request->query('user_code');       
-            if (!$userCode) {
-
-                return response()->json('Không có user', 200);
-            } else {
-                // Lấy ra student từ những lớp có mã lớp giống bên newsletters
-                $listClass = Classroom::whereJsonContains('students', [['student_code' => $userCode]])->pluck('class_code');
-
-                // Lấy ra các newsletters thuộc lớp học của user_code
-                $newsletters = Newsletter::whereJsonContains('notification_object', [['class_code' => $listClass]])->get();            
-            }
-
-            return response()->json($newsletters, 200);
         } catch (\Throwable $th) {
 
             return $this->handleErrorNotDefine($th);

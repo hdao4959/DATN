@@ -60,11 +60,13 @@ class Handler extends ExceptionHandler
             // Trường hợp APP_ENV = production
             if (app()->environment('production')) {
                 return response()->json([
+                    'status' => false,
                     'message' => $exception->getMessage(), 
                 ], 422); 
             } else {
                 // Trường hợp APP_ENV != production
                 return response()->json([
+                    'status' => false,
                     'message' => $exception->getMessage(),
                     'errors' => $exception->errors(),
                 ], 422);
@@ -77,6 +79,9 @@ class Handler extends ExceptionHandler
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return response()->json(['message' => 'Bạn không có quyền truy cập!'], 401);
+        return response()->json([
+            'status' => false,
+            'message' => 'Bạn không có quyền truy cập!'
+        ], 401);
     }
 }
