@@ -155,7 +155,7 @@ const ListAccount = () => {
     }, [users]);
     const handleExport = async () => {
         try {
-            const response = await api.get("/admin/users/data/export", {
+            const response = await api.get("/admin/export-students", {
                 responseType: "blob", // Đảm bảo nhận dữ liệu dạng nhị phân (blob)
             });
 
@@ -182,7 +182,7 @@ const ListAccount = () => {
         const formData = new FormData();
         formData.append("data", file);  // Gửi file dưới dạng 'data'
 
-        api.post("/admin/users/data/import", formData)
+        api.post("/admin/import-students", formData)
             .then((response) => {
                 console.log(response);
 
@@ -195,33 +195,6 @@ const ListAccount = () => {
             });
     };
 
-
-
-
-
-
-
-//     const handleExport = async () => {
-//         try {
-//             const response = await api.get('/admin/export-students', { responseType: 'blob' })
-//             console.log(response.data);
-            
-//             const url = window.URL.createObjectURL(new Blob([response.data]));
-//             // Tạo một link tải file và kích hoạt download
-//             const link = document.createElement('a');
-//             link.href = url;
-//             link.setAttribute('download', 'data_students.xlsx'); // Đặt tên file tải về
-//             document.body.appendChild(link);
-//             link.click();
-
-//             // Xóa link sau khi tải xong
-//             link.parentNode.removeChild(link);
-//         } catch (error) {
-//             console.error("Error exporting:", error);
-//         }
-//     }
-// >>>>>>> Stashed changes
-
     if (!data) return <div>Loading...</div>;
 
     return (
@@ -233,8 +206,8 @@ const ListAccount = () => {
                     </Link>
                 </div>
                 <div>
-                    <button className="btn btn-success mx-2"> <i class="fa fa-file-import"></i> Import</button>
-                    <button onClick={handleExport} className="btn btn-secondary mx-2"> <i class="fa fa-download"></i> Export</button>
+                    <button className="btn btn-success mx-2"> <i className="fa fa-file-import"></i> Import</button>
+                    <button onClick={handleExport} className="btn btn-secondary mx-2"> <i className="fa fa-download"></i> Export</button>
                 </div>
             </div>
 
@@ -242,7 +215,7 @@ const ListAccount = () => {
                 <div className="card-header d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
                     <h4 className="card-title">Account Management</h4>
                     <div>
-                        <i class="fa export-excel-user fa-file-excel fs-2 text-success mr-2" onClick={handleExport} style={{ cursor: "pointer" }} ></i>
+                        <i className="fa export-excel-user fa-file-excel fs-2 text-success mr-2" onClick={handleExport} style={{ cursor: "pointer" }} ></i>
                         <input
                             type="file"
                             accept=".xlsx"

@@ -18,8 +18,7 @@ class StudentExport implements FromCollection, WithHeadings, WithColumnWidths, W
     public function collection()
     {
         return User::select( 'user_code', 'full_name', 'email','phone_number', 'address', 'sex',
-            'birthday', 'citizen_card_number', 'issue_date', 'place_of_grant', 'nation',
-            'is_active', 'major_code', 'narrow_major_code', 'semester_code', 'course_code'
+            'birthday', 'citizen_card_number', 'issue_date', 'place_of_grant', 'nation', 'major_code', 'narrow_major_code', 'semester_code', 'course_code'
         )->where('role', '3')->get();
     }
 
@@ -37,7 +36,6 @@ class StudentExport implements FromCollection, WithHeadings, WithColumnWidths, W
             'Issue Date',
             'Place of Grant',
             'Nation',
-            'Is Active',
             'Major Code',
             'Narrow Major Code',
             'Semester Code',
@@ -53,17 +51,17 @@ class StudentExport implements FromCollection, WithHeadings, WithColumnWidths, W
             'C' => 20,
             'D' => 20,
             'E' => 20,
-            'F' => 5,
+            'F' => 10,
             'G' => 10,
             'H' => 20,
             'I' => 10,
             'J' => 20,
-            'K' => 5,
-            'L' => 5,
-            'M' => 5,
-            'N' => 5,
-            'O' => 5,
-            'P' => 5,
+            'K' => 10,
+            'L' => 10,
+            'M' => 10,
+            'N' => 10,
+            'O' => 10,
+            'P' => 10,
         ];
     }
 

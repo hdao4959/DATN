@@ -39,19 +39,20 @@ class StudentController extends Controller
         ], 500);
     }
 
-    public function handleConflict(){
+    public function handleConflict()
+    {
         return response()->json([
             'status' => false,
             'message' => 'Sinh viên này đã được cập nhật trước đó, vui lòng cập nhật lại trang!'
-        ],409);
+        ], 409);
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-
         try {
-            $list_students = User::with([
+            $perPage = $request->input('per_page', 10);
+            $list_users = User::with([
                 'major' => function ($query) {
                     $query->select('cate_code', 'cate_name', 'parent_code');
                 },
@@ -62,12 +63,25 @@ class StudentController extends Controller
                     $query->select('cate_code', 'cate_name');
                 }
             ])->where('role', '3')
+                ->orderBy('id', 'desc')
                 ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
-                ->paginate(20);
+                ->paginate($perPage);
 
-            return response()->json($list_students, 200);
+            if ($list_users->isEmpty()) {
+                return response()->json(
+                    ['message' => 'Không có tài khoản nào!'],
+                    404
+                );
+            }
+            return response()->json($list_users, 200);
         } catch (Throwable $th) {
-            return $this->handleErrorNotDefine($th);
+            return response()->json(
+                [
+                    'message' => 'Đã xảy ra lỗi không xác định',
+                    'error' => env('APP_DEBUG') ? $th->getMessage() : "Đã xảy ra lỗi!"
+                ],
+                500
+            );
         }
     }
 
@@ -78,8 +92,8 @@ class StudentController extends Controller
         try {
             $data = $request->validated();
             $newest_student_code = User::withTrashed()->where('user_code', 'LIKE', 'FE%')
-            ->orderBy('user_code', 'desc')->pluck('user_code')->first();
-            $current_code = $newest_student_code  ? (int) substr($newest_student_code , 2) : 0;
+                ->orderBy('user_code', 'desc')->pluck('user_code')->first();
+            $current_code = $newest_student_code  ? (int) substr($newest_student_code, 2) : 0;
 
             $new_student_code = 'FE' . str_pad($current_code + 1, 5, 0,  STR_PAD_LEFT);
             $data['user_code'] = $new_student_code;
@@ -101,23 +115,40 @@ class StudentController extends Controller
     {
         try {
             $student = User::with([
-                'major' => function($query){
+                'major' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
-                'narrow_major' => function($query){
+                'narrow_major' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
-                'semester' => function($query){
+                'semester' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
-                'course' => function($query){
+                'course' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
             ])->where([
                 'user_code' => $student_code,
             ])->select(
-                'user_code', 'full_name', 'email', 'phone_number','address',
-                'sex' , 'birthday', 'citizen_card_number', 'issue_date', 'place_of_grant', 'nation', 'role', 'is_active', 'major_code', 'narrow_major_code', 'semester_code', 'course_code', 'created_at', 'updated_at'
+                'user_code',
+                'full_name',
+                'email',
+                'phone_number',
+                'address',
+                'sex',
+                'birthday',
+                'citizen_card_number',
+                'issue_date',
+                'place_of_grant',
+                'nation',
+                'role',
+                'is_active',
+                'major_code',
+                'narrow_major_code',
+                'semester_code',
+                'course_code',
+                'created_at',
+                'updated_at'
             )->first();
 
             if (!$student) {
@@ -142,13 +173,13 @@ class StudentController extends Controller
             }
 
             $data = $request->validated();
-           
+
             // Kiểm tra updated at trong db có khác với updated at ở phiên hiện tại hay không
-            if($student->updated_at->toDateTimeString() !== $data['updated_at'] ){
+            if ($student->updated_at->toDateTimeString() !== $data['updated_at']) {
                 return $this->handleConflict();
             }
 
-            if(!isset($data['narrow_major_code'])){
+            if (!isset($data['narrow_major_code'])) {
                 $data['narrow_major_code'] = null;
             }
             $data['role'] = '3';
@@ -179,10 +210,10 @@ class StudentController extends Controller
                 return $this->handleInvalidId();
             }
 
-            if($student->updated_at->toDateTimeString() !== $data['updated_at']){
+            if ($student->updated_at->toDateTimeString() !== $data['updated_at']) {
                 return $this->handleConflict();
             }
-            
+
             $student->delete();
 
             DB::commit();
@@ -205,9 +236,9 @@ class StudentController extends Controller
         try {
             Excel::import(new StudentImport(), $request->file('file'));
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Import sinh viên thành công'
-            ],201);
+            ], 201);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
