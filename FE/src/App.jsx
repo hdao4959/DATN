@@ -57,6 +57,7 @@ import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 
+
 function App() {
     const router = createBrowserRouter([
         {
@@ -83,6 +84,10 @@ function App() {
                     path: "account",
                     element: <ListAccount />,
                 },
+                // {
+                //     path: "teachers", 
+                //     element: <ListTeacher/>,
+                // },
                 {
                     path: "account/create",
                     element: <CreateAccount />,
@@ -262,9 +267,11 @@ function App() {
         {
             path: "/student",
             element: (
-                //<CheckRole>
+
+                <CheckRole>
                     <StudentLayout />
-                //</CheckRole>
+                </CheckRole>
+
             ),
             children: [
                 {
@@ -283,6 +290,7 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
+
             ],
         },
         {

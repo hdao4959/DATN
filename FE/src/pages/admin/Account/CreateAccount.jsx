@@ -13,7 +13,7 @@ const CreateAccount = () => {
 
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
         mutationFn: (data) => {
-            return axios.post("/admin/users", data);
+            return axios.post("/admin/students", data);
         },
         onSuccess: () => {
             alert("Tạo tài khoản thành công!");

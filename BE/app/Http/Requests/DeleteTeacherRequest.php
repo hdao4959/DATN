@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Classroom;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class HandleStep3 extends FormRequest
+class DeleteTeacherRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,11 +22,7 @@ class HandleStep3 extends FormRequest
     public function rules(): array
     {
         return [
-            'room_code' => 'required|exists:categories,cate_code',
-            'subject_code' => 'required|exists:subjects,subject_code',
-            'course_code' => 'required|exists:categories,cate_code',
+            //
         ];
     }
-
-    protected $stopOnFirstFailure = true;
 }

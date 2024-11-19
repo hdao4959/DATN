@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Classroom;
+namespace App\Http\Requests\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class HandleStep3 extends FormRequest
+class DeleteStudentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,14 @@ class HandleStep3 extends FormRequest
     public function rules(): array
     {
         return [
-            'room_code' => 'required|exists:categories,cate_code',
-            'subject_code' => 'required|exists:subjects,subject_code',
-            'course_code' => 'required|exists:categories,cate_code',
+            'updated_at' => 'required|date_format:Y-m-d H:i:s'
         ];
     }
 
-    protected $stopOnFirstFailure = true;
+    public function messages(){
+        return [
+            'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này!',
+            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+        ];
+    }
 }

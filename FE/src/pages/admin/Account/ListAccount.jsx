@@ -19,7 +19,7 @@ const ListAccount = () => {
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ACCOUNT"],
         queryFn: async () => {
-            const res = await api.get("/admin/ListSudents");
+            const res = await api.get("/admin/students");
             return res.data;
         },
     });
@@ -27,7 +27,9 @@ const ListAccount = () => {
     console.log(users);
 
     const { mutate, isLoading } = useMutation({
-        mutationFn: (user_code) => api.delete(`/admin/users/${user_code}`),
+
+        mutationFn: (user_code) => api.delete(`/admin/students/${user_code}`),
+
         onSuccess: () => {
             toast.success("Xóa tài khoản thành công");
             onModalVisible();
@@ -56,9 +58,8 @@ const ListAccount = () => {
                     try {
                         // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
-                
                         // Gửi request đến API với các tham số phù hợp
-                        const response = await api.get(`/admin/ListSudents`, {
+                        const response = await api.get(`/admin/students`, {
                             params: {
                                 page: page, // Trang hiện tại
                                 per_page: data.length, // Số bản ghi mỗi trang
@@ -66,8 +67,6 @@ const ListAccount = () => {
                                 order_column: data.order[0].column, // Cột được sắp xếp
                                 order_dir: data.order[0].dir, // Hướng sắp xếp
                             },
-                        });
-                
                         // Dữ liệu trả về từ API
                         const result = response.data;
                 
@@ -199,14 +198,43 @@ const ListAccount = () => {
 
 
 
+
+
+//     const handleExport = async () => {
+//         try {
+//             const response = await api.get('/admin/export-students', { responseType: 'blob' })
+//             console.log(response.data);
+            
+//             const url = window.URL.createObjectURL(new Blob([response.data]));
+//             // Tạo một link tải file và kích hoạt download
+//             const link = document.createElement('a');
+//             link.href = url;
+//             link.setAttribute('download', 'data_students.xlsx'); // Đặt tên file tải về
+//             document.body.appendChild(link);
+//             link.click();
+
+//             // Xóa link sau khi tải xong
+//             link.parentNode.removeChild(link);
+//         } catch (error) {
+//             console.error("Error exporting:", error);
+//         }
+//     }
+// >>>>>>> Stashed changes
+
     if (!data) return <div>Loading...</div>;
 
     return (
         <>
-            <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/account/create">
-                    <button className="btn btn-primary">Thêm tài khoản</button>
-                </Link>
+            <div className="mb-3 mt-2 flex justify-between">
+                <div>
+                    <Link to="/admin/account/create">
+                        <button className="btn btn-primary mx-2">Thêm tài khoản</button>
+                    </Link>
+                </div>
+                <div>
+                    <button className="btn btn-success mx-2"> <i class="fa fa-file-import"></i> Import</button>
+                    <button onClick={handleExport} className="btn btn-secondary mx-2"> <i class="fa fa-download"></i> Export</button>
+                </div>
             </div>
 
             <div className="card">
@@ -302,7 +330,11 @@ const ListAccount = () => {
                                                     <td>
                                                         <div>
                                                             <Link
-                                                                to={`/admin/users/edit/${it.user_code}`}
+
+
+
+                                                                to={`/admin/students/edit/${it.user_code}`}
+
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>

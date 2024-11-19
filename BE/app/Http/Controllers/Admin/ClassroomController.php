@@ -29,6 +29,7 @@ class ClassroomController extends Controller
     public function handleInvalidId()
     {
         return response()->json([
+            'status' => false,
             'message' => 'Lớp học không tồn tại!',
         ], 404);
     }
@@ -37,6 +38,7 @@ class ClassroomController extends Controller
     public function handleErrorNotDefine($th)
     {
         return response()->json([
+            'status' => false,
             'message' => "Đã xảy ra lỗi không xác định",
             'error' => env('APP_DEBUG') ? $th->getMessage() : "Lỗi không xác định"
         ], 500);
@@ -48,17 +50,12 @@ class ClassroomController extends Controller
         try {
 
             $classrooms = Classroom::with(['subject'])->where('is_active', true)->paginate(10);
-            if ($classrooms->isEmpty()) {
-                return response()->json([
-                    'message' => 'Không tìm thấy lớp học nào!'
-                ], 404);
-            }
-
-
             return response()->json([
+                'status' => true,
                 'message' => 'Lấy dữ liệu lớp học thành công',
                 'classrooms' => $classrooms
             ], 200);
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -148,10 +145,11 @@ class ClassroomController extends Controller
         $teachers_valid = User::whereNotIn('user_code', $teachers_invalid)->where([
             'role' => '2',
             'is_active' => true,
-            'major_code' => 'CN01'
+            'major_code' => $major_code
         ])->select('user_code', 'full_name')->get();
 
         return response()->json([
+            'status' => true,
             'rooms' => $rooms_valid,
             'teachers' => $teachers_valid
         ]);
@@ -185,6 +183,13 @@ class ClassroomController extends Controller
                 'role' => '3',
             ])->select('user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'birthday', 'nation', 'avatar')
             ->limit($room_slot)->get();
+
+            if(!$students_valid){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Không có học sinh nào hợp lệ để có thể tạo lớp học này'
+                ]);
+            }
             return response()->json($students_valid);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -235,12 +240,13 @@ class ClassroomController extends Controller
             if (empty($data['student_codes'])) {
                 return response()->json(
                     [
+                        'status' => false,
                         'message' => 'Không có học sinh nào để có thể tạo lớp học!'
                     ], 422
                 );
             }
 
-            // Dữ liệu để thÊm trực tiếp vào bảng classroom
+            // Lấy tên lớp học được tạo gần nhất tương ứng với khoá + môn học
             $current_classcode = Classroom::where('class_code', 'LIKE', $data['course_code'] . "_" . $data['subject_code'] . ".%" )
             ->orderBy('class_code', 'desc')->pluck('class_code')->first();
             
@@ -374,7 +380,8 @@ class ClassroomController extends Controller
             // Xoá lớp học
             $classroom->delete();
             return response()->json([
-                'message' => 'Xoá lớp học thành công'
+                'status' => true,
+                'message' => 'Xoá lớp học thành công!'
             ], 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
