@@ -1,13 +1,17 @@
+
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../config/axios';
 
+
 const AttendanceTeacher = () => {
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
+
     const [attendanceStudentDetails, setAttendanceStudentDetails] = useState([]);
     const [attendanceStudentDetailsStatus, setAttendanceStudentDetailsStatus] = useState([]);
+
     const [attendanceFormatData, setAttendanceFormatData] = useState([]);
     const [sortedDates, setSortedDates] = useState([]);
     const [viewMode, setViewMode] = useState("");
@@ -60,6 +64,7 @@ const AttendanceTeacher = () => {
                 }
             ]
         }
+
     });
 
     const { data: attendanceData, refetch: fetchAttendanceData, isLoading: isLoadingAtt } = useQuery({
@@ -106,6 +111,7 @@ const AttendanceTeacher = () => {
             return response?.data;
         },
         enabled: false
+
     });
     useEffect(() => {
         fetchAttendanceData();
@@ -123,6 +129,7 @@ const AttendanceTeacher = () => {
                 if (!date) return "N/A";
                 const formattedDate = new Date(date).toISOString().split("T")[0];
 
+
                 if (!students[student_code]) {
                     students[student_code] = {
                         student_code,
@@ -130,6 +137,7 @@ const AttendanceTeacher = () => {
                         attendance: {}
                     };
                 }
+
 
                 students[student_code].attendance[formattedDate] = { status, noted };
             });
@@ -154,6 +162,7 @@ const AttendanceTeacher = () => {
         }
     }, [attendanceData, attendanceStudentDetails])
 
+
     const handleShowDetails = (classItem, mode, date) => {
         setViewMode(mode);
         setSelectedDate(date);
@@ -162,6 +171,7 @@ const AttendanceTeacher = () => {
         console.log(selectedClassCode);
 
         const modal = new window.bootstrap.Modal(document.getElementById('attendanceModal'));
+
         modal.show();
     };
     const convertToDateTime = (date) => {
@@ -203,9 +213,11 @@ const AttendanceTeacher = () => {
         }));
 
         try {
+
             console.log(attendanceStudentDetails);
 
             const response = await api.put(`/teacher/attendances/${selectedClassCode}`, attendanceStudentDetails);
+
             if (response.data.success) {
                 toast.success("Lưu điểm danh thành công!");
             } else {
@@ -215,6 +227,7 @@ const AttendanceTeacher = () => {
         } catch (error) {
             toast.error('Lưu điểm danh thất bại!');
             console.log(error);
+
 
         }
     };
@@ -280,6 +293,7 @@ const AttendanceTeacher = () => {
                                                 >
                                                     Xem tổng quan
                                                 </button>
+
                                             </td>
                                         </tr>
                                         {expandedRows[classItem.class_code] && (
@@ -395,6 +409,7 @@ const AttendanceTeacher = () => {
                                             </tbody>
                                         </table>
                                     )}
+
                                 </div>
                                 <div className="modal-footer">
                                     <button

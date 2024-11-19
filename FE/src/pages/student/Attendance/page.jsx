@@ -114,6 +114,7 @@ const ShowStudentAttendance = () => {
                                 <div className="table-responsive">
                                     <table id={`attendanceTable-${index}`} className="display" style={{ width: '100%' }}></table>
                                 </div>
+
                             </div>
                         ))}
                     </div>

@@ -22,6 +22,7 @@ class AttendanceController extends Controller
             // $userCode = 'student04';
             $semesterCode = $request->input('search');
             // $semesterCode = 'S01';
+
             $listSemester = Category::where('type', 'semester')
                                     ->where('is_active', '1')
                                     ->select('cate_code', 'cate_name')
@@ -70,7 +71,8 @@ class AttendanceController extends Controller
 
             return response()->json([
                 'semesters' => $listSemester,
-                'attendances' => $result
+                'attendances' => $result,
+                'abc' => $attendances
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
