@@ -35,12 +35,16 @@ const ShowGradesTeacher = () => {
     });
 
     const handleViewDetails = async (class_code) => {
+        console.log(selectedGrade);
+        
         const modal = new window.bootstrap.Modal(document.getElementById('gradesModal'));
         modal.show();
         setIdSelected(class_code);
         setIsModalOpen(true);
         const response = await api.get(`/teacher/grades/${class_code}`);
         setSelectedGrade(response?.data);
+        console.log('abc',selectedGrade);
+        
     };
 
     const handleSaveClick = () => {
@@ -48,9 +52,20 @@ const ShowGradesTeacher = () => {
     };
 
     const handleModalClose = () => {
-        setSelectedGrade([]);
+        const newGrade = [];
+        setSelectedGrade(newGrade); 
+        console.log(newGrade); 
+        
+        if ($('#modalGradesTable').DataTable()) {
+            $('#modalGradesTable').DataTable().destroy(); 
+            $('#modalGradesTable').empty();
+        }
         setIsModalOpen(false);
     };
+    useEffect(() => {
+        console.log('selectedGrade đã thay đổi:', selectedGrade);
+    }, [selectedGrade]);
+    
 
     useEffect(() => {
         if (classes) {
@@ -74,7 +89,7 @@ const ShowGradesTeacher = () => {
                     { title: "Tên lớp", data: "class_name" },
                     // { title: "Phòng học", data: "room_code" },
                     // { title: "Ca học", data: "section" },
-                    { title: "Giảng viên", data: "user_code" },
+                    // { title: "Giảng viên", data: "user_code" },
                     {
                         title: "Điểm",
                         data: null,
@@ -93,7 +108,7 @@ const ShowGradesTeacher = () => {
                 handleViewDetails(class_code);
             });
         }
-    }, [classes]);
+    }, [classes, isLoadingClasses]);
 
     const calculateAverageScore = (studentScores, totalValue) => {
         return studentScores.reduce((total, scoreItem) => {
@@ -115,7 +130,7 @@ const ShowGradesTeacher = () => {
             ) {
                 const totalValue = selectedGrade?.score[0]?.scores?.reduce((total, score) => total + score.value, 0);
                 if (!$.fn.dataTable.isDataTable(`#modalGradesTable`)) {
-                    setIsTableLoading(true);
+                    // setIsTableLoading(true);
                     console.log(isTableLoading);
 
                     $(`#modalGradesTable`).DataTable({
@@ -216,7 +231,7 @@ const ShowGradesTeacher = () => {
                         const totalValue = selectedGrade.score[rowIndex].scores.reduce((sum, scoreItem) => sum + (scoreItem?.value || 0), 0);
                         const averageScore = calculateAverageScore(selectedGrade.score[rowIndex].scores, totalValue);
                         console.log(averageScore);
-                        
+
                         selectedGrade.score[rowIndex].average_score = parseFloat(averageScore).toFixed(2);
 
                         // const dataTable = $('#modalGradesTable').DataTable();
@@ -258,7 +273,7 @@ const ShowGradesTeacher = () => {
                                             <h5 className="modal-title" id="gradesModalLabel">Bảng điểm</h5>
                                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={handleModalClose} ></button>
                                         </div>
-                                        {(selectedGrade == [] && selectedGrade?.scores == [] || isTableLoading) ? (
+                                        {!(selectedGrade) ? (
                                             <div className="modal-body">
                                                 <div className='spinner-border' role='status'></div>
                                                 <p>Đang tải dữ liệu...</p>

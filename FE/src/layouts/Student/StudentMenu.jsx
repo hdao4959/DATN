@@ -47,15 +47,65 @@ const StudentMenu = () => {
                         <li className="menu-item">
                             <NavLink to="/" className={`${styles.menuItem} group`}>
                                 <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                                <p className="text-[#b9babf]">Dashboard</p>
+                                <p className="text-[#b9babf]">Trang Chủ</p>
                             </NavLink>
                         </li>
-
-                        <li className="menu-item">
-                            <NavLink to="/student/attendances" className={`${styles.menuItem} group`}>
-                                <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                                <p className="text-[#b9babf]">Điểm danh</p>
-                            </NavLink>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#attendances" >
+                                <i className="fas fa-clipboard-list" />
+                                <p>Điểm Danh</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="attendances">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/attendances"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Điểm danh</p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#grades" >
+                                <i className="fas fa-clipboard-list" />
+                                <p>Bảng Điểm</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="grades">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/grades"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Bảng Điểm</p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#services" >
+                                <i className="fab fa-stack-overflow" />
+                                <p>Dịch Vụ</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="services">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Dịch Vụ</p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 </div>
