@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import styles from "../index.module.css";
 
 const TeacherMenu = () => {
     return (
@@ -90,34 +91,37 @@ const TeacherMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <NavLink to="/teacher/attendances">
-                                <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                                <p className="text-[#b9babf]">
-                                    Quản lý điểm danh
-                                </p>
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarLayouts">
+                            <a data-bs-toggle="collapse" href="#grades">
                                 <i className="fas fa-th-list" />
-                                <p>Sidebar Layouts</p>
+                                <p>Bảng Điểm</p>
                                 <span className="caret" />
                             </a>
-                            <div className="collapse" id="sidebarLayouts">
+                            <div className="collapse" id="grades">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../sidebar-style-2.html">
-                                            <span className="sub-item">
-                                                Sidebar Style 2
-                                            </span>
-                                        </a>
+                                        <NavLink to="/teacher/grades" className={`${styles.menuItem} group`}>
+                                            <p className="sub-item">
+                                               Bảng điểm
+                                            </p>
+                                        </NavLink>
                                     </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item">
+                            <a data-bs-toggle="collapse" href="#attendances">
+                                <i className="fas fa-th-list" />
+                                <p>Điểm Danh</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="attendances">
+                                <ul className="nav nav-collapse">
                                     <li>
-                                        <a href="../icon-menu.html">
-                                            <span className="sub-item">
-                                                Icon Menu
-                                            </span>
-                                        </a>
+                                        <NavLink to="/teacher/attendances" className={`${styles.menuItem} group`}>
+                                            <p className="sub-item">
+                                                Điểm Danh
+                                            </p>
+                                        </NavLink>
                                     </li>
                                 </ul>
                             </div>
