@@ -19,7 +19,7 @@ const ListAccount = () => {
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ACCOUNT"],
         queryFn: async () => {
-            const res = await api.get("/admin/ListSudents");
+            const res = await api.get("/admin/students");
             return res.data;
         },
     });

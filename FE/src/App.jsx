@@ -84,10 +84,10 @@ function App() {
                     path: "account",
                     element: <ListAccount />,
                 },
-                {
-                    path: "teachers", 
-                    element: <ListTeacher/>,
-                },
+                // {
+                //     path: "teachers", 
+                //     element: <ListTeacher/>,
+                // },
                 {
                     path: "account/create",
                     element: <CreateAccount />,
