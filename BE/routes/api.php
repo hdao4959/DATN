@@ -167,9 +167,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);
+        Route::get('/attendances/edit/{classCode}', [TeacherAttendanceController::class, 'edit']);
         Route::post('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);
         Route::put('/attendances/{classCode}', [TeacherAttendanceController::class, 'update']);
-        Route::delete('/attendances/{classCode}', [TeacherAttendanceController::class, 'destroy']);
+        Route::get('/attendances/showAllAttendance/{classCode}', [TeacherAttendanceController::class, 'showAllAttendance']);
 
         Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
         Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);

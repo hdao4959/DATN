@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use Throwable;
+use Carbon\Carbon;
 use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Attendance;
@@ -18,8 +19,8 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         try {
-            $userCode = $request->user()->user_code;
-            // $userCode = 'student04';
+            // $userCode = $request->user()->user_code;
+            $userCode = 'student05';
             $semesterCode = $request->input('search');
             // $semesterCode = 'S01';
 
@@ -43,31 +44,35 @@ class AttendanceController extends Controller
                                     }, 'classroom.schedules' => function ($query) {
 
                                     }])
-                                    ->get(['id', 'student_code', 'class_code', 'status', 'noted']);
+                                    ->get(['id', 'student_code', 'class_code', 'status', 'noted', 'date']);
+            // dd($attendances);
             $result = $attendances->groupBy('class_code')->map(function ($classGroup) {
                 $firstAttendance = $classGroup->first();
                 return [
-                        
                     'class_code' => $firstAttendance->class_code,  
                     'class_name' => $firstAttendance->classroom->class_name,
                     'subject_name' => $firstAttendance->classroom->subject->subject_name,
                     'attendance' => $classGroup->map(function ($attendance) {
+                        $firstSchedule = $attendance->classroom->schedules;
+                        $listAttendance = [];
+                        $listSchedule = [];
+                        foreach ($firstSchedule as $value) {
+                            // dd($value);
+                            if ($value->date == (Carbon::parse($attendance->date)->toDateString())) {
+                                dd($attendance);
+                                $listAttendance[] = $attendance;                   
+                            } else {
+                                $listSchedule[] = $firstSchedule;
+                            }
+                        }
                         return [
-                            'date' => $attendance->classroom->schedules->first()->date ?? null,
-                            'session_cate_name' => $attendance->classroom->schedules->first()->session->cate_name ?? null, // Lấy cate_name đầu tiên                               
-                            'teacher_name' => $attendance->classroom->teacher->full_name,
-                            'status' => $attendance->status,
-                            'noted' => $attendance->noted,     
+                            'attendance' => $listAttendance,
+                            'schedule' => $listSchedule
                         ];
+
                     })->values()->all()     
                 ];
             })->values()->all();
-            // if ($attendances->isEmpty()) {
-
-            //     return response()->json([
-            //         'message' => 'Không có attendance nào!',
-            //     ], 200);
-            // }
 
             return response()->json([
                 'semesters' => $listSemester,
