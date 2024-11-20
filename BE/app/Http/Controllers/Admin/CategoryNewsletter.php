@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -128,6 +129,7 @@ class CategoryNewsletter extends Controller
      */
     public function update(UpdateCategoryRequest $request, string $cate_code)
     {
+        DB::beginTransaction();
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
@@ -137,6 +139,7 @@ class CategoryNewsletter extends Controller
 
             $listCategory = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listCategory) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -151,6 +154,7 @@ class CategoryNewsletter extends Controller
                 }
                 $params['image'] = $fileName;
                 $listCategory->update($params);
+                DB::commit();
 
                 return response()->json($listCategory, 201);
             }
@@ -165,9 +169,11 @@ class CategoryNewsletter extends Controller
      */
     public function destroy(string $cate_code)
     {
+        DB::beginTransaction();
         try {
             $listCategory = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listCategory) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -175,6 +181,7 @@ class CategoryNewsletter extends Controller
                     Storage::disk('public')->delete($listCategory->image);
                 }
                 $listCategory->delete($listCategory);
+                DB::commit();
 
                 return response()->json([
                     'message' => 'Xóa thành công'
