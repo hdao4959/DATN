@@ -27,6 +27,8 @@ const StudentWalletList = () => {
         if (wallets) {
             $('#walletsTable').DataTable({
                 data: wallets,
+                processing: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
