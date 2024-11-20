@@ -19,61 +19,45 @@ class GradesController extends Controller
     //     $this->gradeRepository = $gradeRepository;
     // }
     public function index($classCode)
-    {$classRoom = DB::table('classrooms')->where([
+    {
+        try {
+        $class = DB::table('classrooms')->where([
         'class_code' => $classCode,
         'is_active' => true
-    ])->select('class_name', 'score')->first();
-        // dd($classCode);
-        try {
-            $classRoom = DB::table('classrooms')->where([
-                'class_code' => $classCode,
-                'is_active' => true
-            ])->select('class_name', 'score')->first();
-                if ($classRoom) {
-                $scoreJson = $classRoom->score;
-                $scoreArray = json_decode($scoreJson, true);
-                // $studentArray = json_decode($classRoom->students, true);
-                // foreach ($studentArray as $student) {
-                //     $studentCode = $student['student_code'];
-
-                    if (!$scoreArray) {
-                        $scores = [
-                            ['name' => 'Lab1', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab2', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab3', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab4', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab5', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab6', 'score' => 0, 'note' => ''],
-                            ['name' => 'Lab7', 'score' => 0, 'note' => ''],
-                        ];
-                    } else {
-                        $scores = [];
-                        foreach ($scoreArray as $scoreName => $scoreNumber) {
-                            // dd(  $scoreNumber);
-                            $scores = $scoreNumber['scores'];
-                        }
-                    }
-                    
-
-                    // Thêm thông tin sinh viên vào mảng kết quả
-                    $studentScores[] = [
-                        // 'name' => $student['name'],
-                        // 'student_code' => $studentCode,
-                        'scores' => $scores
-                    ];
-                // }
-
-                return response()->json([
-                    'className' => $classRoom->class_name,
-                    // 'students' => $studentScores,
-                    'error' => false
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Không tìm thấy lớp học',
-                    'error' => true,
-                ]);
+    ])->select('class_name', 'score', 'class_code')->first();
+    // dd($class);
+    if ($class) {
+        $scoreJson = $class->score;
+        $scoreArray = json_decode($scoreJson, true);
+        $defaultScores = [
+            ['name' => 'Lab1', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab2', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab3', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab4', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab5', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab6', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab7', 'score' => 0, 'note' => '', 'value' => 0],
+            ['name' => 'Lab8', 'score' => 0, 'note' => '', 'value' => 0],
+        ];
+    
+        foreach ($scoreArray as &$studentScore) {
+            if (empty($studentScore['scores'])) {
+                $studentScore['scores'] = $defaultScores;
+                $studentScore['average_score'] = 0;
             }
+        }
+        
+        return response()->json([
+            'classCode' => $class->class_code,
+            'className' => $class->class_name,
+            'score' => $scoreArray ?? [],
+        ]);
+    } else {
+        return response()->json([
+            'message' => 'Không tìm thấy lớp học',
+            'error' => true,
+        ]);
+    }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Có lỗi xảy ra',
