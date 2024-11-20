@@ -52,8 +52,9 @@ const ClassRoomsList = () => {
     useEffect(() => {
         if (classrooms) {
             $('#classroomsTable').DataTable({
-                
                 data: classrooms,
+                processing: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
@@ -136,9 +137,9 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/admin/classrooms/step">
                     <button className="btn btn-primary">
-                        Tạo lịch học mới
+                        Tạo lớp học mới
                     </button>
                 </Link>
             </div>

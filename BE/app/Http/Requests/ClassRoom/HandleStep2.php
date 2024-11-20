@@ -33,4 +33,6 @@ class HandleStep2 extends FormRequest
         'subject_code' => 'required|exists:subjects,subject_code',
         ];
     }
+
+    protected $stopOnFirstFailure = true;
 }

@@ -11,7 +11,6 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ScoreController;
 use App\Http\Controllers\Api\CategoryController;
@@ -27,11 +26,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FeedbackController;
 
-
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
-
-
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
 use App\Http\Controllers\TeacherGradesController;
@@ -44,6 +43,8 @@ use App\Http\Controllers\Student\ClassroomController as StudentClassroomControll
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -61,11 +62,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
-Route::controller(UserController::class)->group(function () {
-    Route::post('users/data/import', 'import');
-    Route::get('users/data/export', 'export');
-    Route::get('students', 'getListSudent');
-});
+
+Route::apiResource('teachers', TeacherController::class);
+
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
@@ -84,11 +83,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
-        Route::apiResource('users', UserController::class);
-        Route::controller(UserController::class)->group(function () {
-            Route::post('users/data/import', 'import');
-            Route::get('users/data/export', 'export');
-            Route::get('students', 'getListSudent');
+
+
+
+        Route::apiResource('teachers', TeacherController::class);
+
+        Route::apiResource('students', StudentController::class);
+        Route::controller(StudentController::class)->group(function () {
+            Route::post('import-students', 'importStudents');
+            Route::get('export-students', 'exportStudents');
         });
 
         Route::get('/subjects', [SubjectController::class, 'index']);
@@ -154,7 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         Route::get('schedules', [TeacherScheduleController::class, 'index']);
-        Route::get('schedules/{classCode}', [TeacherScheduleController::class, 'show']);
+
 
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
@@ -181,25 +184,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/classrooms', [StudentClassroomController::class, 'classrooms']);
         Route::get('/classrooms/{class_code}/schedules', [StudentClassroomController::class, 'schedulesOfClassroom']);
 
+        Route::get('schedules', [StudentScheduleController::class, 'index']);
+
+
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
         Route::get('/grades', [StudentGradesController::class, 'index']);
 
-
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
         Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
 
         Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
-
-        Route::get('schedules', [StudentScheduleController::class, 'index']);
-
-
-        Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
-        Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
-
-        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
-
-        Route::get('schedules', [StudentScheduleController::class, 'index']);
 
     });
 });
@@ -259,6 +254,7 @@ Route::apiResource('feedback',FeedbackController::class);
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 
 
+
 Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
 Route::get('count-room', [DashboardController::class,'getRoomCount']);
 Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
@@ -266,5 +262,8 @@ Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
 Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
 
 
+
+
+Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
 

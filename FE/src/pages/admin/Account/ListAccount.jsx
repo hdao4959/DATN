@@ -27,7 +27,9 @@ const ListAccount = () => {
     console.log(users);
 
     const { mutate, isLoading } = useMutation({
-        mutationFn: (user_code) => api.delete(`/admin/users/${user_code}`),
+
+        mutationFn: (user_code) => api.delete(`/admin/students/${user_code}`),
+
         onSuccess: () => {
             toast.success("Xóa tài khoản thành công");
             onModalVisible();
@@ -50,25 +52,43 @@ const ListAccount = () => {
         if (users) {
             $('#usersTable').DataTable({
                 data: users,
+                processing: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
+                        // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
+                        // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
-                            params: { page, per_page: data.length },
-                        });
-
+                            params: {
+                                page: page, // Trang hiện tại
+                                per_page: data.length, // Số bản ghi mỗi trang
+                                search: data.search.value || '', // Từ khóa tìm kiếm
+                                order_column: data.order[0].column, // Cột được sắp xếp
+                                order_dir: data.order[0].dir, // Hướng sắp xếp
+                            },
+                        })
+                        // Dữ liệu trả về từ API
                         const result = response.data;
-
+                
+                        // Gọi callback để DataTables hiển thị dữ liệu
                         callback({
-                            draw: data.draw,
-                            recordsTotal: result.total,
-                            recordsFiltered: result.total,
-                            data: result.data,
+                            draw: data.draw, // ID của lần gọi này
+                            recordsTotal: result.total, // Tổng số bản ghi (trong DB)
+                            recordsFiltered: result.filtered || result.total, // Tổng số bản ghi sau khi lọc
+                            data: result.data, // Dữ liệu bản ghi
                         });
                     } catch (error) {
                         console.error("Error fetching data:", error);
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: 0,
+                            recordsFiltered: 0,
+                            data: [],
+                        });
                     }
                 },
+                
                 columns: [
                     { title: "Mã sinh viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
@@ -106,7 +126,7 @@ const ListAccount = () => {
                         }
                     }
                 ],
-                pageLength: 10,
+                // pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {
                     paginate: { previous: 'Trước', next: 'Tiếp theo' },
@@ -133,20 +153,82 @@ const ListAccount = () => {
             })
         }
     }, [users]);
+    const handleExport = async () => {
+        try {
+            const response = await api.get("/admin/export-students", {
+                responseType: "blob", // Đảm bảo nhận dữ liệu dạng nhị phân (blob)
+            });
+
+            // Tạo URL từ blob và kích hoạt tải file
+            const url = URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "exported_data.xlsx"); // Đặt tên file mong muốn
+            document.body.appendChild(link);
+            link.click();
+
+            // Dọn dẹp sau khi tải
+            link.parentNode.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error exporting data:", error);
+            alert("Failed to export data. Please try again later.");
+        }
+    };
+    const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("data", file);  // Gửi file dưới dạng 'data'
+
+        api.post("/admin/import-students", formData)
+            .then((response) => {
+                console.log(response);
+
+                toast.success("Import thành công");
+                refetch();
+            })
+            .catch((error) => {
+                toast.error("Có lỗi xảy ra khi import dữ liệu");
+                console.error(error);
+            });
+    };
 
     if (!data) return <div>Loading...</div>;
 
     return (
         <>
-            <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/account/create">
-                    <button className="btn btn-primary">Thêm tài khoản</button>
-                </Link>
+            <div className="mb-3 mt-2 flex justify-between">
+                <div>
+                    <Link to="/admin/account/create">
+                        <button className="btn btn-primary mx-2">Thêm tài khoản</button>
+                    </Link>
+                </div>
+                <div>
+                    <button className="btn btn-success mx-2" onClick={() => document.getElementById('importFile').click()}> <i className="fa fa-file-import"></i> Import</button>
+                    <button onClick={handleExport} className="btn btn-secondary mx-2"> <i className="fa fa-download"></i> Export</button>
+                </div>
             </div>
 
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
                     <h4 className="card-title">Account Management</h4>
+                    <div>
+                        <i className="fa export-excel-user fa-file-excel fs-2 text-success mr-2" onClick={handleExport} style={{ cursor: "pointer" }} ></i>
+                        <input
+                            type="file"
+                            accept=".xlsx"
+                            onChange={handleImport}
+                            style={{ display: 'none' }}
+                            id="importFile"
+                        />
+                        <i
+                            className="fa fa-file-import import-excel-user fa-file-excel fs-2 text-Secondary mr-2"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => document.getElementById('importFile').click()}
+                        ></i>
+                    </div>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
@@ -222,7 +304,11 @@ const ListAccount = () => {
                                                     <td>
                                                         <div>
                                                             <Link
-                                                                to={`/admin/users/edit/${it.user_code}`}
+
+
+
+                                                                to={`/admin/students/edit/${it.user_code}`}
+
                                                             >
                                                                 <i className="fas fa-edit"></i>
                                                             </Link>
