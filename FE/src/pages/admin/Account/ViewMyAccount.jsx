@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import api from "../../../config/axios";
 
 const ViewMyAccount = () => {
     const { user_code } = useParams();
+    console.log(user_code);
+
     const [showModal, setShowModal] = useState(false);
 
     const {
@@ -14,9 +16,7 @@ const ViewMyAccount = () => {
     } = useQuery({
         queryKey: ["user", user_code],
         queryFn: async () => {
-            const response = await axios.get(
-                `/admin/users/${user_code}`
-            );
+            const response = await api.get(`/admin/students/${user_code}`);
             return response.data;
         },
     });
@@ -31,101 +31,7 @@ const ViewMyAccount = () => {
         <div className="container">
             <form>
                 <div className="row">
-                    <div className="col-md-4 d-flex justify-content-center align-items-center flex-column">
-                        <div className="card-body text-center">
-                            <img
-                                src={user.avatar || ""}
-                                alt="User Avatar"
-                                className="img-fluid mb-3"
-                                width={250}
-                                style={{
-                                    borderRadius: "50%",
-                                    margin: "0 auto",
-                                }}
-                            />
-                            <button
-                                className="btn btn-primary mt-3"
-                                onClick={handleSupportClick}
-                                type="button"
-                            >
-                                Gửi hỗ trợ đổi thông tin
-                            </button>
-                        </div>
-                    </div>
-
-                    {showModal && (
-                        <div
-                            className="modal pt-5 show d-block"
-                            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-                        >
-                            <div className="modal-dialog">
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">
-                                            Chỉnh sửa thông tin
-                                        </h5>
-                                        <button
-                                            type="button"
-                                            className="close"
-                                            onClick={handleModalClose}
-                                        >
-                                            <span>&times;</span>
-                                        </button>
-                                    </div>
-                                    <div className="modal-body">
-                                        <div className="form-group">
-                                            <label>Họ và tên</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                defaultValue={
-                                                    user.full_name || ""
-                                                }
-                                                disabled
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Email</label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                defaultValue={user.email || ""}
-                                                disabled
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Số điện thoại</label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                defaultValue={
-                                                    user.phone_number || ""
-                                                }
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button
-                                            type="button"
-                                            className="btn btn-success"
-                                        >
-                                            Gửi yêu cầu
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn btn-secondary"
-                                            onClick={handleModalClose}
-                                        >
-                                            Đóng
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="col-md-8">
+                    <div className="col-md-15">
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
@@ -273,8 +179,10 @@ const ViewMyAccount = () => {
                                         value={user.is_active ? "1" : "0"}
                                         disabled
                                     >
-                                        <option value="0">Inactive</option>
-                                        <option value="1">Active</option>
+                                        <option value="0">
+                                            Không hoạt động
+                                        </option>
+                                        <option value="1">Đang học</option>
                                     </select>
                                 </div>
                             </div>
@@ -282,6 +190,85 @@ const ViewMyAccount = () => {
                     </div>
                 </div>
             </form>
+            <div className=" d-flex justify-content-center align-items-center flex-column">
+                <div className="card-body text-center">
+                    <button
+                        className="btn btn-primary mt-3"
+                        onClick={handleSupportClick}
+                        type="button"
+                    >
+                        Gửi hỗ trợ đổi thông tin
+                    </button>
+                </div>
+            </div>
+
+            {showModal && (
+                <div
+                    className="modal pt-5 show d-block"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                >
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">
+                                    Chỉnh sửa thông tin
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="close"
+                                    onClick={handleModalClose}
+                                >
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label>Họ và tên</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        defaultValue={user.full_name || ""}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        defaultValue={user.email || ""}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Số điện thoại</label>
+                                    <input
+                                        type="tel"
+                                        className="form-control"
+                                        defaultValue={user.phone_number || ""}
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-success"
+                                >
+                                    Gửi yêu cầu
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={handleModalClose}
+                                >
+                                    Đóng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

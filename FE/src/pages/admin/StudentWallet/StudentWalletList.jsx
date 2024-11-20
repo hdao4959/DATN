@@ -27,6 +27,8 @@ const StudentWalletList = () => {
         if (wallets) {
             $('#walletsTable').DataTable({
                 data: wallets,
+                processing: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
@@ -158,9 +160,13 @@ const StudentWalletList = () => {
         }
     }, [wallets]);
     useEffect(() => {
-        const handleGetSelected = () => {
+        const handleGetSelected = async () => {
             const selectedUserCodes = getSelectedUserCodes();
             console.log(selectedUserCodes);
+            await api.get(`/send-email2`, {
+                params: { UserCode: selectedUserCodes },
+            });
+            
         };
 
         $('#getSelectedButton').off('click').on('click', handleGetSelected);
@@ -181,7 +187,7 @@ const StudentWalletList = () => {
             <div className="card">
                 <div className="card-header">
                     <h4 className="card-title">Học phí sinh viên</h4>
-                    {/* <button id="getSelectedButton">Lấy danh sách user_code</button> */}
+                    <button id="getSelectedButton">Gửi mail</button>
 
                 </div>
                 <div className="card-body">

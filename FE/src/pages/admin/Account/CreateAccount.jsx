@@ -1,8 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
+import { toast } from "react-toastify";
 
 const CreateAccount = () => {
     const {
@@ -11,18 +12,29 @@ const CreateAccount = () => {
         formState: { errors },
     } = useForm();
 
+    const { data, refetch } = useQuery({
+        queryKey: ["LIST_MAJORS"],
+        queryFn: async () => {
+            const res = await api.get("/listParentMajorsForForm");
+            return res.data;
+        },
+    });
+
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
         mutationFn: (data) => {
-            return axios.post("/admin/users", data);
+            return api.post("/admin/students", data);
         },
         onSuccess: () => {
             alert("Tạo tài khoản thành công!");
         },
         onError: (error) => {
             console.log(error);
-            alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+            toast.error(error.response.data.message);
         },
     });
+
+    const majors = data || [];
+    console.log(majors);
 
     const onSubmit = (data) => {
         mutate(data);
@@ -30,7 +42,7 @@ const CreateAccount = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/account">
+                <Link to="/admin/teachers">
                     <button className="btn btn-primary">
                         Danh sách tài khoản
                     </button>
@@ -42,31 +54,13 @@ const CreateAccount = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Tạo tài khoản</div>
+                                <div className="card-title">
+                                    Tạo tài khoản sinh viên
+                                </div>
                             </div>
                             <div className="card-body">
                                 {/* Dòng 1 */}
                                 <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label>Mã người dùng</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Nhập mã người dùng"
-                                                {...register("user_code", {
-                                                    required:
-                                                        "Vui lòng nhập mã người dùng",
-                                                })}
-                                            />
-                                            {errors.user_code && (
-                                                <p className="text-danger">
-                                                    {errors.user_code.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
                                     <div className="col-md-6">
                                         <div className="form-group">
                                             <label>Họ và tên</label>
@@ -210,14 +204,11 @@ const CreateAccount = () => {
                                                 >
                                                     Chọn giới tính
                                                 </option>
-                                                <option value="Male">
+                                                <option value="male">
                                                     Nam
                                                 </option>
-                                                <option value="Female">
+                                                <option value="female">
                                                     Nữ
-                                                </option>
-                                                <option value="Other">
-                                                    Khác
                                                 </option>
                                             </select>
                                             {errors.sex && (
@@ -366,55 +357,49 @@ const CreateAccount = () => {
 
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label>Trạng thái</label>
+                                            <label htmlFor="exampleFormControlSelect1">
+                                                Ngành học
+                                            </label>
                                             <select
                                                 className="form-select"
-                                                {...register("is_active")}
+                                                {...register("major_code", {
+                                                    required:
+                                                        "Vui lòng chọn ngành học",
+                                                })}
                                             >
-                                                <option value="0">Đang sử dụng</option>
-                                                <option value="1">Khóa tài khoản</option>
+                                                <option value="">
+                                                    Chọn ngành học
+                                                </option>
+                                                {majors.map((major) => (
+                                                    <option
+                                                        key={major.cate_code}
+                                                        value={major.cate_code}
+                                                    >
+                                                        {major.cate_name}
+                                                    </option>
+                                                ))}
                                             </select>
+                                            {errors.major_code && (
+                                                <p className="text-danger">
+                                                    {errors.major_code.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <div className="form-group">
+                                            <select
+                                                hidden
+                                                className="form-select"
+                                                {...register("is_active")}
+                                                defaultValue={"0"}
+                                            ></select>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Dòng 8 */}
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="exampleFormControlSelect1">
-                                                Chức vụ
-                                            </label>
-                                            <select
-                                                className="form-select"
-                                                {...register("role")}
-                                            >
-                                                <option value={"1"}>
-                                                    Admin
-                                                </option>
-                                                <option value={"2"}>
-                                                    Giảng viên
-                                                </option>
-                                                <option value={"3"}>
-                                                    Sinh viên
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="exampleFormControlSelect1">
-                                                Ngành học
-                                            </label>
-                                            <select className="form-select">
-                                                <option>LTWE</option>
-                                                <option>BE</option>
-                                                <option>MOBILE</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <div className="card-action gap-x-3 flex">

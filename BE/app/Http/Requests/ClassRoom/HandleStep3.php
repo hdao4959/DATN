@@ -27,4 +27,6 @@ class HandleStep3 extends FormRequest
             'course_code' => 'required|exists:categories,cate_code',
         ];
     }
+
+    protected $stopOnFirstFailure = true;
 }

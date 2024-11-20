@@ -49,7 +49,7 @@ class Category extends Model
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
-
+  
 
     // // Mối quan hệ giữa phòng học và lịch
     // public function roomSchedules(){
