@@ -75,9 +75,52 @@ class AttendanceController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function show(string $classCode)
+    {
+        try {
+
+            $attendances = Classroom::where('class_code', $classCode)
+                                    ->with('users', 'schedules')
+                                    ->get()
+                                    ->map(function ($attendance) {
+                                        $currentDate = Carbon::now()->toDateString();
+
+                                        // Lọc schedules theo ngày hiện tại
+                                        $filteredSchedules = $attendance->schedules
+                                            ->filter(function ($schedule) use ($currentDate) {
+                                                return $schedule->date == $currentDate;
+                                            })
+                                            ->pluck('date')
+                                            ->toArray();
+                                
+                                        // Gắn schedules vào từng user
+                                        $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
+                                            return [
+                                                'student_code' => $user->user_code,
+                                                'full_name' => $user->full_name,
+                                                'schedules' => $filteredSchedules,
+                                            ];
+                                        });
+                                
+                                        // Trả về dữ liệu
+                                        return [
+                                            'class_code' => $attendance->class_code,
+                                            'users' => $usersWithSchedules,
+                                        ];
+                                    });
+            if (!$attendances) {
+
+                return $this->handleInvalidId();
+            } else {
+
+                return response()->json($attendances, 200);                
+            }
+        } catch (\Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
+        }
+    }
+
     public function store(StoreAttendanceRequest $request, string $classCode)
     {
         try {
@@ -116,42 +159,22 @@ class AttendanceController extends Controller
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $classCode)
+    public function edit(string $classCode)
     {
         try {
-            $attendances = Classroom::where('class_code', $classCode)
-                                    ->with('users', 'schedules')
-                                    ->get()
-                                    ->map(function ($attendance) {
-                                        // Duyệt qua từng user để lấy các `student_code` và `full_name`
-                                        $users = $attendance->users->map(function ($user) {
-                                            return [
-                                                'student_code' => $user->user_code,
-                                                'full_name' => $user->full_name,
-                                            ];
-                                        });
-                                        
-                                        // Duyệt qua từng schedule để lấy `date`
-                                        $schedules = $attendance->schedules->map(function ($schedule) {
-                                            return $schedule->date;
-                                        });
-                                        $schedules = '2024-11-20';
-                                        if ($schedules == (Carbon::now()->toDateString())) {
-                                            
-                                            return [
-                                                'users' => $users,
-                                                'class_code' => $attendance->class_code,
-                                                'schedules' => $schedules,
-                                            ];                                                
-                                        } else {
-
-                                            return $this->handleInvalidId();
-                                        }
-                                    });
+            $attendances = Attendance::where('class_code', $classCode)
+                            ->whereDate('date', Carbon::today())
+                            ->with('user')
+                            ->get()
+                            ->map(function ($attendance) {
+                                return [
+                                    'student_code' => $attendance->student_code,
+                                    'full_name' => $attendance->user->full_name,
+                                    'date' => $attendance->date,
+                                    'status' => $attendance->status,
+                                    'noted' => $attendance->noted,
+                                ];
+                            });
             if (!$attendances) {
 
                 return $this->handleInvalidId();
@@ -165,9 +188,6 @@ class AttendanceController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateAttendanceRequest $request, string $classCode)
     {
         try {
@@ -207,38 +227,36 @@ class AttendanceController extends Controller
         }
     }
 
-    public function showAll(string $classCode)
+    public function showAllAttendance(string $classCode)
     {
         try {
-            $attendances = Classroom::where('class_code', $classCode)
-                                    ->with('users', 'schedules')
-                                    ->get()
-                                    ->map(function ($attendance) {
-                                        // Duyệt qua từng user để lấy các `student_code` và `full_name`
-                                        $users = $attendance->users->map(function ($user) {
-                                            return [
-                                                'student_code' => $user->user_code,
-                                                'full_name' => $user->full_name,
-                                            ];
-                                        });
-                                        
-                                        // Duyệt qua từng schedule để lấy `date`
-                                        $schedules = $attendance->schedules->map(function ($schedule) {
-                                            return $schedule->date;
-                                        });
-
-                                        if ($schedules == (Carbon::now()->toDateString())) {
-                                            
-                                            return [
-                                                'users' => $users,
-                                                'class_code' => $attendance->class_code,
-                                                'schedules' => $schedules,
-                                            ];                                                
-                                        } else {
-
-                                            return $this->handleInvalidId();
-                                        }
-                                    });
+            $attendances = Attendance::where('class_code', $classCode)
+            ->whereDate('date', Carbon::today())
+            ->with('user')
+            ->get()
+            ->groupBy('student_code')
+            ->map(function ($attendances, $studentCode) {
+                // Đếm số lần status là 'absent'
+                $absentCount = $attendances->where('status', 'absent')->count();
+        
+                // Lấy thông tin user từ quan hệ
+                $user = $attendances->first()->user ?? null;
+        
+                return [
+                    'student_code' => $studentCode,
+                    'full_name' => $user ? $user->full_name : 'N/A',
+                    'absent_count' => $absentCount,
+                    'attendances' => $attendances->map(function ($attendance) {
+                        return [
+                            'date' => $attendance->date,
+                            'status' => $attendance->status,
+                            'noted' => $attendance->noted,
+                        ];
+                    })->values()->all(),
+                ];
+            })
+            ->values()
+            ->all();
             if (!$attendances) {
 
                 return $this->handleInvalidId();
@@ -251,7 +269,6 @@ class AttendanceController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
