@@ -108,6 +108,25 @@ const StudentMenu = () => {
                             </div>
 
                         </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#grades" >
+                                <i className="fas fa-clipboard-list" />
+                                <p>Câu hỏi thường gặp</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="grades">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="FAQS"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">FAQS</p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
