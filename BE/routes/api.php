@@ -195,7 +195,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
         Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
 
-        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+        Route::get('newsletters', [StudentNewsletterController::class, 'index']);
+        Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
+        Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
 
     });
 });

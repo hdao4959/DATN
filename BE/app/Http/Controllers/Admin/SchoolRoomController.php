@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SchoolRoom\StoreSchoolRoomRequest;
 use App\Http\Requests\SchoolRoom\UpdateSchoolRoomRequest;
-use Illuminate\Support\Facades\Log;
 
 class SchoolRoomController extends Controller
 {
@@ -113,6 +114,7 @@ class SchoolRoomController extends Controller
      */
     public function update(UpdateSchoolRoomRequest $request, string $cate_code)
     {
+        DB::beginTransaction();
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
@@ -122,6 +124,7 @@ class SchoolRoomController extends Controller
 
             $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
+                DB::commit();
 
                 return $this->handleInvalidId();
             } else {
@@ -136,6 +139,7 @@ class SchoolRoomController extends Controller
                 }
                 $params['image'] = $fileName;
                 $listSchoolRoom->update($params);
+                DB::rollBack();
 
                 return response()->json($listSchoolRoom, 201);
             }
@@ -150,9 +154,11 @@ class SchoolRoomController extends Controller
      */
     public function destroy(string $cate_code)
     {
+        DB::beginTransaction();
         try {
             $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -160,6 +166,7 @@ class SchoolRoomController extends Controller
                     Storage::disk('public')->delete($listSchoolRoom->image);
                 }
                 $listSchoolRoom->delete($listSchoolRoom);
+                DB::rollBack();
 
                 return response()->json([
                     'message' => 'Xóa thành công'

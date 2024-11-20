@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -157,9 +158,11 @@ class NewsletterController extends Controller
      */
     public function update(UpdateNewsletterRequest $request, string $code)
     {
+        DB::beginTransaction();
         try {
             $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -174,6 +177,7 @@ class NewsletterController extends Controller
                 }
                 $params['image'] = $fileName;
                 $newsletters->update($params);
+                DB::commit();
 
                 return response()->json($newsletters, 201);          
             }
@@ -188,9 +192,11 @@ class NewsletterController extends Controller
      */
     public function destroy(string $code)
     {
+        DB::beginTransaction();
         try {
             $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
             if (!$newsletters) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -198,6 +204,7 @@ class NewsletterController extends Controller
                     Storage::disk('public')->delete($newsletters->image);
                 }
                 $newsletters->delete($newsletters);
+                DB::commit();
 
                 return response()->json([
                     'message' => 'Xóa thành công'
@@ -211,10 +218,13 @@ class NewsletterController extends Controller
     
     public function copyNewsletter(string $code)
     {
+        DB::beginTransaction();
         try {
             $newsletters = Newsletter::where('code', $code)->lockForUpdate()->first();
         
             if (!$newsletters) {
+                DB::rollBack();
+
                 return $this->handleInvalidId();
             }
     
@@ -234,6 +244,7 @@ class NewsletterController extends Controller
             $newPost->created_at = now();
             $newPost->updated_at = now();
             $newPost->save();
+            DB::commit();
 
             return response()->json($newPost, 200);
         } catch (\Throwable $th) {
