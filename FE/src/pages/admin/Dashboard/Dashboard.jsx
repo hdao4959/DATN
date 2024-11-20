@@ -1,6 +1,161 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 const Dashboard = () => {
+    const [statusFeeData, setStatusFeeData] = useState(null);
+    const [attendanceData, setAttendanceData] = useState(null);
+    const [studentCountData, setStudentCountData] = useState({ labels: [], data: [] });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Gọi API trạng thái nộp học phí
+                const feeResponse = await axios.get("http://127.0.0.1:8000/api/status-fee-all");
+                const { pending, paid, unpaid } = feeResponse.data["status-fee"];
+                setStatusFeeData([pending, paid, unpaid]);
+
+                // Khởi tạo biểu đồ 1
+                const ctx1 = document.getElementById("chart1").getContext("2d");
+                new Chart(ctx1, {
+                    type: "pie",
+                    data: {
+                        labels: ["Pending", "Paid", "Unpaid"],
+                        datasets: [
+                            {
+                                label: "Status Fee",
+                                data: [pending, paid, unpaid],
+                                backgroundColor: [
+                                    "rgba(255, 206, 86, 0.6)",
+                                    "rgba(75, 192, 192, 0.6)",
+                                    "rgba(255, 99, 132, 0.6)",
+                                ],
+                                borderColor: [
+                                    "rgba(255, 206, 86, 1)",
+                                    "rgba(75, 192, 192, 1)",
+                                    "rgba(255, 99, 132, 1)",
+                                ],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: "top" },
+                        },
+                    },
+                });
+
+                // Gọi API trạng thái điểm danh
+                const attendanceResponse = await axios.get("http://127.0.0.1:8000/api/status-attendances");
+                const { absent, present } = attendanceResponse.data["status-attendances"];
+                setAttendanceData([absent, present]);
+
+                // Khởi tạo biểu đồ 2
+                const ctx2 = document.getElementById("chart2").getContext("2d");
+                new Chart(ctx2, {
+                    type: "pie",
+                    data: {
+                        labels: ["Absent", "Present"],
+                        datasets: [
+                            {
+                                label: "Status Attendance",
+                                data: [absent, present],
+                                backgroundColor: [
+                                    "rgba(255, 99, 132, 0.6)",
+                                    "rgba(75, 192, 192, 0.6)",
+                                ],
+                                borderColor: [
+                                    "rgba(255, 99, 132, 1)",
+                                    "rgba(75, 192, 192, 1)",
+                                ],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: "top" },
+                        },
+                    },
+                });
+
+                // Gọi API số lượng sinh viên theo ngành
+                const studentCountResponse = await axios.get("http://127.0.0.1:8000/api/count-student");
+                const studentData = studentCountResponse.data;
+                const labels = studentData.map((item) => item.major_name);
+                const data = studentData.map((item) => item.total);
+                setStudentCountData({ labels, data });
+
+                // Khởi tạo biểu đồ cột
+                const ctx3 = document.getElementById("chart3").getContext("2d");
+                new Chart(ctx3, {
+                    type: "bar",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: "Number of Students by Major",
+                                data,
+                                backgroundColor: [
+                                    "rgba(255, 206, 86, 0.6)",
+                                    "rgba(75, 192, 192, 0.6)",
+                                    "rgba(255, 99, 132, 0.6)",
+                                    "rgba(153, 102, 255, 0.6)",
+                                    "rgba(54, 162, 235, 0.6)",
+                                ],
+                                borderColor: [
+                                    "rgba(255, 206, 86, 1)",
+                                    "rgba(75, 192, 192, 1)",
+                                    "rgba(255, 99, 132, 1)",
+                                    "rgba(153, 102, 255, 1)",
+                                    "rgba(54, 162, 235, 1)",
+                                ],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: "top" },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
     return (
         <>
+            <div className="container mt-5">
+                <h3 className="fw-bold mb-3">Dashboard Charts</h3>
+                <div className="row">
+                    <div className="col-md-6">
+                        <h5 className="text-center">Trạng thái nộp học phí</h5>
+                        <canvas id="chart1"></canvas>
+                    </div>
+                    <div className="col-md-6">
+                        <h5 className="text-center">Trạng thái điểm danh</h5>
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+                <div className="row mt-5">
+                    <div className="col-12">
+                        <h5 className="text-center">Số lượng học sinh theo chuyên ngành</h5>
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+            </div>
             <div className="page-header">
                 <h3 className="fw-bold mb-3">Forms</h3>
                 <ul className="breadcrumbs mb-3">
