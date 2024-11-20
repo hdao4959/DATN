@@ -45,11 +45,11 @@ class ClassroomController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-
-            $classrooms = Classroom::with(['subject'])->where('is_active', true)->paginate(10);
+            $perPage = $request->input('per_page', 10);
+            $classrooms = Classroom::with(['subject'])->where('is_active', true)->paginate($perPage);
             return response()->json([
                 'status' => true,
                 'message' => 'Lấy dữ liệu lớp học thành công',
