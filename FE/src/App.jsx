@@ -58,6 +58,9 @@ import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
 
+import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
+import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
+import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -82,20 +85,28 @@ function App() {
                     element: <Dashboard />,
                 },
                 {
-                    path: "account",
+                    path: "students",
                     element: <ListAccount />,
                 },
-                // {
-                //     path: "teachers", 
-                //     element: <ListTeacher/>,
-                // },
                 {
-                    path: "account/create",
+                    path: "students/create",
                     element: <CreateAccount />,
                 },
                 {
-                    path: "account/details/:user_code",
+                    path: "students/:user_code",
                     element: <ViewMyAccount />,
+                },
+                {
+                    path: "teachers",
+                    element: <ListTeacher />,
+                },
+                {
+                    path: "teachers/create",
+                    element: <CreateTeacherAccount />,
+                },
+                {
+                    path: "teachers/:user_code",
+                    element: <TeacherAccountDetails />,
                 },
                 {
                     path: "major",
@@ -268,11 +279,9 @@ function App() {
         {
             path: "/student",
             element: (
-
                 <CheckRole>
                     <StudentLayout />
                 </CheckRole>
-
             ),
             children: [
                 {
@@ -291,11 +300,11 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
+
                 {
                     path: "FAQS",
                     element: <FAQs />
                 }
-
             ],
         },
         {
