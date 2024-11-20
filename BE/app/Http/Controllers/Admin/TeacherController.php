@@ -125,8 +125,13 @@ class TeacherController extends Controller
                     'major_code',
                     'created_at',
                     'updated_at'
-                )->get();
-            return response()->json($teacher);
+                )->first();
+
+
+                $teacherArray = $teacher->toArray();
+                $teacherArray['created_at'] = $teacher->created_at->toDateTimeString();
+                $teacherArray['updated_at'] = $teacher->updated_at->toDateTimeString();
+            return response()->json($teacherArray,200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -143,7 +148,7 @@ class TeacherController extends Controller
         try {
             $data = $request->validated();
 
-            $teacher = User::where('user_code', $teacher_code)->first();
+            $teacher = User::where('user_code', $teacher_code)->lockForUpdate()->first();
 
             if(!$teacher){
                 return $this->handleInvalidId();
