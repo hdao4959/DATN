@@ -15,10 +15,7 @@ const CheckRole = ({ children }) => {
             setIsModalVisible(true); // Hiển thị modal nếu không có quyền truy cập
         } else {
             if (user.role === "3") {
-                toast.info("Tính năng của sinh viên sẽ cập nhật sau");
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                navigate("/signin");
+                navigate("/student");
             } else if (user.role === "2") {
                 navigate("/teacher");
             } else if (user.role === "0") {
@@ -32,7 +29,7 @@ const CheckRole = ({ children }) => {
         navigate("/signin");
     };
 
-    if (accessToken && (user.role === "0" || user.role === "2")) {
+    if (accessToken && (user.role === "0" || user.role === "2" || user.role === "3" )) {
         return <div>{children}</div>;
     }
 

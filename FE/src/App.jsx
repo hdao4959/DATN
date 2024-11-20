@@ -50,12 +50,13 @@ import NotFound from "./pages/NotFound";
 import AttendanceManagement from "./pages/admin/Attendance/page.jsx";
 import AttendanceTeacher from "./pages/teacher/Attendance/page.jsx";
 import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
-import StudentGradesA from "./pages/admin/Grades/graStupages.jsx";
-import ShowGradesTeacherA from "./pages/admin/Grades/graTeapages.jsx";
 import StudentLayout from "./layouts/Student/StudentLayout.jsx";
 import StudentGrades from "./pages/student/Grade/page.jsx";
 import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
+import StudentServices from "./pages/student/Service/page.jsx";
+import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
+
 
 function App() {
     const router = createBrowserRouter([
@@ -83,6 +84,10 @@ function App() {
                     path: "account",
                     element: <ListAccount />,
                 },
+                // {
+                //     path: "teachers", 
+                //     element: <ListTeacher/>,
+                // },
                 {
                     path: "account/create",
                     element: <CreateAccount />,
@@ -223,10 +228,6 @@ function App() {
                     path: "attendance",
                     element: <AttendanceManagement />,
                 },
-                {
-                },
-                {
-                },
             ],
         },
         {
@@ -266,9 +267,11 @@ function App() {
         {
             path: "/student",
             element: (
+
                 <CheckRole>
                     <StudentLayout />
                 </CheckRole>
+
             ),
             children: [
                 {
@@ -279,6 +282,15 @@ function App() {
                     path: "grades",
                     element: <StudentGrades />,
                 },
+                {
+                    path: "services",
+                    element: <StudentServices />,
+                },
+                {
+                    path: "services/re-enrollment",
+                    element: <ReEnrollment />,
+                },
+
             ],
         },
         {

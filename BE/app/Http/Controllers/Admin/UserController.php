@@ -52,10 +52,10 @@ class UserController extends Controller
         }
     }
 
-    public function getListSudent()
+    public function getListSudent(Request $request)
     {
-
         try {
+            $perPage = $request->input('per_page', 10);
             $list_users = User::with([
                 'major' => function ($query) {
                     $query->select('cate_code', 'cate_name', 'parent_code');
@@ -69,7 +69,8 @@ class UserController extends Controller
             ])->where('role', '3')
                 ->orderBy('id', 'desc')
                 ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
-                ->paginate(20);
+                ->paginate($perPage);
+
             if ($list_users->isEmpty()) {
                 return response()->json(
                     ['message' => 'Không có tài khoản nào!'],
@@ -87,6 +88,7 @@ class UserController extends Controller
             );
         }
     }
+
 
 
     public function store(StoreUserRequest $request)
@@ -188,8 +190,20 @@ class UserController extends Controller
 
     public function import(Request $request)
     {
-        Excel::import(new UsersImport(), $request->file('file'));
-        return response()->json('Import thành công');
+        if ($request->hasFile('data')) {
+            $file = $request->file('data');
+
+            try {
+                // Sử dụng thư viện Excel để import dữ liệu
+                Excel::import(new UsersImport, $file);  // Xử lý import với UsersImport
+                return response()->json(['message' => 'Import thành công!'], 200);
+            } catch (\Exception $e) {
+                // Xử lý lỗi nếu có
+                return response()->json(['error' => 'Có lỗi xảy ra khi import dữ liệu: ' . $e->getMessage()], 500);
+            }
+        } else {
+            return response()->json(['error' => 'Không có file để import'], 400);
+        }
     }
 
     public function export()

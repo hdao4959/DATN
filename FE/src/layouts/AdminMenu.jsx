@@ -197,10 +197,12 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/classrooms/add"
+
+
+                                to="/admin/classrooms/step"
                                 className={`${styles.menuItem} group`}
                             >
-                                <p className="sub-item">Thêm mới  lớp học</p>
+                                <p className="sub-item">Thêm mới lớp học</p>
                             </NavLink>
                         </li>
                     </ul>
@@ -233,6 +235,7 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
+
 
             <li className="nav-item ">
                 <a data-bs-toggle="collapse" href="#major" >

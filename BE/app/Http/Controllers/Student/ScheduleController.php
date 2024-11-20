@@ -13,8 +13,6 @@ class ScheduleController extends Controller
     public function index(Request $request){
         try {
             $userCode = $request->user()->user_code;
-            // $userCode = 'student04';
-
             $schedules = ClassroomUser::where('user_code', $userCode)
                         ->with(['classroom' => function ($query) {
                             $query->select('class_code', 'class_name', 'subject_code', 'user_code');

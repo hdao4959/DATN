@@ -19,6 +19,8 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+
     protected $fillable = [
         'user_code',
         'full_name',
@@ -47,8 +49,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        
         'password',
         'remember_token',
+       
     ];
 
     /**
@@ -76,7 +80,10 @@ class User extends Authenticatable
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
-
+     
+    public function narrow_major(){
+        return $this->belongsTo(Category::class, 'narrow_major_code', 'cate_code');
+    }
     public function course(){
         return $this->belongsTo(Category::class, 'course_code', 'cate_code');
     }

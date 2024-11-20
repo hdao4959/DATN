@@ -44,7 +44,7 @@ class AttendanceController extends Controller
                                         return $query
                                                 ->where('class_code', 'like', "%{$classCode}%");
                                     })
-                                    ->paginate(4);
+                                    ->paginate(10);
             if ($classrooms->isEmpty()) {
 
                 return $this->handleInvalidId();

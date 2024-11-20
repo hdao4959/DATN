@@ -74,7 +74,8 @@ const ShowGradesTeacher = () => {
                     { title: "Tên lớp", data: "class_name" },
                     // { title: "Phòng học", data: "room_code" },
                     // { title: "Ca học", data: "section" },
-                    { title: "Giảng viên", data: "user_code" },
+                    // { title: "Giảng viên", data: "user_code" },
+
                     {
                         title: "Điểm",
                         data: null,

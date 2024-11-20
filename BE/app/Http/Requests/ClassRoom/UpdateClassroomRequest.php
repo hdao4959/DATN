@@ -61,6 +61,6 @@ class UpdateClassroomRequest extends FormRequest
         ];
     }
 
-    // protected $stopOnFirstFailure = true;
+    protected $stopOnFirstFailure = true;
 
 }
