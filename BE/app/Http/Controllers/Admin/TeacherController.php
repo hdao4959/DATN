@@ -44,7 +44,6 @@ class TeacherController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
             $teachers = User::where([
                 'role' => '2'
             ])->select(
@@ -53,7 +52,7 @@ class TeacherController extends Controller
                 'email',
                 'sex',
                 'is_active'
-            )->paginate($perPage);;
+            )->paginate(10);
             return response()->json($teachers, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -77,11 +76,14 @@ class TeacherController extends Controller
         try {
             $data = $request->validated();
 
+            
+
             $newest_teacher_code = User::where('user_code', "LIKE", "TC%")
             ->orderBy('user_code', 'desc')->pluck('user_code')->first();
 
             $new_code = $newest_teacher_code ? (int) substr($newest_teacher_code, 2) : 0;
             $new_teacher_code = "TC" . str_pad($new_code + 1, 5, 0, STR_PAD_LEFT);
+            
             $data['user_code'] = $new_teacher_code;
             $data['role'] = '2';
             User::create($data);

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import api from "../../../config/axios";
 
-const ViewMyAccount = () => {
+const TeacherAccountDetails = () => {
     const { user_code } = useParams();
     console.log(user_code);
 
@@ -95,9 +95,8 @@ const ViewMyAccount = () => {
                                         value={user.sex || ""}
                                         disabled
                                     >
-                                        <option value="Male">Nam</option>
-                                        <option value="Female">Nữ</option>
-                                        <option value="Other">Khác</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
                                     </select>
                                 </div>
                             </div>
@@ -147,29 +146,21 @@ const ViewMyAccount = () => {
                                         value={user.role || ""}
                                         disabled
                                     >
-                                        <option value="admin">Admin</option>
-                                        <option value="teacher">
-                                            Giảng viên
-                                        </option>
-                                        <option value="student">
-                                            Sinh viên
-                                        </option>
+                                        <option value="0">Admin</option>
+                                        <option value="2">Giảng viên</option>
+                                        <option value="3">Sinh viên</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
                                     <label>Ngành học</label>
                                     <select
                                         className="form-select"
-                                        defaultValue={user.major || ""}
+                                        defaultValue={
+                                            user.major.cate_name || ""
+                                        }
                                         disabled
                                     >
-                                        <option value="CNTT">CNTT</option>
-                                        <option value="Khách Sạn">
-                                            Khách Sạn
-                                        </option>
-                                        <option value="QTKD">
-                                            Quản Trị Kinh Doanh
-                                        </option>
+                                        <option>{user.major.cate_name}</option>
                                     </select>
                                 </div>
                                 <div className="form-group">
@@ -182,7 +173,7 @@ const ViewMyAccount = () => {
                                         <option value="0">
                                             Không hoạt động
                                         </option>
-                                        <option value="1">Đang học</option>
+                                        <option value="1">Đang dạy</option>
                                     </select>
                                 </div>
                             </div>
@@ -273,4 +264,4 @@ const ViewMyAccount = () => {
     );
 };
 
-export default ViewMyAccount;
+export default TeacherAccountDetails;

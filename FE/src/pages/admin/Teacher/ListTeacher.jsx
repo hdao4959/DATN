@@ -1,217 +1,139 @@
-import React, { useEffect, useState } from 'react'
-import api from '../../../config/axios'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
+import Modal from "../../../components/Modal/Modal";
+import { toast } from "react-toastify";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
 
 const ListTeacher = () => {
-    const [teachers, setTeacher] = useState([]);
+    const navigate = useNavigate();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState();
 
+    const onModalVisible = () => setModalOpen((prev) => !prev);
 
-    const getData =  async () => {
-        
-        const response = await api.get('admin/teachers');
-        setTeacher(response.data);
-       
-    }
-    useEffect(() =>  {
-        getData();
-    }, [])
-    
-    const handleExport = async () => {
-        try {
-            const response = await api.get('/admin/students/export', { responseType: 'blob' })
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            // Tạo một link tải file và kích hoạt download
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'exported_data.xlsx'); // Đặt tên file tải về
-            document.body.appendChild(link);
-            link.click();
+    const { data, refetch } = useQuery({
+        queryKey: ["LIST_TEACHER"],
+        queryFn: async () => {
+            const res = await api.get("/admin/teachers");
+            return res.data;
+        },
+    });
 
-            // Xóa link sau khi tải xong
-            link.parentNode.removeChild(link);
-        } catch (error) {
-            console.error("Error exporting:", error);
+    const teachers = data?.data || [];
+
+    const { mutate, isLoading } = useMutation({
+        mutationFn: (user_code) => api.delete(`/admin/teachers/${user_code}`),
+        onSuccess: () => {
+            toast.success("Xóa giảng viên thành công");
+            onModalVisible();
+            refetch();
+        },
+        onError: () => {
+            toast.error("Có lỗi xảy ra khi xóa giảng viên");
+        },
+    });
+
+    const handleDelete = (user_code) => {
+        setSelectedTeacher(user_code);
+        onModalVisible();
+    };
+
+    useEffect(() => {
+        if (teachers) {
+            if ($.fn.DataTable.isDataTable("#teachersTable")) {
+                $("#teachersTable").DataTable().destroy();
+            }
+
+            $("#teachersTable").DataTable({
+                data: teachers,
+                columns: [
+                    { title: "Mã giảng viên", data: "user_code" },
+                    { title: "Họ và tên", data: "full_name" },
+                    { title: "Email", data: "email" },
+                    {
+                        title: "Giới tính",
+                        data: "sex",
+                        render: (data) => (data === "male" ? "Nam" : "Nữ"),
+                    },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        className: "text-center",
+                        render: (data) =>
+                            data
+                                ? `<i class="fas fa-check-circle" style="color: green; font-size: 20px;"></i>`
+                                : `<i class="fas fa-times-circle" style="color: red; font-size: 20px;"></i>`,
+                    },
+                    {
+                        title: "Hành động",
+                        data: null,
+                        render: (data, type, row) => `
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
+                                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+                                <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
+                            </div>
+                        `,
+                    },
+                ],
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: { previous: "Trước", next: "Tiếp theo" },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
+                },
+                createdRow: (row, data) => {
+                    $(row)
+                        .find(".fa-trash")
+                        .on("click", () => {
+                            handleDelete(data.user_code);
+                        });
+                    $(row)
+                        .find(".fa-edit")
+                        .on("click", () => {
+                            navigate(`/admin/teachers/${data.user_code}`);
+                        });
+                },
+            });
         }
-    }
-    
-  
-    if (!teachers) return <div>Loading...</div>;
+    }, [teachers]);
 
-  return (
-    <div>
-       <div className="mb-3 mt-2 flex justify-between">
-                <div>
-                    <Link to="/admin/account/create">
-                        <button className="btn btn-primary mx-2">Thêm tài khoản</button>
-                    </Link>
-                </div>
-                <div>
-                    <button className="btn btn-success mx-2"> <i class="fa fa-file-import"></i> Import</button>
-                    <button onClick={handleExport} className="btn btn-secondary mx-2"> <i class="fa fa-download"></i> Export</button>
-                </div>
+    if (!data) return <div>Loading...</div>;
+
+    return (
+        <>
+            <div className="mb-3 mt-2 flex items-center justify-between">
+                <Link to="/admin/teachers/create">
+                    <button className="btn btn-primary">Thêm giảng viên</button>
+                </Link>
             </div>
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Account Management</h4>
+                    <h4 className="card-title">Teacher Management</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
-                        <div className="dataTables_wrapper container-fluid dt-bootstrap4">
-                            <div className="row">
-                                <div className="col-sm-12 col-md-6">
-                                    <div
-                                        id="basic-datatables_filter"
-                                        className="dataTables_filter"
-                                    >
-                                        <label>
-                                            Search:
-                                            <input
-                                                type="search"
-                                                className="form-control form-control-sm"
-                                                placeholder=""
-                                                aria-controls="basic-datatables"
-                                            />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <table
-                                        id="basic-datatables"
-                                        className="display table table-striped table-hover dataTable"
-                                        role="grid"
-                                        aria-describedby="basic-datatables_info"
-                                    >
-                                        <thead>
-                                            <tr role="row">
-                                                <th>ID</th>
-                                                <th>Mã người dùng</th>
-                                                <th>Họ và tên</th>
-                                                <th>Email</th>
-                                                <th>Khóa học</th>
-                                                <th>Trạng thái</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {teachers.map((it, index) => (
-                                                <tr
-                                                    role="row"
-                                                    key={index}
-                                                    className="odd"
-                                                >
-                                                    <td>{it.id}</td>
-                                                    <td>{it.user_code}</td>
-                                                    <td>{it.full_name}</td>
-                                                    <td>{it.email}</td>
-                                                    <td>{it.course?.cate_name}</td>
-                                                    <td>
-                                                        {it.is_active == 1 ? (
-                                                            <i
-                                                                className="fas fa-check-circle"
-                                                                style={{
-                                                                    color: "green",
-                                                                }}
-                                                            ></i>
-                                                        ) : (
-                                                            <i
-                                                                className="fa-solid fa-ban"
-                                                                style={{
-                                                                    color: "red",
-                                                                }}
-                                                            ></i>
-                                                        )}
-                                                    </td>
-
-                                                    <td>
-                                                        <div>
-                                                            <Link
-                                                                to={`/admin/students/edit/${it.user_code}`}
-                                                            >
-                                                                <i className="fas fa-edit"></i>
-                                                            </Link>
-
-                                                            <i
-                                                                className="fas fa-trash ml-6"
-                                                                onClick={() =>
-                                                                    handleDelete(
-                                                                        it.user_code
-                                                                    )
-                                                                }
-                                                                // disabled={
-                                                                //     isLoading
-                                                                // }
-                                                            ></i>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12 col-md-5">
-                                    <div className="dataTables_info">
-                                        Showing 1 to 10 of {teachers.length} entries
-                                    </div>
-                                </div>
-                                <div className="col-sm-12 col-md-7">
-                                    <div className="dataTables_paginate paging_simple_numbers">
-                                        <ul className="pagination">
-                                            <li className="paginate_button page-item previous disabled">
-                                                <a
-                                                    href="#"
-                                                    className="page-link"
-                                                >
-                                                    Previous
-                                                </a>
-                                            </li>
-                                            <li className="paginate_button page-item active">
-                                                <a
-                                                    href="#"
-                                                    className="page-link"
-                                                >
-                                                    1
-                                                </a>
-                                            </li>
-                                            <li className="paginate_button page-item ">
-                                                <a
-                                                    href="#"
-                                                    className="page-link"
-                                                >
-                                                    2
-                                                </a>
-                                            </li>
-                                            <li className="paginate_button page-item ">
-                                                <a
-                                                    href="#"
-                                                    className="page-link"
-                                                >
-                                                    3
-                                                </a>
-                                            </li>
-
-                                            <li className="paginate_button page-item next">
-                                                <a
-                                                    href="#"
-                                                    className="page-link"
-                                                >
-                                                    Next
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <table id="teachersTable" className="display"></table>
                     </div>
                 </div>
             </div>
-    </div>
-  )
-}
+            <Modal
+                title="Xóa giảng viên"
+                description="Bạn có chắc chắn muốn xoá giảng viên này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={modalOpen}
+                onVisible={onModalVisible}
+                onOk={() => mutate(selectedTeacher)}
+            />
+        </>
+    );
+};
 
-export default ListTeacher
+export default ListTeacher;

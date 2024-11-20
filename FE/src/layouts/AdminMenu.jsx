@@ -180,7 +180,7 @@ const AdminMenu = () => {
                 </NavLink>
             </li>
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#classroom" >
+                <a data-bs-toggle="collapse" href="#classroom">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý lớp học</p>
                     <span className="caret" />
@@ -197,8 +197,6 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-
-
                                 to="/admin/classrooms/step"
                                 className={`${styles.menuItem} group`}
                             >
@@ -209,7 +207,7 @@ const AdminMenu = () => {
                 </div>
             </li>
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#schoolroom" >
+                <a data-bs-toggle="collapse" href="#schoolroom">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý phòng học</p>
                     <span className="caret" />
@@ -236,9 +234,8 @@ const AdminMenu = () => {
                 </div>
             </li>
 
-
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#major" >
+                <a data-bs-toggle="collapse" href="#major">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý chuyên ngành</p>
                     <span className="caret" />
@@ -250,7 +247,9 @@ const AdminMenu = () => {
                                 to="/admin/major"
                                 className={`${styles.menuItem} group`}
                             >
-                                <p className="sub-item">Danh sách chuyên ngành</p>
+                                <p className="sub-item">
+                                    Danh sách chuyên ngành
+                                </p>
                             </NavLink>
                         </li>
                         <li>
@@ -258,14 +257,16 @@ const AdminMenu = () => {
                                 to="/admin/major/add"
                                 className={`${styles.menuItem} group`}
                             >
-                                <p className="sub-item">Thêm mới chuyên ngành</p>
+                                <p className="sub-item">
+                                    Thêm mới chuyên ngành
+                                </p>
                             </NavLink>
                         </li>
                     </ul>
                 </div>
             </li>
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#grade" >
+                <a data-bs-toggle="collapse" href="#grade">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý điểm</p>
                     <span className="caret" />
@@ -308,7 +309,7 @@ const AdminMenu = () => {
                 </div>
             </li>
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#wallet" >
+                <a data-bs-toggle="collapse" href="#wallet">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý học phí</p>
                     <span className="caret" />
@@ -328,7 +329,7 @@ const AdminMenu = () => {
             </li>
 
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#categories" >
+                <a data-bs-toggle="collapse" href="#categories">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý danh mục</p>
                     <span className="caret" />
@@ -356,7 +357,7 @@ const AdminMenu = () => {
             </li>
 
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#post" >
+                <a data-bs-toggle="collapse" href="#post">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý bài viết</p>
                     <span className="caret" />
@@ -384,16 +385,16 @@ const AdminMenu = () => {
             </li>
 
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#account" >
+                <a data-bs-toggle="collapse" href="#account">
                     <i className="fas fa-layer-group" />
-                    <p>Quản lý tài khoản</p>
+                    <p>Quản lý sinh viên</p>
                     <span className="caret" />
                 </a>
                 <div className="collapse" id="account">
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/account"
+                                to="/admin/students"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách sinh viên</p>
@@ -401,7 +402,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/account/create"
+                                to="/admin/students/create"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới sinh viên</p>
@@ -412,7 +413,35 @@ const AdminMenu = () => {
             </li>
 
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#subjects" >
+                <a data-bs-toggle="collapse" href="#teachers">
+                    <i className="fas fa-layer-group" />
+                    <p>Quản lý giảng viên</p>
+                    <span className="caret" />
+                </a>
+                <div className="collapse" id="teachers">
+                    <ul className="nav nav-collapse">
+                        <li>
+                            <NavLink
+                                to="/admin/teachers"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Danh sách giảng viên</p>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/admin/teachers/create"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Thêm mới giảng viên</p>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li className="nav-item ">
+                <a data-bs-toggle="collapse" href="#subjects">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý môn học</p>
                     <span className="caret" />
@@ -439,7 +468,7 @@ const AdminMenu = () => {
                 </div>
             </li>
             <li className="nav-item ">
-                <a data-bs-toggle="collapse" href="#attendance" >
+                <a data-bs-toggle="collapse" href="#attendance">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý điểm danh</p>
                     <span className="caret" />
@@ -456,6 +485,25 @@ const AdminMenu = () => {
                         </li>
                     </ul>
                 </div>
+            </li>
+
+            <li className="menu-item">
+                <NavLink
+                    to="/admin/gradesStudent"
+                    className={`${styles.menuItem} group`}
+                >
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm số Student</p>
+                </NavLink>
+            </li>
+            <li className="menu-item">
+                <NavLink
+                    to="/admin/gradesTeacher"
+                    className={`${styles.menuItem} group`}
+                >
+                    <i className="fas fa-th-list text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
+                    <p className="text-[#b9babf]">Quản lý điểm số teacher</p>
+                </NavLink>
             </li>
         </ul>
     );
