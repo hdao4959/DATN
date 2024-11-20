@@ -95,7 +95,7 @@ class DashboardController extends Controller
         try{
              $data = Attendance::select('status',DB::raw('COUNT(*) as count'))
                     ->groupBy('status')->get();
-                    
+
             $result = $data->reduce(function ($carry, $item) {
             $key = "status-attendances";
 
