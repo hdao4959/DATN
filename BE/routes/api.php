@@ -29,6 +29,7 @@ use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
@@ -84,9 +85,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
 
-        
+
         Route::apiResource('teachers', TeacherController::class);
-        
+
         Route::apiResource('students', StudentController::class);
         Route::controller(StudentController::class)->group(function () {
             Route::post('import-students', 'importStudents');
@@ -252,4 +253,11 @@ Route::apiResource('feedback',FeedbackController::class);
 
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
+
+Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
+Route::get('count-room', [DashboardController::class,'getRoomCount']);
+Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
+Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
+Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
+
 
