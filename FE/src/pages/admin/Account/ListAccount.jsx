@@ -206,7 +206,7 @@ const ListAccount = () => {
                     </Link>
                 </div>
                 <div>
-                    <button className="btn btn-success mx-2"> <i className="fa fa-file-import"></i> Import</button>
+                    <button className="btn btn-success mx-2" onClick={() => document.getElementById('importFile').click()}> <i className="fa fa-file-import"></i> Import</button>
                     <button onClick={handleExport} className="btn btn-secondary mx-2"> <i className="fa fa-download"></i> Export</button>
                 </div>
             </div>
