@@ -154,7 +154,11 @@ class StudentController extends Controller
             if (!$student) {
                 return $this->handleInvalidId();
             }
-            return response()->json($student, 200);
+
+            $studentArray = $student->toArray();
+            $studentArray['created_at'] = $student->created_at->toDateTimeString();
+            $studentArray['updated_at'] = $student->updated_at->toDateTimeString();
+            return response()->json($studentArray, 200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
