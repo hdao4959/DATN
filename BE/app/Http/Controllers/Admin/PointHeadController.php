@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Throwable;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -113,6 +114,7 @@ class PointHeadController extends Controller
      */
     public function update(UpdatePointHeadRequest $request, string $cate_code)
     {
+        DB::beginTransaction();
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
@@ -122,6 +124,7 @@ class PointHeadController extends Controller
 
             $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listPointHead) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -136,6 +139,7 @@ class PointHeadController extends Controller
                 }
                 $params['image'] = $fileName;
                 $listPointHead->update($params);
+                DB::commit();
 
                 return response()->json($listPointHead, 201);          
             }
@@ -150,9 +154,11 @@ class PointHeadController extends Controller
      */
     public function destroy(string $cate_code)
     {
+        DB::beginTransaction();
         try {
             $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listPointHead) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -160,6 +166,7 @@ class PointHeadController extends Controller
                     Storage::disk('public')->delete($listPointHead->image);
                 }
                 $listPointHead->delete($listPointHead);
+                DB::commit();
 
                 return response()->json([
                     'message' => 'Xoa thanh cong'

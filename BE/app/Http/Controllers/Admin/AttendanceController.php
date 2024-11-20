@@ -6,6 +6,7 @@ use Throwable;
 use App\Models\Classroom;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Attendance\StoreAttendanceRequest;
@@ -113,15 +114,18 @@ class AttendanceController extends Controller
      */
     public function update(UpdateAttendanceRequest $request, string $id)
     {
+        DB::beginTransaction();
         try {
             $attendances = Attendance::where('id', $id)->lockForUpdate()->first();
             if (!$attendances) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
                 $params = $request->except('_token', '_method');
       
                 $attendances->update($params);
+                DB::commit();
 
                 return response()->json($attendances, 201);          
             }
@@ -136,13 +140,16 @@ class AttendanceController extends Controller
      */
     public function destroy(string $id)
     {
+        DB::beginTransaction();
         try {
             $attendances = Attendance::where('id', $id)->lockForUpdate()->first();
             if (!$attendances) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
                 $attendances->delete($attendances);
+                DB::commit();
 
                 return response()->json([
                     'message' => 'Xoa thanh cong'

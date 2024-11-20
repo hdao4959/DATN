@@ -22,9 +22,15 @@ class DashboardController extends Controller
 
     public function getStudentCountByMajor() {
         try{
-            $data = User::select('major_code',  DB::raw('COUNT(*) as total'))
+            $data = User::with('major')->select('major_code',  DB::raw('COUNT(*) as total'))
                     ->groupBy('major_code')
-                    ->get();
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'major_name' => $item->major->cate_name ?? 'Unknown', // Lấy tên major, nếu không có thì trả về 'Unknown'
+                            'total' => $item->total,
+                        ];
+                    });;
 
             return response()->json( $data);
         }catch(\Exception $e){
@@ -95,7 +101,7 @@ class DashboardController extends Controller
         try{
              $data = Attendance::select('status',DB::raw('COUNT(*) as count'))
                     ->groupBy('status')->get();
-                    
+
             $result = $data->reduce(function ($carry, $item) {
             $key = "status-attendances";
 

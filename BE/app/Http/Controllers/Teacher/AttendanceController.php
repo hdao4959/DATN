@@ -139,7 +139,7 @@ class AttendanceController extends Controller
                                         $schedules = $attendance->schedules->map(function ($schedule) {
                                             return $schedule->date;
                                         });
-
+                                        $schedules = '2024-11-20';
                                         if ($schedules == (Carbon::now()->toDateString())) {
                                             
                                             return [
@@ -207,27 +207,72 @@ class AttendanceController extends Controller
         }
     }
 
+    public function showAll(string $classCode)
+    {
+        try {
+            $attendances = Classroom::where('class_code', $classCode)
+                                    ->with('users', 'schedules')
+                                    ->get()
+                                    ->map(function ($attendance) {
+                                        // Duyệt qua từng user để lấy các `student_code` và `full_name`
+                                        $users = $attendance->users->map(function ($user) {
+                                            return [
+                                                'student_code' => $user->user_code,
+                                                'full_name' => $user->full_name,
+                                            ];
+                                        });
+                                        
+                                        // Duyệt qua từng schedule để lấy `date`
+                                        $schedules = $attendance->schedules->map(function ($schedule) {
+                                            return $schedule->date;
+                                        });
+
+                                        if ($schedules == (Carbon::now()->toDateString())) {
+                                            
+                                            return [
+                                                'users' => $users,
+                                                'class_code' => $attendance->class_code,
+                                                'schedules' => $schedules,
+                                            ];                                                
+                                        } else {
+
+                                            return $this->handleInvalidId();
+                                        }
+                                    });
+            if (!$attendances) {
+
+                return $this->handleInvalidId();
+            } else {
+
+                return response()->json($attendances, 200);                
+            }
+        } catch (\Throwable $th) {
+
+            return $this->handleErrorNotDefine($th);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $classCode)
     {
-        try {
-            $attendances = Attendance::where('class_code', $classCode)->first();
-            if (!$attendances) {
+        // try {
+        //     $attendances = Attendance::where('class_code', $classCode)->first();
+        //     if (!$attendances) {
 
-                return $this->handleInvalidId();
-            } else {
-                $attendances->delete($attendances);
+        //         return $this->handleInvalidId();
+        //     } else {
+        //         $attendances->delete($attendances);
 
-                return response()->json([
-                    'message' => 'Xoa thanh cong'
-                ], 200);            
-            }
-        } catch (Throwable $th) {
+        //         return response()->json([
+        //             'message' => 'Xoa thanh cong'
+        //         ], 200);            
+        //     }
+        // } catch (Throwable $th) {
 
-            return $this->handleErrorNotDefine($th);
-        }
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
     
 }

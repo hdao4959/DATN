@@ -30,6 +30,7 @@ use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
+
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
@@ -194,7 +195,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
         Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
 
-        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+        Route::get('newsletters', [StudentNewsletterController::class, 'index']);
+        Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
+        Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
 
     });
 });
@@ -255,15 +258,15 @@ Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 
 
 
+
+Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
+
+
 Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
 Route::get('count-room', [DashboardController::class,'getRoomCount']);
 Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
 Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
 Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
 
-
-
-
-Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
 
