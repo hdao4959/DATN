@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\FeedbackController;
 
@@ -256,6 +257,14 @@ Route::apiResource('feedback',FeedbackController::class);
 
 
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
+
+
+Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
+Route::get('count-room', [DashboardController::class,'getRoomCount']);
+Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
+Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
+Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
+
 
 
 
