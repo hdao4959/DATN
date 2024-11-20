@@ -34,7 +34,7 @@ const ViewMyAccount = () => {
                     <div className="col-md-4 d-flex justify-content-center align-items-center flex-column">
                         <div className="card-body text-center">
                             <img
-                                src={user.avatar || ""}
+                                src={user.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
                                 alt="User Avatar"
                                 className="img-fluid mb-3"
                                 width={250}
