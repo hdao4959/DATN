@@ -56,6 +56,7 @@ import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
 import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
+import FAQs from "./pages/student/Suport/Suport.jsx";
 
 
 function App() {
@@ -290,6 +291,10 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
+                {
+                    path: "FAQS",
+                    element: <FAQs />
+                }
 
             ],
         },
