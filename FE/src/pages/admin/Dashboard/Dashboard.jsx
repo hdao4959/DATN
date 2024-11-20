@@ -156,7 +156,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className="page-header">
+            {/* <div className="page-header">
                 <h3 className="fw-bold mb-3">Forms</h3>
                 <ul className="breadcrumbs mb-3">
                     <li className="nav-home">
@@ -1083,7 +1083,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 };
