@@ -69,8 +69,8 @@
         </tr>
     </table>
 
-    <p><strong>3. Thời hạn nộp tiền:</strong> Từ ngày <strong>{{ $data['start_date']->format('d/m/Y') }}</strong> 
-        đến trước 24h ngày <strong>{{ $data['due_date']->format('d/m/Y') }}</strong></p>
+    <p><strong>3. Thời hạn nộp tiền:</strong> Từ ngày <strong>{{ $data['start_date'] }}</strong> 
+        đến trước 24h ngày <strong>{{ $data['due_date'] }}</strong></p>
         
 
 
