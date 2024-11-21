@@ -28,5 +28,15 @@ class HandleStep3 extends FormRequest
         ];
     }
 
+    public function messages(){
+        return [
+            'room_code.required' => 'Bạn chưa chọn phòng học!',
+            'room_code.exists' => 'Phòng học này không tồn tại!',
+            'subject_code.required' => 'Bạn chưa chọn môn học!',
+            'subject_code.exists' => 'Môn học này không tồn tại',
+            'course_code.required' => 'Bạn chưa chọn khoá học',
+        ];
+    }
+
     protected $stopOnFirstFailure = true;
 }

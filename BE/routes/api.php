@@ -201,8 +201,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
 
     });
-});
-
 
 // Các route phục vụ cho form
 Route::controller(GetDataForFormController::class)->group(function () {
@@ -216,6 +214,11 @@ Route::controller(GetDataForFormController::class)->group(function () {
     Route::get('/listRoomsForForm', 'listRoomsForForm');
     Route::get('/listSubjectsForForm', 'listSubjectsForForm');
 });
+
+});
+
+
+
 
 Route::get('haha', function () {
     // $array_student_id = User::where(
@@ -247,6 +250,14 @@ Route::get('haha', function () {
     // return response()->json('OK');
 
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
+
+});
+Route::controller(ClassroomController::class)->group(function(){
+    Route::post('handleStep1Test', 'handleStep1Test');
+    Route::post('renderSchedules', 'renderSchedules');
+    Route::post('renderRoomsAndTeachers', 'renderRoomsAndTeachers');
+    Route::post('handleStep2Test', 'handleStep2Test');
+    Route::post('storeTest', 'store');
 
 });
 
