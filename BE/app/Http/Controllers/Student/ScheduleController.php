@@ -88,7 +88,7 @@ class ScheduleController extends Controller
 
             // $schedules = Schedule::with()->where('user_code', $student_code)->get();
 
-            return response()->json($schedules);
+            return response()->json($student_code);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }

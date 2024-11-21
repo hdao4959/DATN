@@ -103,11 +103,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('classrooms', ClassroomController::class);
-        Route::controller(ClassroomController::class)->group(function () {
-            Route::post('classrooms/handle_step1', 'handleStep1');
-            Route::post('classrooms/handle_step2', 'handleStep2');
-            Route::post('classrooms/handle_step3', 'handleStep3');
+
+        Route::controller(ClassroomController::class)->group(function(){
+            Route::post('classrooms/handleStep1', 'handleStep1Test');
+            Route::post('classrooms/renderSchedules', 'renderSchedules');
+            Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
+            Route::post('classrooms/handleStep2', 'handleStep2Test');
+        
         });
+
+        // Route::controller(ClassroomController::class)->group(function () {
+        //     Route::post('classrooms/handle_step1', 'handleStep1');
+        //     Route::post('classrooms/handle_step2', 'handleStep2');
+        //     Route::post('classrooms/handle_step3', 'handleStep3');
+        // });
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
 
         Route::apiResource('newsletters', NewsletterController::class);
@@ -252,14 +261,7 @@ Route::get('haha', function () {
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
 
 });
-Route::controller(ClassroomController::class)->group(function(){
-    Route::post('handleStep1Test', 'handleStep1Test');
-    Route::post('renderSchedules', 'renderSchedules');
-    Route::post('renderRoomsAndTeachers', 'renderRoomsAndTeachers');
-    Route::post('handleStep2Test', 'handleStep2Test');
-    Route::post('storeTest', 'store');
 
-});
 
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
