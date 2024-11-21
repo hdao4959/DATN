@@ -139,7 +139,7 @@ const TeacherLayout = () => {
                                                 >
                                                     My Profile
                                                 </Link>
-                                                <a
+                                                {/* <a
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
@@ -157,7 +157,7 @@ const TeacherLayout = () => {
                                                     href="#"
                                                 >
                                                     Account Setting
-                                                </a>
+                                                </a> */}
                                                 <div className="dropdown-divider" />
                                                 <div
                                                     onClick={Signout}

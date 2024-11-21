@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 
-const CreateAccount = () => {
+const CreateTeacherAccount = () => {
     const {
         register,
         handleSubmit,
@@ -22,7 +22,7 @@ const CreateAccount = () => {
 
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
         mutationFn: (data) => {
-            return api.post("/admin/students", data);
+            return api.post("/admin/teachers", data);
         },
         onSuccess: () => {
             alert("Tạo tài khoản thành công!");
@@ -54,9 +54,7 @@ const CreateAccount = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">
-                                    Tạo tài khoản sinh viên
-                                </div>
+                                <div className="card-title">Tạo tài khoản</div>
                             </div>
                             <div className="card-body">
                                 {/* Dòng 1 */}
@@ -358,7 +356,7 @@ const CreateAccount = () => {
                                     <div className="col-md-6">
                                         <div className="form-group">
                                             <label htmlFor="exampleFormControlSelect1">
-                                                Ngành học
+                                                Chuyên ngành
                                             </label>
                                             <select
                                                 className="form-select"
@@ -368,7 +366,7 @@ const CreateAccount = () => {
                                                 })}
                                             >
                                                 <option value="">
-                                                    Chọn ngành học
+                                                    Chọn chuyên ngành
                                                 </option>
                                                 {majors.map((major) => (
                                                     <option
@@ -443,4 +441,4 @@ const CreateAccount = () => {
     );
 };
 
-export default CreateAccount;
+export default CreateTeacherAccount;

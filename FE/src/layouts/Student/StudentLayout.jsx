@@ -448,7 +448,7 @@ const StudentLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user.avatar}
+                                                src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -466,7 +466,7 @@ const StudentLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src={user.avatar}
+                                                            src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />
@@ -502,7 +502,7 @@ const StudentLayout = () => {
                                                 >
                                                     My Profile
                                                 </Link>
-                                                <a
+                                                {/* <a
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
@@ -520,7 +520,7 @@ const StudentLayout = () => {
                                                     href="#"
                                                 >
                                                     Account Setting
-                                                </a>
+                                                </a> */}
                                                 <div className="dropdown-divider" />
                                                 <div
                                                     onClick={Signout}

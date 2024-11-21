@@ -57,8 +57,8 @@ class SendEmailController extends Controller
             ->whereHas('user', function ($query) use ($userCodes) {
                 $query->whereIn('user_code', $userCodes);
             })
-            // ->distinct('user_code')
-            // ->where('status', 'pending')
+            ->distinct('user_code')
+            ->where('status', 'pending')
             ->get();
 
         if ($fees->isEmpty()) {
@@ -74,6 +74,7 @@ class SendEmailController extends Controller
                     'semester' => $fee->semester,
                     'amount' => $fee->amount,
                     'due_date' => $fee->due_date,
+                    'start_date' => $fee->start_date,
                 ]));
             } catch (\Exception $e) {
                 Log::error('Error dispatching email job for Fee ID: ' . $fee->id . '. Error: ' . $e->getMessage());
