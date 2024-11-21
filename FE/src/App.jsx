@@ -57,6 +57,11 @@ import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 
+import TeacherAddPost from "./pages/teacher/Post/AddPost";
+import TeacherPostList from "./pages/teacher/Post/PostList";
+import TeacherUpdatePost from "./pages/teacher/Post/UpdatePost";
+import StudentNews from "./pages/student/Post/page.jsx";
+import StudentDetailNews from "./pages/student/Post/detail.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -262,6 +267,19 @@ function App() {
                     path: "grades",
                     element: <ShowGradesTeacher />,
                 },
+                {
+                    path: "post",
+                    element: <TeacherPostList />,
+                },
+                {
+                    path: "post/add",
+                    element: <TeacherAddPost />,
+                },
+                {
+                    path: "post/:id/edit",
+                    element: <TeacherUpdatePost />,
+                },
+
             ],
         },
         {
@@ -289,6 +307,14 @@ function App() {
                 {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
+                },
+                {
+                    path: "news",
+                    element: <StudentNews />,
+                },
+                {
+                    path: "news/:id/detail",
+                    element: <StudentDetailNews />,
                 },
 
             ],
