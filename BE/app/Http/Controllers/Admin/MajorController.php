@@ -115,9 +115,11 @@ class MajorController extends Controller
      */
     public function update(UpdateMajorRequest $request, string $cate_code)
     {
+        DB::beginTransaction();
         try {
             $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listMajor) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -132,6 +134,7 @@ class MajorController extends Controller
                 }
                 $params['image'] = $fileName;
                 $listMajor->update($params);
+                DB::commit();
 
                 return response()->json($listMajor, 201);
             }
@@ -146,9 +149,11 @@ class MajorController extends Controller
      */
     public function destroy(string $cate_code)
     {
+        DB::beginTransaction();
         try {
             $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listMajor) {
+                DB::rollBack();
 
                 return $this->handleInvalidId();
             } else {
@@ -156,6 +161,7 @@ class MajorController extends Controller
                     Storage::disk('public')->delete($listMajor->image);
                 }
                 $listMajor->delete($listMajor);
+                DB::commit();
 
                 return response()->json([
                     'message' => 'Xóa thành công'

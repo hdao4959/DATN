@@ -19,6 +19,7 @@ class Subject extends Model
         're_study_fee',
         'credit_number',
         'total_sessions',
+        'assessments',
         'exam_day',
         'description',
         'image',
@@ -26,6 +27,9 @@ class Subject extends Model
         'semester_code',
         'major_code',
         'narrow_major_code',
+    ];
+    protected $casts = [
+        'assessments' => 'array',
     ];
 
     public function major(){

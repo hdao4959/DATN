@@ -16,8 +16,7 @@ class ScoreController extends Controller
     public function bangDiemTheoKy(Request $request)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'student04';
+            $userCode = $request->user()->user_code;
             $semesterCode = $request->input('search');
             $listSemester = Category::where('type', 'semester')
                                     ->where('is_active', '1')
@@ -99,8 +98,7 @@ class ScoreController extends Controller
     public function bangDiem(Request $request)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'student04';
+            $userCode = $request->user()->user_code;
             $classRooms = ClassroomUser::where('user_code', $userCode)
                             ->with(['classroom' => function ($query) {
                                 $query->select('class_code', 'class_name', 'score', 'subject_code')

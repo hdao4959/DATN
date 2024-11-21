@@ -103,11 +103,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('classrooms', ClassroomController::class);
-        Route::controller(ClassroomController::class)->group(function () {
-            Route::post('classrooms/handle_step1', 'handleStep1');
-            Route::post('classrooms/handle_step2', 'handleStep2');
-            Route::post('classrooms/handle_step3', 'handleStep3');
+
+        Route::controller(ClassroomController::class)->group(function(){
+            Route::post('classrooms/handleStep1', 'handleStep1Test');
+            Route::post('classrooms/renderSchedules', 'renderSchedules');
+            Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
+            Route::post('classrooms/handleStep2', 'handleStep2Test');
+        
         });
+
+        // Route::controller(ClassroomController::class)->group(function () {
+        //     Route::post('classrooms/handle_step1', 'handleStep1');
+        //     Route::post('classrooms/handle_step2', 'handleStep2');
+        //     Route::post('classrooms/handle_step3', 'handleStep3');
+        // });
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
 
         Route::apiResource('newsletters', NewsletterController::class);
@@ -167,9 +176,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);
+        Route::get('/attendances/edit/{classCode}', [TeacherAttendanceController::class, 'edit']);
         Route::post('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);
         Route::put('/attendances/{classCode}', [TeacherAttendanceController::class, 'update']);
-        Route::delete('/attendances/{classCode}', [TeacherAttendanceController::class, 'destroy']);
+        Route::get('/attendances/showAllAttendance/{classCode}', [TeacherAttendanceController::class, 'showAllAttendance']);
 
         Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
         Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);
@@ -195,11 +205,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('scoreTableByPeriod', [StudentScoreController::class, 'bangDiemTheoKy']);
         Route::get('scoreTable', [StudentScoreController::class, 'bangDiem']);
 
-        Route::get('showNewsletter', [StudentNewsletterController::class, 'showNewsletter']);
+        Route::get('newsletters', [StudentNewsletterController::class, 'index']);
+        Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
+        Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
 
     });
-});
-
 
 // Các route phục vụ cho form
 Route::controller(GetDataForFormController::class)->group(function () {
@@ -213,6 +223,11 @@ Route::controller(GetDataForFormController::class)->group(function () {
     Route::get('/listRoomsForForm', 'listRoomsForForm');
     Route::get('/listSubjectsForForm', 'listSubjectsForForm');
 });
+
+});
+
+
+
 
 Route::get('haha', function () {
     // $array_student_id = User::where(
@@ -246,6 +261,7 @@ Route::get('haha', function () {
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
 
 });
+
 
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);

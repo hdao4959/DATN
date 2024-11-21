@@ -56,7 +56,17 @@ import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
 import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
+import FAQs from "./pages/student/Suport/Suport.jsx";
 
+import TeacherAddPost from "./pages/teacher/Post/AddPost";
+import TeacherPostList from "./pages/teacher/Post/PostList";
+import TeacherUpdatePost from "./pages/teacher/Post/UpdatePost";
+import StudentNews from "./pages/student/Post/page.jsx";
+import StudentDetailNews from "./pages/student/Post/detail.jsx";
+
+import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
+import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
+import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -81,20 +91,28 @@ function App() {
                     element: <Dashboard />,
                 },
                 {
-                    path: "account",
+                    path: "students",
                     element: <ListAccount />,
                 },
-                // {
-                //     path: "teachers", 
-                //     element: <ListTeacher/>,
-                // },
                 {
-                    path: "account/create",
+                    path: "students/create",
                     element: <CreateAccount />,
                 },
                 {
-                    path: "account/details/:user_code",
+                    path: "students/:user_code",
                     element: <ViewMyAccount />,
+                },
+                {
+                    path: "teachers",
+                    element: <ListTeacher />,
+                },
+                {
+                    path: "teachers/create",
+                    element: <CreateTeacherAccount />,
+                },
+                {
+                    path: "teachers/:user_code",
+                    element: <TeacherAccountDetails />,
                 },
                 {
                     path: "major",
@@ -262,16 +280,27 @@ function App() {
                     path: "grades",
                     element: <ShowGradesTeacher />,
                 },
+                {
+                    path: "post",
+                    element: <TeacherPostList />,
+                },
+                {
+                    path: "post/add",
+                    element: <TeacherAddPost />,
+                },
+                {
+                    path: "post/:id/edit",
+                    element: <TeacherUpdatePost />,
+                },
+
             ],
         },
         {
             path: "/student",
             element: (
-
                 <CheckRole>
                     <StudentLayout />
                 </CheckRole>
-
             ),
             children: [
                 {
@@ -290,7 +319,19 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
+                {
+                    path: "news",
+                    element: <StudentNews />,
+                },
+                {
+                    path: "news/:id/detail",
+                    element: <StudentDetailNews />,
+                },
 
+                {
+                    path: "FAQS",
+                    element: <FAQs />
+                }
             ],
         },
         {

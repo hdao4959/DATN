@@ -41,10 +41,9 @@ class TeacherController extends Controller
         ],409);
     }
 
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $perPage = $request->input('per_page', 10);
             $teachers = User::where([
                 'role' => '2'
             ])->select(
@@ -53,7 +52,8 @@ class TeacherController extends Controller
                 'email',
                 'sex',
                 'is_active'
-            )->paginate($perPage);;
+            )->paginate(10);
+
             return response()->json($teachers, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -82,6 +82,7 @@ class TeacherController extends Controller
 
             $new_code = $newest_teacher_code ? (int) substr($newest_teacher_code, 2) : 0;
             $new_teacher_code = "TC" . str_pad($new_code + 1, 5, 0, STR_PAD_LEFT);
+            
             $data['user_code'] = $new_teacher_code;
             $data['role'] = '2';
             User::create($data);
@@ -125,13 +126,8 @@ class TeacherController extends Controller
                     'major_code',
                     'created_at',
                     'updated_at'
-                )->first();
-
-
-                $teacherArray = $teacher->toArray();
-                $teacherArray['created_at'] = $teacher->created_at->toDateTimeString();
-                $teacherArray['updated_at'] = $teacher->updated_at->toDateTimeString();
-            return response()->json($teacherArray,200);
+                )->get();
+            return response()->json($teacher);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -148,7 +144,7 @@ class TeacherController extends Controller
         try {
             $data = $request->validated();
 
-            $teacher = User::where('user_code', $teacher_code)->lockForUpdate()->first();
+            $teacher = User::where('user_code', $teacher_code)->first();
 
             if(!$teacher){
                 return $this->handleInvalidId();
