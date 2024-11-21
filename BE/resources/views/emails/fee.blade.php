@@ -39,14 +39,14 @@
 <body>
     <h1>THÔNG BÁO NỘP HỌC PHÍ</h1>
     <p><i>(Sinh viên chuyển ngành, chuyển cơ sở và đã hoàn thành học phí vui lòng bỏ qua thông báo này)</i></p>
-    
+
     <p><strong>Thân gửi sinh viên:</strong> {{ $data['full_name'] }}</p>
     <p><strong>Mã số sinh viên:</strong> {{ $data['user_code'] }}</p>
-    
+
     <p>Theo kế hoạch của phòng Tổ chức & Quản lý Đào tạo. Trường Cao đẳng F-Education - Cơ sở Hà Nội gửi đến bạn thông tin học phí cần nộp như sau:</p>
 
     <h2>Thông tin học phí</h2>
-    
+
     <table>
         <tr>
             <th>Nội dung</th>

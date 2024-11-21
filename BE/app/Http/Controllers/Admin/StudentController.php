@@ -252,4 +252,20 @@ class StudentController extends Controller
     {
         return Excel::download(new StudentExport, 'students.xlsx');
     }
+
+    public function changeMajorStudent(int $id , Request $request){
+        try{
+            $user = User::find($id);
+            $user->update([
+                'semester_code' => $request->semester_code,
+                'major_code'    => $request->major_code
+            ]);
+
+            return response()->json(['message' => 'Chuyển chuyên ngành thành công',
+                                            'student'=>$user]);
+
+        }catch(\Throwable $th){
+            return response()->json(['message' => $th->getMessage()]);
+        }
+    }
 }

@@ -44,8 +44,7 @@ use App\Http\Controllers\Student\ClassroomController as StudentClassroomControll
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
-
-
+use App\Http\Controllers\Student\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('import-students', 'importStudents');
             Route::get('export-students', 'exportStudents');
         });
+
 
         Route::get('/subjects', [SubjectController::class, 'index']);
         Route::get('/subjects/{id}', [SubjectController::class, 'show']);
@@ -253,18 +253,26 @@ Route::apiResource('feedback',FeedbackController::class);
 
 
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
-
-
-
-
 Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
+// DashboardAdmin
+Route::get('count-room',        [DashboardController::class,'getRoomCount']);
+Route::get('count-student',     [DashboardController::class,'getStudentCountByMajor']);
+Route::get('status-fee-date',   [DashboardController::class,'getStatusFeesByDate']);
+Route::get('status-fee-all',    [DashboardController::class,'getStatusFeesAll']);
+Route::get('status-attendances',[DashboardController::class,'getStatusAttendances']);
+// Admin
+Route::post('students/change-major/{id}', [StudentController::class,'changeMajorStudent']);
 
-Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
-Route::get('count-room', [DashboardController::class,'getRoomCount']);
-Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
-Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
-Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
+
+// Student
+Route::post('services/change-major/{user_code}',            [ServiceController::class,'changeMajor']);
+Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class,'provideScoreboard']);
+Route::post('services/change-info/{user_code}',             [ServiceController::class,'ChangeInfo']);
+Route::post('services/provide-student-card/{user_code}',    [ServiceController::class,'provideStudentCard']);
+Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class,'DropOutOfSchool']);
+
+
 
 
 
