@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('notifications', [StudentNewsletterController::class, 'showNoti']);
 
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
@@ -199,7 +200,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters', [StudentNewsletterController::class, 'index']);
         Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
-
+        
     });
 });
 
