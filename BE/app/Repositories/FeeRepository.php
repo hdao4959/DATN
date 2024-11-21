@@ -37,7 +37,7 @@ class FeeRepository implements FeeRepositoryInterface {
         ->select('id', 'full_name','user_code', 'semester_code')
         ->get();
 
-        
+
         foreach ($students as $stu) {
 
             $nextSemester = $stu->semester->value + 1;
@@ -65,10 +65,7 @@ class FeeRepository implements FeeRepositoryInterface {
 
             $fee = Fee::create($feeData);
 
-
             // $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');
-
-
             //  Wallet::query()
             // ->where('user_id',$fee->user_id)
             // ->update(['total'=>$totalFees]);

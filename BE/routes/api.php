@@ -44,8 +44,7 @@ use App\Http\Controllers\Student\ClassroomController as StudentClassroomControll
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
-
-
+use App\Http\Controllers\Student\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('export-students', 'exportStudents');
         });
 
+
         Route::get('/subjects', [SubjectController::class, 'index']);
         Route::get('/subjects/{id}', [SubjectController::class, 'show']);
         Route::post('/subjects', [SubjectController::class, 'store']);
@@ -104,11 +104,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('classrooms', ClassroomController::class);
-        Route::controller(ClassroomController::class)->group(function () {
-            Route::post('classrooms/handle_step1', 'handleStep1');
-            Route::post('classrooms/handle_step2', 'handleStep2');
-            Route::post('classrooms/handle_step3', 'handleStep3');
+
+        Route::controller(ClassroomController::class)->group(function(){
+            Route::post('classrooms/handleStep1', 'handleStep1Test');
+            Route::post('classrooms/renderSchedules', 'renderSchedules');
+            Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
+            Route::post('classrooms/handleStep2', 'handleStep2Test');
+        
         });
+
+        // Route::controller(ClassroomController::class)->group(function () {
+        //     Route::post('classrooms/handle_step1', 'handleStep1');
+        //     Route::post('classrooms/handle_step2', 'handleStep2');
+        //     Route::post('classrooms/handle_step3', 'handleStep3');
+        // });
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
 
         Route::apiResource('newsletters', NewsletterController::class);
@@ -202,8 +211,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
         
     });
-});
-
 
 // Các route phục vụ cho form
 Route::controller(GetDataForFormController::class)->group(function () {
@@ -217,6 +224,11 @@ Route::controller(GetDataForFormController::class)->group(function () {
     Route::get('/listRoomsForForm', 'listRoomsForForm');
     Route::get('/listSubjectsForForm', 'listSubjectsForForm');
 });
+
+});
+
+
+
 
 Route::get('haha', function () {
     // $array_student_id = User::where(
@@ -251,24 +263,33 @@ Route::get('haha', function () {
 
 });
 
+
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
 Route::apiResource('feedback',FeedbackController::class);
 
 
 Route::get('send-email', [SendEmailController::class,'sendMailFee']);
-
-
-
-
 Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
+// DashboardAdmin
+Route::get('count-room',        [DashboardController::class,'getRoomCount']);
+Route::get('count-student',     [DashboardController::class,'getStudentCountByMajor']);
+Route::get('status-fee-date',   [DashboardController::class,'getStatusFeesByDate']);
+Route::get('status-fee-all',    [DashboardController::class,'getStatusFeesAll']);
+Route::get('status-attendances',[DashboardController::class,'getStatusAttendances']);
+// Admin
+Route::post('students/change-major/{id}', [StudentController::class,'changeMajorStudent']);
 
-Route::get('count-student', [DashboardController::class,'getStudentCountByMajor']);
-Route::get('count-room', [DashboardController::class,'getRoomCount']);
-Route::get('status-fee-date', [DashboardController::class,'getStatusFeesByDate']);
-Route::get('status-fee-all', [DashboardController::class,'getStatusFeesAll']);
-Route::get('status-attendances', [DashboardController::class,'getStatusAttendances']);
+
+// Student
+Route::post('services/change-major/{user_code}',            [ServiceController::class,'changeMajor']);
+Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class,'provideScoreboard']);
+Route::post('services/change-info/{user_code}',             [ServiceController::class,'ChangeInfo']);
+Route::post('services/provide-student-card/{user_code}',    [ServiceController::class,'provideStudentCard']);
+Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class,'DropOutOfSchool']);
+
+
 
 
 

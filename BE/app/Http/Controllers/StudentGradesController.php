@@ -6,6 +6,7 @@ use App\Models\Grades;
 use App\Http\Requests\UpdateGradesRequest;
 use App\Models\ClassRoom;
 use App\Models\Subject;
+use App\Models\User;
 use App\Repositories\Contracts\GradeRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -16,25 +17,25 @@ use Illuminate\Support\Facades\Auth;
 class StudentGradesController extends Controller
 {
     public function index(Request $request){
-   
+
             try {
-                $user = Auth::user(); 
+                $user = Auth::user();
                 // $studentCode = $user->user_code;
                 $studentCode = 'student04';
                 $classes = DB::table('classroom_user')
                     ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
                     ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
-                    ->where('classroom_user.user_code', $studentCode) 
+                    ->where('classroom_user.user_code', $studentCode)
                     ->select('classrooms.class_code', 'classrooms.class_name', 'classrooms.score', 'subjects.subject_name', 'subjects.subject_code')
                     ->get();
-    
+
                 if ($classes->isEmpty()) {
                     return response()->json([
                         'message' => 'Sinh viên này chưa tham gia lớp học nào',
                         'error' => true,
                     ]);
                 }
-    
+
                 $classScores = [];
                 foreach ($classes as $class) {
                     $scoreJson = $class->score;
@@ -53,7 +54,7 @@ class StudentGradesController extends Controller
                             }
                         }
                     }
-            
+
                     $classScores[] = [
                         'class_code' => $class->class_code,
                         'class_name' => $class->class_name,
@@ -62,7 +63,7 @@ class StudentGradesController extends Controller
                         'score' => $studentScore ?? [],
                     ];
                 }
-    
+
                 return response()->json([
                     'message' => 'Lấy thông tin lớp và điểm thành công',
                     'error' => false,
@@ -75,16 +76,18 @@ class StudentGradesController extends Controller
                 ]);
             }
             }
-    
+
 
 
     public function create()
     {
         //
     }
-    
+
     public function show(Grades $grades) {}
 
+
+    
     // public function getByParam(Request $request){
     //     try{
     //         $grade = $this->gradeRepository->getByParam($request);
@@ -107,10 +110,11 @@ class StudentGradesController extends Controller
 
     //  public function update(UpdateGradesRequest $request, $classCode)
     //  {
-        
+
     //  }
-     
-     
+
+
+
 
 
 }

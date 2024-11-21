@@ -126,6 +126,24 @@ const TeacherMenu = () => {
                                 </ul>
                             </div>
                         </li>
+                        <li className="nav-item">
+                            <a data-bs-toggle="collapse" href="#post">
+                                <i className="fas fa-th-list" />
+                                <p>Bài Viết</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="post">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink to="/teacher/post" className={`${styles.menuItem} group`}>
+                                            <p className="sub-item">
+                                                Bài Viết
+                                            </p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         <li className="nav-item  submenu">
                             <a data-bs-toggle="collapse" href="#forms">
                                 <i className="fas fa-pen-square" />

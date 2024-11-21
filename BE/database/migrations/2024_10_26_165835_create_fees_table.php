@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('due_date');
             $table->enum('status', ['pending','paid','unpaid'])->default('pending');
+            // $table->unique(['user_id','semester']);
             $table->timestamps();
         });
     }
