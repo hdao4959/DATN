@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
-use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\isEmpty;
 
 class ClassroomController extends Controller
 {
@@ -64,6 +62,9 @@ class ClassroomController extends Controller
             $teacher_code = request()->user()->user_code;
 
             $classroom = Classroom::with( [
+                'subject' => function($query){
+                    $query->select('subject_code', 'subject_name', 'credit_number', 'total_sessions', 'description', 'semester_code', 'major_code' );
+                },
                 'subject.semester' => function($query){
                     $query->select('id','cate_code', 'cate_name');
                 },
@@ -119,23 +120,7 @@ class ClassroomController extends Controller
         }
     }
 
-    public function listSchedules(string $classcode){
-        $teacher_code = request()->user()->user_code;
-        $class_code = Classroom::where([
-            'class_code' => $classcode, 
-            'user_code' => $teacher_code
-        ])->pluck('class_code')->first();
 
-        $list_schedules = Schedule::with( 
-           ['room',
-           'session'])
-        ->where('class_code', $class_code)
-        ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
-            return response()->json($list_schedules);
-        
-
-
-    }
     /**
      * Update the specified resource in storage.
      */
