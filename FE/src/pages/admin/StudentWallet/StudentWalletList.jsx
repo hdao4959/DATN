@@ -162,13 +162,15 @@ const StudentWalletList = () => {
     useEffect(() => {
         const handleGetSelected = async () => {
             const selectedUserCodes = getSelectedUserCodes();
-            console.log(selectedUserCodes);
+            if (selectedUserCodes.length == 0) {
+                return toast.error('Vui lòng chọn sinh viên muốn gửi mail')
+            }
             await api.get(`/send-email2`, {
                 params: { UserCode: selectedUserCodes },
             });
             
         };
-
+        
         $('#getSelectedButton').off('click').on('click', handleGetSelected);
     }, []);
 
@@ -185,10 +187,9 @@ const StudentWalletList = () => {
     return (
         <>
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Học phí sinh viên</h4>
-                    <button id="getSelectedButton">Gửi mail</button>
-
+                    <button className='btn btn-primary' id="getSelectedButton"><i class="fa fa-paper-plane"></i> Gửi mail</button>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">

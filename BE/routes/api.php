@@ -63,6 +63,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
+Route::get('/students/{student_code}', [StudentController::class, 'show']);
 
 Route::apiResource('teachers', TeacherController::class);
 
