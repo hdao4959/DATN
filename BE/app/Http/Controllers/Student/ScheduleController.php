@@ -1,12 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Student;
-
-use Throwable;
-use Illuminate\Http\Request;
 use App\Models\ClassroomUser;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Classroom;
 use App\Models\Schedule;
 
 class ScheduleController extends Controller
@@ -84,13 +81,47 @@ class ScheduleController extends Controller
 
     public function index(){
         try {
+
             $student_code = request()->user()->user_code;
 
-            // $schedules = Schedule::with()->where('user_code', $student_code)->get();
+            $classroom_codes = ClassroomUser::where('user_code', $student_code)->pluck('class_code');
 
-            return response()->json($student_code);
+            if(!$classroom_codes){
+                return response()->json([
+                    'status'=> false,
+                    'message' => 'Không có lớp học nào'
+                ],200);
+            }
+            
+            $schedules = Schedule::whereIn('class_code', $classroom_codes)
+            ->where('date', '>=', now()->toDateString())
+            ->get();
+
+            return response()->json($schedules,200);
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
+    }
+
+    public function schedulesOfClassroom(string $class_code){
+
+        $student_code = request()->user()->user_code;
+
+        $classroom = Classroom::whereHas('users' , function($query) use ($student_code){
+            $query->where('users.user_code', $student_code);
+        })->firstWhere([
+            'class_code' => $class_code
+        ]);
+
+        if(!$classroom){
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền truy cập!'
+            ],403);
+        }
+
+        $schedules = Schedule::where('class_code', $classroom->class_code)->get();
+        return response()->json($schedules,200);
     }
 }

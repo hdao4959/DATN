@@ -2,7 +2,8 @@ import { Link, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import StudentMenu from "./StudentMenu";
 import "/src/css/sidebar.css";
-
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../config/axios";
 const StudentLayout = () => {
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : null;
@@ -11,6 +12,14 @@ const StudentLayout = () => {
         var accessToken = token.access_token;
         console.log("Access Token:", accessToken);
     }
+    const { data: notifications, refetch } = useQuery({
+        queryKey: ["LIST_NOTI"],
+        queryFn: async () => {
+            const res = await api.get("/notifications");
+            return res.data;
+        },
+    });
+    // console.log(notifications);
 
     const Signout = async () => {
         try {
@@ -246,7 +255,7 @@ const StudentLayout = () => {
                                         aria-expanded="false"
                                     >
                                         <i className="fa fa-bell" />
-                                        <span className="notification">4</span>
+                                        <span className="notification">{notifications?.count || 0}</span>
                                     </a>
                                     <ul
                                         className="dropdown-menu notif-box animated fadeIn"
@@ -254,73 +263,27 @@ const StudentLayout = () => {
                                     >
                                         <li>
                                             <div className="dropdown-title">
-                                                You have 4 new notification
+                                                You have {notifications?.count || 0} new notification
                                             </div>
                                         </li>
                                         <li>
                                             <div className="notif-scroll scrollbar-outer">
                                                 <div className="notif-center">
-                                                    <a href="#">
-                                                        <div className="notif-icon notif-primary">
-                                                            <i className="fa fa-user-plus" />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="block">
-                                                                {" "}
-                                                                New user
-                                                                registered{" "}
-                                                            </span>
-                                                            <span className="time">
-                                                                5 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-icon notif-success">
-                                                            <i className="fa fa-comment" />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="block">
-                                                                Rahmad commented
-                                                                on Admin
-                                                            </span>
-                                                            <span className="time">
-                                                                12 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-img">
-                                                            <img
-                                                                src="../assets/img/profile2.jpg"
-                                                                alt="Img Profile"
-                                                            />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="block">
-                                                                Reza send
-                                                                messages to you
-                                                            </span>
-                                                            <span className="time">
-                                                                12 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-icon notif-danger">
-                                                            <i className="fa fa-heart" />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="block">
-                                                                {" "}
-                                                                Farrah liked
-                                                                Admin{" "}
-                                                            </span>
-                                                            <span className="time">
-                                                                17 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
+                                                    {notifications?.data?.map((notification) => (
+                                                        <a href="#" key={notification.code}>
+                                                            <div className="notif-icon notif-primary">
+                                                                <i className="fa fa-user-plus" />
+                                                            </div>
+                                                            <div className="notif-content">
+                                                                <span className="block">
+                                                                    {notification.title}
+                                                                </span>
+                                                                <span className="time">
+                                                                    {new Date(notification.created_at).toLocaleString()}
+                                                                </span>
+                                                            </div>
+                                                        </a>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </li>

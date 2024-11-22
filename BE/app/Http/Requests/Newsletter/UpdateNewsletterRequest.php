@@ -26,13 +26,13 @@ class UpdateNewsletterRequest extends FormRequest
         return [
             'code' => 'required|regex:/^[^<>{}]*$/|unique:newsletters,code,' . $this->route('newsletter') . ',code',
             'title' => 'required|max:255|regex:/^[^<>{}]*$/',
-            'tags' => 'regex:/^[^<>{}]*$/',
+            // 'tags' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'regex:/^[^<>{}]*$/',
             'type' => 'required|regex:/^[^<>{}]*$/',
             'order' => 'regex:/^[^<>{}]*$/',
             'is_active' => 'regex:/^[^<>{}]*$/',
-            'notification_object' => 'regex:/^[^<>{}]*$/',
+            // 'notification_object' => 'regex:/^[^<>{}]*$/',
             'user_code' => 'regex:/^[^<>{}]*$/',
             'cate_code' => 'regex:/^[^<>{}]*$/'
         ];
@@ -47,7 +47,7 @@ class UpdateNewsletterRequest extends FormRequest
             'title.required' => 'Bạn chưa nhập Title bản tin',
             'title.max' => 'Title bản tin không quá 255 kí tự',
             'title.regex' => 'Title bản tin không chứa kí tự đặc biệt',
-            'tags.regex' => 'Nhãn bản tin không chứa kí tự đặc biệt',
+            // 'tags.regex' => 'Nhãn bản tin không chứa kí tự đặc biệt',
             'image.image' => 'File phải là ảnh',
             'image.mimes' => 'File ảnh phải có định dạng jpeg, png, jpg, gif, hoặc svg.',
             'description.regex' => 'Mô tả không chứa kí tự đặc biệt',
@@ -55,7 +55,7 @@ class UpdateNewsletterRequest extends FormRequest
             'type.regex' => 'Kiểu bản tin không chứa kí tự đặc biệt',
             'order.regex' => 'Thứ tự bản tin không chứa kí tự đặc biệt',
             'is_active.regex' => 'Trạng thái bản tin không chứa kí tự đặc biệt',
-            'notification_object.regex' => 'Đối tượng bản tin không chứa kí tự đặc biệt',
+            // 'notification_object.regex' => 'Đối tượng bản tin không chứa kí tự đặc biệt',
             'user_code.regex' => 'Tên tác giả bản tin không chứa kí tự đặc biệt',
             'cate_code.regex' => 'Chuyên mục bản tin không chứa kí tự đặc biệt'
         ];
