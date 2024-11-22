@@ -63,7 +63,6 @@ import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.j
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
 import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
 
-
 function App() {
     const router = createBrowserRouter([
         {
@@ -95,7 +94,7 @@ function App() {
                     element: <CreateAccount />,
                 },
                 {
-                    path: "students/:user_code",
+                    path: "account/:user_code",
                     element: <ViewMyAccount />,
                 },
                 {
@@ -335,8 +334,8 @@ function App() {
 
                 {
                     path: "FAQS",
-                    element: <FAQs />
-                }
+                    element: <FAQs />,
+                },
             ],
         },
         {
