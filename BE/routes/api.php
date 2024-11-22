@@ -111,7 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('classrooms/renderSchedules', 'renderSchedules');
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
-        
+
         });
 
         // Route::controller(ClassroomController::class)->group(function () {
@@ -198,7 +198,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/classrooms', [StudentClassroomController::class, 'index']);
         Route::get('/classrooms/{class_code}', [StudentClassroomController::class, 'show']);
 
-        
+
         Route::get('schedules', [StudentScheduleController::class, 'index']);
         Route::get('/classrooms/{class_code}/schedules', [StudentScheduleController::class, 'schedulesOfClassroom']);
 
@@ -213,7 +213,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters', [StudentNewsletterController::class, 'index']);
         Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
-        
+
     });
 
 // Các route phục vụ cho form
@@ -277,7 +277,7 @@ Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
 // DashboardAdmin
-Route::get('count-room',        [DashboardController::class,'getRoomCount']);
+Route::get('count-info',        [DashboardController::class,'getCountInfo']);
 Route::get('count-student',     [DashboardController::class,'getStudentCountByMajor']);
 Route::get('status-fee-date',   [DashboardController::class,'getStatusFeesByDate']);
 Route::get('status-fee-all',    [DashboardController::class,'getStatusFeesAll']);
