@@ -5,10 +5,52 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
+    
+    public function getAllServies(Request $request){
+        try{
+            $data = Service::query();
+
+            if($request['status']){
+                $data->where('status', $request['status']);
+            }
+
+            $data->paginate(25);
+            return response()->json($data);
+        }catch(\Throwable $th){
+            return response()->json(['message'=>$th->getMessage()]);
+        }
+    }
+
+    public function changeStatus(string $user_code, Request $request){
+          try{
+              $message = "";
+              $status = $request->status;
+              $reason  = $request->reason;
+              $user = User::where('user_code',$user_code);
+            // "pending","approved","rejected"
+              if($status == "approved"){
+                  $message = "Đã duyệt";
+              }
+
+              if($status == "rejected"){
+                  $message = "Đã từ chối";
+              }
+
+              $user->update([
+                'status'=> $request->status,
+                'reason'=> $reason
+              ]);
+
+              return response()->json(['message' => $message,'reason' => $reason ]);
+          }catch(\Throwable $th){
+              return response()->json(['message' => $th->getMessage()]);
+          }
+    }
     public function changeMajor(string $user_code, Request $request){
 
       try{
@@ -94,4 +136,5 @@ class ServiceController extends Controller
             return response()->json(['message'=>$th->getMessage()]);
           }
     }
+
 }

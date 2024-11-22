@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendEmailJob;
+use App\Jobs\SendEmailServiceJob;
 use App\Models\Fee;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,8 +21,6 @@ class SendEmailController extends Controller
         foreach ($fees as $fee) {
             try {
                 // return response()->json( ['message' => 'Emails dispatched', 'data' => $fee['user']['email']]);
-
-
                 dispatch(new SendEmailJob([
                     'email' => $fee->user->email,
                     'full_name' => $fee->user->full_name,
@@ -82,5 +81,20 @@ class SendEmailController extends Controller
         }
 
         return response()->json(['message' => 'Đã gửi email thành công', 'data' => $fees]);
+    }
+
+
+    public function sendMailServices(){
+
+        try{
+            dispatch(new SendEmailServiceJob([
+
+            ]));
+        }catch(\Exception $e){
+            Log::error('Error dispatching email job for Fee ID: . Error: ' . $e->getMessage());
+        }
+
+
+        return response()->json(['message' => 'Đã gửi email thành công', 'data' => '']);
     }
 }
