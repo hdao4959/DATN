@@ -1,24 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
-import { ReactDOM } from 'react-dom/client';
+import React, { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import { ReactDOM } from "react-dom/client";
 import { Link } from "react-router-dom";
-import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
+import {
+    QueryClient,
+    QueryClientProvider,
+    useMutation,
+    useQuery,
+} from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
-import 'datatables.net-dt/css/dataTables.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import ShowGrades from '../Grades/pages';
-import ShowAttendance from '../Attendance/page';
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import ShowGrades from "../Grades/pages";
+import ShowAttendance from "../Attendance/page";
 const ClassRoomsList = () => {
     const accessToken = getToken();
     const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
     const queryClient = new QueryClient();
-    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] = useState(null);
-    const [selectedClassCodeForAttendances, setSelectedClassCodeForAttendances] = useState(null);
-    const { data, refetch, isLoading: isLoadingClasses } = useQuery({
+    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] =
+        useState(null);
+    const [
+        selectedClassCodeForAttendances,
+        setSelectedClassCodeForAttendances,
+    ] = useState(null);
+    const {
+        data,
+        refetch,
+        isLoading: isLoadingClasses,
+    } = useQuery({
         queryKey: ["LIST_ROOMS"],
         queryFn: async () => {
             const res = await api.get("/admin/classrooms", {
@@ -71,7 +84,7 @@ const ClassRoomsList = () => {
 
     useEffect(() => {
         if (classrooms) {
-            $('#classroomsTable').DataTable({
+            $("#classroomsTable").DataTable({
                 data: classrooms,
                 // processing: true,
                 // serverSide: true,
@@ -124,10 +137,11 @@ const ClassRoomsList = () => {
                             return data === true
                                 ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
                                 : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
-                        }
+                        },
                     },
                     {
-                        title: "Hành động", className: 'text-center',
+                        title: "Hành động",
+                        className: "text-center",
                         data: null,
                         render: (data, type, row) => {
                             return `
@@ -160,51 +174,58 @@ const ClassRoomsList = () => {
                                         title="Xóa"></i>
                                 </div>
                             `;
-                        }
-                    }
-
+                        },
+                    },
                 ],
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {
-                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
-                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
-                    search: 'Tìm kiếm:'
+                    paginate: { previous: "Trước", next: "Tiếp theo" },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
                 },
                 destroy: true,
                 createdRow: (row, data, dataIndex) => {
                     // Gắn sự kiện xóa sau khi bảng được vẽ
-                    $(row).find('.fa-trash').on('click', function () {
-                        const classCode = $(this).data('id');
-                        handleDelete(classCode);
-                    });
+                    $(row)
+                        .find(".fa-trash")
+                        .on("click", function () {
+                            const classCode = $(this).data("id");
+                            handleDelete(classCode);
+                        });
 
-                    $(row).find('.fa-edit').on('click', function () {
-                        const classCode = $(this).data('id');
-                        console.log(classCode);
+                    $(row)
+                        .find(".fa-edit")
+                        .on("click", function () {
+                            const classCode = $(this).data("id");
+                            console.log(classCode);
 
-                        navigate(`/admin/classrooms/edit/${classCode}`);
-
-                    });
-                }
+                            navigate(`/admin/classrooms/edit/${classCode}`);
+                        });
+                },
             });
             // Lắng nghe sự kiện click cho nút "Xem điểm"
-            $('#classroomsTable').on('click', '[id^="view_grades_"]', function () {
-                const classCode = $(this).data('id');  // Lấy mã lớp học từ data-id của button
-                setSelectedClassCodeForGrades(classCode);
-                handleViewGrades(classCode);
-
-            });
-
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_grades_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForGrades(classCode);
+                    handleViewGrades(classCode);
+                }
+            );
 
             // Lắng nghe sự kiện click cho nút "Xem điểm danh"
-            $('#classroomsTable').on('click', '[id^="view_attendance_"]', function () {
-                const classCode = $(this).data('id');  // Lấy mã lớp học từ data-id của button
-                setSelectedClassCodeForAttendances(classCode);
-                handleViewAttendances(classCode);
-            });
-
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_attendance_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForAttendances(classCode);
+                    handleViewAttendances(classCode);
+                }
+            );
         }
     }, [classrooms]);
 
@@ -212,10 +233,8 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/step">
-                    <button className="btn btn-primary">
-                        Tạo lớp học mới
-                    </button>
+                <Link to="/admin/classrooms/add">
+                    <button className="btn btn-primary">Tạo lớp học mới</button>
                 </Link>
             </div>
 
@@ -224,12 +243,21 @@ const ClassRoomsList = () => {
                     <h4 className="card-title">Quản lý lớp học</h4>
                 </div>
                 {selectedClassCodeForGrades && (
-                    <ShowGrades classCode={selectedClassCodeForGrades} onClose={handleCloseModal} />
+                    <ShowGrades
+                        classCode={selectedClassCodeForGrades}
+                        onClose={handleCloseModal}
+                    />
                 )}
                 {selectedClassCodeForAttendances && (
-                    <ShowAttendance classCode={selectedClassCodeForAttendances} onClose={handleCloseModal} />
+                    <ShowAttendance
+                        classCode={selectedClassCodeForAttendances}
+                        onClose={handleCloseModal}
+                    />
                 )}
-                {(selectedClassCodeForGrades || selectedClassCodeForAttendances) && <div className="modal-backdrop fade show"></div>}
+                {(selectedClassCodeForGrades ||
+                    selectedClassCodeForAttendances) && (
+                    <div className="modal-backdrop fade show"></div>
+                )}
                 <div className="card-body">
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>

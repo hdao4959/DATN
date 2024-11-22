@@ -197,7 +197,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/classrooms/step"
+                                to="/admin/classrooms/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới lớp học</p>
