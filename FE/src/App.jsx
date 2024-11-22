@@ -53,17 +53,16 @@ import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
 import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
-
 import TeacherAddPost from "./pages/teacher/Post/AddPost";
 import TeacherPostList from "./pages/teacher/Post/PostList";
 import TeacherUpdatePost from "./pages/teacher/Post/UpdatePost";
 import StudentNews from "./pages/student/Post/page.jsx";
 import StudentDetailNews from "./pages/student/Post/detail.jsx";
-
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
 import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
+
 
 function App() {
     const router = createBrowserRouter([
@@ -313,6 +312,7 @@ function App() {
                 },
                 {
                     path: "FAQS",
+
                     element: <FAQs />,
                 },
                 // {
@@ -323,6 +323,7 @@ function App() {
                 //     path: "request-attendance",
                 //     element: <AttendanceRequestForm />,
                 // },
+
                 {
                     path: "news",
                     element: <StudentNews />,
@@ -331,6 +332,11 @@ function App() {
                     path: "news/:id/detail",
                     element: <StudentDetailNews />,
                 },
+
+                {
+                    path: "FAQS",
+                    element: <FAQs />
+                }
             ],
         },
         {
