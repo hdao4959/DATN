@@ -101,7 +101,71 @@ const StudentMenu = () => {
                                             to="/student/services"
                                             className={`${styles.menuItem} group`}
                                         >
-                                            <p className="sub-item">Dịch Vụ</p>
+                                            <p className="sub-item">Dịch Vụ</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/change-major"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu đổi chuyên ngành</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu học lại</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu thôi học</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu cấp bảng điểm</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu cấp thẻ sinh viên</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu thay đổi thông tin</p> <br />
+
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/request-attendance"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Yêu cầu khổi phục điểm danh</p> <br />
+
                                         </NavLink>
                                     </li>
                                 </ul>
@@ -109,12 +173,12 @@ const StudentMenu = () => {
 
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#grades" >
+                            <a data-bs-toggle="collapse" href="#asks" >
                                 <i className="fas fa-clipboard-list" />
                                 <p>Câu hỏi thường gặp</p>
                                 <span className="caret" />
                             </a>
-                            <div className="collapse" id="grades">
+                            <div className="collapse" id="asks">
                                 <ul className="nav nav-collapse">
                                     <li>
                                         <NavLink

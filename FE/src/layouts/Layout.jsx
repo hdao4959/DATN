@@ -113,7 +113,7 @@ const AdminLayout = () => {
                                         </form>
                                     </ul>
                                 </li>
-                                <li className="nav-item topbar-icon dropdown hidden-caret">
+                                {/* <li className="nav-item topbar-icon dropdown hidden-caret">
                                     <a
                                         className="nav-link dropdown-toggle"
                                         href="#"
@@ -233,7 +233,7 @@ const AdminLayout = () => {
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> */}
                                 <li className="nav-item topbar-icon dropdown hidden-caret">
                                     <a
                                         className="nav-link dropdown-toggle"
@@ -334,7 +334,7 @@ const AdminLayout = () => {
                                         </li>
                                     </ul>
                                 </li>
-                                <li className="nav-item topbar-icon dropdown hidden-caret">
+                                {/* <li className="nav-item topbar-icon dropdown hidden-caret">
                                     <a
                                         className="nav-link"
                                         data-bs-toggle="dropdown"
@@ -437,7 +437,7 @@ const AdminLayout = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </li>
+                                </li> */}
                                 <li className="nav-item topbar-user dropdown hidden-caret">
                                     <a
                                         className="dropdown-toggle profile-pic"
@@ -488,10 +488,9 @@ const AdminLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${
-                                                                user?.user_code ||
+                                                            to={`account/details/${user?.user_code ||
                                                                 ""
-                                                            }`}
+                                                                }`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -502,9 +501,8 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${
-                                                        user?.user_code || ""
-                                                    }`}
+                                                    to={`account/details/${user?.user_code || ""
+                                                        }`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >

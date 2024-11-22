@@ -61,6 +61,8 @@ import FAQs from "./pages/student/Suport/Suport.jsx";
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
+import ChangeMajorForm from "./pages/student/Major/ChangeMajor.jsx";
+import AttendanceRequestForm from "./pages/student/Attendance/RequestAttendance.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -300,10 +302,17 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
-
                 {
                     path: "FAQS",
                     element: <FAQs />
+                },
+                {
+                    path: "change-major",
+                    element: <ChangeMajorForm />
+                },
+                {
+                    path: "request-attendance",
+                    element: <AttendanceRequestForm />
                 }
             ],
         },
