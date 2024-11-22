@@ -45,13 +45,16 @@ const StudentMenu = () => {
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
                         <li className="menu-item">
-                            <NavLink to="/" className={`${styles.menuItem} group`}>
+                            <NavLink
+                                to="/"
+                                className={`${styles.menuItem} group`}
+                            >
                                 <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                                 <p className="text-[#b9babf]">Trang Chủ</p>
                             </NavLink>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#attendances" >
+                            <a data-bs-toggle="collapse" href="#attendances">
                                 <i className="fas fa-clipboard-list" />
                                 <p>Điểm Danh</p>
                                 <span className="caret" />
@@ -63,14 +66,16 @@ const StudentMenu = () => {
                                             to="/student/attendances"
                                             className={`${styles.menuItem} group`}
                                         >
-                                            <p className="sub-item">Điểm danh</p>
+                                            <p className="sub-item">
+                                                Điểm danh
+                                            </p>
                                         </NavLink>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#grades" >
+                            <a data-bs-toggle="collapse" href="#grades">
                                 <i className="fas fa-clipboard-list" />
                                 <p>Bảng Điểm</p>
                                 <span className="caret" />
@@ -82,14 +87,16 @@ const StudentMenu = () => {
                                             to="/student/grades"
                                             className={`${styles.menuItem} group`}
                                         >
-                                            <p className="sub-item">Bảng Điểm</p>
+                                            <p className="sub-item">
+                                                Bảng Điểm
+                                            </p>
                                         </NavLink>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#services" >
+                            <a data-bs-toggle="collapse" href="#services">
                                 <i className="fab fa-stack-overflow" />
                                 <p>Dịch Vụ</p>
                                 <span className="caret" />
@@ -106,7 +113,6 @@ const StudentMenu = () => {
                                     </li>
                                 </ul>
                             </div>
-
                         </li>
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#news" >
@@ -128,12 +134,12 @@ const StudentMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#grades" >
+                            <a data-bs-toggle="collapse" href="#asks" >
                                 <i className="fas fa-clipboard-list" />
                                 <p>Câu hỏi thường gặp</p>
                                 <span className="caret" />
                             </a>
-                            <div className="collapse" id="grades">
+                            <div className="collapse" id="asks">
                                 <ul className="nav nav-collapse">
                                     <li>
                                         <NavLink

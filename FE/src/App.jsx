@@ -55,7 +55,6 @@ import StudentGrades from "./pages/student/Grade/page.jsx";
 import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
 import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
-import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
 
 import TeacherAddPost from "./pages/teacher/Post/AddPost";
@@ -67,6 +66,8 @@ import StudentDetailNews from "./pages/student/Post/detail.jsx";
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
+import TestAddClassroom from "./pages/admin/Rooms/AddClassroomTest";
+import AddClassroomForm from "./pages/admin/Rooms/AddClassroomTest";
 
 function App() {
     const router = createBrowserRouter([
@@ -81,9 +82,9 @@ function App() {
         {
             path: "admin",
             element: (
-                <CheckRole>
-                    <Layout />
-                </CheckRole>
+                // <CheckRole>
+                <Layout />
+                // </CheckRole>
             ),
             children: [
                 {
@@ -146,7 +147,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroomTest />,
+                    element: <TestAddClassroom />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -155,10 +156,6 @@ function App() {
                 {
                     path: "classrooms/view/:class_code",
                     element: <ClassroomDetails />,
-                },
-                {
-                    path: "classrooms/step",
-                    element: <MultiStepForm />,
                 },
                 {
                     path: "semesters",
@@ -292,7 +289,6 @@ function App() {
                     path: "post/:id/edit",
                     element: <TeacherUpdatePost />,
                 },
-
             ],
         },
         {
@@ -330,8 +326,8 @@ function App() {
 
                 {
                     path: "FAQS",
-                    element: <FAQs />
-                }
+                    element: <FAQs />,
+                },
             ],
         },
         {

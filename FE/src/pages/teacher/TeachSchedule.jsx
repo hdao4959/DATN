@@ -120,7 +120,7 @@ const MyCalendar = () => {
                     style={{ height: "100%", margin: "20px" }}
                     eventPropGetter={eventStyleGetter}
                     views={["month", "week", "day"]}
-                    defaultView="day"
+                    defaultView="week"
                     onSelectEvent={handleSelectEvent}
                 />
             )}
