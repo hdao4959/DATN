@@ -255,4 +255,29 @@ class NewsletterController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
+
+    public function bulkUpdateType(Request $request)
+    {
+        try {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request
+    
+            DB::transaction(function () use ($activies) {
+                foreach ($activies as $code => $active) {
+                    // Tìm newsletter theo code và áp dụng lock for update
+                    $newsletter = Newsletter::where('code', $code)->lockForUpdate()->first();
+    
+                    if ($newsletter) {
+                        $newsletter->is_active = $active; // Sửa lại đúng field
+                        $newsletter->save();
+                    }
+                }
+            });
+    
+            return response()->json([
+                'message' => 'Trạng thái đã được cập nhật thành công!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 }
