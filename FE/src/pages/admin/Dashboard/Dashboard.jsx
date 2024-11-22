@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DashboardCards from "./DashboardCards";
 
 const Dashboard = () => {
     const [statusFeeData, setStatusFeeData] = useState(null);
@@ -137,6 +138,7 @@ const Dashboard = () => {
     }, []);
     return (
         <>
+            <DashboardCards />
             <div className="container mt-5">
                 <h3 className="fw-bold mb-3">Dashboard Charts</h3>
                 <div className="row">
