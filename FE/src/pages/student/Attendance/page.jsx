@@ -24,10 +24,13 @@ const ShowStudentAttendance = () => {
         }
     };
 
-    function formatDate(date) {
-        if (!date) return ""; 
-        const [year, month, day] = date.split("/");
-        return `${day}/${month}/${year}`; 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
     }
 
     useEffect(() => {
@@ -48,7 +51,11 @@ const ShowStudentAttendance = () => {
                 destroy: true,
                 data: subjectData.attendance.map((item) => ({
                     ...item,
-                    status: item.status === 1 ? `<strong class='text-green-500'>Có mặt</strong>` : `<strong class='text-red-500'>Vắng</strong>`,
+                    status: item.status === 'present'
+                        ? "<strong class='text-green-500'>Có mặt</strong>"
+                        : item.status === 'absent'
+                            ? "<strong class='text-red-500'>Vắng</strong>"
+                            : "<strong class='text-gray-500'>Chưa học</strong>",
                 })),
                 columns: [
                     {
@@ -56,10 +63,9 @@ const ShowStudentAttendance = () => {
                         data: null,
                         render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
                     },
-                    { title: "Mã sinh viên", data: "student_code" },
                     { title: "Trạng thái", data: "status" },
                     { title: "Ghi chú", data: "noted" },
-                    { title: "Giảng viên", data: "teacher_name" },
+                    { title: "Giảng viên", data: "full_name" },
                     {
                         title: "Ngày",
                         data: "date",
@@ -67,7 +73,11 @@ const ShowStudentAttendance = () => {
                             return formatDate(data);
                         }
                     },
-                    { title: "Ca học", data: "session_cate_name" },
+                    {
+                        title: "Ca học",
+                        data: "cate_name",
+                        render: (data) => data || ""
+                    },
                 ],
                 scrollX: true,
                 scrollY: true,
@@ -108,13 +118,25 @@ const ShowStudentAttendance = () => {
                         {attendanceData.map((classData, index) => (
                             <div key={index} className="attendance-table table-striped card-body border-spacing-3"
                                 style={{ border: '2px solid #ccc', borderRadius: '8px', padding: '15px', margin: '20px 0' }}>
-                                <h3 className='strong' style={{ color: 'black', marginBottom: '10px' }}>
-                                    #{index + 1} Lớp: {classData.class_name} - Môn: {classData.subject_name}
-                                </h3>
+                                <div
+                                    className="d-flex justify-content-between align-items-center"
+                                    style={{ marginBottom: '10px' }}
+                                >
+                                    <h3 className="strong" style={{ color: 'black' }}>
+                                        #{index + 1} Lớp: {classData.class_name} - Môn: {classData.subject_name}
+                                    </h3>
+                                    <div>
+                                        Vắng{' '}
+                                        <span className="text-danger strong">
+                                            {classData.total_absent}
+                                        </span>{' '}
+                                        / {classData.total_schedule ? classData.total_schedule : 0}
+                                    </div>
+                                </div>
+                                <div>Vắng <span className='text-danger strong'>{classData.total_absent}</span> / {classData.total_schedule ? classData.total_schedule : 0}</div>
                                 <div className="table-responsive">
                                     <table id={`attendanceTable-${index}`} className="display" style={{ width: '100%' }}></table>
                                 </div>
-
                             </div>
                         ))}
                     </div>

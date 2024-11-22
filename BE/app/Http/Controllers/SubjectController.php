@@ -25,10 +25,11 @@ class SubjectController extends Controller
     public function store(StoreSubjectRequest $request)
     {
         try {
+            // $data = $request->only(['assessments']);
             $subject = $this->subjectRepository->create($request);
-            return response()->json(['message'=> 'thêm mới thành công'], 201);
+            return response()->json(['message' => 'Thêm mới thành công'], 201);
         } catch (\Throwable $th) {
-            return response()->json(['message' => $th->getMessage(),400]);
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 

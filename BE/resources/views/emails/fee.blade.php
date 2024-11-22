@@ -69,9 +69,9 @@
         </tr>
     </table>
 
-    <p><strong>3. Thời hạn nộp tiền:</strong> Từ ngày <strong>{{ $data['start_date'] }}</strong> 
+    <p><strong>3. Thời hạn nộp tiền:</strong> Từ ngày <strong>{{ $data['start_date'] }}</strong>
         đến trước 24h ngày <strong>{{ $data['due_date'] }}</strong></p>
-        
+
 
 
     <p><strong>4. Đối với sinh viên thiếu nợ môn Tiếng Anh:</strong> Chủ động đăng ký trả nợ môn, sử dụng số dư Ví Học

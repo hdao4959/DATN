@@ -132,6 +132,7 @@ class NewsletterController extends Controller
                                 'description' => $newsletter->description,
                                 'type' => $newsletter->type,
                                 'order' => $newsletter->order,
+                                'notification_object' => $newsletter->notification_object,
                                 'expiry_date' => $newsletter->expiry_date,
                                 'is_active' => $newsletter->is_active,
                                 'cate_code' => $newsletter->category ? $newsletter->category->cate_code : 'No Category',                                

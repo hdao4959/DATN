@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('credit_number')->comment("Số tín chỉ");
 
             $table->integer('total_sessions')->comment('Tổng số buổi học');
+            $table->json('assessments')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->string('semester_code',40)->comment('Mã kì học');

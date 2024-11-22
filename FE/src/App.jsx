@@ -58,6 +58,12 @@ import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
 
+import TeacherAddPost from "./pages/teacher/Post/AddPost";
+import TeacherPostList from "./pages/teacher/Post/PostList";
+import TeacherUpdatePost from "./pages/teacher/Post/UpdatePost";
+import StudentNews from "./pages/student/Post/page.jsx";
+import StudentDetailNews from "./pages/student/Post/detail.jsx";
+
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
@@ -276,6 +282,19 @@ function App() {
                     path: "grades",
                     element: <ShowGradesTeacher />,
                 },
+                {
+                    path: "post",
+                    element: <TeacherPostList />,
+                },
+                {
+                    path: "post/add",
+                    element: <TeacherAddPost />,
+                },
+                {
+                    path: "post/:id/edit",
+                    element: <TeacherUpdatePost />,
+                },
+
             ],
         },
         {
@@ -313,7 +332,15 @@ function App() {
                 {
                     path: "request-attendance",
                     element: <AttendanceRequestForm />
-                }
+                },
+                {
+                    path: "news",
+                    element: <StudentNews />,
+                },
+                {
+                    path: "news/:id/detail",
+                    element: <StudentDetailNews />,
+                },
             ],
         },
         {
