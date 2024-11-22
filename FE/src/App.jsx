@@ -30,7 +30,6 @@ import ShowGrades from "./pages/admin/Grades/pages.jsx";
 import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
-import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
 import AddPost from "./pages/admin/Post/AddPost";
@@ -45,8 +44,6 @@ import ClassList from "./pages/teacher/MyClass/ClassList";
 import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
 import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
 import NotFound from "./pages/NotFound";
-// import MyCalendar from "./pages/teacher/TeachSchedule";
-// import MyClass from "./pages/teacher/myClass/MyClass";
 import AttendanceManagement from "./pages/admin/Attendance/page.jsx";
 import AttendanceTeacher from "./pages/teacher/Attendance/page.jsx";
 import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
@@ -66,8 +63,7 @@ import StudentDetailNews from "./pages/student/Post/detail.jsx";
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
-import TestAddClassroom from "./pages/admin/Rooms/AddClassroomTest";
-import AddClassroomForm from "./pages/admin/Rooms/AddClassroomTest";
+import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -147,7 +143,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <TestAddClassroom />,
+                    element: <AddClassroom />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -316,17 +312,24 @@ function App() {
                     element: <ReEnrollment />,
                 },
                 {
+                    path: "FAQS",
+                    element: <FAQs />,
+                },
+                // {
+                //     path: "change-major",
+                //     element: <ChangeMajorForm />,
+                // },
+                // {
+                //     path: "request-attendance",
+                //     element: <AttendanceRequestForm />,
+                // },
+                {
                     path: "news",
                     element: <StudentNews />,
                 },
                 {
                     path: "news/:id/detail",
                     element: <StudentDetailNews />,
-                },
-
-                {
-                    path: "FAQS",
-                    element: <FAQs />,
                 },
             ],
         },

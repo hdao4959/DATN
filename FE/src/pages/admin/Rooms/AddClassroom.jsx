@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "/src/css/multiStep.css";
 import { useNavigate } from "react-router-dom";
 
-const TestAddClassroom = () => {
+const AddClassroom = () => {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -673,4 +673,4 @@ const TestAddClassroom = () => {
     );
 };
 
-export default TestAddClassroom;
+export default AddClassroom;

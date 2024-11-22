@@ -11,13 +11,13 @@ const AddMajor = () => {
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm(); // Lấy formState để xử lý lỗi
+    } = useForm();
     const nav = useNavigate();
     const { data: listMajor } = useQuery({
         queryKey: ["LIST_PARENT_MAJOR"],
         queryFn: async () => {
-            const res = await api.get("/admin/majors");
-            return res.data?.parent;
+            const res = await api.get("/listParentMajorsForForm");
+            return res.data;
         },
     });
     const { mutate } = useMutation({
@@ -207,16 +207,13 @@ const AddMajor = () => {
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image", {
-                                                required:
-                                                    "Vui lòng chọn hình ảnh",
-                                            })}
+                                            {...register("image")}
                                         />
-                                        {errors.image && (
+                                        {/* {errors.image && (
                                             <span className="text-danger">
                                                 {errors.image.message}
                                             </span>
-                                        )}
+                                        )} */}
                                     </div>
 
                                     <div className="form-group">
@@ -229,17 +226,15 @@ const AddMajor = () => {
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description", {
-                                                required: "Vui lòng nhập mô tả",
-                                            })}
+                                            {...register("description")}
                                             placeholder="Nhập mô tả"
                                         />
 
-                                        {errors.description && (
+                                        {/* {errors.description && (
                                             <span className="text-danger">
                                                 {errors.description.message}
                                             </span>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             </div>
