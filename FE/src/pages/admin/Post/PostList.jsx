@@ -24,11 +24,9 @@ const PostList = () => {
         queryKey: ["POST_LIST"],
         queryFn: async () => {
             const res = await api.get("/admin/newsletters");
-            return res.data.newsletter ?? [];
+            return res.data.newsletter?.data ?? [];
         },
     });
-
-    console.log(data);
 
     const { mutate } = useMutation({
         mutationFn: (id) => api.delete(`/admin/newsletters/${id}`),
@@ -48,7 +46,8 @@ const PostList = () => {
     useEffect(() => {
         if (data) {
             $('#classroomsTable').DataTable({
-
+                serverSide: true,
+                processing: true,
                 data: data,
                 ajax: async (data, callback) => {
                     try {
@@ -57,7 +56,7 @@ const PostList = () => {
                             params: { page, per_page: data.length },
                         });
 
-                        const result = response.data;
+                        const result = response.data.newsletter;
 
                         callback({
                             draw: data.draw,

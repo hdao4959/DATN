@@ -41,6 +41,7 @@ class MajorController extends Controller
         try {
             // Lấy ra cate_code và cate_name của cha
             $search = $request->input('search');
+            $perPage = $request->input('per_page', 10);
             $majors = Category::with(
                 ['childrens' => function ($query) {
             $query->select('cate_code', 'cate_name', 'image','parent_code', 'is_active');
@@ -50,7 +51,7 @@ class MajorController extends Controller
                     return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
                         $childQuerry->where('cate_name', 'like', "%$search%");
                     });
-                })->get();
+                })->paginate($perPage);
             return response()->json($majors, 200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);

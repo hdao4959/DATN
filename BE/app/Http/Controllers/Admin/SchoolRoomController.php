@@ -39,13 +39,14 @@ class SchoolRoomController extends Controller
         try {
             // Tìm kiếm theo cate_name
             $search = $request->input('search');
+            $perPage = $request->input('per_page', 10);
             $data = Category::where('type', '=', 'school_room')
                 ->when($search, function ($query, $search) {
                     return $query
                         ->where('cate_name', 'like', "%{$search}%");
                 })
                 ->orderBy('id', 'desc')
-                ->paginate(10);
+                ->paginate($perPage);
             if ($data->isEmpty()) {
 
                 return $this->handleInvalidId();
