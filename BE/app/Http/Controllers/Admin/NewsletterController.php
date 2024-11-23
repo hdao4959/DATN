@@ -46,47 +46,53 @@ class NewsletterController extends Controller
             $category = Category::where('type', '=', 'category')
                                 ->select('cate_code', 'cate_name')
                                 ->get();
-
+    
             $title = $request->input('title');
             $type = $request->input('type');
+            $perPage = $request->input('per_page', 10); // Số lượng phần tử mỗi trang, mặc định là 10.
+    
+            // Sử dụng paginate thay vì get()
             $newsletters = Newsletter::with(['category', 'user'])
                 ->when($title, function ($query, $title) {
-                    return $query
-                            ->where('title', 'like', "%{$title}%");
+                    return $query->where('title', 'like', "%{$title}%");
                 })
                 ->when($type !== null, function ($query) use ($type) {
-                    return $query
-                            ->where('type', '=', $type);
+                    return $query->where('type', '=', $type);
                 })
-                ->get()->map(function ($newsletter) {
-                    return [
-                        'id' => $newsletter->id,
-                        'code' => $newsletter->code,
-                        'title' => $newsletter->title,
-                        'content' => $newsletter->content,
-                        'image' => $newsletter->image,
-                        'type' => $newsletter->type,
-                        'expiry_date' => $newsletter->expiry_date,
-                        'is_active' => $newsletter->is_active,
-                        'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
-                        'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
-                    ];
-                });                        
-
+                ->paginate($perPage); // Phân trang
+    
+            // Map dữ liệu cho từng phần tử
+            $mappedNewsletters = $newsletters->getCollection()->map(function ($newsletter) {
+                return [
+                    'id' => $newsletter->id,
+                    'code' => $newsletter->code,
+                    'title' => $newsletter->title,
+                    'content' => $newsletter->content,
+                    'image' => $newsletter->image,
+                    'type' => $newsletter->type,
+                    'expiry_date' => $newsletter->expiry_date,
+                    'is_active' => $newsletter->is_active,
+                    'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
+                    'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
+                ];
+            });
+    
+            // Thay thế collection gốc bằng collection đã map
+            $newsletters->setCollection($mappedNewsletters);
+    
             if ($newsletters->isEmpty()) {
-
                 return $this->handleInvalidId();
             }
-
+    
             return response()->json([
                 'newsletter' => $newsletters,
-                'category' => $category
-            ],200);
+                'category' => $category,
+            ], 200);
         } catch (Throwable $th) {
-
             return $this->handleErrorNotDefine($th);
         }
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -250,6 +256,31 @@ class NewsletterController extends Controller
             return response()->json($newPost, 200);
         } catch (\Throwable $th) {
 
+            return $this->handleErrorNotDefine($th);
+        }
+    }
+
+    public function bulkUpdateType(Request $request)
+    {
+        try {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request
+    
+            DB::transaction(function () use ($activies) {
+                foreach ($activies as $code => $active) {
+                    // Tìm newsletter theo code và áp dụng lock for update
+                    $newsletter = Newsletter::where('code', $code)->lockForUpdate()->first();
+    
+                    if ($newsletter) {
+                        $newsletter->is_active = $active; // Sửa lại đúng field
+                        $newsletter->save();
+                    }
+                }
+            });
+    
+            return response()->json([
+                'message' => 'Trạng thái đã được cập nhật thành công!'
+            ], 200);
+        } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }

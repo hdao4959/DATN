@@ -63,6 +63,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
+Route::get('/students/{student_code}', [StudentController::class, 'show']);
 
 Route::apiResource('teachers', TeacherController::class);
 
@@ -105,13 +106,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('classrooms', ClassroomController::class);
+        Route::put('/classrooms/bulk-update-type', [ClassroomController::class, 'bulkUpdateType']);
 
         Route::controller(ClassroomController::class)->group(function(){
             Route::post('classrooms/handleStep1', 'handleStep1');
             Route::post('classrooms/renderSchedules', 'renderSchedules');
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
-        
+
         });
 
         // Route::controller(ClassroomController::class)->group(function () {
@@ -120,21 +122,19 @@ Route::middleware('auth:sanctum')->group(function () {
         //     Route::post('classrooms/handle_step3', 'handleStep3');
         // });
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
+        Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
+        Route::apiResource('majors', MajorController::class);
+        Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
 
         Route::apiResource('newsletters', NewsletterController::class);
         Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
-
+        Route::put('/newsletters/bulk-update-type', [NewsletterController::class, 'bulkUpdateType']);
 
         Route::apiResource('assessment', AssessmentItemController::class);
 
         Route::get('score/{id}', [ScoreController::class, 'create']);
 
-        Route::apiResource('majors', MajorController::class);
-        Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-
-
         Route::apiResource('categories', CategoryController::class);
-
 
         Route::controller(CategoryController::class)->group(function () {
             Route::get('/listParentCategories', 'listParentCategories');
@@ -147,22 +147,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('sessions', SessionController::class);
         Route::apiResource('semesters', SemesterController::class);
-        Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
 
         Route::apiResource('grades', GradesController::class);
         Route::get('grades', [GradesController::class, 'getByParam']);
         Route::patch('grades/{id}', [GradesController::class, 'update']);
 
         Route::apiResource('schoolrooms', SchoolRoomController::class);
+        Route::put('/schoolrooms/bulk-update-type', [SchoolRoomController::class, 'bulkUpdateType']);
+
         Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
 
         Route::apiResource('pointheads', PointHeadController::class);
+        Route::put('/pointheads/bulk-update-type', [PointHeadController::class, 'bulkUpdateType']);
 
         // Route::apiResource('newsletters', NewsletterController::class);
 
         Route::apiResource('attendances', AttendanceController::class);
 
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+        Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
+
         Route::apiResource('fees', FeeController::class);
 
     });
@@ -191,6 +195,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('newsletters', TeacherNewsletterController::class);
         Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
+        Route::put('/newsletters/bulk-update-type', [NewsletterController::class, 'bulkUpdateType']);
 
     });
 
@@ -198,7 +203,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/classrooms', [StudentClassroomController::class, 'index']);
         Route::get('/classrooms/{class_code}', [StudentClassroomController::class, 'show']);
 
-        
+
         Route::get('schedules', [StudentScheduleController::class, 'index']);
         Route::get('/classrooms/{class_code}/schedules', [StudentScheduleController::class, 'schedulesOfClassroom']);
 
@@ -213,7 +218,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters', [StudentNewsletterController::class, 'index']);
         Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
-        
+
     });
 
 // Các route phục vụ cho form
@@ -277,7 +282,7 @@ Route::get('send-email', [SendEmailController::class,'sendMailFee']);
 Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
 
 // DashboardAdmin
-Route::get('count-room',        [DashboardController::class,'getRoomCount']);
+Route::get('count-info',        [DashboardController::class,'getCountInfo']);
 Route::get('count-student',     [DashboardController::class,'getStudentCountByMajor']);
 Route::get('status-fee-date',   [DashboardController::class,'getStatusFeesByDate']);
 Route::get('status-fee-all',    [DashboardController::class,'getStatusFeesAll']);

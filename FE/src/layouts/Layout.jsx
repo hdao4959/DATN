@@ -88,7 +88,7 @@ const AdminLayout = () => {
                                     />
                                 </div>
                             </nav> */}
-                            <ul className="navbar-nav topbar-nav ms-md-auto align-items-center">
+                            <ul className="navbar-nav topbar-nav ms-md-auto align-items-center" style={{ marginRight: "10px", }}>
                                 <li className="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
                                     <a
                                         className="nav-link dropdown-toggle"
@@ -233,7 +233,7 @@ const AdminLayout = () => {
                                         </li>
                                     </ul>
                                 </li> */}
-                                <li className="nav-item topbar-icon dropdown hidden-caret">
+                                {/* <li className="nav-item topbar-icon dropdown hidden-caret">
                                     <a
                                         className="nav-link dropdown-toggle"
                                         href="#"
@@ -556,8 +556,8 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

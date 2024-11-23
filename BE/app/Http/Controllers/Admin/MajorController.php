@@ -41,6 +41,7 @@ class MajorController extends Controller
         try {
             // Lấy ra cate_code và cate_name của cha
             $search = $request->input('search');
+            $perPage = $request->input('per_page', 10);
             $majors = Category::with(
                 ['childrens' => function ($query) {
             $query->select('cate_code', 'cate_name', 'image','parent_code', 'is_active');
@@ -50,7 +51,7 @@ class MajorController extends Controller
                     return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
                         $childQuerry->where('cate_name', 'like', "%$search%");
                     });
-                })->get();
+                })->paginate($perPage);
             return response()->json($majors, 200);
         } catch (Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -176,19 +177,24 @@ class MajorController extends Controller
     public function bulkUpdateType(Request $request)
     {
         try {
-            $activies = $request->input('is_active'); // Lấy dữ liệu từ request            
-            foreach ($activies as $cate_code => $active) {
-                // Tìm category theo ID và cập nhật trường 'is_active'
-                $category = Category::where('cate_code', $cate_code)->first();
-                $category->ia_active = $active;
-                $category->save();
-            }
-
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request
+    
+            DB::transaction(function () use ($activies) {
+                foreach ($activies as $cate_code => $active) {
+                    // Tìm category theo cate_code và áp dụng lock for update
+                    $category = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
+    
+                    if ($category) {
+                        $category->is_active = $active; // Sửa lại đúng field
+                        $category->save();
+                    }
+                }
+            });
+    
             return response()->json([
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
         } catch (\Throwable $th) {
-
             return $this->handleErrorNotDefine($th);
         }
     }

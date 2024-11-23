@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Category;
+use App\Models\Classroom;
 use App\Models\Fee;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,9 +12,19 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function getRoomCount() {
+    public function getCountInfo() {
         try{
-            $data = Category::where('type','school_room')->count();
+            $major = Category::where('type','major')->count();
+            $student = User::where('role','3')->count();
+            $teacher = User::where('role','2')->count();
+            $classroom = Classroom::count();
+
+            $data = [
+                'count_major' => $major,
+                'count_student' => $student,
+                'count_teacher' => $teacher,
+                'count_classroom' => $classroom
+            ];
             return response()->json(['countRoom' => $data]);
         }catch(\Exception $e){
             return response()->json(['message' => $e->getMessage() ]);

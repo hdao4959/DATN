@@ -50,6 +50,26 @@ const ListTeacher = () => {
 
             $("#teachersTable").DataTable({
                 data: teachers,
+                serverSide: true,
+                processing: true,
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/teachers`, {
+                            params: { page, per_page: data.length },
+                        });
+                        const result = response.data;
+
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
                 columns: [
                     { title: "Mã giảng viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },

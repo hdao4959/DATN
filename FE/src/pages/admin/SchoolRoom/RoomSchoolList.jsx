@@ -56,6 +56,8 @@ const RoomSchoolList = () => {
         if (roomSchool) {
             $('#roomSchoolTable').DataTable({
                 data: roomSchool,
+                serverSide: true,
+                processing: true,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
@@ -108,7 +110,7 @@ const RoomSchoolList = () => {
                         }
                     }
                 ],
-                pageLength: 10,
+                // pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {
                     paginate: { previous: 'Trước', next: 'Tiếp theo' },

@@ -15,25 +15,26 @@ return new class extends Migration
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->string('user_code');
-            $table->integer('semester');
-            $table->decimal('amount',10,2);
+            $table->string('user_code',20);
+            $table->decimal('total_amount', 10, 2);
+            $table->decimal('amount', 10, 2)->default(0);
             $table->date('start_date');
             $table->date('due_date');
-            $table->enum('status', ['pending','paid','unpaid'])->default('pending');
-            // $table->unique(['user_id','semester']);
+            $table->string('semester_code',40);
+            $table->foreign('semester_code')->references('cate_code')->on('categories')
+            ->restrictOnDelete()->restrictOnUpdate();
+            $table->enum('status', ['pending', 'paid', 'unpaid'])->default('unpaid');
             $table->timestamps();
         });
     }
     // fees: 	fee_id
-	// student_id
-	// amount:		(số tiền phải đóng)
-	// overpaid_amount
-	// start_date:	(ngày bắt đầu)
-	// due_date:	(ngày hạn đóng)
-	// status: 	(trạng thái)
-	// paid_date:
+    // student_id
+    // amount:		(số tiền phải đóng)
+    // overpaid_amount
+    // start_date:	(ngày bắt đầu)
+    // due_date:	(ngày hạn đóng)
+    // status: 	(trạng thái)
+    // paid_date:
 
     /**
      * Reverse the migrations.

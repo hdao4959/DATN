@@ -15,7 +15,7 @@ const CheckRole = ({ children }) => {
             setIsModalVisible(true); // Hiển thị modal nếu không có quyền truy cập
         } else {
             if (user.role === "3") {
-                navigate("/student");
+                navigate("/student/news");
             } else if (user.role === "2") {
                 navigate("/teacher");
             } else if (user.role === "0") {

@@ -263,7 +263,7 @@ const StudentLayout = () => {
                                     >
                                         <li>
                                             <div className="dropdown-title">
-                                                You have {notifications?.count || 0} new notification
+                                                Bạn có {notifications?.count || 0} thông báo
                                             </div>
                                         </li>
                                         <li>
@@ -272,7 +272,7 @@ const StudentLayout = () => {
                                                     {notifications?.data?.map((notification) => (
                                                         <a href="#" key={notification.code}>
                                                             <div className="notif-icon notif-primary">
-                                                                <i className="fa fa-user-plus" />
+                                                                <i className="fa fa-bell" />
                                                             </div>
                                                             <div className="notif-content">
                                                                 <span className="block">
@@ -292,7 +292,7 @@ const StudentLayout = () => {
                                                 className="see-all"
                                                 href="javascript:void(0);"
                                             >
-                                                See all notifications
+                                                Xem tất cả thông báo
                                                 <i className="fa fa-angle-right" />
                                             </a>
                                         </li>

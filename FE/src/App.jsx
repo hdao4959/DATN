@@ -252,6 +252,10 @@ function App() {
                     element: <TeachSchedule />,
                 },
                 {
+                    path: "account/details/:user_code",
+                    element: <ViewMyAccount />,
+                },
+                {
                     path: "class",
                     element: <ClassList />,
                 },
@@ -296,6 +300,10 @@ function App() {
                 {
                     path: "attendances",
                     element: <ShowStudentAttendance />,
+                },
+                {
+                    path: "account/details/:user_code",
+                    element: <ViewMyAccount />,
                 },
                 {
                     path: "grades",
