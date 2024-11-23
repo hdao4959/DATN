@@ -227,46 +227,92 @@ class AttendanceController extends Controller
         }
     }
 
-    public function showAllAttendance(string $classCode)
+    public function showAllAttendance(Request $request, string $classCode)
     {
         try {
-            $attendances = Attendance::where('class_code', $classCode)
-            ->whereDate('date', Carbon::today())
-            ->with('user')
-            ->get()
-            ->groupBy('student_code')
-            ->map(function ($attendances, $studentCode) {
+            $userCode = $request->user()->user_code;
+
+            $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
+                                        $query->where('user_code', $userCode)->where('class_code', $classCode);
+                                    })
+                                    ->with(['classroom' => function ($query) {
+                                        $query->select('class_code', 'class_name', 'subject_code', 'user_code');
+
+                                        }, 'classroom.users' => function ($query) {
+                                            $query->select('full_name');
+
+                                        }, 'classroom.subject' => function ($query) {
+                                            $query->select('subject_code', 'subject_name', 'semester_code');
+
+                                        },'classroom.schedules.session' => function ($query) {
+                                            $query->select('cate_code', 'cate_name'); // Tải thêm session
+                                        }
+                                    ])
+                                    ->get(['id', 'student_code', 'class_code', 'status', 'noted', 'date']);
+            // dd($attendances);
+            $result = $attendances->groupBy('student_code')->map(function ($studentGroup) {
+                $firstAttendance = $studentGroup->first();
+
+                // Lấy `user_code` từ nhóm hiện tại
+                $userCode = $firstAttendance->student_code;
+
+                // Lấy `full_name` từ danh sách `users` dựa trên `user_code`
+                $user = $firstAttendance->classroom->users->firstWhere('pivot.user_code', $userCode);
+                $fullName = $user ? $user->full_name : null;
+                
+                // Lấy tất cả các lịch học từ lớp học
+                $schedules = $firstAttendance->classroom->schedules;
+            
+                // Gộp dữ liệu điểm danh và lịch học
+                $attendanceData = $studentGroup->map(function ($attendance) use ($schedules) {
+                    // Lấy cate_code từ lịch học tương ứng (nếu có)
+                    $schedule = $schedules->firstWhere('date', Carbon::parse($attendance->date)->toDateString());
+                    return [
+                        'date' => Carbon::parse($attendance->date)->toDateString(),
+                        'cate_name' => $schedule->session->cate_name ?? null,
+                        'status' => $attendance->status,
+                        'noted' => $attendance->noted,
+                    ];
+                });
+            
+                $attendanceDates = $attendanceData->pluck('date')->toArray();
+            
+                // Duyệt qua các lịch học và lọc ra các lịch không có trong dữ liệu điểm danh
+                $scheduleData = $schedules->filter(function ($schedule) use ($attendanceDates) {
+                    return !in_array(Carbon::parse($schedule->date)->toDateString(), $attendanceDates);
+                })->map(function ($schedule) {
+                    return [
+                        'date' => Carbon::parse($schedule->date)->toDateString(),
+                        'full_name' => null,
+                        'status' => null,
+                        'noted' => 'Chưa điểm danh',
+                    ];
+                });
+            
+                // Kết hợp danh sách điểm danh và lịch học
+                $finalData = $attendanceData->merge($scheduleData)->sortBy('date')->values();
                 // Đếm số lần status là 'absent'
-                $absentCount = $attendances->where('status', 'absent')->count();
-        
-                // Lấy thông tin user từ quan hệ
-                $user = $attendances->first()->user ?? null;
-        
+                $totalSchedule = $finalData->count();
+                // dd($absentCount);
+                $absentCount = $attendanceData->where('status', 'absent')->count();
+                // dd($absentCount);
                 return [
-                    'student_code' => $studentCode,
-                    'full_name' => $user ? $user->full_name : 'N/A',
-                    'absent_count' => $absentCount,
-                    'attendances' => $attendances->map(function ($attendance) {
-                        return [
-                            'date' => $attendance->date,
-                            'status' => $attendance->status,
-                            'noted' => $attendance->noted,
-                        ];
-                    })->values()->all(),
+                    'student_code' => $userCode,
+                    'full_name' => $fullName,
+                    'total_schedule' => $totalSchedule,
+                    'total_absent' => $absentCount,
+                    'attendance' => $finalData,
                 ];
-            })
-            ->values()
-            ->all();
-            if (!$attendances) {
+            })->values()->all();
+                            
 
-                return $this->handleInvalidId();
-            } else {
+            return response()->json($result, 200);
+        } catch (Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
-                return response()->json($attendances, 200);                
-            }
-        } catch (\Throwable $th) {
-
-            return $this->handleErrorNotDefine($th);
+            return response()->json([
+                'message' => 'Lỗi không xác định!'
+            ], 500);
         }
     }
     /**
