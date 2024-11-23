@@ -1,13 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const DashboardCards = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/count-info");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                const result = await response.json();
+                setData(result.countRoom);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
     return (
         <div>
             {/* Header */}
             <div className="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
                 <div>
                     <h3 className="fw-bold mb-3">Dashboard</h3>
-                    <h6 className="op-7 mb-2">Free Bootstrap 5 Admin Dashboard</h6>
                 </div>
                 <div className="ms-md-auto py-2 py-md-0">
                     <a href="#" className="btn btn-label-info btn-round me-2">
@@ -28,25 +58,11 @@ const DashboardCards = () => {
                             <div className="d-flex justify-content-between">
                                 <div>
                                     <h6>
-                                        <b>Todays Income</b>
+                                        <b>Chuyên ngành</b>
                                     </h6>
-                                    <p className="text-muted">All Customs Value</p>
+                                    <p className="text-muted">Tổng chuyên nghành</p>
                                 </div>
-                                <h4 className="text-info fw-bold">$170</h4>
-                            </div>
-                            <div className="progress progress-sm">
-                                <div
-                                    className="progress-bar bg-info"
-                                    style={{ width: "75%" }}
-                                    role="progressbar"
-                                    aria-valuenow="75"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
-                            </div>
-                            <div className="d-flex justify-content-between mt-2">
-                                <p className="text-muted mb-0">Change</p>
-                                <p className="text-muted mb-0">75%</p>
+                                <h4 className="text-info fw-bold">{data.count_major}</h4>
                             </div>
                         </div>
                     </div>
@@ -59,25 +75,11 @@ const DashboardCards = () => {
                             <div className="d-flex justify-content-between">
                                 <div>
                                     <h6>
-                                        <b>Total Revenue</b>
+                                        <b>Sinh viên</b>
                                     </h6>
-                                    <p className="text-muted">All Customs Value</p>
+                                    <p className="text-muted">Tổng số sinh viên</p>
                                 </div>
-                                <h4 className="text-success fw-bold">$120</h4>
-                            </div>
-                            <div className="progress progress-sm">
-                                <div
-                                    className="progress-bar bg-success"
-                                    style={{ width: "25%" }}
-                                    role="progressbar"
-                                    aria-valuenow="25"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
-                            </div>
-                            <div className="d-flex justify-content-between mt-2">
-                                <p className="text-muted mb-0">Change</p>
-                                <p className="text-muted mb-0">25%</p>
+                                <h4 className="text-success fw-bold">{data.count_student}</h4>
                             </div>
                         </div>
                     </div>
@@ -90,25 +92,11 @@ const DashboardCards = () => {
                             <div className="d-flex justify-content-between">
                                 <div>
                                     <h6>
-                                        <b>New Orders</b>
+                                        <b>Giảng viên</b>
                                     </h6>
-                                    <p className="text-muted">Fresh Order Amount</p>
+                                    <p className="text-muted">Tổng số giảng viên</p>
                                 </div>
-                                <h4 className="text-danger fw-bold">15</h4>
-                            </div>
-                            <div className="progress progress-sm">
-                                <div
-                                    className="progress-bar bg-danger"
-                                    style={{ width: "50%" }}
-                                    role="progressbar"
-                                    aria-valuenow="50"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
-                            </div>
-                            <div className="d-flex justify-content-between mt-2">
-                                <p className="text-muted mb-0">Change</p>
-                                <p className="text-muted mb-0">50%</p>
+                                <h4 className="text-danger fw-bold">{data.count_teacher}</h4>
                             </div>
                         </div>
                     </div>
@@ -121,25 +109,11 @@ const DashboardCards = () => {
                             <div className="d-flex justify-content-between">
                                 <div>
                                     <h6>
-                                        <b>New Users</b>
+                                        <b>Lớp học</b>
                                     </h6>
-                                    <p className="text-muted">Joined New User</p>
+                                    <p className="text-muted">Tổng số lớp học</p>
                                 </div>
-                                <h4 className="text-secondary fw-bold">12</h4>
-                            </div>
-                            <div className="progress progress-sm">
-                                <div
-                                    className="progress-bar bg-secondary"
-                                    style={{ width: "25%" }}
-                                    role="progressbar"
-                                    aria-valuenow="25"
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                ></div>
-                            </div>
-                            <div className="d-flex justify-content-between mt-2">
-                                <p className="text-muted mb-0">Change</p>
-                                <p className="text-muted mb-0">25%</p>
+                                <h4 className="text-secondary fw-bold">{data.count_classroom}</h4>
                             </div>
                         </div>
                     </div>
