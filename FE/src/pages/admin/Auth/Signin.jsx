@@ -52,7 +52,7 @@ const Signin = () => {
             } else if (error.response.status === 500) {
                 toast.warning("Lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
-                toast.warning(error.response.data.message);
+                toast.error(error.response.data.message);
             }
             console.log(error);
         },

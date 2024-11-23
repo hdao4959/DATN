@@ -6,6 +6,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getToken } from "../../utils/getToken";
 
+moment.locale("vi");
+
 const localizer = momentLocalizer(moment);
 
 const eventStyleGetter = (event) => {
@@ -122,6 +124,16 @@ const MyCalendar = () => {
                     views={["month", "week", "day"]}
                     defaultView="week"
                     onSelectEvent={handleSelectEvent}
+                    messages={{
+                        allDay: "Cả ngày",
+                        previous: "Trước",
+                        next: "Tiếp theo",
+                        today: "Hôm nay",
+                        month: "Tháng",
+                        week: "Tuần",
+                        day: "Ngày",
+                        date: "Ngày",
+                    }}
                 />
             )}
 

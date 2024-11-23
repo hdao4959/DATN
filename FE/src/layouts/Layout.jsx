@@ -446,7 +446,10 @@ const AdminLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                src={
+                                                    user?.avatar ||
+                                                    "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                }
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -487,9 +490,10 @@ const AdminLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${user?.user_code ||
+                                                            to={`/admin/account/${
+                                                                user?.user_code ||
                                                                 ""
-                                                                }`}
+                                                            }`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -500,8 +504,9 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${user?.user_code || ""
-                                                        }`}
+                                                    to={`/admin/account/${
+                                                        user?.user_code || ""
+                                                    }`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
