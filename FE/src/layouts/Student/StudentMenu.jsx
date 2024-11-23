@@ -54,7 +54,7 @@ const StudentMenu = () => {
                                 <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                                 <p className="text-[#b9babf]">Trang Chủ</p>
                             </NavLink>
-                        </li> */}
+                        </li>
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#attendances">
                                 <i className="fas fa-clipboard-list" />
