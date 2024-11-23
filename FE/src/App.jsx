@@ -293,9 +293,11 @@ function App() {
         {
             path: "/student",
             element: (
+
                 <CheckRole>
                     <StudentLayout />
                 </CheckRole>
+
             ),
             children: [
                 {
@@ -334,13 +336,16 @@ function App() {
 
                 {
                     path: "news",
-                    element: <StudentNews />,
+                    element: <StudentNews Type="news"/>,
                 },
                 {
                     path: "news/:id/detail",
                     element: <StudentDetailNews />,
                 },
-
+                {
+                    path: "notifications",
+                    element: <StudentNews Type="notification"/>,
+                },
                 {
                     path: "FAQS",
                     element: <FAQs />

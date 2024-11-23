@@ -16,8 +16,9 @@ class NewsletterController extends Controller
     {
         try {
             // Lấy user_code từ FE
-            $userCode = $request->user()->user_code;
-
+            $userCode = $request->user()->user_code;     
+            // $userCode = 'student05';
+            
             if (!$userCode) {
 
                 return response()->json('Không có user', 200);
@@ -53,7 +54,8 @@ class NewsletterController extends Controller
     {
         try {
             // Lấy user_code từ FE
-            $userCode = $request->user()->user_code;
+            $userCode = $request->user()->user_code;  
+            // $userCode = 'student05';    
             if (!$userCode) {
 
                 return response()->json('Không có user', 200);
@@ -62,27 +64,27 @@ class NewsletterController extends Controller
                 $listClass = ClassroomUser::where('user_code', $userCode)->pluck('class_code');
 
                 // Lấy ra các newsletters thuộc lớp học của user_code
-                $newsletters = Newsletter::where(function ($query) use ($listClass) {
+                $newsletters = Newsletter::where('code', $code)->where(function ($query) use ($listClass) {
                     foreach ($listClass as $classCode) {
                         $query->orWhereJsonContains('notification_object', ['class_code' => $classCode]);
                     }
                 })
-                    ->with(['category', 'user'])
-                    ->get()->map(function ($newsletter) {
-                        return [
-                            'id' => $newsletter->id,
-                            'code' => $newsletter->code,
-                            'title' => $newsletter->title,
-                            'content' => $newsletter->content,
-                            'image' => $newsletter->image,
-                            'type' => $newsletter->type,
-                            'expiry_date' => $newsletter->expiry_date,
-                            'is_active' => $newsletter->is_active,
-                            'created_at' => $newsletter->created_at,
-                            'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
-                            'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
-                        ];
-                    });
+                ->with(['category', 'user'])
+                ->get()->map(function ($newsletter) {
+                    return [
+                        'id' => $newsletter->id,
+                        'code' => $newsletter->code,
+                        'title' => $newsletter->title,
+                        'content' => $newsletter->content,
+                        'image' => $newsletter->image,
+                        'type' => $newsletter->type,
+                        'expiry_date' => $newsletter->expiry_date,
+                        'is_active' => $newsletter->is_active,
+                        'created_at' => $newsletter->created_at,
+                        'cate_name' => $newsletter->category ? $newsletter->category->cate_name : null,
+                        'full_name' => $newsletter->user ? $newsletter->user->full_name : null,
+                    ];
+                });        
             }
 
             return response()->json($newsletters, 200);
@@ -131,12 +133,12 @@ class NewsletterController extends Controller
             ], 500);
         }
     }
-
     public function showNoti(Request $request)
     {
         try {
             // Lấy user_code từ FE
             $userCode = $request->user()->user_code;
+            // $userCode = 'student05';
 
             if (!$userCode) {
                 return response()->json('Không có user', 200);

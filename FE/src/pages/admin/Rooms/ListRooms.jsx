@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { createRoot } from "react-dom/client";
-import { ReactDOM } from "react-dom/client";
 import { Link } from "react-router-dom";
 import {
-    QueryClient,
-    QueryClientProvider,
     useMutation,
     useQuery,
 } from "@tanstack/react-query";
@@ -20,7 +16,6 @@ import ShowAttendance from "../Attendance/page";
 const ClassRoomsList = () => {
     const accessToken = getToken();
     const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
-    const queryClient = new QueryClient();
     const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] =
         useState(null);
     const [
@@ -82,6 +77,25 @@ const ClassRoomsList = () => {
         setSelectedClassCodeForAttendances(null);
     };
 
+    const { mutate: updateStatus } = useMutation({
+        mutationFn: async (data) => {
+            return api.put('/admin/classrooms/bulk-update-type', data, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+        },
+        onSuccess: () => {
+            toast.success("Cập nhật trạng thái thành công!");
+            refetch(); // Reload lại danh sách classrooms
+        },
+        onError: (error) => {
+            // console.error("onError Callback:", error.response || error.message || error); // Log lỗi trong onError
+            toast.error("Có lỗi xảy ra khi cập nhật trạng thái!");
+        },
+    });
+
     useEffect(() => {
         if (classrooms) {
             $("#classroomsTable").DataTable({
@@ -133,10 +147,10 @@ const ClassRoomsList = () => {
                         title: "Trạng thái",
                         data: "is_active",
                         className: "text-center",
-                        render: (data, type, row) => {
-                            return data === true
-                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
-                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
+                        render: (data) => {
+                            return data
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
                         },
                     },
                     {
@@ -203,6 +217,19 @@ const ClassRoomsList = () => {
 
                             navigate(`/admin/classrooms/edit/${classCode}`);
                         });
+                    $(row)
+                        .find(".toggleStatus")
+                        .on("click", function () {
+                            const currentStatus = data.is_active;
+                            const newStatus = !currentStatus;
+
+                            // Gọi API thay đổi trạng thái
+                            updateStatus({
+                                is_active: {
+                                    [data.class_code]: newStatus,
+                                },
+                            });
+                        });
                 },
             });
             // Lắng nghe sự kiện click cho nút "Xem điểm"
@@ -256,8 +283,8 @@ const ClassRoomsList = () => {
                 )}
                 {(selectedClassCodeForGrades ||
                     selectedClassCodeForAttendances) && (
-                    <div className="modal-backdrop fade show"></div>
-                )}
+                        <div className="modal-backdrop fade show"></div>
+                    )}
                 <div className="card-body">
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>
