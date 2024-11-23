@@ -167,6 +167,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('fees', FeeController::class);
 
     });
+    });
+
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
@@ -226,7 +228,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 // Các route phục vụ cho form
-Route::controller(GetDataForFormController::class)->group(function () {
+        Route::controller(GetDataForFormController::class)->group(function () {
     Route::get('/listCoursesForForm', 'listCoursesForFrom');
     Route::get('/listSemestersForForm', 'listSemestersForForm');
     Route::get('/listMajorsForForm', 'listMajorsForForm');
@@ -236,46 +238,10 @@ Route::controller(GetDataForFormController::class)->group(function () {
     Route::get('/listSessionsForForm', 'listSessionsForForm');
     Route::get('/listRoomsForForm', 'listRoomsForForm');
     Route::get('/listSubjectsForForm', 'listSubjectsForForm');
-});
+    });
 
 });
 
-
-
-
-Route::get('haha', function () {
-    // $array_student_id = User::where(
-    //     [
-    //         'major_code' => 'CN01',
-    //         'is_active' => true,
-    //         'semester_code' => 'S01',
-    //         'role' => 'student'
-    //     ]
-    // )->limit(3)->pluck('id');
-
-    // if ($array_student_id->isEmpty()) {
-    //     return response()->json(
-    //         [
-    //             'message' => 'Không có học sinh nào để có thể tạo lớp học!'
-    //         ], 422
-    //     );
-    // }
-
-    // $classroom = Classroom::create([
-    //     'class_code' => '1312' ,
-    //     'class_name' => 'Lớp 1',
-    //     'section' => 1,
-    //     'subject_code' => 'php1',
-    //     'user_code' => 'TC277'
-    // ]);
-    // $classroom->users()->attach($array_student_id);
-    // // $user = User::with('classrooms')->where('role', 'student')->first();
-    // return response()->json('OK');
-
-    // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
-
-
-});
 
 
 Route::apiResource('transaction', TransactionController::class);
@@ -302,8 +268,3 @@ Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::
 Route::post('services/change-info/{user_code}',             [ServiceController::class,'ChangeInfo']);
 Route::post('services/provide-student-card/{user_code}',    [ServiceController::class,'provideStudentCard']);
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class,'DropOutOfSchool']);
-
-
-
-
-
