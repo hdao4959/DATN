@@ -40,7 +40,7 @@ const ClassSchedules = () => {
                 }
 
                 const response = await fetch(
-                    `http://127.0.0.1:8000/api/teacher/classrooms/${class_code}/list_schedules`,
+                    `http://127.0.0.1:8000/api/teacher/classrooms/${class_code}/schedules`,
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
