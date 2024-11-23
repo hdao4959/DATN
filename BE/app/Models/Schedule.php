@@ -38,6 +38,7 @@ class Schedule extends Model
             ],
             'room' => [
                 'cate_name' => $this->room->cate_name ?? null,
+                'value' => $this->room->value ?? null,
             ],
             'session' => [
                 'cate_code' => $this->session->cate_code ?? null,

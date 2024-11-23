@@ -87,8 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-
-
         Route::apiResource('teachers', TeacherController::class);
 
         Route::apiResource('students', StudentController::class);
@@ -114,13 +112,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
 
+        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+             Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+             Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
         });
 
-        // Route::controller(ClassroomController::class)->group(function () {
-        //     Route::post('classrooms/handle_step1', 'handleStep1');
-        //     Route::post('classrooms/handle_step2', 'handleStep2');
-        //     Route::post('classrooms/handle_step3', 'handleStep3');
-        // });
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
         Route::apiResource('majors', MajorController::class);
@@ -200,13 +197,20 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
-        Route::get('/classrooms', [StudentClassroomController::class, 'index']);
-        Route::get('/classrooms/{class_code}', [StudentClassroomController::class, 'show']);
+        Route::controller(StudentClassroomController::class)->group(function(){
+            Route::get('/classrooms', 'index');
+            Route::get('/classrooms/{class_code}', 'show');
+        });
 
 
-        Route::get('schedules', [StudentScheduleController::class, 'index']);
-        Route::get('/classrooms/{class_code}/schedules', [StudentScheduleController::class, 'schedulesOfClassroom']);
-
+        // Các route cho lịch học
+        Route::controller(StudentScheduleController::class)->group(function(){
+            Route::get('schedules', 'index');
+            Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+            Route::get('/transferSchedules', 'transferSchedules');
+            Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
+            Route::post('/handleTransferSchedule', 'handleTransferSchedule');
+        });
 
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
@@ -269,6 +273,7 @@ Route::get('haha', function () {
     // return response()->json('OK');
 
     // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
+
 
 });
 

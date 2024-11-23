@@ -40,4 +40,7 @@ class RenderRoomsAndTeachersForStoreClassroom extends FormRequest
             'list_study_dates.*.date' => 'Lịch học không đúng định dạng (Y-m-d)!',
         ];
     }
+
+    
+    protected $stopOnFirstFailure = true;
 }
