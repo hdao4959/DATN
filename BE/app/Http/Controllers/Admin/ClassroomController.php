@@ -608,4 +608,28 @@ class ClassroomController extends Controller
         }
     }
 
+    public function bulkUpdateType(Request $request)
+    {
+        try {
+            $activies = $request->input('is_active'); // Lấy dữ liệu từ request
+    
+            DB::transaction(function () use ($activies) {
+                foreach ($activies as $class_code => $active) {
+                    // Tìm classroom theo class_code và áp dụng lock for update
+                    $classroom = Classroom::where('class_code', $class_code)->lockForUpdate()->first();
+    
+                    if ($classroom) {
+                        $classroom->is_active = $active; // Sửa lại đúng field
+                        $classroom->save();
+                    }
+                }
+            });
+    
+            return response()->json([
+                'message' => 'Trạng thái đã được cập nhật thành công!'
+            ], 200);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 }

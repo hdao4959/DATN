@@ -30,7 +30,6 @@ import ShowGrades from "./pages/admin/Grades/pages.jsx";
 import GradeComponentList from "./pages/admin/GradeComponents/GradeComponentList";
 import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents";
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
-import AddClassroomTest from "./pages/admin/Rooms/AddClassroomTest";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
 import AddPost from "./pages/admin/Post/AddPost";
@@ -45,8 +44,6 @@ import ClassList from "./pages/teacher/MyClass/ClassList";
 import ClassroomStudents from "./pages/teacher/MyClass/ClassroomStudents";
 import ClassSchedules from "./pages/teacher/MyClass/ClassSchedules";
 import NotFound from "./pages/NotFound";
-// import MyCalendar from "./pages/teacher/TeachSchedule";
-// import MyClass from "./pages/teacher/myClass/MyClass";
 import AttendanceManagement from "./pages/admin/Attendance/page.jsx";
 import AttendanceTeacher from "./pages/teacher/Attendance/page.jsx";
 import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
@@ -55,18 +52,17 @@ import StudentGrades from "./pages/student/Grade/page.jsx";
 import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
 import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
-import MultiStepForm from "./pages/admin/Rooms/MultiRooms.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
-
 import TeacherAddPost from "./pages/teacher/Post/AddPost";
 import TeacherPostList from "./pages/teacher/Post/PostList";
 import TeacherUpdatePost from "./pages/teacher/Post/UpdatePost";
 import StudentNews from "./pages/student/Post/page.jsx";
 import StudentDetailNews from "./pages/student/Post/detail.jsx";
-
 import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
+import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
+
 
 function App() {
     const router = createBrowserRouter([
@@ -81,9 +77,9 @@ function App() {
         {
             path: "admin",
             element: (
-                <CheckRole>
-                    <Layout />
-                </CheckRole>
+                // <CheckRole>
+                <Layout />
+                // </CheckRole>
             ),
             children: [
                 {
@@ -146,7 +142,7 @@ function App() {
                 },
                 {
                     path: "classrooms/add",
-                    element: <AddClassroomTest />,
+                    element: <AddClassroom />,
                 },
                 {
                     path: "classrooms/edit/:class_code",
@@ -155,10 +151,6 @@ function App() {
                 {
                     path: "classrooms/view/:class_code",
                     element: <ClassroomDetails />,
-                },
-                {
-                    path: "classrooms/step",
-                    element: <MultiStepForm />,
                 },
                 {
                     path: "semesters",
@@ -296,7 +288,6 @@ function App() {
                     path: "post/:id/edit",
                     element: <TeacherUpdatePost />,
                 },
-
             ],
         },
         {
@@ -327,6 +318,20 @@ function App() {
                     path: "services/re-enrollment",
                     element: <ReEnrollment />,
                 },
+                {
+                    path: "FAQS",
+
+                    element: <FAQs />,
+                },
+                // {
+                //     path: "change-major",
+                //     element: <ChangeMajorForm />,
+                // },
+                // {
+                //     path: "request-attendance",
+                //     element: <AttendanceRequestForm />,
+                // },
+
                 {
                     path: "news",
                     element: <StudentNews />,
