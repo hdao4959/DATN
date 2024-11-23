@@ -42,4 +42,7 @@ class RenderSchedulesForStoreClassroom extends FormRequest
             'study_days.*.in' => 'Các ngày học không hợp lệ!',
         ];
     }
+
+    
+    protected $stopOnFirstFailure = true;
 }

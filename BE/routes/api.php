@@ -87,8 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-
-
         Route::apiResource('teachers', TeacherController::class);
 
         Route::apiResource('students', StudentController::class);
@@ -106,14 +104,63 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('classrooms', ClassroomController::class);
-        Route::put('/classrooms/bulk-update-type', [ClassroomController::class, 'bulkUpdateType']);
+        Route::put('/classrooms/updateActive/{classCode}', [ClassroomController::class, 'updateActive']);
 
-        Route::controller(ClassroomController::class)->group(function(){
+        Route::controller(ClassroomController::class)->group(function () {
             Route::post('classrooms/handleStep1', 'handleStep1');
             Route::post('classrooms/renderSchedules', 'renderSchedules');
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
 
+            Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
+                Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+                Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+                Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
+            });
+
+            Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
+            Route::apiResource('majors', MajorController::class);
+            Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+
+            Route::apiResource('newsletters', NewsletterController::class);
+            Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+            Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
+
+            Route::apiResource('assessment', AssessmentItemController::class);
+
+            Route::get('score/{id}', [ScoreController::class, 'create']);
+
+            Route::apiResource('categories', CategoryController::class);
+
+            Route::controller(CategoryController::class)->group(function () {
+                Route::get('/listParentCategories', 'listParentCategories');
+                Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
+            });
+
+            Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+            Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+            Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
+
+            Route::apiResource('sessions', SessionController::class);
+            Route::apiResource('semesters', SemesterController::class);
+
+            Route::apiResource('grades', GradesController::class);
+            Route::get('grades', [GradesController::class, 'getByParam']);
+            Route::patch('grades/{id}', [GradesController::class, 'update']);
+
+            Route::apiResource('schoolrooms', SchoolRoomController::class);
+
+            Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
+
+            Route::apiResource('pointheads', PointHeadController::class);
+
+            // Route::apiResource('newsletters', NewsletterController::class);
+
+            Route::apiResource('attendances', AttendanceController::class);
+
+            Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+
+            Route::apiResource('fees', FeeController::class);
         });
 
         // Route::controller(ClassroomController::class)->group(function () {
@@ -167,9 +214,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
 
-
+        Route::apiResource('fees', FeeController::class);
 
     });
+
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
@@ -195,18 +243,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('newsletters', TeacherNewsletterController::class);
         Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
-        Route::put('/newsletters/bulk-update-type', [NewsletterController::class, 'bulkUpdateType']);
-
+        Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
-        Route::get('/classrooms', [StudentClassroomController::class, 'index']);
-        Route::get('/classrooms/{class_code}', [StudentClassroomController::class, 'show']);
+        Route::controller(StudentClassroomController::class)->group(function () {
+            Route::get('/classrooms', 'index');
+            Route::get('/classrooms/{class_code}', 'show');
+        });
 
 
-        Route::get('schedules', [StudentScheduleController::class, 'index']);
-        Route::get('/classrooms/{class_code}/schedules', [StudentScheduleController::class, 'schedulesOfClassroom']);
-
+        // Các route cho lịch học
+        Route::controller(StudentScheduleController::class)->group(function () {
+            Route::get('schedules', 'index');
+            Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+            Route::get('/transferSchedules', 'transferSchedules');
+            Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
+            Route::post('/handleTransferSchedule', 'handleTransferSchedule');
+        });
 
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
@@ -218,77 +272,40 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters', [StudentNewsletterController::class, 'index']);
         Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
-
     });
 
-// Các route phục vụ cho form
-Route::controller(GetDataForFormController::class)->group(function () {
-    Route::get('/listCoursesForForm', 'listCoursesForFrom');
-    Route::get('/listSemestersForForm', 'listSemestersForForm');
-    Route::get('/listMajorsForForm', 'listMajorsForForm');
-    Route::get('/listParentMajorsForForm', 'listParentMajorsForForm');
-    Route::get('/listChildrenMajorsForForm/{parent_code}', 'listChildrenMajorsForForm');
-    Route::get('/listSubjectsToMajorForForm/{major_code}',  'listSubjectsToMajorForForm');
-    Route::get('/listSessionsForForm', 'listSessionsForForm');
-    Route::get('/listRoomsForForm', 'listRoomsForForm');
-    Route::get('/listSubjectsForForm', 'listSubjectsForForm');
+    // Các route phục vụ cho form
+    Route::controller(GetDataForFormController::class)->group(function () {
+        Route::get('/listCoursesForForm', 'listCoursesForFrom');
+        Route::get('/listSemestersForForm', 'listSemestersForForm');
+        Route::get('/listMajorsForForm', 'listMajorsForForm');
+        Route::get('/listParentMajorsForForm', 'listParentMajorsForForm');
+        Route::get('/listChildrenMajorsForForm/{parent_code}', 'listChildrenMajorsForForm');
+        Route::get('/listSubjectsToMajorForForm/{major_code}',  'listSubjectsToMajorForForm');
+        Route::get('/listSessionsForForm', 'listSessionsForForm');
+        Route::get('/listRoomsForForm', 'listRoomsForForm');
+        Route::get('/listSubjectsForForm', 'listSubjectsForForm');
+    });
 });
 
-});
-
-
-
-
-Route::get('haha', function () {
-    // $array_student_id = User::where(
-    //     [
-    //         'major_code' => 'CN01',
-    //         'is_active' => true,
-    //         'semester_code' => 'S01',
-    //         'role' => 'student'
-    //     ]
-    // )->limit(3)->pluck('id');
-
-    // if ($array_student_id->isEmpty()) {
-    //     return response()->json(
-    //         [
-    //             'message' => 'Không có học sinh nào để có thể tạo lớp học!'
-    //         ], 422
-    //     );
-    // }
-
-    // $classroom = Classroom::create([
-    //     'class_code' => '1312' ,
-    //     'class_name' => 'Lớp 1',
-    //     'section' => 1,
-    //     'subject_code' => 'php1',
-    //     'user_code' => 'TC277'
-    // ]);
-    // $classroom->users()->attach($array_student_id);
-    // // $user = User::with('classrooms')->where('role', 'student')->first();
-    // return response()->json('OK');
-
-    // $classroom = Classroom::with('teacher', 'subject', 'schedules')->where('class_code', 00001)->get();
-
-});
 
 
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
-Route::apiResource('feedback',FeedbackController::class);
+Route::apiResource('feedback', FeedbackController::class);
 
 
-Route::get('send-email', [SendEmailController::class,'sendMailFee']);
-Route::get('send-email2', [SendEmailController::class,'sendMailFeeUser']);
+Route::get('send-email', [SendEmailController::class, 'sendMailFee']);
+Route::get('send-email2', [SendEmailController::class, 'sendMailFeeUser']);
 
 // DashboardAdmin
-Route::get('count-info',        [DashboardController::class,'getCountInfo']);
-Route::get('count-student',     [DashboardController::class,'getStudentCountByMajor']);
-Route::get('status-fee-date',   [DashboardController::class,'getStatusFeesByDate']);
-Route::get('status-fee-all',    [DashboardController::class,'getStatusFeesAll']);
-Route::get('status-attendances',[DashboardController::class,'getStatusAttendances']);
+Route::get('count-info',        [DashboardController::class, 'getCountInfo']);
+Route::get('count-student',     [DashboardController::class, 'getStudentCountByMajor']);
+Route::get('status-fee-date',   [DashboardController::class, 'getStatusFeesByDate']);
+Route::get('status-fee-all',    [DashboardController::class, 'getStatusFeesAll']);
+Route::get('status-attendances', [DashboardController::class, 'getStatusAttendances']);
 // Admin
-Route::post('students/change-major/{id}', [StudentController::class,'changeMajorStudent']);
+Route::post('students/change-major/{id}', [StudentController::class, 'changeMajorStudent']);
 
 
 // Student

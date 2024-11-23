@@ -64,6 +64,7 @@ import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx
 import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
 import ViewSchedules from "./pages/student/Schedules/ViewSchedules.jsx";
 import ViewClassrooms from "./pages/student/Classrooms/ViewClassrooms.jsx";
+import TransferSchedule from "./pages/student/Schedules/TransferSchedule.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -78,9 +79,9 @@ function App() {
         {
             path: "admin",
             element: (
-                // <CheckRole>
-                <Layout />
-                // </CheckRole>
+                <CheckRole>
+                    <Layout />
+                </CheckRole>
             ),
             children: [
                 {
@@ -349,6 +350,10 @@ function App() {
                 {
                     path: "schedules",
                     element: <ViewSchedules />,
+                },
+                {
+                    path: "schedules/transfer",
+                    element: <TransferSchedule />,
                 },
                 {
                     path: "classrooms",

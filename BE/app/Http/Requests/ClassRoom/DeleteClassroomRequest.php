@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Teacher;
+namespace App\Http\Requests\Classroom;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteTeacherRequest extends FormRequest
+class DeleteClassroomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,8 +28,8 @@ class DeleteTeacherRequest extends FormRequest
 
     public function messages(){
         return [
-             'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này!',
-            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+        'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này!',
+        'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
         ];
     }
 }
