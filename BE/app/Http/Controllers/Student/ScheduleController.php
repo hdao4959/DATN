@@ -102,7 +102,7 @@ class ScheduleController extends Controller
                 }
             ])->whereIn('class_code', $classroom_codes)
                 ->get()->makeHidden(['id', 'score', 'is_active', 'user_code', 'description', 'deleted_at', 'created_at', 'updated_at']);
-
+            // return response()->json($classrooms);
 
             $classrooms_info_response = [];
 
@@ -117,7 +117,23 @@ class ScheduleController extends Controller
                     }
                 }
 
-                $session = $class->schedules->first()->session;
+                $schedule = $class->schedules->first();
+
+                if(!$schedule){
+                    continue;
+                }
+
+                $session = $schedule->session;
+                if(!$session){
+                    continue;
+                }
+
+                $session_code = $session->cate_code;
+                $session_name = $session->cate_name;
+
+                if(!$session_code || !$session_name){
+                    continue;
+                }
                 $classrooms_info_response[] = [
                     'class_code' => $class->class_code,
                     'class_name' => $class->class_name,
@@ -125,14 +141,13 @@ class ScheduleController extends Controller
                     'subject_name' => $class->subject->subject_name,
                     'users_count' => $class->users_count,
                     'room_slot' => $class->schedules->first()->room->value,
-                    'session_code' => $session->cate_code,
-                    'session_name' => $session->cate_name,
+                    'session_code' => $session_code,
+                    'session_name' => $session_name,
                     'study_days' => $study_days,
                     'date_from' => $class->schedules->first()->date
                 ];
-                return response()->json($classrooms_info_response);
             }
-            return response()->json($classrooms);
+            return response()->json($classrooms_info_response);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -177,8 +192,8 @@ class ScheduleController extends Controller
                         $query->select('subject_code', 'subject_name');
                     },
                     'schedules' => function ($query) {
-                        $query->orderBy('date', 'asc')->limit(7);
-                    },   
+                        $query->with(['session', 'room'])->orderBy('date', 'asc')->limit(7);
+                    }
                 ])->whereHas('schedules', function($query) use ($data){
                     $query->whereHas('session', function($sessionQuery) use ($data){
                         $sessionQuery->where('cate_code', $data['session_code']);
@@ -216,20 +231,38 @@ class ScheduleController extends Controller
                         $days[] = $day;
                     }
                 }
-                $session = $class->schedules->first()->session;
-                $room = $class->schedules->first()->room;
+                $schedule = $class->schedules->first();
+                if(!$schedule){
+                    continue;
+                }
+
+
+                $room_code = $schedule->room->cate_code;
+                $session_code = $schedule->session->cate_code;
+
+                if (!$room_code || !$session_code) {
+                    continue; 
+                }
+
+                $room_name = $schedule->room->cate_name;
+                $room_slot = $schedule->room->value;
+                $session_name = $schedule->session->cate_name;
+
+            if(!$room_name || !$room_slot || !$session_name){
+                continue;
+            }
 
                 $classrooms_info_response[] = [
                     'class_code' => $class->class_code,
                     'class_name' => $class->class_name,
                     'subject_code' => $class->subject->subject_code,
                     'subject_name' => $class->subject->subject_name,
-                    'session_code' => $session->cate_code,
-                    'session_name' => $session->cate_name,
+                    'session_code' => $session_code,
+                    'session_name' => $session_name,
                     'users_count' => $class->users_count,
-                    'room_code' => $room->cate_code,
-                    'room_name' => $room->cate_name,
-                    'room_slot' => $room->value,
+                    'room_code' => $room_code,
+                    'room_name' => $room_name,
+                    'room_slot' => $room_slot,
                     'study_days' => $days
                 ];
             }
@@ -302,8 +335,8 @@ class ScheduleController extends Controller
             if ($this->sliceClassname($classroom_current->class_code) !== $this->sliceClassname($classroom_target->class_code)) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Môn học không trùng hợp'
-                ]);
+                    'message' => 'Môn học hoặc khoá học giữa 2 lớp không trùng khớp!'
+                ],403);
             }
 
             $schedule = $classroom_target->schedules->first();
