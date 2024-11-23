@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Fee::class)->constrained();
+            $table->foreignIdFor(model: Fee::class)->constrained();
             $table->date('payment_date');
             $table->decimal('amount_paid',12,2);
             $table->enum('payment_method',['transfer','cash']);

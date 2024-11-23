@@ -79,6 +79,7 @@
 
     <p><strong>5. Hình thức nộp tiền:</strong> Sinh viên truy cập hệ thống <a
             href="https://dng.fpt.edu.vn">dng.fpt.edu.vn</a> để xem hướng dẫn nộp tiền.</p>
+    <a href="http://127.0.0.1:8000/total_momo?fee_id={{ $data['id'] }}">Thanh toán ngay</a>
 
     <h2>Hướng dẫn tra cứu học phí đã nộp</h2>
     <ul>

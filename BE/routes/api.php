@@ -30,7 +30,7 @@ use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
-
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
@@ -167,7 +167,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
 
-        Route::apiResource('fees', FeeController::class);
+
 
     });
 
@@ -301,4 +301,5 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 
 
-
+Route::apiResource('fees', FeeController::class);
+Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);

@@ -7,6 +7,7 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Repositories\Contracts\FeeRepositoryInterface;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -44,10 +45,12 @@ class FeeController extends Controller
     public function store(Request $request)
     {
         try {
-            $this->feeRepository->createAll();
-            return response()->json(['message' => 'tao fee thanh cong']);
-        } catch (Throwable $th) {
-            return response()->json(['message' => $th], 404);
+           $data = $this->feeRepository->createAll();
+            return response()->json(['message' => $data]);
+            // return response()->json($data);
+        }
+        catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 404);
         }
     }
 
