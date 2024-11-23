@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import $ from 'jquery';
 import 'datatables.net';
@@ -6,36 +6,50 @@ import api from '../../../config/axios';
 import { useQuery } from '@tanstack/react-query';
 
 const StudentGrades = () => {
-    const { data: subjects, isLoading: isLoadingClasses, refetch } = useQuery({
+    const [subjects, setSubjects] = useState([]);
+    const [semesterCode, setSemesterCode] = useState('');
+    const [semesters, setSemesters] = useState([]);
+    const { data, isLoading: isLoadingClasses, refetch } = useQuery({
         queryKey: ["LIST_CLASSES"],
         queryFn: async () => {
-            const res = await api.get(`/student/grades`);
-            console.log(res?.data?.data);
-            
-            return res?.data?.data;
+            console.log(semesterCode);
+
+            const res = await api.get(`/student/grades`, {
+                params: { search: semesterCode }
+            });
+            setSubjects(res?.data?.data || []);
+            setSemesters(res?.data?.semesters);
+            return res?.data;
         }
     });
 
     useEffect(() => {
-        if (subjects) {
-            subjects.forEach((_, index) => {
-                $(`#gradesTable${index}`).DataTable({
-                    pageLength: 10,
-                    lengthMenu: [10, 20, 50, 100],
-                    searching: false,
-                    language: {
-                        paginate: {
-                            previous: 'Trước',
-                            next: 'Tiếp theo'
-                        },
-                        lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                        info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
+        refetch();
+    }, [semesterCode]);
+
+    useEffect(() => {
+        subjects?.forEach((_, index) => {
+            // // Hủy bảng cũ trước khi tạo lại
+            // if ($(`#gradesTable${index}`).DataTable()) {
+            //     $(`#gradesTable${index}`).DataTable().clear().destroy();
+            // }
+            // Tạo bảng mới
+            $(`#gradesTable${index}`).DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                searching: false,
+                language: {
+                    paginate: {
+                        previous: 'Trước',
+                        next: 'Tiếp theo'
                     },
-                    destroy: true
-                });
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
+                },
+                destroy: true
             });
-        }
-    }, [subjects]);
+        });
+    }, [subjects, semesterCode]);
 
     const calculateAverage = (score) => {
         const totalWeight = score?.scores?.reduce((sum, scores) => sum + scores.value, 0);
@@ -47,7 +61,21 @@ const StudentGrades = () => {
         <div>
             <div className="card" style={{ minHeight: '800px' }}>
                 <div className="card-header">
-                    <h4 className="card-title">Bảng Điểm</h4>
+                    <h4 className="card-title">Bảng điểm</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <select
+                            value={semesterCode}
+                            onChange={(e) => setSemesterCode(e.target.value)}
+                            className="form-control"
+                        >
+                            <option value="">Chọn kỳ học..</option>
+                            {semesters?.map((sem) => (
+                                <option key={sem.cate_code} value={sem.cate_code}>
+                                    {sem.cate_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <div className="card-body">
                     {isLoadingClasses ? (
@@ -56,6 +84,13 @@ const StudentGrades = () => {
                             <p>Đang tải dữ liệu...</p>
                         </div>)
                         : ('')
+                    }
+                    {
+                        subjects ? (
+                            <div className="text-center">
+                                <p>{data?.message}</p>
+                            </div>
+                        ) : ('')
                     }
                     {subjects?.map((subject, index) => {
                         let average = Number(calculateAverage(subject.score));
