@@ -62,6 +62,8 @@ import ListTeacher from "./pages/admin/Teacher/ListTeacher.jsx";
 import TeacherAccountDetails from "./pages/admin/Teacher/TeacherAccountDetails.jsx";
 import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx";
 import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
+import ViewSchedules from "./pages/student/Schedules/ViewSchedules.jsx";
+import ViewClassrooms from "./pages/student/Classrooms/ViewClassrooms.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -343,6 +345,14 @@ function App() {
                 {
                     path: "FAQS",
                     element: <FAQs />,
+                },
+                {
+                    path: "schedules",
+                    element: <ViewSchedules />,
+                },
+                {
+                    path: "classrooms",
+                    element: <ViewClassrooms />,
                 },
             ],
         },

@@ -72,6 +72,66 @@ const StudentMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#schedules">
+                                <i className="fas fa-clipboard-list" />
+                                <p>Lịch học</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="schedules">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/schedules"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Lịch học</p>
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/schedules/transfer"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Thay đổi lịch học
+                                            </p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#classrooms">
+                                <i className="fas fa-clipboard-list" />
+                                <p>Lớp học</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="classrooms">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/classrooms"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Lớp của tôi
+                                            </p>
+                                        </NavLink>
+                                    </li>
+                                    {/* <li>
+                                        <NavLink
+                                            to="/student/schedules/transfer"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Thay đổi lịch học
+                                            </p>
+                                        </NavLink>
+                                    </li> */}
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#grades">
                                 <i className="fas fa-clipboard-list" />
                                 <p>Bảng Điểm</p>
