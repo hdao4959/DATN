@@ -99,6 +99,7 @@ class AttendanceController extends Controller
                     'class_name' => $firstAttendance->classroom->class_name,
                     'subject_name' => $firstAttendance->classroom->subject->subject_name,
                     'total_absent' => $absentCount,
+                    'total_schedule' => $totalSchedule,
                     'attendance' => $finalData,
                 ];
             })->values()->all();
@@ -108,7 +109,6 @@ class AttendanceController extends Controller
                 'semesters' => $listSemester,
                 'attendances' => $result,
                 'semesterCode' => $semesterCode,
-                'total_schedule' => $totalSchedule,
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
