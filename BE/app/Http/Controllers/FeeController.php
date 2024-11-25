@@ -60,9 +60,13 @@ class FeeController extends Controller
     public function show($id)
     {
         try {
-            $data = Fee::where('id', $id)->first();
+            // $data = Fee::where('id', $id)->first();
+            $data = Fee::find($id);
             if (!$data) {
-                return $this->handleInvalidId();
+                return response()->json([
+                    'message' => 'Fee not found.',
+                    'success' => false
+                ], 404);    
             } else {
                 return response()->json([
                     $data
@@ -79,11 +83,7 @@ class FeeController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        $data = $request->all(); // Lấy tất cả dữ liệu từ FormData
-        // Bạn có thể truy cập các giá trị này ví dụ: $data['user_code'], $data['semester_code'], ...
-        return response()->json([
-            'data' => $data,
-        ], 200);
+        
     }
 
 
@@ -92,7 +92,21 @@ class FeeController extends Controller
      */
     public function update(Request $request, Fee $fee)
     {
-        //
+        $validatedData = $request->validate([
+            'amount' => 'required|numeric|min:0',
+        ]);
+    
+        // Cập nhật giá trị mới
+        $fee->amount = $validatedData['amount'];
+        if($validatedData['amount'] >= $fee->total_amount){
+            $fee->status = 'paid';
+        }
+        $fee->save();
+    
+        return response()->json([
+            'message' => 'Fee updated successfully.',
+            'data' => $fee,
+        ], 200);
     }
 
     /**

@@ -35,9 +35,7 @@ const StudentWalletList = () => {
                         const response = await api.get(`/admin/fees`, {
                             params: { page, per_page: data.length },
                         });
-
                         const result = response.data;
-
                         callback({
                             draw: data.draw,
                             recordsTotal: result.total,

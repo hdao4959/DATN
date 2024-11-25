@@ -18,9 +18,9 @@ const EditMajor = () => {
 
     // Mutation để cập nhật dữ liệu
     const { mutate } = useMutation({
-        mutationFn: (data) => {
-            return api.put(`/admin/fees/${id}`, data);
-        },
+        mutationFn: async (data) => {
+            await api.put(`/admin/fees/${id}`, data);
+          },
         onSuccess: () => {
             toast.success("Cập nhật công nợ thành công");
         },
@@ -30,44 +30,42 @@ const EditMajor = () => {
         },
     });
 
-
     // Query để lấy dữ liệu chi tiết
     const { data: detail } = useQuery({
         queryKey: ["WALLETS_DETAIL", id],
         queryFn: async () => {
             const res = await api.get(`/admin/fees/${id}`);
-            return res.data;
+            return res.data.length > 0 ? res.data[0] : null
         },
     });
     console.log(detail);
 
     // Gán giá trị mặc định khi có dữ liệu
     useEffect(() => {
-        if (detail && Array.isArray(detail) && detail.length > 0) {
+        if (detail) { // Kiểm tra nếu detail không phải là null hoặc undefined
             reset({
-                user_code: detail[0].user_code || "",
-                total_amount: detail[0].total_amount || "",
-                amount: detail[0].amount || "0.00", // Giá trị mặc định nếu không có amount
+                user_code: detail.user_code || "",
+                total_amount:  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(detail.total_amount)  || "",
+                amount: detail.amount || "0", // Gán giá trị mặc định
             });
+        } else {
+            console.error("Detail không hợp lệ:", detail);
         }
     }, [detail, reset]);
 
 
+
     // Hàm xử lý submit
     const onSubmit = (data) => {
-        const formData = new FormData();
-        formData.append("user_code", data.user_code);
-        formData.append("total_amount", data.total_amount);
-        formData.append("amount", data.amount);
-        formData.append("semester_code", data.semester_code);
-        formData.append("_method", "PUT"); // Thêm `_method` nếu backend yêu cầu
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
-
-        mutate(formData);
-
+        const jsonData = {
+            user_code: data.user_code,
+            total_amount: data.total_amount,
+            amount: data.amount,
+            semester_code: data.semester_code,
+        };
+        mutate(jsonData);
     };
+    
 
     return (
         <>
@@ -153,9 +151,8 @@ const EditMajor = () => {
                                             type="text"
                                             className="form-control hidden"
                                             {...register("semester_code")}
-                                            defaultValue={detail[0]?.semester_code || ""}
+                                            defaultValue={detail?.semester_code || ""}
                                         />
-
                                     </div>
                                 </div>
                             </div>
