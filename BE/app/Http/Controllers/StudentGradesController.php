@@ -23,14 +23,19 @@ class StudentGradesController extends Controller
             try {
                 $user = Auth::user();
                 $studentCode = $user->user_code;
-                // $studentCode = 'student04';
-                $semesterCode = $request->input('search');
-                // $semesterCode = 'S04';
+                // $studentCode = 'student05';
+                $semesterCodeUser = User::where('user_code', $studentCode)
+                                        ->select('semester_code')
+                                        ->first();
+                $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
+            
                 $listSemester = Category::where('type', 'semester')
-                                        ->where('is_active', '1')
-                                        ->select('cate_code', 'cate_name')
-                                        ->get();
-
+                    ->where('is_active', '1')
+                    ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
+                    ->orderBy('cate_code', 'asc')
+                    ->select('cate_code', 'cate_name')
+                    ->get();
+               
                 $classes = DB::table('classroom_user')
                 ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
                 ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
@@ -79,7 +84,8 @@ class StudentGradesController extends Controller
                     'message' => 'Lấy thông tin lớp và điểm thành công',
                     'error' => false,
                     'data' => $classScores,
-                    'semesters' => $listSemester
+                    'semesters' => $listSemester,
+                    'semesterCode' => $semesterCode,
 
                 ]);
             } catch (\Throwable $th) {
