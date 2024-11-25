@@ -47,7 +47,7 @@ const EditMajor = () => {
                 parent_code: majorDetail.listMajor.parent_code,
                 is_active: majorDetail.listMajor.is_active,
                 value: majorDetail.listMajor.value,
-                description: majorDetail.listMajor.description,
+                description: majorDetail.listMajor.description ,
             });
         }
     }, [majorDetail, reset]);
@@ -138,16 +138,10 @@ const EditMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="parent_code">
                                             Chuyên ngành cha
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <select
                                             className="form-select"
-                                            {...register("parent_code", {
-                                                required:
-                                                    "Vui lòng chọn chuyên ngành cha",
-                                            })}
+                                            {...register("parent_code")}
                                         >
                                             <option value="">
                                                 -- Lựa chọn --
@@ -173,7 +167,7 @@ const EditMajor = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label htmlFor="value">
                                             Giá trị
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -195,7 +189,7 @@ const EditMajor = () => {
                                                 {errors.value.message}
                                             </span>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="form-group">
                                         <label htmlFor="is_active">
@@ -244,16 +238,11 @@ const EditMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="description">
                                             Mô tả
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description", {
-                                                required: "Vui lòng nhập mô tả",
-                                            })}
+                                            {...register("description")}
                                             placeholder="Nhập mô tả"
                                         />
 

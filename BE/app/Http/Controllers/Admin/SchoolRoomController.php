@@ -155,15 +155,13 @@ class SchoolRoomController extends Controller
             $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
                 DB::rollBack();
-
                 return $this->handleInvalidId();
             } else {
                 if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
                     Storage::disk('public')->delete($listSchoolRoom->image);
                 }
                 $listSchoolRoom->delete($listSchoolRoom);
-                DB::rollBack();
-
+                DB::commit();
                 return response()->json([
                     'message' => 'Xóa thành công'
                 ], 200);
