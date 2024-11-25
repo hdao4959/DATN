@@ -234,6 +234,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/attendances/{classCode}', [TeacherAttendanceController::class, 'store']);
         Route::put('/attendances/{classCode}', [TeacherAttendanceController::class, 'update']);
         Route::get('/attendances/showAllAttendance/{classCode}', [TeacherAttendanceController::class, 'showAllAttendance']);
+        Route::get('/attendances/{classCode}/{date}', [TeacherAttendanceController::class, 'showAttendanceByDate']);
 
         Route::get('/grades/{id}', [TeacherGradesController::class, 'index']);
         Route::get('/grades', [TeacherGradesController::class, 'getTeacherClass']);

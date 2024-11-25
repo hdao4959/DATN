@@ -1,223 +1,123 @@
-
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../config/axios';
 
-
 const AttendanceTeacher = () => {
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
-
-    const [attendanceStudentDetails, setAttendanceStudentDetails] = useState([]);
     const [attendanceStudentDetailsStatus, setAttendanceStudentDetailsStatus] = useState([]);
-
-    const [attendanceFormatData, setAttendanceFormatData] = useState([]);
-    const [sortedDates, setSortedDates] = useState([]);
+    const [attendanceStudentDetails, setAttendanceStudentDetails] = useState([]);
     const [viewMode, setViewMode] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
+    const [schedules, setSchedules] = useState([]);
 
     const { data: classes, isLoading: isLoadingClasses, refetch } = useQuery({
-        queryKey: ["LIST_CLASSES"],
+        queryKey: ["LIST_ATTENDANCE_CLASS"],
         queryFn: async () => {
-            // const response = await api.get(`/teacher/attendances`);
-            // return response?.data?.data;
-            return [
-                {
-                    "id": 105,
-                    "class_code": "k18_MH107.1",
-                    "class_name": "Lớp MH107.1",
-                    "score": null,
-                    "description": "Lớp học cho môn MH107",
-                    "is_active": true,
-                    "subject_code": "MH107",
-                    "user_code": "TC969",
-                    "deleted_at": null,
-                    "created_at": "2024-11-03T19:03:34.000000Z",
-                    "updated_at": "2024-11-03T19:03:34.000000Z"
-                },
-                {
-                    "id": 121,
-                    "class_code": "_MH001.1",
-                    "class_name": "Lớp MH001.1",
-                    "score": "[{\"scores\": [{\"name\": \"Lab1\", \"note\": \"abc\", \"score\": 8, \"value\": 4}, {\"name\": \"Lab2\", \"note\": \"123\", \"score\": 9, \"value\": 4}], \"student_code\": \"student04\", \"student_name\": \"Student 4\", \"average_score\": \"8.5\"}, {\"scores\": [{\"name\": \"Lab1\", \"note\": null, \"score\": 7, \"value\": 4}, {\"name\": \"Lab2\", \"note\": null, \"score\": 9, \"value\": 4}], \"student_code\": \"student05\", \"student_name\": \"Student 5\", \"average_score\": \"8\"}]",
-                    "description": "Lớp học cho môn MH001",
-                    "is_active": true,
-                    "subject_code": "MH001",
-                    "user_code": "TC969",
-                    "deleted_at": null,
-                    "created_at": "2024-11-03T19:03:46.000000Z",
-                    "updated_at": "2024-11-03T19:03:46.000000Z"
-                },
-                {
-                    "id": 142,
-                    "class_code": "k18_MH009.1",
-                    "class_name": "NodeJsxzzzz",
-                    "score": null,
-                    "description": null,
-                    "is_active": true,
-                    "subject_code": "MH009",
-                    "user_code": "TC969",
-                    "deleted_at": null,
-                    "created_at": "2024-11-18T09:34:04.000000Z",
-                    "updated_at": "2024-11-18T09:34:04.000000Z"
-                }
-            ]
+            const response = await api.get(`/teacher/attendances`);
+            return response?.data;
         }
-
     });
 
     const { data: attendanceData, refetch: fetchAttendanceData, isLoading: isLoadingAtt } = useQuery({
         queryKey: ["ATTENDANCE", selectedClassCode],
         queryFn: async () => {
-            // const selectedClassCode = queryKey[1];
-            // console.log(selectedClassCode);
-
-            const response = await api.get(`/teacher/attendances/${selectedClassCode}`);
+            setSelectedClassCode(selectedClassCode);
+            const response = await api.get(`/teacher/attendances/${selectedClassCode}/${selectedDate}`);
             const res = response?.data;
-            console.log(res);
-
-            // let attendanceDataConvert = [];
-
-            if (Array.isArray(res) && res.length > 0) {
-                const attendance = res[0];
-                let attendanceDataConvert = [];
-                if (Array.isArray(attendance.users) && Array.isArray(attendance.schedules)) {
-                    attendance.users.forEach(user => {
-                        attendance.schedules.forEach(date => {
-                            const existingRecord = attendanceDataConvert.find(record => record.student_code === user.student_code && record.date === date);
-                            if (!existingRecord) {
-                                attendanceDataConvert.push({
-                                    student_code: user.student_code,
-                                    full_name: user.full_name,
-                                    class_code: attendance.class_code,
-                                    date: date,
-                                    status: 'pabsent', 
-                                    noted: 'No issue',
-                                });
-                            }
-                        });
-                    });
-                }
-                console.log('Converted Data:', attendanceDataConvert);
-                setAttendanceStudentDetails(attendanceDataConvert);
-                // return attendanceDataConvert;
-            } else {
-                console.error('Invalid data structure:', res);
-                // return [];
-            }
-
-            // setAttendanceStudentDetails(attendanceDataConvert);
-            return response?.data;
+            setAttendanceStudentDetails(res);
+            return res;
         },
         enabled: false
-
     });
+    const { data: AllAttendance, refetch: fetchAllAttendanceData, isLoading: isLoadingAllAtt } = useQuery({
+        queryKey: ["ALL_ATTENDANCE", selectedClassCode],
+        queryFn: async () => {
+            const response = await api.get(`/teacher/attendances/showAllAttendance/${selectedClassCode}`);
+            const res = response?.data;
+            return res;
+        },
+        enabled: false
+    });
+    function getAttendanceSchedule(classCode, classes) {
+        const classData = classes?.find(cls => cls.class_code === classCode);
+
+        if (!classData || !classData.schedules) return [];
+
+        return classData.schedules
+            .map(schedule => schedule.date)
+            .sort((a, b) => new Date(a) - new Date(b));
+    }
     useEffect(() => {
-        fetchAttendanceData();
+        const schedules = getAttendanceSchedule(selectedClassCode, classes);
+        setSchedules(schedules);
     }, [selectedClassCode])
-
-    useEffect(() => {
-        setAttendanceStudentDetailsStatus(attendanceStudentDetails);
-    }, [attendanceStudentDetails])
-
-    useEffect(() => {
-        const students = {};
-        if (attendanceStudentDetails && attendanceStudentDetails != []) {
-            attendanceStudentDetails?.forEach(record => {
-                const { student_code, full_name, date, status, noted } = record;
-                if (!date) return "N/A";
-                const formattedDate = new Date(date).toISOString().split("T")[0];
-
-
-                if (!students[student_code]) {
-                    students[student_code] = {
-                        student_code,
-                        full_name,
-                        attendance: {}
-                    };
-                }
-
-
-                students[student_code].attendance[formattedDate] = { status, noted };
-            });
-
-            const firstStudent = Object.values(students)[0];
-            const sortedDates = firstStudent ? Object.keys(firstStudent.attendance).sort((a, b) => new Date(a) - new Date(b)) : [];
-            const tableData = Object.values(students);
-
-            let table = null;
-            if (table) {
-                table = $('#modalAttendanceTable').DataTable({
-                    destroy: true,
-                    language: {
-                        search: 'Tìm kiếm'
-                    },
-                    paging: false,
-                })
-            }
-
-            setAttendanceFormatData(tableData);
-            setSortedDates(sortedDates);
-        }
-    }, [attendanceData, attendanceStudentDetails])
-
 
     const handleShowDetails = (classItem, mode, date) => {
         setViewMode(mode);
         setSelectedDate(date);
+        mode === 'overview' ? (fetchAllAttendanceData()) : (fetchAttendanceData());
         setSelectedClassCode(classItem.class_code);
-        fetchAttendanceData();
-        console.log(selectedClassCode);
-
         const modal = new window.bootstrap.Modal(document.getElementById('attendanceModal'));
-
         modal.show();
     };
-    const convertToDateTime = (date) => {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, "0");
-        const minutes = String(now.getMinutes()).padStart(2, "0");
-        const seconds = String(now.getSeconds()).padStart(2, "0");
 
-        return `${date} ${hours}:${minutes}:${seconds}`;
-    };
-
-    const handleToggleStatus = (studentCode, date) => {
-        const dateTime = convertToDateTime(date);
-        const ctd = (date) => {
-            return new Date(date).toISOString().split("T")[0];
+    const handleToggleStatus = (student) => {
+        const attendance = student.attendance[0];
+        const newStatus = attendance.status === 'present' ? 'absent' : 'present';
+        const updatedAttendance = {
+            student_code: student.student_code,
+            class_code: selectedClassCode,
+            date: attendance.date,
+            status: newStatus,
+            noted: attendance.noted || '',
         };
+
+        setAttendanceStudentDetailsStatus((prevState) => {
+            const existingIndex = prevState.findIndex(
+                (item) => item.student_code === updatedAttendance.student_code && item.date === updatedAttendance.date
+            );
+            if (existingIndex !== -1) {
+                const newState = [...prevState];
+                newState[existingIndex] = updatedAttendance;
+                return newState;
+            } else {
+                return [...prevState, updatedAttendance];
+            }
+        });
+
         setAttendanceStudentDetails((prevDetails) =>
-            prevDetails.map((student) => {
-                if (
-                    student.student_code === studentCode &&
-                    ctd(student.date) === date
-                ) {
+            prevDetails.map((studentItem) => {
+                if (studentItem.student_code === student.student_code) {
+                    const updatedAttendance = {
+                        ...studentItem.attendance[0],
+                        status: studentItem.attendance[0].status === "present"
+                            ? "absent"
+                            : studentItem.attendance[0].status === "absent"
+                            ? "present"
+                            : "absent", // Nếu status ban đầu là null, gán "absent"
+                        noted: studentItem.attendance[0].noted || "",
+                    };
                     return {
-                        ...student,
-                        status:
-                            student.status === "present" ? "absent" : "present",
-                        date: dateTime,
+                        ...studentItem,
+                        attendance: [updatedAttendance],
                     };
                 }
-                return student;
+                return studentItem;
             })
         );
+        
     };
 
     const handleSaveAttendance = async () => {
-        const updatedAttendance = attendanceStudentDetails.map((student) => ({
-            student_code: student.student_code,
-            attendance: student.attendance,
-        }));
-
+        const today = new Date().toISOString().split('T')[0];
+        if (selectedDate !== today) {
+            toast.error('Chỉ có thể cập nhật điểm danh trong thời gian cho phép!');
+            return; 
+        }
         try {
-
-            console.log(attendanceStudentDetails);
-
-            const response = await api.put(`/teacher/attendances/${selectedClassCode}`, attendanceStudentDetails);
-
+            const response = await api.put(`/teacher/attendances/${selectedClassCode}`, attendanceStudentDetailsStatus);
             if (response.data.success) {
                 toast.success("Lưu điểm danh thành công!");
             } else {
@@ -226,20 +126,13 @@ const AttendanceTeacher = () => {
             }
         } catch (error) {
             toast.error('Lưu điểm danh thất bại!');
-            console.log(error);
-
-
         }
     };
 
     const toggleRow = (classCode) => {
-        if (!attendanceData) {
-            fetchAttendanceData(classCode);
-        }
-        setExpandedRows((prev) => ({
-            ...prev,
-            [classCode]: !prev[classCode],
-        }));
+        setSelectedClassCode(classCode);
+        fetchAllAttendanceData(classCode);
+        setExpandedRows((prev) => (prev === classCode ? null : classCode));
     };
     const formatDate = (dateString) => {
         const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -280,7 +173,7 @@ const AttendanceTeacher = () => {
                                         <tr key={classItem.id}>
                                             <td>{classItem.class_code}</td>
                                             <td>{classItem.class_name}</td>
-                                            <td className='text-center'>
+                                            <td className='text-center text-nowrap'>
                                                 <button
                                                     className="btn btn-primary"
                                                     onClick={() => toggleRow(classItem.class_code)}
@@ -293,27 +186,49 @@ const AttendanceTeacher = () => {
                                                 >
                                                     Xem tổng quan
                                                 </button>
-
                                             </td>
                                         </tr>
-                                        {expandedRows[classItem.class_code] && (
+                                        {expandedRows == classItem.class_code && (
                                             <tr className="nested-row">
                                                 <td colSpan={3}>
                                                     <div style={{ paddingLeft: '20px' }}>
-                                                        {sortedDates?.map((date, index) => (
-                                                            <button
-                                                                key={index}
-                                                                className="btn btn-success"
-                                                                onClick={() => handleShowDetails(classItem, 'detail', date)}
-                                                                style={{ marginRight: '10px', marginBottom: '5px' }}
-                                                            >
-                                                                <strong>{formatDate(date)}</strong>
-                                                            </button>
-                                                        ))}
+                                                        {schedules?.map((date, index) => {
+                                                            const isToday = new Date(date).toDateString() === new Date().toDateString();
+                                                            // const isToday = true;
+                                                            return (
+                                                                <div key={index} className='' style={{ position: 'relative', display: 'inline-block', marginRight: '10px', marginBottom: '5px' }}>
+                                                                    <button
+                                                                        className={`btn btn-success ${isToday && 'border-5 border-success rounded'}`}
+                                                                        onClick={() => handleShowDetails(classItem, 'detail', date)}
+                                                                        style={{ position: 'relative', zIndex: 1 }}
+                                                                    >
+                                                                        <strong>{formatDate(date)}</strong>
+                                                                    </button>
+                                                                    {isToday && (
+                                                                        <span
+                                                                            style={{
+                                                                                position: 'absolute',
+                                                                                top: '-15px',
+                                                                                right: '-5px',
+                                                                                backgroundColor: 'red',
+                                                                                color: 'white',
+                                                                                padding: '2px 5px',
+                                                                                fontSize: '10px',
+                                                                                borderRadius: '5px',
+                                                                                zIndex: 2,
+                                                                            }}
+                                                                        >
+                                                                            Hôm nay
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </td>
                                             </tr>
                                         )}
+
                                     </React.Fragment>
                                 ))}
                             </tbody>
@@ -337,8 +252,8 @@ const AttendanceTeacher = () => {
                                         Bảng điểm danh{" "}
                                         {viewMode === "detail"
                                             ? `- Ngày ${formatDate(
-                                                  selectedDate
-                                              )} - Lớp ${selectedClassCode}`
+                                                selectedDate
+                                            )} - Lớp ${selectedClassCode}`
                                             : `- Lớp ${selectedClassCode}`}
                                     </h5>
                                     <button
@@ -351,7 +266,7 @@ const AttendanceTeacher = () => {
                                     </button>
                                 </div>
                                 <div className="modal-body table-responsive">
-                                    {isLoadingAtt ? (
+                                    {(isLoadingAtt || isLoadingAllAtt) ? (
                                         <div className="loading-spinner">
                                             <div className='spinner-border' role='status'></div>
                                             <p>Đang tải dữ liệu...</p>
@@ -362,54 +277,65 @@ const AttendanceTeacher = () => {
                                                 <tr>
                                                     <th>Mã sinh viên</th>
                                                     <th>Họ và tên</th>
-                                                    {viewMode === 'overview' && sortedDates.map((date, index) => (
+                                                    {viewMode === 'overview' && schedules.map((date, index) => (
                                                         <th key={index} className='text-center'>{formatDate(date)}</th>
                                                     ))}
                                                     {viewMode === 'detail' && <th className='text-center'>Trạng thái</th>}
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {attendanceFormatData?.length > 0 ? (
-                                                    attendanceFormatData?.map((student, index) => (
+                                                {viewMode === 'overview' && AllAttendance?.map((student, index) => {
+                                                    const attendanceByDate = student.attendance.reduce((acc, att) => {
+                                                        acc[att.date] = att; 
+                                                        return acc;
+                                                    }, {});
+
+                                                    return (
                                                         <tr key={student.student_code}>
                                                             <td>{student.student_code}</td>
                                                             <td>{student.full_name}</td>
-                                                            {viewMode === 'overview' ? (
-                                                                sortedDates?.map((date) => (
-                                                                    <td key={date} className='text-center'>
-                                                                        <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                            <input className="form-check-input attendance-checkbox btn-sm"
-                                                                                type="checkbox"
-                                                                                disabled
-                                                                                style={{ transform: 'scale(2.5)' }}
-                                                                                checked={student.attendance[date]?.status === 'present'}
-                                                                            />
-                                                                        </div>
-                                                                    </td>
-                                                                ))
-                                                            ) :
-                                                                (
-                                                                    <td className="text-center">
-                                                                        <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                            <input className="form-check-input attendance-checkbox btn-sm"
-                                                                                type="checkbox"
-                                                                                checked={student.attendance[selectedDate]?.status === 'present'}
-                                                                                style={{ transform: 'scale(2.5)' }}
-                                                                                onChange={() => handleToggleStatus(student.student_code, selectedDate)}
-                                                                            />
-                                                                        </div>
-                                                                    </td>
-                                                                )
-                                                            }
+                                                            {schedules?.map((date) => (
+                                                                <td key={date} className="text-center">
+                                                                    <div className="form-check form-switch d-flex align-items-center justify-content-center">
+                                                                        <input
+                                                                            className="form-check-input attendance-checkbox btn-sm"
+                                                                            type="checkbox"
+                                                                            disabled
+                                                                            style={{ transform: 'scale(2.5)' }}
+                                                                            checked={attendanceByDate[date]?.status === 'present'}
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                            ))}
                                                         </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr><td colSpan={3}>Không có dữ liệu điểm danh.</td></tr>
-                                                )}
+                                                    );
+                                                })}
+
+                                                {viewMode === 'detail' && attendanceStudentDetails?.map((student, index) => {
+                                                    const isToday = new Date(student.attendance[0].date).toDateString() === new Date().toDateString();
+                                                    // const isToday = true;
+                                                    return (
+                                                        <tr key={student.student_code}>
+                                                            <td>{student.student_code}</td>
+                                                            <td>{student.full_name}</td>
+                                                            <td className="text-center">
+                                                                <div className="form-check form-switch d-flex align-items-center justify-content-center">
+                                                                    <input
+                                                                        className="form-check-input attendance-checkbox btn-sm"
+                                                                        type="checkbox"
+                                                                        checked={student?.attendance[0]?.status === 'present'}
+                                                                        style={{ transform: 'scale(2.5)' }}
+                                                                        onChange={() => handleToggleStatus(student)}
+                                                                        disabled={isToday === false}
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
                                     )}
-
                                 </div>
                                 <div className="modal-footer">
                                     <button
