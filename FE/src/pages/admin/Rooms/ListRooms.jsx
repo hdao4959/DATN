@@ -100,8 +100,8 @@ const ClassRoomsList = () => {
         if (classrooms) {
             $("#classroomsTable").DataTable({
                 data: classrooms,
-                // processing: true,
-                // serverSide: true,
+                processing: true,
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         // Tính toán số trang

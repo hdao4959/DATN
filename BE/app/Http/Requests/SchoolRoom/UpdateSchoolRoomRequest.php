@@ -24,11 +24,12 @@ class UpdateSchoolRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cate_code' => 'required|unique:categories,cate_code,' . $this->route('schoolroom') . ',cate_code',
-            'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
+            'cate_code' => 'unique:categories,cate_code,' . $this->route('schoolroom') . ',cate_code',
+            'cate_name' => 'max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
-            'description' => 'regex:/^[^<>{}]*$/',
+            // 'description' => 'regex:/^[^<>{}]*$/',
+            'description' => 'nullable|regex:/^[^<>{}]*$/',
             'parent_code' => 'regex:/^[^<>{}]*$/',
             'is_active' => 'regex:/^[^<>{}]*$/'
         ];
@@ -36,9 +37,7 @@ class UpdateSchoolRoomRequest extends FormRequest
 
     public function messages(){
         return [
-            'cate_code.required' => 'Bạn chưa nhập mã phòng học',
             'cate_code.unique' => 'Mã phòng học đã được sử dụng',
-            'cate_name.required' => 'Bạn chưa nhập tên phòng học',
             'cate_name.max' => 'Tên phòng học không quá 255 kí tự',
             'cate_name.regex' => 'Tên phòng học không chứa kí tự đặc biệt',
             'value.regex' => 'Giá trị không chứa kí tự đặc biệt',

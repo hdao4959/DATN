@@ -117,18 +117,12 @@ class SchoolRoomController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Lấy ra cate_code và cate_name của cha
-            $parent = Category::whereNull('parent_code')
-                ->where('type', '=', 'school_room')
-                ->select('cate_code', 'cate_name')
-                ->get();
-
             $listSchoolRoom = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
             if (!$listSchoolRoom) {
-                DB::commit();
-
+                DB::rollBack();
                 return $this->handleInvalidId();
             } else {
+                // return response()->json($request->all(), 201);
                 $params = $request->except('_token', '_method');
                 if ($request->hasFile('image')) {
                     if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
@@ -140,7 +134,8 @@ class SchoolRoomController extends Controller
                 }
                 $params['image'] = $fileName;
                 $listSchoolRoom->update($params);
-                DB::rollBack();
+                // DB::rollBack();
+                DB::commit();
 
                 return response()->json($listSchoolRoom, 201);
             }
@@ -183,19 +178,19 @@ class SchoolRoomController extends Controller
     {
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request
-    
+
             DB::transaction(function () use ($activies) {
                 foreach ($activies as $cate_code => $active) {
                     // Tìm category theo cate_code và áp dụng lock for update
                     $category = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
-    
+
                     if ($category) {
                         $category->is_active = $active; // Sửa lại đúng field
                         $category->save();
                     }
                 }
             });
-    
+
             return response()->json([
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);
