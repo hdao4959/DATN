@@ -10,6 +10,7 @@ import $ from "jquery";
 import "datatables.net";
 import { useNavigate } from "react-router-dom";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { toast } from "react-toastify";
 
 const PostCategoryList = () => {
     const accessToken = getToken();
@@ -51,9 +52,13 @@ const PostCategoryList = () => {
 
     // Mutation cập nhật trạng thái
     const updateStatusMutation = useMutation({
-        mutationFn: (cateCode) => api.post(`/admin/updateActive/${cateCode}`),
+        mutationFn: async (cateCode) => {
+            const r = await api.post(`/admin/updateActive/${cateCode}`);
+            return r;
+        },
         onSuccess: () => {
-            toast.success(response.data.message);
+            console.log(123)
+            toast.success("Cập nhật trạng thái thành công");
             refetch();
         },
         onError: () => {

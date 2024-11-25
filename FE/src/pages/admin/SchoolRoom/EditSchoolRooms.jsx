@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
@@ -17,7 +17,7 @@ const EditSchoolRooms = () => {
         formState: { errors },
     } = useForm();
     const nav = useNavigate();
-
+    const queryClient = useQueryClient();
     // const { data: listSchoolRooms } = useQuery({
     //     queryKey: ["LIST_SCHOOLROOMS"],
     //     queryFn: async () => {
@@ -30,6 +30,7 @@ const EditSchoolRooms = () => {
         mutationFn: (data) => api.post(`/admin/schoolrooms/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật phòng thành công");
+            queryClient.invalidateQueries(["SCHOOLROOMS_DETAIL", id]);
             nav("/admin/schoolrooms");
         },
         onError: (error) => {
@@ -42,7 +43,6 @@ const EditSchoolRooms = () => {
         queryKey: ["SCHOOLROOMS_DETAIL", id],
         queryFn: async () => {
             const res = await api.get(`/admin/schoolrooms/${id}`);
-
             return res.data;
         },
     });
