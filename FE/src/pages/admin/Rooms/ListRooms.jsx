@@ -176,16 +176,14 @@ const ClassRoomsList = () => {
                                         title="Xem điểm danh">
                                         Xem điểm danh
                                     </button>
-                                    <i class="fas fa-edit" 
-                                        style="cursor: pointer; font-size: 20px;" 
-                                        data-id="${row.class_code}" 
-                                        id="edit_${row.class_code}" 
-                                        title="Chỉnh sửa"></i>
-                                    <i class="fas fa-trash" 
-                                        style="cursor: pointer; color: red; font-size: 20px;" 
+                                    <button 
+                                        class="btn btn-danger btn-sm trash" 
+                                        style="font-size: 14px;" 
                                         data-id="${row.class_code}" 
                                         id="delete_${row.class_code}" 
-                                        title="Xóa"></i>
+                                        title="Xóa">
+                                        Xóa
+                                    </button>
                                 </div>
                             `;
                         },
@@ -203,7 +201,7 @@ const ClassRoomsList = () => {
                 createdRow: (row, data, dataIndex) => {
                     // Gắn sự kiện xóa sau khi bảng được vẽ
                     $(row)
-                        .find(".fa-trash")
+                        .find(".trash")
                         .on("click", function () {
                             const classCode = $(this).data("id");
                             handleDelete(classCode);
