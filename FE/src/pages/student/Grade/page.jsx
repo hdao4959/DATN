@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 const StudentGrades = () => {
     const [subjects, setSubjects] = useState([]);
     const [semesterCode, setSemesterCode] = useState('');
+    const [semesterCodeDefault, setSemesterCodeDefault] = useState('');
     const [semesters, setSemesters] = useState([]);
     const { data, isLoading: isLoadingClasses, refetch } = useQuery({
         queryKey: ["LIST_CLASSES"],
@@ -19,6 +20,7 @@ const StudentGrades = () => {
             });
             setSubjects(res?.data?.data || []);
             setSemesters(res?.data?.semesters);
+            setSemesterCodeDefault(res?.data?.semesterCode);
             return res?.data;
         }
     });
@@ -64,11 +66,10 @@ const StudentGrades = () => {
                     <h4 className="card-title">Bảng điểm</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <select
-                            value={semesterCode}
+                            value={semesterCodeDefault}
                             onChange={(e) => setSemesterCode(e.target.value)}
                             className="form-control"
                         >
-                            <option value="">Chọn kỳ học..</option>
                             {semesters?.map((sem) => (
                                 <option key={sem.cate_code} value={sem.cate_code}>
                                     {sem.cate_name}
@@ -84,13 +85,6 @@ const StudentGrades = () => {
                             <p>Đang tải dữ liệu...</p>
                         </div>)
                         : ('')
-                    }
-                    {
-                        subjects ? (
-                            <div className="text-center">
-                                <p>{data?.message}</p>
-                            </div>
-                        ) : ('')
                     }
                     {subjects?.map((subject, index) => {
                         let average = Number(calculateAverage(subject.score));
