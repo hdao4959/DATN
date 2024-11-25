@@ -23,4 +23,9 @@ class Fee extends Model
     {
         return $this->belongsTo(User::class, 'user_code', 'user_code');
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'fee_id');
+    }
 }

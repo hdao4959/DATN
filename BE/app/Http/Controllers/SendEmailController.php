@@ -56,7 +56,7 @@ class SendEmailController extends Controller
                 $query->whereIn('user_code', $userCodes);
             })
             ->distinct('user_code')
-            ->where('status', 'pending')
+            // ->where('status', 'pending')
             ->get();
 
         if ($fees->isEmpty()) {
@@ -66,6 +66,7 @@ class SendEmailController extends Controller
         foreach ($fees as $fee) {
             try {
                 dispatch(new SendEmailJob([
+                    'id' => $fee->id,
                     'email' => $fee->user->email,
                     'full_name' => $fee->user->full_name,
                     'user_code' => $fee->user->user_code,

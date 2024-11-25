@@ -215,7 +215,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
 
         Route::apiResource('fees', FeeController::class);
-
     });
 
 
@@ -272,6 +271,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters', [StudentNewsletterController::class, 'index']);
         Route::get('newsletters/{code}', [StudentNewsletterController::class, 'show']);
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
+        Route::apiResource('transaction', TransactionController::class);
+        Route::get('getListDebt', [FeeController::class, 'getListDebt']);
     });
 
     // Các route phục vụ cho form
@@ -309,11 +310,11 @@ Route::post('students/change-major/{id}', [StudentController::class, 'changeMajo
 
 
 // Student
-Route::post('services/change-major/{user_code}',            [ServiceController::class,'changeMajor']);
-Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class,'provideScoreboard']);
-Route::post('services/change-info/{user_code}',             [ServiceController::class,'ChangeInfo']);
-Route::post('services/provide-student-card/{user_code}',    [ServiceController::class,'provideStudentCard']);
-Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class,'DropOutOfSchool']);
+Route::post('services/change-major/{user_code}',            [ServiceController::class, 'changeMajor']);
+Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class, 'provideScoreboard']);
+Route::post('services/change-info/{user_code}',             [ServiceController::class, 'ChangeInfo']);
+Route::post('services/provide-student-card/{user_code}',    [ServiceController::class, 'provideStudentCard']);
+Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
 

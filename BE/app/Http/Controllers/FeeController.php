@@ -42,8 +42,9 @@ class FeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
+        // return response()->json(['data' => $request]);
         try {
            $data = $this->feeRepository->createAll();
             return response()->json(['message' => $data]);
@@ -82,4 +83,20 @@ class FeeController extends Controller
     {
         //
     }
+
+        public function getListDebt(Request $request)
+        {
+            try {
+                $userCode = $request->user()->user_code;     
+                if (!$userCode) {
+                    return response()->json('Không có user_code', 400);
+                }
+
+                $data = Fee::where('user_code', $userCode)->where('status','unpaid')->get();
+
+                return response()->json($data);
+            } catch (Throwable $th) {
+                return response()->json(['message' => $th], 404);
+            }
+        }
 }

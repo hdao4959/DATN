@@ -81,7 +81,7 @@ const StudentLayout = () => {
                     </div>
                     {/* Navbar Header */}
                     <nav className="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-                        <div className="container-fluid">
+                        <div className="container-fluid mr-5">
                             {/* <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -134,7 +134,7 @@ const StudentLayout = () => {
                                         aria-haspopup="true"
                                         aria-expanded="false"
                                     >
-                                        <i className="fa fa-bell" />
+                                        <i className="fa fa-bell fs-4" />
                                         <span className="notification">{notifications?.count || 0}</span>
                                     </a>
                                     <ul
@@ -151,7 +151,8 @@ const StudentLayout = () => {
                                                 <div className="notif-center">
                                                     {notifications?.data?.map((notification) => (
                                                         <NavLink to={`/student/news/${notification.code}/detail`} key={notification.code}>
-                                                            <div className="notif-icon notif-primary">
+                                                            <div className="notif-icon notif-primary" style={{ minWidth: "40px" }}
+                                                            >
                                                                 <i className="fa fa-bell" />
                                                             </div>
                                                             <div className="notif-content">

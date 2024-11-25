@@ -52,11 +52,11 @@ const NewsDetail = (Type) => {
               {data ? (
                 <div>
                   <div>
-                    <img
+                    {/* <img
                       src={data.image}
                       alt={data.title}
                       style={{ maxWidth: "100%", height: "auto" }}
-                    />
+                    /> */}
                   </div>
                   <div>
                     <div dangerouslySetInnerHTML={{ __html: data.content }} style={{ minHeight: '300px' }} />

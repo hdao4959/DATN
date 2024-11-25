@@ -40,22 +40,19 @@ class CheckoutController extends Controller
         if (!$fee) {
             return redirect()->back()->with('error', 'Không tìm thấy hóa đơn học phí!');
         }
-
-
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
-
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
         $orderInfo = "Thanh toán qua MoMo";
+        // $amount = 10000;
         $amount = $fee->total_amount - $fee->amount;
         $orderId = time() . "";
         // url khi thanh toan thanh cong
         $redirectUrl = url('/payment-success');
         $ipnUrl = url('/payment-callback');
 
-        $extraData = "fee_id=$feeId";
+        $extraData = "";
 
 
         $requestId = time() . "";
@@ -83,7 +80,7 @@ class CheckoutController extends Controller
 
 
         $result = $this->execPostRequest($endpoint, json_encode($data));
-        // dd($result);
+        // return dd($amount,$result);
         $jsonResult = json_decode($result, true);  // decode json
 
         //Just a example, please check more in there

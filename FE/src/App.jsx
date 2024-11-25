@@ -65,6 +65,8 @@ import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
 import ViewSchedules from "./pages/student/Schedules/ViewSchedules.jsx";
 import ViewClassrooms from "./pages/student/Classrooms/ViewClassrooms.jsx";
 import TransferSchedule from "./pages/student/Schedules/TransferSchedule.jsx";
+import WalletBalance from "./pages/student/Wallets/WalletBalance.jsx";
+import Debt from "./pages/student/Wallets/Debt.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -363,6 +365,17 @@ function App() {
                 {
                     path: "classrooms",
                     element: <ViewClassrooms />,
+                },
+                
+                {
+                    path: "wallet-balance",
+                    element: <WalletBalance />,
+                },
+                
+                
+                {
+                    path: "debt",
+                    element: <Debt />,
                 },
             ],
         },
