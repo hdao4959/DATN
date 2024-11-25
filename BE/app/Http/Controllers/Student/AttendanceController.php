@@ -90,6 +90,7 @@ class AttendanceController extends Controller
             
                 // Kết hợp danh sách điểm danh và lịch học
                 $finalData = $attendanceData->merge($scheduleData)->sortBy('date')->values();
+                $totalSchedule = $finalData->count();
                 // Đếm số lần status là 'absent'
                 $absentCount = $attendanceData->where('status', 'absent')->count();
                 // dd($absentCount);
@@ -107,6 +108,7 @@ class AttendanceController extends Controller
                 'semesters' => $listSemester,
                 'attendances' => $result,
                 'semesterCode' => $semesterCode,
+                'total_schedule' => $totalSchedule,
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
