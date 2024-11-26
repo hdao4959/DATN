@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-    useMutation,
-    useQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
 import "datatables.net-dt/css/dataTables.dataTables.css";
@@ -79,7 +76,7 @@ const ClassRoomsList = () => {
 
     const { mutate: updateStatus } = useMutation({
         mutationFn: async (data) => {
-            return api.put('/admin/classrooms/bulk-update-type', data, {
+            return api.put("/admin/classrooms/bulk-update-type", data, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
@@ -142,17 +139,8 @@ const ClassRoomsList = () => {
                 columns: [
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
-                    { title: "Mã môn", data: "subject_code" },
-                    {
-                        title: "Trạng thái",
-                        data: "is_active",
-                        className: "text-center",
-                        render: (data) => {
-                            return data
-                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
-                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
-                        },
-                    },
+
+                    { title: "Môn học", data: "subject.subject_name" },
                     {
                         title: "Hành động",
                         className: "text-center",
@@ -281,8 +269,8 @@ const ClassRoomsList = () => {
                 )}
                 {(selectedClassCodeForGrades ||
                     selectedClassCodeForAttendances) && (
-                        <div className="modal-backdrop fade show"></div>
-                    )}
+                    <div className="modal-backdrop fade show"></div>
+                )}
                 <div className="card-body">
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>
