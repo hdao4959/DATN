@@ -311,6 +311,10 @@ function App() {
             ),
             children: [
                 {
+                    path: "",
+                    element: <StudentNews />,
+                },
+                {
                     path: "attendances",
                     element: <ShowStudentAttendance />,
                 },

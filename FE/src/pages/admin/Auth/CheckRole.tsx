@@ -15,7 +15,7 @@ const CheckRole = ({ children }) => {
             setIsModalVisible(true);
         } else {
             if (user.role === "3" && !window.location.pathname.startsWith("/student")) {
-                navigate("/student/news");
+                navigate("/student");
             } else if (user.role === "2" && !window.location.pathname.startsWith("/teacher")) {
                 navigate("/teacher");
             } else if (user.role === "0" && !window.location.pathname.startsWith("/admin")) {

@@ -213,6 +213,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('newsletters', TeacherNewsletterController::class);
         Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
         Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
+        Route::apiResource('categories', CategoryController::class);
+
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
