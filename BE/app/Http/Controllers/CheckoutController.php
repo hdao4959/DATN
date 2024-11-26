@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fee;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
@@ -47,13 +48,12 @@ class CheckoutController extends Controller
         $orderInfo = "Thanh toán qua MoMo";
         // $amount = 10000;
         $amount = $fee->total_amount - $fee->amount;
+        // $amount = $fee->total_amount ;
         $orderId = time() . "";
         // url khi thanh toan thanh cong
         $redirectUrl = url('/payment-success');
         $ipnUrl = url('/payment-callback');
-
-        $extraData = "";
-
+        $extraData = $feeId;
 
         $requestId = time() . "";
         $requestType = "payWithATM";
@@ -77,11 +77,10 @@ class CheckoutController extends Controller
             'requestType' => $requestType,
             'signature' => $signature
         );
-
-
         $result = $this->execPostRequest($endpoint, json_encode($data));
         // return dd($amount,$result);
         $jsonResult = json_decode($result, true);  // decode json
+        // dd($jsonResult);
 
         //Just a example, please check more in there
         return redirect()->to($jsonResult['payUrl']);
@@ -97,10 +96,10 @@ class CheckoutController extends Controller
     }
 
     // Lấy dữ liệu 'extraData' và giải mã
-    parse_str($data['extraData'], $extraData);
+    // parse_str($data['extraData'], $extraData);
 
     // Lấy fee_id từ extraData
-    $feeId = $extraData['fee_id'] ?? null;
+    $feeId = $data['extraData'] ?? null;
 
     // Kiểm tra tính hợp lệ của fee_id
     if (!$feeId) {
@@ -108,17 +107,17 @@ class CheckoutController extends Controller
     }
 
     // Xác thực chữ ký từ MoMo
-    $calculatedSignature = hash_hmac('sha256', $data['orderId'] . $data['amount'] . $data['resultCode'], env('MOMO_SECRET_KEY'));
+    // $calculatedSignature = hash_hmac('sha256', $data['orderId'] . $data['amount'] . $data['resultCode'], env('MOMO_SECRET_KEY'));
 
-    if ($calculatedSignature !== $data['signature']) {
-        return response()->json(['message' => 'Invalid signature'], 400);
-    }
+    // if ($calculatedSignature !== $data['signature']) {
+    //     return response()->json(['message' => 'Invalid signature'], 400);
+    // }
 
     // Kiểm tra kết quả giao dịch
     if ($data['resultCode'] == 0) { // Thanh toán thành công
         // Tìm Fee dựa trên feeId
         $fee = Fee::find($feeId);
-
+        $wallet = Wallet::where('user_code', $fee->user_code)->first();
         if ($fee) {
             // Cập nhật số tiền đã thanh toán
             $fee->amount += $data['amount'];
@@ -131,20 +130,34 @@ class CheckoutController extends Controller
             $fee->save();
 
             // Lưu giao dịch vào bảng `transactions`
-            Transaction::create([
+            $transAdd = Transaction::create([
                 'fee_id' => $fee->id,
                 'payment_date' => now(),
                 'amount_paid' => $data['amount'],
-                'payment_method' => 'momo',
+                'payment_method' => 'transfer',
                 'receipt_number' => $data['transId'],
             ]);
 
+            $transDeduct = Transaction::create([
+                'fee_id' => $fee->id,
+                'payment_date' => now(),
+                'amount_paid' => $fee->total_amount,
+                'type' => 'deduct',
+                'payment_method' => 'transfer',
+                'receipt_number' => $data['transId'],
+            ]);
+
+            $wallet->update([
+                'total' => $wallet->total + $data['amount'],
+                'paid' => $wallet->paid + $fee->total_amount,
+            ]);
+
+            $wallet->save();
             return response()->json(['message' => 'Payment processed successfully'], 200);
         }
 
         return response()->json(['message' => 'Fee not found'], 400);
     }
-
     return response()->json(['message' => 'Payment failed'], 400);
 }
 

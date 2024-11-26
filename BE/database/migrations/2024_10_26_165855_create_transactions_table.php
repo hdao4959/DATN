@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('payment_date');
             $table->decimal('amount_paid',12,2);
             $table->enum('payment_method',['transfer','cash']);
+            $table->enum('type', ['add','deduct']);
             $table->string('receipt_number');
             $table->timestamps();
         });
