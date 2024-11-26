@@ -133,6 +133,8 @@ const ClassRoomsList = () => {
 
             $("#classroomsTable").DataTable({
                 data: classrooms,
+                processing: true,
+                serverSide: true,
                 columns: [
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
@@ -208,6 +210,12 @@ const ClassRoomsList = () => {
                 )}
 
                 <div className="card-body">
+                    {isLoading && (
+                        <>
+                        <div className="spinner-border" role="status"></div>
+                        <p>Đang tải dữ liệu</p>
+                        </>
+                    )}
                     <table id="classroomsTable" className="table table-bordered"></table>
                 </div>
             </div>
