@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\ClassroomUser;
 use App\Models\Schedule;
+use App\Models\TransferScheduleTimeframe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScheduleController extends Controller
 {
@@ -35,17 +37,18 @@ class ScheduleController extends Controller
         try {
 
             $classroom = Classroom::with('schedules')->where('class_code', $class_code)->first();
-            if(!$classroom){
+            if (!$classroom) {
                 return response()->json(
                     [
                         'status' => false,
                         'message' => 'Lớp học không tồn tại!'
-                    ],404
-                    );
+                    ],
+                    404
+                );
             }
             $schedules = $classroom->schedules;
 
-            return response()->json($schedules,200);
+            return response()->json($schedules, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -72,6 +75,37 @@ class ScheduleController extends Controller
             $schedules = Schedule::whereIn('class_code', $classroom_codes)->get();
             return response()->json($schedules);
         } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
+
+    public function create_transfer_schedule_timeframe(Request $request)
+    {
+
+        DB::beginTransaction();
+        try {
+
+            $data = $request->validate([
+                'start_time' => 'required',
+                'end_time' => 'required'
+            ]);
+            TransferScheduleTimeframe::updateOrCreate(
+                [
+                    'id' => 1
+                ],
+                [
+
+                    'start_time' => $data['start_time'],
+                    'end_time' => $data['end_time']
+                ]
+            );
+            DB::commit();
+            return response()->json([
+                'status' => true, 
+                'message' => 'Đặt thời gian đổi lịch cho sinh viên thành công!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollback();
             return $this->handleErrorNotDefine($th);
         }
     }

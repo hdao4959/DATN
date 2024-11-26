@@ -104,6 +104,14 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('classrooms/renderSchedules', 'renderSchedules');
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
+
+
+        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+            Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
+            Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+             Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
+
         });
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
@@ -177,7 +185,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
         Route::apiResource('fees', FeeController::class);
     });
-
+    });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
@@ -250,7 +258,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/listSubjectsForForm', 'listSubjectsForForm');
     });
 });
-
 
 
 Route::apiResource('transaction', TransactionController::class);
