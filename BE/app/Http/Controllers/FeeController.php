@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fee;
 use App\Models\Subject;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Repositories\Contracts\FeeRepositoryInterface;
@@ -66,7 +67,7 @@ class FeeController extends Controller
                 return response()->json([
                     'message' => 'Fee not found.',
                     'success' => false
-                ], 404);    
+                ], 404);
             } else {
                 return response()->json([
                     $data
@@ -81,33 +82,75 @@ class FeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id)
-    {
-        
-    }
+    public function edit(Request $request, $id) {}
 
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Fee $fee)
-    {
-        $validatedData = $request->validate([
-            'amount' => 'required|numeric|min:0',
-        ]);
-    
-        // Cập nhật giá trị mới
-        $fee->amount = $validatedData['amount'];
-        if($validatedData['amount'] >= $fee->total_amount){
-            $fee->status = 'paid';
-        }
-        $fee->save();
-    
-        return response()->json([
-            'message' => 'Fee updated successfully.',
-            'data' => $fee,
-        ], 200);
+{
+    $validatedData = $request->validate([
+        'amount' => 'required|numeric|min:0',
+    ]);
+
+    // Cập nhật số tiền cho khoản phí
+    $fee->amount = $validatedData['amount'];
+    $isFullyPaid = $validatedData['amount'] >= $fee->total_amount;
+
+    // Cập nhật trạng thái nếu đã thanh toán đầy đủ
+    if ($isFullyPaid) {
+        $fee->status = 'paid';
     }
+
+    // Tìm hoặc tạo ví tiền
+    $wallet = Wallet::firstOrCreate(
+        ['user_code' => $fee->user_code],
+        ['total' => 0, 'paid' => 0]
+    );
+
+    // Cập nhật thông tin ví
+    $wallet->total += $isFullyPaid ? $fee->total_amount : 0;
+    $wallet->paid += $validatedData['amount'];
+    $wallet->save();
+
+    // Tạo giao dịch
+    $transactions = [];
+
+    // Giao dịch nạp tiền
+    $transactions[] = [
+        'fee_id' => $fee->id,
+        'payment_date' => now(),
+        'amount_paid' => $validatedData['amount'],
+        'payment_method' => 'cash',
+        'receipt_number' => "",
+        'is_deposit' => 1,
+    ];
+
+    // Giao dịch thanh toán đầy đủ
+    if ($isFullyPaid) {
+        $transactions[] = [
+            'fee_id' => $fee->id,
+            'payment_date' => now(),
+            'amount_paid' => $fee->total_amount,
+            'payment_method' => 'transfer',
+            'receipt_number' => "",
+            'is_deposit' => 0,
+        ];
+    }
+
+    // Lưu giao dịch
+    Transaction::insert($transactions);
+
+    // Lưu khoản phí
+    $fee->save();
+
+    return response()->json([
+        'message' => 'Fee updated successfully.',
+        'data' => $fee,
+    ], 200);
+}
+
 
     /**
      * Remove the specified resource from storage.

@@ -38,7 +38,8 @@ const StudentWalletList = () => {
                         className: 'fw-bold',
                         data: "amount_paid",
                         render: function (data, type, row) {
-                            return `<span class="text-success">+ ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data)}</span>`;
+                            const sign = row.is_deposit ? '+' : '-';
+                            return `<span >${sign} ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data)}</span>`;
                         }
                     },
                     {
@@ -82,6 +83,15 @@ const StudentWalletList = () => {
                         }
                     },
                 ],
+                rowCallback: function (row, data) {
+                    // Nếu is_deposit = true thì đổi màu nền thành xanh
+                    if (data.is_deposit) {
+                        $(row).css('background-color', '#d1e7dd'); // Màu xanh nhạt
+                    }
+                    else {
+                        $(row).css('background-color', '#f8d7da'); // Màu xanh nhạt
+                    }
+                },
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
                 language: {
