@@ -245,7 +245,7 @@ const AttendanceTeacher = () => {
                         <div className="modal-dialog modal-xl">
                             <div
                                 className="modal-content"
-                                style={{ width: "100%" }}
+                                style={{ width: "100%",minHeight: "100vh" }}
                             >
                                 <div className="modal-header">
                                     <h5 className="modal-title strong text-lg">
