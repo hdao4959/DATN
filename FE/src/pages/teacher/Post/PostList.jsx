@@ -129,15 +129,6 @@ const PostList = () => {
                             `;
                         }
                     },
-                    {
-                        title: null,
-                        data: null,
-                        render: (data, row) => {
-                            return `
-                                <button class='btn btn-primary display-flex'>Đăng</button>
-                            `;
-                        }
-                    }
                 ],
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
