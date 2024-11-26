@@ -33,6 +33,8 @@ class FeeRepository implements FeeRepositoryInterface {
 
     public function createAll(){
 
+        Transaction::query()->delete();
+        Fee::query()->delete();
         $message = [];
         $students = User::with(['semester' => function ($query) {
             $query->select('cate_code', 'value'); // chỉ lấy cate_code và name từ bảng categories

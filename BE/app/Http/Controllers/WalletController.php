@@ -35,7 +35,7 @@ class WalletController extends Controller
         Wallet::query()->delete();
         foreach ($users as $user) {
             $data = [
-                'user_id' => $user->id,
+                'user_code' => $user->user_code,
                 'total' => 0,
                 'paid'  => 0
             ];

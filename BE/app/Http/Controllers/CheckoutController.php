@@ -51,6 +51,7 @@ class CheckoutController extends Controller
         $orderInfo = "Thanh toán qua MoMo";
         // $amount = 10000;
         $amount = $fee->total_amount - $fee->amount;
+        // $amount = $fee->total_amount ;
         $orderId = time() . "";
         // url khi thanh toan thanh cong
         $redirectUrl = url('/payment-success');
@@ -81,11 +82,10 @@ class CheckoutController extends Controller
             'requestType' => $requestType,
             'signature' => $signature
         );
-
-
         $result = $this->execPostRequest($endpoint, json_encode($data));
         // return dd($amount,$result);
         $jsonResult = json_decode($result, true);  // decode json
+        // dd($jsonResult);
 
         //Just a example, please check more in there
         return redirect()->to($jsonResult['payUrl']);
@@ -145,7 +145,7 @@ class CheckoutController extends Controller
                     'payment_date' => now(),
                     'amount_paid' => $data['amount'],
                     'payment_method' => 'transfer',
-                    'receipt_number' => "",
+                    'receipt_number' =>  $data['transId'],
                     'is_deposit' => 1,
                 ];
 
