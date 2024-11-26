@@ -7,7 +7,7 @@ const StudentMenu = () => {
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
                 <div className="logo-header" data-background-color="dark">
-                    <Link to={"/admin"} className="logo">
+                    <Link to={"/student"} className="logo">
                         <img
                             src="https://ap.poly.edu.vn/images/whiteLogo.png"
                             width={150}
@@ -44,7 +44,6 @@ const StudentMenu = () => {
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
-
                         {/* <li className="menu-item">
 
                             <NavLink to="/student" className={`${styles.menuItem} group`}>

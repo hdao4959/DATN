@@ -16,7 +16,7 @@ const ViewMyAccount = () => {
     } = useQuery({
         queryKey: ["user", user_code],
         queryFn: async () => {
-            const response = await api.get(`/students/${user_code}`);
+            const response = await api.get(`/user`);
             return response.data;
         },
     });
@@ -43,51 +43,77 @@ const ViewMyAccount = () => {
                                                 className="rounded-circle"
                                             />
                                             <div>
-                                                <p className="fw-bold fs-4 mb-1">{user.full_name || ""} 
+                                                <p className="fw-bold fs-4 mb-1">
+                                                    {user.full_name || ""}
                                                 </p>
                                                 <p className="text-muted mb-0">
-                                                    {user.role === "3" && "Sinh viên"}
-                                                    {user.role === "2" && "Giảng viên"}
-                                                    {user.role === "1" && "Admin"}
-                                                    {user.role === "0" && "Quản lý cấp cao"}
+                                                    {user.role === "3" &&
+                                                        "Sinh viên"}
+                                                    {user.role === "2" &&
+                                                        "Giảng viên"}
+                                                    {user.role === "1" &&
+                                                        "Admin"}
+                                                    {user.role === "0" &&
+                                                        "Quản lý cấp cao"}
                                                 </p>
                                             </div>
                                         </div>
                                         <hr />
                                         <div className="d-flex gap-4 justify-content-between">
-                                            <p className="fw-bold fs-5 mb-0 text-nowrap">Email:</p>
-                                            <p className="fs-5 mb-0 text-end">{user.email || ""}</p>
+                                            <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                Email:
+                                            </p>
+                                            <p className="fs-5 mb-0 text-end">
+                                                {user.email || ""}
+                                            </p>
                                         </div>
                                         <div className="d-flex gap-4 justify-content-between mt-3">
-                                            <p className="fw-bold fs-5 mb-0 text-nowrap">Số điện thoại:</p>
-                                            <p className="fs-5 mb-0 text-end">{user.phone_number || ""}</p>
+                                            <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                Số điện thoại:
+                                            </p>
+                                            <p className="fs-5 mb-0 text-end">
+                                                {user.phone_number || ""}
+                                            </p>
                                         </div>
                                         {user?.role == 3 && (
                                             <>
                                                 <hr />
                                                 <div className="d-flex gap-4 justify-content-between mt-3">
-                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">Kỳ học:</p>
+                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                        Kỳ học:
+                                                    </p>
                                                     <p className="fs-5 mb-0">
-                                                        {user?.semester?.cate_name || ""}
+                                                        {user?.semester
+                                                            ?.cate_name || ""}
                                                     </p>
                                                 </div>
                                                 <div className="d-flex gap-4 justify-content-between mt-3">
-                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">Khóa học:</p>
+                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                        Khóa học:
+                                                    </p>
                                                     <p className="fs-5 mb-0">
-                                                        {user?.course?.cate_name || ""}
+                                                        {user?.course
+                                                            ?.cate_name || ""}
                                                     </p>
                                                 </div>
                                                 <div className="d-flex gap-4 justify-content-between mt-3">
-                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">Chuyên ngành:</p>
+                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                        Chuyên ngành:
+                                                    </p>
                                                     <p className="fs-5 mb-0">
-                                                        {user?.major?.cate_name || ""}
+                                                        {user?.major
+                                                            ?.cate_name || ""}
                                                     </p>
                                                 </div>
                                                 <hr />
                                                 <div className="d-flex gap-4 justify-content-between mt-3">
-                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">Trạng thái:</p>
+                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                        Trạng thái:
+                                                    </p>
                                                     <p className="fs-5 mb-0">
-                                                        {user.is_active == 1 ? "Đang học" : "Đang dừng"}
+                                                        {user.is_active == 1
+                                                            ? "Đang học"
+                                                            : "Đang dừng"}
                                                     </p>
                                                 </div>
                                             </>
@@ -129,7 +155,7 @@ const ViewMyAccount = () => {
                                         disabled
                                     />
                                 </div>
-                                
+
                                 <div className="form-group">
                                     <label>Địa chỉ</label>
                                     <input
@@ -175,7 +201,6 @@ const ViewMyAccount = () => {
                                         disabled
                                     />
                                 </div>
-
                             </div>
                         </div>
                     </div>

@@ -600,12 +600,10 @@ class ClassroomController extends Controller
     //     // }
     // }
 
-    public function destroy(DeleteClassroomRequest $request, string $classCode)
+    public function destroy(string $classCode)
     {
         DB::beginTransaction();
         try {
-
-            $data = $request->validated();
 
             $classroom = Classroom::where('class_code', $classCode)->lockForUpdate()->first();
 
@@ -645,7 +643,7 @@ class ClassroomController extends Controller
                 'error' => false
             ], 200);
         } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+            // Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
             return response()->json([
                 'message' => 'Lỗi không xác định',

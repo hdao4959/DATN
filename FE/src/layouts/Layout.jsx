@@ -88,7 +88,10 @@ const AdminLayout = () => {
                                     />
                                 </div>
                             </nav> */}
-                            <ul className="navbar-nav topbar-nav ms-md-auto align-items-center" style={{ marginRight: "10px", }}>
+                            <ul
+                                className="navbar-nav topbar-nav ms-md-auto align-items-center"
+                                style={{ marginRight: "10px" }}
+                            >
                                 <li className="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
                                     <a
                                         className="nav-link dropdown-toggle"
@@ -490,10 +493,10 @@ const AdminLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`/admin/account/${
-                                                                user?.user_code ||
+                                                            to={
+                                                                `/admin/account` ||
                                                                 ""
-                                                            }`}
+                                                            }
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -504,9 +507,7 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`/admin/account/${
-                                                        user?.user_code || ""
-                                                    }`}
+                                                    to={`/admin/account`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
@@ -556,8 +557,8 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 
