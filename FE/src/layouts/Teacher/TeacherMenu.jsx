@@ -101,7 +101,7 @@ const TeacherMenu = () => {
                                     <li>
                                         <NavLink to="/teacher/grades" className={`${styles.menuItem} group`}>
                                             <p className="sub-item">
-                                               Bảng điểm
+                                                Bảng điểm
                                             </p>
                                         </NavLink>
                                     </li>
@@ -129,7 +129,7 @@ const TeacherMenu = () => {
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#post">
                                 <i className="fas fa-th-list" />
-                                <p>Bài Viết</p>
+                                <p>Thông Báo</p>
                                 <span className="caret" />
                             </a>
                             <div className="collapse" id="post">
@@ -137,14 +137,14 @@ const TeacherMenu = () => {
                                     <li>
                                         <NavLink to="/teacher/post" className={`${styles.menuItem} group`}>
                                             <p className="sub-item">
-                                                Bài Viết
+                                                Thông Báo
                                             </p>
                                         </NavLink>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-                        
+
                     </ul>
                 </div>
             </div>

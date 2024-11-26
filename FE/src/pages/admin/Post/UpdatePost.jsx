@@ -53,22 +53,49 @@ const UpdatePost = () => {
             toast.error(msg || "Có lỗi xảy ra");
         },
     });
-
     useEffect(() => {
         if (postDetail) {
+            // Xử lý tags
+            const processedTags = Array.isArray(postDetail.tags)
+                ? postDetail.tags.map(tag => tag.tag_name)  // Nếu là mảng đối tượng, lấy `tag_name`
+                : postDetail.tags ? postDetail.tags.split(",") : [];  // Nếu là chuỗi, tách thành mảng
+
+            // Xử lý notification_object
+            const processedNotificationObject = () => {
+                if (Array.isArray(postDetail.notification_object)) {
+                    // Nếu là mảng đối tượng hợp lệ, trích xuất class_code và kết hợp thành chuỗi
+                    return postDetail.notification_object.map(item => item.class_code).join(", ");
+                } else if (!postDetail.notification_object || postDetail.notification_object === null) {
+                    // Nếu là null hoặc không có giá trị, trả về chuỗi rỗng
+                    return "";
+                } else {
+                    // Nếu là chuỗi bất kỳ (ví dụ: "sds", "abc123"), trả về chuỗi đó
+                    return postDetail.notification_object || "";
+                }
+            };
+
+            const notificationObject = processedNotificationObject();  // Lấy giá trị đã xử lý
+
+            // Reset form với các giá trị đã xử lý
             reset({
                 code: postDetail.code,
                 title: postDetail.title,
-                tags: postDetail.tags.split(","),
+                tags: processedTags,  // Gán tags đã xử lý
                 description: postDetail.description,
                 type: postDetail.type,
-                notification_object: postDetail.notification_object,
+                notification_object: notificationObject,  // Gán notification_object đã xử lý
                 cate_code: postDetail.cate_code,
             });
 
             setContent(postDetail.content);
         }
     }, [postDetail]);
+
+
+
+
+
+
 
     const onSubmit = (values) => {
         if (content === "<p><br></p>") {
