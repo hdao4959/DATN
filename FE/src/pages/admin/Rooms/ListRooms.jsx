@@ -31,12 +31,17 @@ const ClassRoomsList = () => {
 
     // Mutation cập nhật trạng thái lớp học
     const updateStatusMutation = useMutation({
-        mutationFn: (classCode) => api.post(`/admin/classrooms/updateActive/${classCode}`, {}, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        }),
+        mutationFn: (classCode) =>
+            api.post(
+                `/admin/classrooms/updateActive/${classCode}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            ),
         onSuccess: () => {
             toast.success("Cập nhật trạng thái lớp học thành công");
             refetch();
@@ -48,19 +53,20 @@ const ClassRoomsList = () => {
 
     // Mutation xóa lớp học
     const deleteClassMutation = useMutation({
-        mutationFn: (classCode) => api.delete(`/admin/classrooms/${classCode}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        }),
+        mutationFn: (classCode) =>
+            api.delete(`/admin/classrooms/${classCode}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }),
         onSuccess: () => {
             toast.success("Xóa lớp học thành công");
             refetch();
             setDeleteModalOpen(false); // Đóng modal khi xóa thành công
         },
-        onError: () => {
-            toast.error("Có lỗi xảy ra khi xóa lớp học");
+        onError: (error) => {
+            toast.error(error.response.data.message);
         },
     });
 
@@ -101,30 +107,7 @@ const ClassRoomsList = () => {
         toggleDeleteModal(classCode);
     };
 
-    const handleCloseModal = () => {
-        setSelectedClassCodeForGrades(null);
-        setSelectedClassCodeForAttendances(null);
-    };
-
-    const { mutate: updateStatus } = useMutation({
-        mutationFn: async (data) => {
-            return api.put("/admin/classrooms/bulk-update-type", data, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-        },
-        onSuccess: () => {
-            toast.success("Cập nhật trạng thái thành công!");
-            refetch(); // Reload lại danh sách classrooms
-        },
-        onError: (error) => {
-            // console.error("onError Callback:", error.response || error.message || error); // Log lỗi trong onError
-            toast.error("Có lỗi xảy ra khi cập nhật trạng thái!");
-        },
-    });
-
+    // Chuyển đổi dữ liệu thành định dạng DataTable
     useEffect(() => {
         if (classrooms) {
             if ($.fn.dataTable.isDataTable("#classroomsTable")) {
@@ -138,8 +121,18 @@ const ClassRoomsList = () => {
                 columns: [
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
-                    { title: "Môn học", data: "subject.subject_name" },
-
+                    { title: "Mã môn", data: "subject_code" },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        render: (data) =>
+                            `<i class="fas ${
+                                data === 1
+                                    ? "fa-times-circle text-red-500"
+                                    : "fa-check-circle text-green-500"
+                            } toggle-status" style="font-size: 20px; cursor: pointer;"></i>`,
+                        className: "text-center",
+                    },
                     {
                         title: "Hành động",
                         data: null,
@@ -192,23 +185,6 @@ const ClassRoomsList = () => {
                 <div className="card-header">
                     <h4 className="card-title">Quản lý lớp học</h4>
                 </div>
-                {selectedClassCodeForGrades && (
-                    <ShowGrades
-                        classCode={selectedClassCodeForGrades}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {selectedClassCodeForAttendances && (
-                    <ShowAttendance
-                        classCode={selectedClassCodeForAttendances}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {(selectedClassCodeForGrades ||
-                    selectedClassCodeForAttendances) && (
-                    <div className="modal-backdrop fade show"></div>
-                )}
-
                 <div className="card-body">
                     {isLoading && (
                         <>
