@@ -18,14 +18,6 @@ const EditSchoolRooms = () => {
     } = useForm();
     const nav = useNavigate();
     const queryClient = useQueryClient();
-    // const { data: listSchoolRooms } = useQuery({
-    //     queryKey: ["LIST_SCHOOLROOMS"],
-    //     queryFn: async () => {
-    //         const res = await api.get("/admin/getListMajor/major");
-    //         return res.data;
-    //     }
-    // });
-
     const { mutate } = useMutation({
         mutationFn: (data) => api.put(`/admin/schoolrooms/${id}`, data),
         onSuccess: () => {

@@ -160,8 +160,9 @@ class SchoolRoomController extends Controller
                 if ($listSchoolRoom->image && Storage::disk('public')->exists($listSchoolRoom->image)) {
                     Storage::disk('public')->delete($listSchoolRoom->image);
                 }
-                $listSchoolRoom->delete($listSchoolRoom);
+                $listSchoolRoom->delete();
                 DB::commit();
+
                 return response()->json([
                     'message' => 'Xóa thành công'
                 ], 200);
