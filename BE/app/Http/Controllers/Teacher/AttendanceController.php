@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use Exception;
 use Throwable;
 use Carbon\Carbon;
 use App\Models\Schedule;
 use App\Models\Classroom;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use App\Exports\AttendancesExport;
+use App\Imports\AttendancesImport;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Attendance\StoreAttendanceRequest;
 use App\Http\Requests\Attendance\UpdateAttendanceRequest;
 
@@ -312,6 +316,101 @@ class AttendanceController extends Controller
 
             return response()->json([
                 'message' => 'Lỗi không xác định!'
+            ], 500);
+        }
+    }
+
+    public function exportAttendance(string $classCode)
+    {
+        $today = Carbon::today()->toDateString();
+        $attendances = Attendance::whereHas('classroom', function ($query) {
+            $query->where('class_code', $classCode);
+        })
+        ->with([
+            'classroom' => function ($query) {
+                $query->select('class_code', 'class_name', 'subject_code', 'user_code');
+            },
+            'classroom.users' => function ($query) {
+                $query->select('users.user_code', 'users.full_name');
+            },
+            'classroom.teacher' => function ($query) {
+                $query->select('user_code', 'full_name');
+            },
+            'classroom.schedules.session' => function ($query) {
+                $query->select('cate_code', 'cate_name');
+            },
+        ])
+        ->get(['id', 'student_code', 'class_code', 'status', 'noted', 'date']);
+
+        // Xử lý dữ liệu export
+        $result = $attendances->groupBy('class_code')->map(function ($classGroup) use ($today) {
+            $firstAttendance = $classGroup->first();
+            // $attendanceDate = $classGroup->date;
+            // Lấy tất cả học sinh từ lớp học
+            $students = $firstAttendance->classroom->users;
+
+            // Lọc danh sách điểm danh có ngày bằng hôm nay
+            $attendanceToday = $classGroup->filter(function ($attendance) use ($today) {
+                return Carbon::parse($attendance->date)->toDateString() === $today;
+            });
+            // Lấy tất cả các lịch học từ lớp học
+            $schedules = $firstAttendance->classroom->schedules;
+            // dd($classGroup);
+            // Gộp dữ liệu điểm danh và danh sách học sinh
+            $attendanceData = $students->map(function ($student) use ($attendanceToday, $today) {
+                $studentAttendance = $attendanceToday->firstWhere('student_code', $student->user_code);
+                // dd($attendanceToday);
+                if ($studentAttendance) {
+                    
+                    // Trả về dữ liệu attendance hiện tại
+                    return [
+                        'student_code' => $student->user_code,
+                        'full_name' => $student->full_name,
+                        'status' => $studentAttendance->status,
+                        'date' => Carbon::parse($studentAttendance->date)->toDateString(),
+                        'noted' => $studentAttendance->noted,
+                    ];
+                } else {
+                    // Trả về dữ liệu mặc định nếu không có attendance
+                    return [
+                        'student_code' => $student->user_code,
+                        'full_name' => $student->full_name,
+                        'status' => null,
+                        'date' => $today,
+                        'noted' => 'Chưa điểm danh',
+                    ];
+                }
+            });
+
+            return [
+                'class_code' => $firstAttendance->class_code,
+                'attendance' => $attendanceData,
+            ];
+        })->values()->all();
+
+        return Excel::download(new AttendancesExport($result), 'attendance.xlsx');
+    }
+
+    public function importAttendance (Request $request) {
+        // Kiểm tra xem file có tồn tại hay không
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv', // Đảm bảo chỉ nhận file Excel
+        ]);
+
+        try {
+            // Import file và xử lý qua AttendancesImport
+            $import = new AttendancesImport();
+            Excel::import($import, $request->file('file'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Attendance data imported successfully.',
+                'class_code' => $import->getClassCode(), // Trả về class_code đã trích xuất
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error during import: ' . $e->getMessage(),
             ], 500);
         }
     }

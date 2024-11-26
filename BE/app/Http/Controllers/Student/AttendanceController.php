@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use Throwable;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Attendance;
@@ -20,8 +21,10 @@ class AttendanceController extends Controller
     {
         try {
             $userCode = $request->user()->user_code;
-            $semesterCode = $request->input('search');
-
+            $smtCode = User::where('user_code', $userCode)->pluck('semester_code');
+            // dd($smtCode);
+            $semesterCode = $request->input('search', $smtCode);
+            // dd($semesterCode);
             $listSemester = Category::where('type', 'semester')
                                     ->where('is_active', '1')
                                     ->select('cate_code', 'cate_name')

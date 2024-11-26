@@ -192,6 +192,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('copyNewsletter/{code}', [TeacherNewsletterController::class, 'copyNewsletter']);
         Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
 
+        Route::controller(TeacherAttendanceController::class)->group(function () {
+            Route::post('/import-attendances', 'importAttendance');
+            Route::get('/export-attendances', 'exportAttendance');
+        });
+
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
