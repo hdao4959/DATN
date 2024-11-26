@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
@@ -17,19 +17,12 @@ const EditSchoolRooms = () => {
         formState: { errors },
     } = useForm();
     const nav = useNavigate();
-
-    // const { data: listSchoolRooms } = useQuery({
-    //     queryKey: ["LIST_SCHOOLROOMS"],
-    //     queryFn: async () => {
-    //         const res = await api.get("/admin/getListMajor/major");
-    //         return res.data;
-    //     }
-    // });
-
+    const queryClient = useQueryClient();
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post(`/admin/schoolrooms/${id}`, data),
+        mutationFn: (data) => api.put(`/admin/schoolrooms/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật phòng thành công");
+            queryClient.invalidateQueries(["SCHOOLROOMS_DETAIL", id]);
             nav("/admin/schoolrooms");
         },
         onError: (error) => {
@@ -42,7 +35,6 @@ const EditSchoolRooms = () => {
         queryKey: ["SCHOOLROOMS_DETAIL", id],
         queryFn: async () => {
             const res = await api.get(`/admin/schoolrooms/${id}`);
-
             return res.data;
         },
     });
@@ -52,7 +44,6 @@ const EditSchoolRooms = () => {
             reset({
                 cate_code: schoolRoomsDetail.cate_code,
                 cate_name: schoolRoomsDetail.cate_name,
-                // parrent_code: majorDetail.parrent_code,
                 is_active: schoolRoomsDetail.is_active,
                 value: schoolRoomsDetail.value,
                 description: schoolRoomsDetail.description,
@@ -60,22 +51,41 @@ const EditSchoolRooms = () => {
         }
     }, [schoolRoomsDetail, reset]);
 
-    const onSubmit = (data) => {
-        const formData = new FormData();
-        formData.append("cate_code", data.cate_code);
-        formData.append("cate_name", data.cate_name);
-        // formData.append('parrent_code', data.parrent_code);
-        formData.append("is_active", data.is_active);
-        formData.append("description", data.description);
-        formData.append("value", data.value);
-        formData.append("_method", "PUT");
+    const onSubmit = async (data) => {
+        // const formData = new FormData();
+        // formData.append("cate_code", data.cate_code);
+        // formData.append("cate_name", data.cate_name);
+        // // formData.append('parrent_code', data.parrent_code);
+        // formData.append("is_active", data.is_active);
+        // formData.append("description", data.description);
+        // formData.append("value", data.value);
+        // formData.append("_method", "PUT");
+        let imageUrl = null;
 
-        // Thêm file vào FormData
+        // Gửi hình ảnh (nếu có)
         if (data.image && data.image.length > 0) {
+            const formData = new FormData();
             formData.append("image", data.image[0]);
+
+            const imageResponse = await api.post("/upload-image", formData);
+            imageUrl = imageResponse.data.url; // URL của hình ảnh sau khi upload
         }
 
-        mutate(formData);
+        const jsonData = {
+            cate_code: data.cate_code,
+            cate_name: data.cate_name,
+            is_active: data.is_active,
+            description: data.description,
+            value: data.value,
+            image_url: imageUrl,
+        };
+        mutate(jsonData);
+        // Thêm file vào FormData
+        // if (data.image && data.image.length > 0) {
+        //     formData.append("image", data.image[0]);
+        // }
+
+        // mutate(formData);
     };
 
     return (
@@ -220,16 +230,11 @@ const EditSchoolRooms = () => {
                                     <div className="form-group">
                                         <label htmlFor="description">
                                             Mô tả
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description", {
-                                                required: "Vui lòng nhập mô tả",
-                                            })}
+                                            {...register("description")}
                                             placeholder="Nhập mô tả"
                                         />
                                         {errors.description && (
@@ -250,7 +255,7 @@ const EditSchoolRooms = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/major")}
+                                    onClick={() => nav("/admin/schoolrooms")}
                                 >
                                     Hủy
                                 </button>

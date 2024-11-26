@@ -273,7 +273,7 @@ const AdminMenu = () => {
                 </a>
                 <div className="collapse" id="grade">
                     <ul className="nav nav-collapse">
-                        <li>
+                        {/* <li>
                             <NavLink
                                 to="/admin/grades"
                                 className={`${styles.menuItem} group`}
@@ -288,7 +288,7 @@ const AdminMenu = () => {
                             >
                                 <p className="sub-item">Thêm mới điểm</p>
                             </NavLink>
-                        </li>
+                        </li> */}
                         <li>
                             <NavLink
                                 to="/admin/grade-components"
@@ -467,7 +467,7 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
-            <li className="nav-item ">
+            {/* <li className="nav-item ">
                 <a data-bs-toggle="collapse" href="#attendance">
                     <i className="fas fa-layer-group" />
                     <p>Quản lý điểm danh</p>
@@ -485,7 +485,7 @@ const AdminMenu = () => {
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> */}
         </ul>
     );
 };

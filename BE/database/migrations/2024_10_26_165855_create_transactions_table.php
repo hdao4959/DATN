@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('payment_method',['transfer','cash']);
             $table->enum('type', ['add','deduct']);
             $table->string('receipt_number');
+            $table->boolean('is_deposit')->default(true);
             $table->timestamps();
         });
     }

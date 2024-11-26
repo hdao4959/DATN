@@ -81,7 +81,10 @@ const MajorList = () => {
     // Chuyển đổi dữ liệu từ API thành format DataTable
     const flattenMajorData = (data) => {
         let result = [];
+        let sortOrder = 0; // Đếm thứ tự hiển thị
+        
         data.forEach((major) => {
+            // Thêm chuyên ngành cha
             result.push({
                 id: major.id,
                 cate_code: major.cate_code,
@@ -89,29 +92,32 @@ const MajorList = () => {
                 image: major.image,
                 is_active: major.is_active,
                 is_parent: true,
+                sortOrder: sortOrder++, // Tăng thứ tự
             });
-
+    
             // Nếu có chuyên ngành con, thêm vào danh sách
             major.childrens.forEach((child) => {
                 result.push({
                     id: child.id,
                     cate_code: child.cate_code,
-                    cate_name: `-- ${child.cate_name}`,
+                    cate_name: `|_______ ${child.cate_name}`, // Thụt lề
                     image: child.image,
                     is_active: child.is_active,
                     is_parent: false,
+                    sortOrder: sortOrder++, // Tăng thứ tự
                 });
             });
         });
         return result;
     };
+    
 
     useEffect(() => {
         if (data) {
             if ($.fn.dataTable.isDataTable("#major-table")) {
                 $("#major-table").DataTable().clear().destroy();
             }
-
+    
             $("#major-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
@@ -155,7 +161,9 @@ const MajorList = () => {
                             </div>`,
                         className: "text-center",
                     },
+                    { title: "Thứ tự sắp xếp", data: "sortOrder", visible: false }, // Ẩn cột sortOrder
                 ],
+                order: [[5, "asc"]], // Sắp xếp theo cột thứ 5 (sortOrder)
                 createdRow: (row, rowData) => {
                     $(row)
                         .find(".change-status")
@@ -176,13 +184,14 @@ const MajorList = () => {
                 scrollX: true,
             });
         }
-
+    
         return () => {
             if ($.fn.dataTable.isDataTable("#major-table")) {
                 $("#major-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
+    
 
     return (
         <>

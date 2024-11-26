@@ -77,6 +77,25 @@ const RoomSchoolList = () => {
         if (roomSchool) {
             $('#roomSchoolTable').DataTable({
                 data: roomSchool,
+                processing: true,
+                serverSide: true, 
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/schoolrooms`, {
+                            params: { page, per_page: data.length },
+                        });
+                        const result = response.data;
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 columns: [
@@ -128,7 +147,7 @@ const RoomSchoolList = () => {
 
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
-                        navigate(`/admin/schoolrooms/edit/${classCode}`);
+                        navigate(`/admin/schoolrooms/${classCode}/edit`);
                     });
 
                     $(row).find('.toggleStatus').on('click', function () {

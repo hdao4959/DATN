@@ -32,6 +32,7 @@ import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
+import EditStudentWallet from "./pages/admin/StudentWallet/EditStudentWallet";
 import AddPost from "./pages/admin/Post/AddPost";
 import PostCategoryList from "./pages/admin/PostCategory/PostCategoryList";
 import AddPostCategory from "./pages/admin/PostCategory/AddPostCategory";
@@ -212,6 +213,11 @@ function App() {
                     path: "student-wallet",
                     element: <StudentWalletList />,
                 },
+                
+                {
+                    path: "wallets/:id/edit",
+                    element: <EditStudentWallet />,
+                },
 
                 {
                     path: "post",
@@ -304,6 +310,10 @@ function App() {
 
             ),
             children: [
+                {
+                    path: "",
+                    element: <StudentNews />,
+                },
                 {
                     path: "attendances",
                     element: <ShowStudentAttendance />,

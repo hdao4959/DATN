@@ -26,7 +26,9 @@ class TransactionController extends Controller
             $transactions = Transaction::with('fee') // Lấy thông tin bảng fees
             ->whereHas('fee', function ($query) use ($userCode) {
                 $query->where('user_code', $userCode);
-            })->get();
+            })
+            ->orderBy('payment_date','desc')
+            ->get();
             $wallets = Wallet::where('user_code', $userCode)->get();
             return response()->json([
                 'transactions' => $transactions,

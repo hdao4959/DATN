@@ -35,9 +35,7 @@ const StudentWalletList = () => {
                         const response = await api.get(`/admin/fees`, {
                             params: { page, per_page: data.length },
                         });
-
                         const result = response.data;
-
                         callback({
                             draw: data.draw,
                             recordsTotal: result.total,
@@ -125,7 +123,7 @@ const StudentWalletList = () => {
                         render: (data, type, row) => {
                             return `
                                 <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
-                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.id}" id="edit_${row.id}"></i>
                                 </div>
                             `;
                         }

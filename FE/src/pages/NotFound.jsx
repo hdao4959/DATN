@@ -15,7 +15,7 @@ const NotFound = () => {
         } else if (user.role === "2") {
             navigate("/teacher");
         } else if (user.role === "3") {
-            navigate("/student/news");
+            navigate("/student");
         } else {
             navigate("/signin");
         }

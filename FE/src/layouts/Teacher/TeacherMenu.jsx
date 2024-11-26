@@ -101,7 +101,7 @@ const TeacherMenu = () => {
                                     <li>
                                         <NavLink to="/teacher/grades" className={`${styles.menuItem} group`}>
                                             <p className="sub-item">
-                                               Bảng điểm
+                                                Bảng điểm
                                             </p>
                                         </NavLink>
                                     </li>
@@ -129,7 +129,7 @@ const TeacherMenu = () => {
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#post">
                                 <i className="fas fa-th-list" />
-                                <p>Bài Viết</p>
+                                <p>Thông Báo</p>
                                 <span className="caret" />
                             </a>
                             <div className="collapse" id="post">
@@ -137,56 +137,14 @@ const TeacherMenu = () => {
                                     <li>
                                         <NavLink to="/teacher/post" className={`${styles.menuItem} group`}>
                                             <p className="sub-item">
-                                                Bài Viết
+                                                Thông Báo
                                             </p>
                                         </NavLink>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-                        <li className="nav-item  submenu">
-                            <a data-bs-toggle="collapse" href="#forms">
-                                <i className="fas fa-pen-square" />
-                                <p>Forms</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="forms">
-                                <ul className="nav nav-collapse">
-                                    <li className="active">
-                                        <a href="../forms/forms.html">
-                                            <span className="sub-item">
-                                                Basic Form
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#tables">
-                                <i className="fas fa-table" />
-                                <p>Tables</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="tables">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <a href="../tables/tables.html">
-                                            <span className="sub-item">
-                                                Basic Table
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="../tables/datatables.html">
-                                            <span className="sub-item">
-                                                Datatables
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+
                     </ul>
                 </div>
             </div>
