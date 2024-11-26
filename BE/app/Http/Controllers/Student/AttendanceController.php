@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use Throwable;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Attendance;
