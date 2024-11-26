@@ -47,7 +47,7 @@ const EditMajor = () => {
                 parent_code: majorDetail.listMajor.parent_code,
                 is_active: majorDetail.listMajor.is_active,
                 value: majorDetail.listMajor.value,
-                description: majorDetail.listMajor.description ,
+                description: majorDetail.listMajor.description,
             });
         }
     }, [majorDetail, reset]);
@@ -167,7 +167,7 @@ const EditMajor = () => {
                                         )}
                                     </div>
 
-                                    {/* <div className="form-group">
+                                    <div className="form-group">
                                         <label htmlFor="value">
                                             Giá trị
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -189,7 +189,7 @@ const EditMajor = () => {
                                                 {errors.value.message}
                                             </span>
                                         )}
-                                    </div> */}
+                                    </div>
 
                                     <div className="form-group">
                                         <label htmlFor="is_active">

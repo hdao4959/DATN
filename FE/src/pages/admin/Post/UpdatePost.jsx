@@ -27,7 +27,7 @@ const UpdatePost = () => {
     const { data: categories } = useQuery({
         queryKey: ["POST_CATEGORY"],
         queryFn: async () => {
-            const res = await api.get("/admin/category");
+            const res = await api.get("/admin/categories");
             return res.data.data ?? [];
         },
     });

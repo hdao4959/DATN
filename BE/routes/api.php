@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/subjects/{id}', [SubjectController::class, 'update']);
         Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
         Route::apiResource('classrooms', ClassroomController::class);
-        Route::put('/classrooms/updateActive/{classCode}', [ClassroomController::class, 'updateActive']);
+        Route::post('/classrooms/updateActive/{classCode}', [ClassroomController::class, 'updateActive']);
         Route::controller(ClassroomController::class)->group(function () {
             Route::post('classrooms/handleStep1', 'handleStep1');
             Route::post('classrooms/renderSchedules', 'renderSchedules');
