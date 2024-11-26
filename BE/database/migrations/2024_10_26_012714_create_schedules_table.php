@@ -30,6 +30,7 @@ return new class extends Migration
 
             $table->date('date');
             $table->unique(['class_code', 'room_code', 'session_code', 'date']);
+            $table->index('date');
             $table->timestamps();
         });
     }

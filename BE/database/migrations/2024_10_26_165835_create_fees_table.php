@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
             $table->string('user_code',20);
+            $table->foreign('user_code')->references('user_code')
+                  ->on('users')->cascadeOnDelete()->restrictOnUpdate();
             $table->decimal('total_amount', 10, 2);
             $table->decimal('amount', 10, 2)->default(0);
             $table->date('start_date');
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->foreign('semester_code')->references('cate_code')->on('categories')
             ->restrictOnDelete()->restrictOnUpdate();
             $table->enum('status', ['pending', 'paid', 'unpaid'])->default('unpaid');
+            $table->unique(['user_code', 'semester_code']);
             $table->timestamps();
         });
     }

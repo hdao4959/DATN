@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../config/axios";
 
-const NewsDetail = () => {
+const NewsDetail = (Type) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  console.log(Type);
+  
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["LIST_NEWS", id],
@@ -35,7 +37,7 @@ const NewsDetail = () => {
   };
   return (
     <div className="container mt-4">
-      <div className="card">
+      <div className="">
         {isLoading ? (
           <div>
             <div className="spinner-border" role="status"></div>
@@ -43,18 +45,18 @@ const NewsDetail = () => {
           </div>
         ) : (
           <>
-            <div className="card-header">
+            <div className="">
               <h2 className="text-lg"><strong>{data.title}</strong></h2>
             </div>
-            <div className="card-body" style={{ lineHeight: '2' }}>
+            <div className="" style={{ lineHeight: '2' }}>
               {data ? (
                 <div>
                   <div>
-                    <img
+                    {/* <img
                       src={data.image}
                       alt={data.title}
                       style={{ maxWidth: "100%", height: "auto" }}
-                    />
+                    /> */}
                   </div>
                   <div>
                     <div dangerouslySetInnerHTML={{ __html: data.content }} style={{ minHeight: '300px' }} />

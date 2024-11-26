@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Repositories\Contracts\FeeRepositoryInterface;
 use App\Jobs\SendEmailJob;
+use App\Models\Category;
+use Illuminate\Database\QueryException;
 
 class FeeRepository implements FeeRepositoryInterface {
     public function getAll($email = null ,$status = null){
@@ -31,17 +33,25 @@ class FeeRepository implements FeeRepositoryInterface {
 
     public function createAll(){
 
+        Transaction::query()->delete();
+        Fee::query()->delete();
+        $message = [];
         $students = User::with(['semester' => function ($query) {
             $query->select('cate_code', 'value'); // chỉ lấy cate_code và name từ bảng categories
         }])
-        ->select('id', 'full_name','user_code', 'semester_code')
+        ->select('id', 'full_name','user_code','semester_code')
         ->get();
 
-
+        //  return $students;
         foreach ($students as $stu) {
 
             $nextSemester = $stu->semester->value + 1;
+            if($nextSemester == 8){
+                continue;
+            }
 
+
+            $semesterCode = 'S0'.$nextSemester;
             $subjects = Subject::whereHas('semester', function ($query) use ($nextSemester) {
                 $query->where('value', $nextSemester);
             })
@@ -50,27 +60,38 @@ class FeeRepository implements FeeRepositoryInterface {
             }])
             ->get();
 
+            // return $subjects;
 
-            $totalTuition = $subjects->sum('tuition');
+            $totalAmount = $subjects->sum('tuition');
 
             $feeData  = [
-                'user_id' => $stu->id,
                 'user_code' => $stu->user_code,
-                'semester' => $nextSemester,
-                'amount'  => $totalTuition,
+                'total_amount' => $totalAmount,
+                'semester_code' => $semesterCode,
+                'amount'  => 0,
                 'start_date' => '2024-10-01',
                 'due_date' => '2024-10-31',
-                'status'  => 'pending'
+                'status'  => 'unpaid'
             ];
 
-            $fee = Fee::create($feeData);
+            try{
+                $fee = Fee::create($feeData);
+                $message[] = "Tạo fee thành công";
+            }catch(QueryException $e){
+                if ($e->getCode() === '23000') {
+                    $message[] = "Lỗi trùng lặp";
+                    continue;
+                }
+            }
 
-            // $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');
-            //  Wallet::query()
-            // ->where('user_id',$fee->user_id)
-            // ->update(['total'=>$totalFees]);
+
+        //     // $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');
+        //     //  Wallet::query()
+        //     // ->where('user_id',$fee->user_id)
+        //     // ->update(['total'=>$totalFees]);
         }
 
+        return $message;
     }
 
     public function sendEmailToUsers (array $user = []){

@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Wallet extends Model
+class TransferScheduleTimeframe extends Model
 {
     use HasFactory;
-
+    
+    protected $table = 'transfer_schedule_timeframe';
     protected $fillable = [
-        'user_code',
-        'total',
-        'paid'
+        'start_time', 
+        'end_time'
     ];
+
 
 }

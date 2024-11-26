@@ -395,7 +395,7 @@ class SubjectSeeder extends Seeder
         //             'image' => 'mon_hoc_' . $i . '.jpg', // Tên ảnh cho mỗi môn học
         //             'semester_code' => 'S0' . $i,
         //             // 'semester_code' => $semesterCodes[array_rand($semesterCodes)],
-        //             'major_code' => 'CNTT04', // Chọn ngẫu nhiên mã ngành
+        //             'major_code' => 'CN0'. rand(1,5), // Chọn ngẫu nhiên mã ngành
         //             'is_active' => 1,
         //             'deleted_at' => null,
         //             'created_at' => Carbon::now(),
@@ -404,7 +404,7 @@ class SubjectSeeder extends Seeder
         //     ]);
         // }
 
-        for ($i = 301; $i <= 350; $i++) {
+        for ($i = 0; $i <= 2; $i++) {
             DB::table('users')->insert([
                 [
                     'user_code' => 'CNTT03_' . sprintf('%02d', $i), // student01, student02, ...
@@ -423,10 +423,10 @@ class SubjectSeeder extends Seeder
                     'avatar' => null,
                     'role' => '3',
                     'is_active' => 1,
-                    'major_code' => 'CNTT03', // Chọn ngẫu nhiên mã ngành
+                    'major_code' => 'CN01', // Chọn ngẫu nhiên mã ngành
                     'narrow_major_code' => null, // Chọn ngẫu nhiên narrow_major_code
-                    'semester_code' => 'S07',
-                    'course_code' => 'k18',
+                    'semester_code' => 'S01',
+                    'course_code' => 'S01',
                     'remember_token' => Str::random(10),
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),

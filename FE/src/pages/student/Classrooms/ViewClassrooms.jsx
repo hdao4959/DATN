@@ -37,7 +37,7 @@ const ViewClassrooms = () => {
         <div>
             <div className="card" style={{ minHeight: "800px" }}>
                 <div className="card-header">
-                    <h4 className="card-title">Lịch Học</h4>
+                    <h4 className="card-title">Danh sách lớp học</h4>
                 </div>
                 <div className="card-body">
                     {isLoading ? (
@@ -55,7 +55,7 @@ const ViewClassrooms = () => {
                                     <th>STT</th>
                                     <th>Mã Lớp</th>
                                     <th>Tên môn học</th>
-                                    <th></th>
+                                    <th>Lịch học</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -68,9 +68,9 @@ const ViewClassrooms = () => {
                                         </td>
                                         <td>
                                             <Link
-                                                to={`/student/classrooms/${classroom.class_code}/schedule`}
+                                                to={`/student/classrooms/schedule/${classroom.class_code}`}
                                             >
-                                                Hahah
+                                                <i class="fas fa-eye"></i>
                                             </Link>
                                         </td>
                                     </tr>

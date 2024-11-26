@@ -46,11 +46,12 @@ class ClassroomController extends Controller
         ], 500);
     }
 
-    public function handleConflict(){
+    public function handleConflict()
+    {
         return response()->json([
             'status' => false,
             'message' => 'Bản ghi này đã có cập nhật trước đó, hãy cập nhật lại trang!'
-        ],409);
+        ], 409);
     }
 
 
@@ -537,7 +538,7 @@ class ClassroomController extends Controller
                 'subject' => function ($query) {
                     $query->select('subject_code', 'subject_name', 'major_code');
                 },
-                'subject.major' => function($query){
+                'subject.major' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 },
                 // Thông tin Giảng viên
@@ -599,12 +600,10 @@ class ClassroomController extends Controller
     //     // }
     // }
 
-    public function destroy(DeleteClassroomRequest $request, string $classCode)
+    public function destroy(string $classCode)
     {
         DB::beginTransaction();
         try {
-
-            $data = $request->validated();
 
             $classroom = Classroom::where('class_code', $classCode)->lockForUpdate()->first();
 
@@ -612,9 +611,9 @@ class ClassroomController extends Controller
                 return $this->handleInvalidId();
             }
 
-            if($data['updated_at'] !== $classroom->updated_at->toDateTimeString()){
-                return $this->handleConflict();
-            }
+            // if ($data['updated_at'] !== $classroom->updated_at->toDateTimeString()) {
+            //     return $this->handleConflict();
+            // }
 
             // Xoá lớp học
             $classroom->delete();
@@ -644,7 +643,7 @@ class ClassroomController extends Controller
                 'error' => false
             ], 200);
         } catch (\Throwable $th) {
-            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+            // Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
             return response()->json([
                 'message' => 'Lỗi không xác định',

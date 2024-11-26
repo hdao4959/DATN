@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Wallet extends Model
+class TransferScheduleHistory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_code',
-        'total',
-        'paid'
+        'student_code',
+        'from_class_code',
+        'to_class_code',
     ];
-
 }

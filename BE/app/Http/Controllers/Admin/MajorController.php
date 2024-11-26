@@ -44,11 +44,12 @@ class MajorController extends Controller
             $perPage = $request->input('per_page', 10);
             $majors = Category::with(
                 ['childrens' => function ($query) {
-            $query->select('cate_code', 'cate_name', 'image','parent_code', 'is_active');
-            }])->whereNull('parent_code')
+                    $query->select('cate_code', 'cate_name', 'image', 'parent_code', 'is_active');
+                }]
+            )->whereNull('parent_code')
                 ->where('type', '=', 'major')
-                ->select('cate_code', 'cate_name','image','is_active')->when($search, function($query, $search){
-                    return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+                ->select('cate_code', 'cate_name', 'image', 'is_active')->when($search, function ($query, $search) {
+                    return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function ($childQuerry) use ($search) {
                         $childQuerry->where('cate_name', 'like', "%$search%");
                     });
                 })->paginate($perPage);
@@ -116,33 +117,39 @@ class MajorController extends Controller
      */
     public function update(UpdateMajorRequest $request, string $cate_code)
     {
+        // return response()->json($request, 201);
+
         DB::beginTransaction();
-        try {
-            $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
-            if (!$listMajor) {
-                DB::rollBack();
+        // try {
+        $listMajor = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
 
-                return $this->handleInvalidId();
-            } else {
-                $params = $request->except('_token', '_method');
-                if ($request->hasFile('image')) {
-                    if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
-                        Storage::disk('public')->delete($listMajor->image);
-                    }
-                    $fileName = $request->file('image')->store('uploads/image', 'public');
-                } else {
-                    $fileName = $listMajor->image;
+        if (!$listMajor) {
+            DB::rollBack();
+
+            return $this->handleInvalidId();
+        } else {
+            $params = $request->except('_token', '_method');
+            // return response()->json($params, 201);
+
+            if ($request->hasFile('image')) {
+                if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {
+                    Storage::disk('public')->delete($listMajor->image);
                 }
-                $params['image'] = $fileName;
-                $listMajor->update($params);
-                DB::commit();
-
-                return response()->json($listMajor, 201);
+                $fileName = $request->file('image')->store('uploads/image', 'public');
+            } else {
+                $fileName = $listMajor->image;
             }
-        } catch (Throwable $th) {
+            $params['image'] = $fileName;
+            $listMajor->is_active =  $params['is_active'];
+            $listMajor->update($params);
+            DB::commit();
 
-            return $this->handleErrorNotDefine($th);
+            return response()->json($listMajor, 201);
         }
+        // } catch (Throwable $th) {
+
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
     /**
@@ -178,19 +185,19 @@ class MajorController extends Controller
     {
         try {
             $activies = $request->input('is_active'); // Lấy dữ liệu từ request
-    
+
             DB::transaction(function () use ($activies) {
                 foreach ($activies as $cate_code => $active) {
                     // Tìm category theo cate_code và áp dụng lock for update
                     $category = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
-    
+
                     if ($category) {
                         $category->is_active = $active; // Sửa lại đúng field
                         $category->save();
                     }
                 }
             });
-    
+
             return response()->json([
                 'message' => 'Trạng thái đã được cập nhật thành công!'
             ], 200);

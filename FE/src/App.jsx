@@ -32,6 +32,7 @@ import AddGradeComponents from "./pages/admin/GradeComponents/AddGradeComponents
 import UpdateGradeComponents from "./pages/admin/GradeComponents/UpdateGradeComponents";
 import ClassroomDetails from "./pages/admin/Rooms/ClassroomDetails";
 import StudentWalletList from "./pages/admin/StudentWallet/StudentWalletList";
+import EditStudentWallet from "./pages/admin/StudentWallet/EditStudentWallet";
 import AddPost from "./pages/admin/Post/AddPost";
 import PostCategoryList from "./pages/admin/PostCategory/PostCategoryList";
 import AddPostCategory from "./pages/admin/PostCategory/AddPostCategory";
@@ -64,6 +65,12 @@ import CreateTeacherAccount from "./pages/admin/Teacher/CreateTeacherAccount.jsx
 import AddClassroom from "./pages/admin/Rooms/AddClassroom.jsx";
 import ViewSchedules from "./pages/student/Schedules/ViewSchedules.jsx";
 import ViewClassrooms from "./pages/student/Classrooms/ViewClassrooms.jsx";
+import TransferSchedule from "./pages/student/Schedules/TransferSchedule.jsx";
+import WalletBalance from "./pages/student/Wallets/WalletBalance.jsx";
+import Debt from "./pages/student/Wallets/Debt.jsx";
+import ScheduleTimeFrame from "./pages/admin/ScheduleTimeFrame/ScheduleTimeFrame.jsx";
+import ViewSchedulesForClass from "./pages/student/Classrooms/ViewSchedulesForClass.jsx";
+import StudentAccountDetails from "./pages/admin/Account/StudentAccountDetails.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -78,9 +85,9 @@ function App() {
         {
             path: "admin",
             element: (
-                // <CheckRole>
-                <Layout />
-                // </CheckRole>
+                <CheckRole>
+                    <Layout />
+                </CheckRole>
             ),
             children: [
                 {
@@ -96,7 +103,11 @@ function App() {
                     element: <CreateAccount />,
                 },
                 {
-                    path: "account/:user_code",
+                    path: "students/:user_code",
+                    element: <StudentAccountDetails />,
+                },
+                {
+                    path: "account",
                     element: <ViewMyAccount />,
                 },
                 {
@@ -211,6 +222,11 @@ function App() {
                 },
 
                 {
+                    path: "wallets/:id/edit",
+                    element: <EditStudentWallet />,
+                },
+
+                {
                     path: "post",
                     element: <PostList />,
                 },
@@ -238,6 +254,10 @@ function App() {
                 {
                     path: "attendance",
                     element: <AttendanceManagement />,
+                },
+                {
+                    path: "timeframes",
+                    element: <ScheduleTimeFrame />,
                 },
             ],
         },
@@ -300,11 +320,15 @@ function App() {
             ),
             children: [
                 {
+                    path: "",
+                    element: <StudentNews />,
+                },
+                {
                     path: "attendances",
                     element: <ShowStudentAttendance />,
                 },
                 {
-                    path: "account/details/:user_code",
+                    path: "account",
                     element: <ViewMyAccount />,
                 },
                 {
@@ -335,13 +359,16 @@ function App() {
 
                 {
                     path: "news",
-                    element: <StudentNews />,
+                    element: <StudentNews Type="news" />,
                 },
                 {
                     path: "news/:id/detail",
                     element: <StudentDetailNews />,
                 },
-
+                {
+                    path: "notifications",
+                    element: <StudentNews Type="notification" />,
+                },
                 {
                     path: "FAQS",
                     element: <FAQs />,
@@ -351,8 +378,26 @@ function App() {
                     element: <ViewSchedules />,
                 },
                 {
+                    path: "schedules/transfer",
+                    element: <TransferSchedule />,
+                },
+                {
                     path: "classrooms",
                     element: <ViewClassrooms />,
+                },
+                {
+                    path: "classrooms/schedule/:class_code",
+                    element: <ViewSchedulesForClass />,
+                },
+
+                {
+                    path: "wallet-balance",
+                    element: <WalletBalance />,
+                },
+
+                {
+                    path: "debt",
+                    element: <Debt />,
                 },
             ],
         },

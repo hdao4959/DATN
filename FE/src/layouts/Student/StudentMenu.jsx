@@ -7,7 +7,7 @@ const StudentMenu = () => {
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
                 <div className="logo-header" data-background-color="dark">
-                    <Link to={"/admin"} className="logo">
+                    <Link to={"/student"} className="logo">
                         <img
                             src="https://ap.poly.edu.vn/images/whiteLogo.png"
                             width={150}
@@ -44,8 +44,7 @@ const StudentMenu = () => {
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
-
-                        <li className="menu-item">
+                        {/* <li className="menu-item">
 
                             <NavLink to="/student" className={`${styles.menuItem} group`}>
 
@@ -54,7 +53,7 @@ const StudentMenu = () => {
                                 <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                                 <p className="text-[#b9babf]">Trang Chủ</p>
                             </NavLink>
-                        </li>
+                        </li> */}
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#attendances">
                                 <i className="fas fa-clipboard-list" />
@@ -274,7 +273,7 @@ const StudentMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#asks">
+                            <a data-bs-toggle="collapse" href="#FAQS">
                                 <i className="fas fa-clipboard-list" />
                                 <p>Câu hỏi thường gặp</p>
                                 <span className="caret" />
@@ -287,6 +286,34 @@ const StudentMenu = () => {
                                             className={`${styles.menuItem} group`}
                                         >
                                             <p className="sub-item">FAQS</p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#wallets">
+                                <i className="fas fa-wallet" />
+                                <p>Ví sinh viên</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="wallets">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="wallet-balance"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Số dư ví</p>
+                                        </NavLink>
+                                    </li>
+
+                                    <li>
+                                        <NavLink
+                                            to="debt"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Công nợ</p>
                                         </NavLink>
                                     </li>
                                 </ul>

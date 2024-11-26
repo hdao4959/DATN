@@ -28,8 +28,8 @@ class UpdateMajorRequest extends FormRequest
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
             'value' => 'regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
-            'description' => 'regex:/^[^<>{}]*$/',
-            'parent_code' => 'regex:/^[^<>{}]*$/',
+            'description' => 'nullable|regex:/^[^<>{}]*$/',
+            'parent_code' => 'nullable|regex:/^[^<>{}]*$/',
             'is_active' => 'regex:/^[^<>{}]*$/'
         ];
     }

@@ -10,16 +10,23 @@ class Fee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'user_code',
-        'semester',
+        'id',
+        'total_amount',
+        'semester_code',
         'amount',
         'start_date',
         'due_date',
         'status'
     ];
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_code', 'user_code');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'fee_id');
     }
 }

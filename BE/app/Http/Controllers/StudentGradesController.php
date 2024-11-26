@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ClassroomUser;
+use App\Models\Category;
 
 class StudentGradesController extends Controller
 {
@@ -20,19 +22,33 @@ class StudentGradesController extends Controller
 
             try {
                 $user = Auth::user();
-                // $studentCode = $user->user_code;
-                $studentCode = 'student04';
-                $classes = DB::table('classroom_user')
-                    ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
-                    ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
-                    ->where('classroom_user.user_code', $studentCode)
-                    ->select('classrooms.class_code', 'classrooms.class_name', 'classrooms.score', 'subjects.subject_name', 'subjects.subject_code')
+                $studentCode = $user->user_code;
+                // $studentCode = 'student05';
+                $semesterCodeUser = User::where('user_code', $studentCode)
+                                        ->select('semester_code')
+                                        ->first();
+                $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
+            
+                $listSemester = Category::where('type', 'semester')
+                    ->where('is_active', '1')
+                    ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
+                    ->orderBy('cate_code', 'asc')
+                    ->select('cate_code', 'cate_name')
                     ->get();
+               
+                $classes = DB::table('classroom_user')
+                ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
+                ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
+                ->where('classroom_user.user_code', $studentCode)
+                ->where('subjects.semester_code', $semesterCode) // thêm điều kiện semester_code
+                ->select('classrooms.class_code', 'classrooms.class_name', 'classrooms.score', 'subjects.subject_name', 'subjects.subject_code')
+                ->get();
 
                 if ($classes->isEmpty()) {
                     return response()->json([
                         'message' => 'Sinh viên này chưa tham gia lớp học nào',
                         'error' => true,
+                        'semesters' => $listSemester
                     ]);
                 }
 
@@ -68,6 +84,9 @@ class StudentGradesController extends Controller
                     'message' => 'Lấy thông tin lớp và điểm thành công',
                     'error' => false,
                     'data' => $classScores,
+                    'semesters' => $listSemester,
+                    'semesterCode' => $semesterCode,
+
                 ]);
             } catch (\Throwable $th) {
                 return response()->json([

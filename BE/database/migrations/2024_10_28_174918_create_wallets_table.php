@@ -15,9 +15,10 @@ return new class extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->string('user_code',20)->unique();
+            $table->foreign('user_code')->references('user_code')
+                  ->on('users')->cascadeOnDelete()->restrictOnUpdate();
             $table->decimal('total',12,0)->default(0);
             $table->decimal('paid', 12,0)->default(0);
-            $table->json('log')->comment('Lịch sử giao dịch dạng json');
             $table->timestamps();
         });
     }

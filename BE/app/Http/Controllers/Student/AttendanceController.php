@@ -11,6 +11,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class AttendanceController extends Controller
 {
@@ -21,14 +22,21 @@ class AttendanceController extends Controller
     {
         try {
             $userCode = $request->user()->user_code;
-            $smtCode = User::where('user_code', $userCode)->pluck('semester_code');
-            // dd($smtCode);
-            $semesterCode = $request->input('search', $smtCode);
-            // dd($semesterCode);
+            // $userCode = 'student05';
+
+            $semesterCodeUser = User::where('user_code', $userCode)
+                                    ->select('semester_code')
+                                    ->first();
+
+            $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
+        
             $listSemester = Category::where('type', 'semester')
-                                    ->where('is_active', '1')
-                                    ->select('cate_code', 'cate_name')
-                                    ->get();
+                ->where('is_active', '1')
+                ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
+                ->orderBy('cate_code', 'asc')
+                ->select('cate_code', 'cate_name')
+                ->get();
+           
             $attendances = Attendance::whereHas('classroom.subject', function ($query) use ($semesterCode) {
                                         $query->where('semester_code', $semesterCode);
                                     })
@@ -83,17 +91,16 @@ class AttendanceController extends Controller
             
                 // Kết hợp danh sách điểm danh và lịch học
                 $finalData = $attendanceData->merge($scheduleData)->sortBy('date')->values();
-                // Đếm số lần status là 'absent'
                 $totalSchedule = $finalData->count();
-                // dd($absentCount);
+                // Đếm số lần status là 'absent'
                 $absentCount = $attendanceData->where('status', 'absent')->count();
                 // dd($absentCount);
                 return [
                     'class_code' => $firstAttendance->class_code,
                     'class_name' => $firstAttendance->classroom->class_name,
                     'subject_name' => $firstAttendance->classroom->subject->subject_name,
-                    'total_schedule' => $totalSchedule,
                     'total_absent' => $absentCount,
+                    'total_schedule' => $totalSchedule,
                     'attendance' => $finalData,
                 ];
             })->values()->all();
@@ -101,13 +108,14 @@ class AttendanceController extends Controller
 
             return response()->json([
                 'semesters' => $listSemester,
-                'attendances' => $result
+                'attendances' => $result,
+                'semesterCode' => $semesterCode,
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
             return response()->json([
-                'message' => 'Lỗi không xác định!'
+                'message' => 'Lỗi không xác định!' .$th->getMessage()
             ], 500);
         }
     }

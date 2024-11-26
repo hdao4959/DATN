@@ -3,31 +3,23 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import api from "../../../config/axios";
 
-const TeacherAccountDetails = () => {
+const StudentAccountDetails = () => {
     const { user_code } = useParams();
     const [showModal, setShowModal] = useState(false);
-
     const {
         data: user,
         isLoading,
         isError,
-        error,
     } = useQuery({
         queryKey: ["user", user_code],
         queryFn: async () => {
-            const response = await api.get(`/admin/teachers/${user_code}`);
-
-            if (response?.data?.message) {
-                throw new Error(response.data.message); // Throw an error with the message
-            }
-
+            const response = await api.get(`/admin/students/${user_code}`);
             return response.data;
         },
     });
 
     if (isLoading) return <div>Loading...</div>;
-    if (isError)
-        return <div>Error: {error.message || "An error occurred"}</div>;
+    if (isError) return <div>Error loading user data</div>;
 
     const handleSupportClick = () => setShowModal(true);
     const handleModalClose = () => setShowModal(false);
@@ -178,7 +170,7 @@ const TeacherAccountDetails = () => {
                                         <option value="0">
                                             Không hoạt động
                                         </option>
-                                        <option value="1">Đang dạy</option>
+                                        <option value="1">Đang học</option>
                                     </select>
                                 </div>
                             </div>
@@ -269,4 +261,4 @@ const TeacherAccountDetails = () => {
     );
 };
 
-export default TeacherAccountDetails;
+export default StudentAccountDetails;

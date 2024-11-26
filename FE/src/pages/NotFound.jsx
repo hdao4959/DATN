@@ -33,7 +33,7 @@ const NotFound = () => {
                     <h2>404 - Không tìm thấy trang</h2>
                 </div>
                 <button onClick={handleBack}>
-                    <a href="">Trở về</a>
+                    <a >Trở về</a>
                 </button>
             </div>
         </div>

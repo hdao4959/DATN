@@ -35,7 +35,7 @@ const DashboardCards = () => {
     return (
         <div>
             {/* Header */}
-            <div className="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+            {/* <div className="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
                 <div>
                     <h3 className="fw-bold mb-3">Dashboard</h3>
                 </div>
@@ -47,22 +47,22 @@ const DashboardCards = () => {
                         Add Customer
                     </a>
                 </div>
-            </div>
+            </div> */}
 
             {/* Cards Row */}
             <div className="row row-card-no-pd">
                 {/* Card 1 */}
                 <div className="col-12 col-sm-6 col-md-6 col-xl-3">
-                    <div className="card">
+                    <div className="card" style={{minHeight: "110px"}}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between">
                                 <div>
                                     <h6>
                                         <b>Chuyên ngành</b>
                                     </h6>
-                                    <p className="text-muted">Tổng chuyên nghành</p>
+                                    <p className="text-muted">Tổng chuyên ngành</p>
                                 </div>
-                                <h4 className="text-info fw-bold">{data.count_major}</h4>
+                                <h4 className="text-info fw-bold fs-1">{data.count_major}</h4>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@ const DashboardCards = () => {
 
                 {/* Card 2 */}
                 <div className="col-12 col-sm-6 col-md-6 col-xl-3">
-                    <div className="card">
+                    <div className="card"style={{minHeight: "110px"}}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between">
                                 <div>
@@ -79,7 +79,7 @@ const DashboardCards = () => {
                                     </h6>
                                     <p className="text-muted">Tổng số sinh viên</p>
                                 </div>
-                                <h4 className="text-success fw-bold">{data.count_student}</h4>
+                                <h4 className="text-success fw-bold fs-1">{data.count_student}</h4>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@ const DashboardCards = () => {
 
                 {/* Card 3 */}
                 <div className="col-12 col-sm-6 col-md-6 col-xl-3">
-                    <div className="card">
+                    <div className="card" style={{minHeight: "110px"}}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between">
                                 <div>
@@ -96,7 +96,7 @@ const DashboardCards = () => {
                                     </h6>
                                     <p className="text-muted">Tổng số giảng viên</p>
                                 </div>
-                                <h4 className="text-danger fw-bold">{data.count_teacher}</h4>
+                                <h4 className="text-danger fw-bold fs-1">{data.count_teacher}</h4>
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,7 @@ const DashboardCards = () => {
 
                 {/* Card 4 */}
                 <div className="col-12 col-sm-6 col-md-6 col-xl-3">
-                    <div className="card">
+                    <div className="card" style={{minHeight: "110px"}}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between">
                                 <div>
@@ -113,7 +113,7 @@ const DashboardCards = () => {
                                     </h6>
                                     <p className="text-muted">Tổng số lớp học</p>
                                 </div>
-                                <h4 className="text-secondary fw-bold">{data.count_classroom}</h4>
+                                <h4 className="text-secondary fw-bold fs-1">{data.count_classroom}</h4>
                             </div>
                         </div>
                     </div>

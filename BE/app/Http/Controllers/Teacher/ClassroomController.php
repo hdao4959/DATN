@@ -80,7 +80,7 @@ class ClassroomController extends Controller
             }
 
             if($classroom->user_code !== $teacher_code){
-                return response()->json('Bạn không có quyền truy cập vào lớp học này', 403)     ;
+                return response()->json('Bạn không dạy lớp học này', 403);
             }
 
 

@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import StudentMenu from "./StudentMenu";
 import "/src/css/sidebar.css";
@@ -81,7 +81,7 @@ const StudentLayout = () => {
                     </div>
                     {/* Navbar Header */}
                     <nav className="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-                        <div className="container-fluid">
+                        <div className="container-fluid mr-5">
                             {/* <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
                                 <div className="input-group">
                                     <div className="input-group-prepend">
@@ -123,127 +123,7 @@ const StudentLayout = () => {
                                         </form>
                                     </ul>
                                 </li>
-                                <li className="nav-item topbar-icon dropdown hidden-caret">
-                                    <a
-                                        className="nav-link dropdown-toggle"
-                                        href="#"
-                                        id="messageDropdown"
-                                        role="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                    >
-                                        <i className="fa fa-envelope" />
-                                    </a>
-                                    <ul
-                                        className="dropdown-menu messages-notif-box animated fadeIn"
-                                        aria-labelledby="messageDropdown"
-                                    >
-                                        <li>
-                                            <div className="dropdown-title d-flex justify-content-between align-items-center">
-                                                Messages
-                                                <a href="#" className="small">
-                                                    Mark all as read
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="message-notif-scroll scrollbar-outer">
-                                                <div className="notif-center">
-                                                    <a href="#">
-                                                        <div className="notif-img">
-                                                            <img
-                                                                src="../assets/img/jm_denis.jpg"
-                                                                alt="Img Profile"
-                                                            />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="subject">
-                                                                Jimmy Denis
-                                                            </span>
-                                                            <span className="block">
-                                                                {" "}
-                                                                How are you ?{" "}
-                                                            </span>
-                                                            <span className="time">
-                                                                5 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-img">
-                                                            <img
-                                                                src="../assets/img/chadengle.jpg"
-                                                                alt="Img Profile"
-                                                            />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="subject">
-                                                                Chad
-                                                            </span>
-                                                            <span className="block">
-                                                                {" "}
-                                                                Ok, Thanks !{" "}
-                                                            </span>
-                                                            <span className="time">
-                                                                12 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-img">
-                                                            <img
-                                                                src="../assets/img/mlane.jpg"
-                                                                alt="Img Profile"
-                                                            />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="subject">
-                                                                Jhon Doe
-                                                            </span>
-                                                            <span className="block">
-                                                                Ready for the
-                                                                meeting today...
-                                                            </span>
-                                                            <span className="time">
-                                                                12 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="#">
-                                                        <div className="notif-img">
-                                                            <img
-                                                                src="../assets/img/talha.jpg"
-                                                                alt="Img Profile"
-                                                            />
-                                                        </div>
-                                                        <div className="notif-content">
-                                                            <span className="subject">
-                                                                Talha
-                                                            </span>
-                                                            <span className="block">
-                                                                {" "}
-                                                                Hi, Apa Kabar ?{" "}
-                                                            </span>
-                                                            <span className="time">
-                                                                17 minutes ago
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <a
-                                                className="see-all"
-                                                href="javascript:void(0);"
-                                            >
-                                                See all messages
-                                                <i className="fa fa-angle-right" />
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+
                                 <li className="nav-item topbar-icon dropdown hidden-caret">
                                     <a
                                         className="nav-link dropdown-toggle"
@@ -254,8 +134,10 @@ const StudentLayout = () => {
                                         aria-haspopup="true"
                                         aria-expanded="false"
                                     >
-                                        <i className="fa fa-bell" />
-                                        <span className="notification">{notifications?.count || 0}</span>
+                                        <i className="fa fa-bell fs-4" />
+                                        <span className="notification">
+                                            {notifications?.count || 0}
+                                        </span>
                                     </a>
                                     <ul
                                         className="dropdown-menu notif-box animated fadeIn"
@@ -263,144 +145,59 @@ const StudentLayout = () => {
                                     >
                                         <li>
                                             <div className="dropdown-title">
-                                                Bạn có {notifications?.count || 0} thông báo
+                                                Bạn có{" "}
+                                                {notifications?.count || 0}{" "}
+                                                thông báo
                                             </div>
                                         </li>
                                         <li>
                                             <div className="notif-scroll scrollbar-outer">
                                                 <div className="notif-center">
-                                                    {notifications?.data?.map((notification) => (
-                                                        <a href="#" key={notification.code}>
-                                                            <div className="notif-icon notif-primary">
-                                                                <i className="fa fa-bell" />
-                                                            </div>
-                                                            <div className="notif-content">
-                                                                <span className="block">
-                                                                    {notification.title}
-                                                                </span>
-                                                                <span className="time">
-                                                                    {new Date(notification.created_at).toLocaleString()}
-                                                                </span>
-                                                            </div>
-                                                        </a>
-                                                    ))}
+                                                    {notifications?.data?.map(
+                                                        (notification) => (
+                                                            <NavLink
+                                                                to={`/student/news/${notification.code}/detail`}
+                                                                key={
+                                                                    notification.code
+                                                                }
+                                                            >
+                                                                <div
+                                                                    className="notif-icon notif-primary"
+                                                                    style={{
+                                                                        minWidth:
+                                                                            "40px",
+                                                                    }}
+                                                                >
+                                                                    <i className="fa fa-bell" />
+                                                                </div>
+                                                                <div className="notif-content">
+                                                                    <span className="block">
+                                                                        {
+                                                                            notification.title
+                                                                        }
+                                                                    </span>
+                                                                    <span className="time">
+                                                                        {new Date(
+                                                                            notification.created_at
+                                                                        ).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                            </NavLink>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </li>
                                         <li>
-                                            <a
+                                            <NavLink
                                                 className="see-all"
-                                                href="javascript:void(0);"
+                                                to={`/student/notifications`}
                                             >
                                                 Xem tất cả thông báo
                                                 <i className="fa fa-angle-right" />
-                                            </a>
+                                            </NavLink>
                                         </li>
                                     </ul>
-                                </li>
-                                <li className="nav-item topbar-icon dropdown hidden-caret">
-                                    <a
-                                        className="nav-link"
-                                        data-bs-toggle="dropdown"
-                                        href="#"
-                                        aria-expanded="false"
-                                    >
-                                        <i className="fas fa-layer-group" />
-                                    </a>
-                                    <div className="dropdown-menu quick-actions animated fadeIn">
-                                        <div className="quick-actions-header">
-                                            <span className="title mb-1">
-                                                Quick Actions
-                                            </span>
-                                            <span className="subtitle op-7">
-                                                Shortcuts
-                                            </span>
-                                        </div>
-                                        <div className="quick-actions-scroll scrollbar-outer">
-                                            <div className="quick-actions-items">
-                                                <div className="row m-0">
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-danger rounded-circle">
-                                                                <i className="far fa-calendar-alt" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Calendar
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-warning rounded-circle">
-                                                                <i className="fas fa-map" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Maps
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-info rounded-circle">
-                                                                <i className="fas fa-file-excel" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Reports
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-success rounded-circle">
-                                                                <i className="fas fa-envelope" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Emails
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-primary rounded-circle">
-                                                                <i className="fas fa-file-invoice-dollar" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Invoice
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                    <a
-                                                        className="col-6 col-md-4 p-0"
-                                                        href="#"
-                                                    >
-                                                        <div className="quick-actions-item">
-                                                            <div className="avatar-item bg-secondary rounded-circle">
-                                                                <i className="fas fa-credit-card" />
-                                                            </div>
-                                                            <span className="text">
-                                                                Payments
-                                                            </span>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </li>
                                 <li className="nav-item topbar-user dropdown hidden-caret">
                                     <a
@@ -411,7 +208,10 @@ const StudentLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                src={
+                                                    user?.avatar ||
+                                                    "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                }
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -429,7 +229,10 @@ const StudentLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                            src={
+                                                                user?.avatar ||
+                                                                "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                            }
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />
@@ -448,7 +251,7 @@ const StudentLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${user.user_code}`}
+                                                            to={`account`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -459,7 +262,7 @@ const StudentLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${user.user_code}`}
+                                                    to={`account`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
