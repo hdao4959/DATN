@@ -285,6 +285,10 @@ function App() {
             ),
             children: [
                 {
+                    path: "",
+                    element: <TeachSchedule />,
+                },
+                {
                     path: "schedule",
                     element: <TeachSchedule />,
                 },

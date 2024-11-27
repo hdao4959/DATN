@@ -59,7 +59,9 @@ const AddPost = () => {
         formData.append("notification_object", values.notification_object);
         formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-        formData.append("image", values.image[0]);
+        if (values.image && values.image.length > 0) {
+            formData.append("image", values.image[0]);
+        }
 
         mutate(formData);
     };
@@ -154,7 +156,7 @@ const AddPost = () => {
                                         )}
                                     </div> */}
 
-                                    <div className="form-group">
+                                    <div className="form-group hidden">
                                         <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -171,9 +173,9 @@ const AddPost = () => {
                                                     onChange={field.onChange}
                                                 />
                                             )}
-                                            rules={{
-                                                required: "Vui lòng nhập tags",
-                                            }}
+                                            // rules={{
+                                            //     required: "Vui lòng nhập tags",
+                                            // }}
                                         />
 
                                         {errors.tags && (
@@ -186,17 +188,11 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="image">
                                             Ảnh bìa
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image", {
-                                                required:
-                                                    "Vui lòng chọn hình ảnh",
-                                            })}
+                                            {...register("image")}
                                         />
                                         {errors.image && (
                                             <span className="text-danger">
@@ -205,7 +201,7 @@ const AddPost = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className="form-group hidden">
                                         <label htmlFor="type">
                                             Loại bài viết
                                         </label>
@@ -229,17 +225,11 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="description">
                                             Nội dung hiển thị
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description", {
-                                                required:
-                                                    "Vui lòng nhập nội dung hiển thị",
-                                            })}
+                                            {...register("description")}
                                             placeholder="Nhập nội dung hiển thị"
                                         />
                                         {errors.description && (
