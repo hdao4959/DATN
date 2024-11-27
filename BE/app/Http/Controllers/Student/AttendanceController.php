@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Student;
 
 use Throwable;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 
 class AttendanceController extends Controller
 {
