@@ -128,6 +128,7 @@ class TeacherController extends Controller
                     'created_at',
                     'updated_at'
                 )->first();
+
                 if(!$teacher){
                     return response()->json([
                         'status' => false,

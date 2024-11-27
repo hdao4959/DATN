@@ -13,7 +13,8 @@ class Schedule extends Model
         'date', 
         'room_code',
         'classroom_code',
-        'session_code'
+        'session_code',
+        // 'type'
     ];
 
     public function classroom(){
