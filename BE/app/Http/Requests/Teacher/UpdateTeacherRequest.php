@@ -24,7 +24,7 @@ class UpdateTeacherRequest extends FormRequest
         return [
             'full_name' => 'required|max:50',
             'email' => 'required|email|max:255|unique:users,email,' . $this->route('teacher') . ',user_code',
-            'password' => 'required|max:255|min:6',
+            // 'password' => 'required|max:255|min:6',
             'phone_number' => 'required|max:20|regex:/^(0[3-9][0-9]{8})$/',
             'address' => 'required|max:200',
             'sex' => 'required|in:male,female',
@@ -51,9 +51,9 @@ class UpdateTeacherRequest extends FormRequest
             'email.max' => 'Email không được quá :max ký tự',
 
             'email.unique' => 'Email này đã được sử dụng!',
-            'password.required' => 'Bạn chưa nhập password!',
-            'password.min' => 'Mật khẩu phải có ít nhất :min ký tự!',
-            'password.max' => 'Mật khẩu không được quá :max ký tự!',
+            // 'password.required' => 'Bạn chưa nhập password!',
+            // 'password.min' => 'Mật khẩu phải có ít nhất :min ký tự!',
+            // 'password.max' => 'Mật khẩu không được quá :max ký tự!',
 
             'phone_number.required' => 'Bạn chưa nhập số đt!',
             'phone_number.regex' => 'Số điện thoại không hợp lệ!',
