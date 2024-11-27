@@ -12,9 +12,8 @@ class Schedule extends Model
     protected $fillable = [
         'date', 
         'room_code',
-        'classroom_code',
-        'session_code',
-        // 'type'
+        'class_code',
+        'session_code'
     ];
 
     public function classroom(){

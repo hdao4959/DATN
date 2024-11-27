@@ -170,17 +170,11 @@ const EditMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="value">
                                             Giá trị
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("value", {
-                                                required:
-                                                    "Vui lòng nhập giá trị",
-                                            })}
+                                            {...register("value")}
                                             placeholder="Nhập giá trị"
                                         />
 
