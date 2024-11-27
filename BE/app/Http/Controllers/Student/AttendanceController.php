@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Student;
 
 use Throwable;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Classroom;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 
 class AttendanceController extends Controller
 {
@@ -99,6 +99,7 @@ class AttendanceController extends Controller
                     'class_name' => $firstAttendance->classroom->class_name,
                     'subject_name' => $firstAttendance->classroom->subject->subject_name,
                     'total_absent' => $absentCount,
+                    'total_schedule' => $totalSchedule,
                     'attendance' => $finalData,
                 ];
             })->values()->all();
@@ -108,7 +109,6 @@ class AttendanceController extends Controller
                 'semesters' => $listSemester,
                 'attendances' => $result,
                 'semesterCode' => $semesterCode,
-                'total_schedule' => $totalSchedule,
             ], 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);

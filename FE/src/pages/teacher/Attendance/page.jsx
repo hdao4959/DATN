@@ -54,11 +54,18 @@ const AttendanceTeacher = () => {
         setSchedules(schedules);
     }, [selectedClassCode])
 
+    useEffect(() => {
+        if (viewMode === 'overview') {
+            fetchAllAttendanceData(); 
+        } else {
+            fetchAttendanceData(); 
+        }
+      }, [viewMode, fetchAllAttendanceData, fetchAttendanceData, selectedClassCode]);
+
     const handleShowDetails = (classItem, mode, date) => {
+        setSelectedClassCode(classItem.class_code);
         setViewMode(mode);
         setSelectedDate(date);
-        mode === 'overview' ? (fetchAllAttendanceData()) : (fetchAttendanceData());
-        setSelectedClassCode(classItem.class_code);
         const modal = new window.bootstrap.Modal(document.getElementById('attendanceModal'));
         modal.show();
     };
@@ -245,7 +252,7 @@ const AttendanceTeacher = () => {
                         <div className="modal-dialog modal-xl">
                             <div
                                 className="modal-content"
-                                style={{ width: "100%" }}
+                                style={{ width: "100%",minHeight: "100vh" }}
                             >
                                 <div className="modal-header">
                                     <h5 className="modal-title strong text-lg">

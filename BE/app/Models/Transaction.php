@@ -14,6 +14,12 @@ class Transaction extends Model
         'payment_date',
         'amount_paid',
         'payment_method',
+        'type',
         'receipt_number'
     ];
+    public function fee()
+    {
+        return $this->belongsTo(Fee::class, 'fee_id');
+    }
+
 }

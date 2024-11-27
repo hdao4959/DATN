@@ -80,7 +80,7 @@ class ClassroomController extends Controller
             }
 
             if($classroom->user_code !== $teacher_code){
-                return response()->json('Bạn không có quyền truy cập vào lớp học này', 403)     ;
+                return response()->json('Bạn không dạy lớp học này', 403);
             }
 
 
@@ -91,34 +91,34 @@ class ClassroomController extends Controller
        
     }
 
-    public function listStudents(string $classcode){
-        try {
-            $teacher_code = request()->user()->user_code;
-            $classroom = Classroom::where([
-                'class_code' => $classcode, 
-                'user_code' => $teacher_code
-                ])
-                ->select('class_code')->first();
+    // public function listStudents(string $classcode){
+    //     try {
+    //         $teacher_code = request()->user()->user_code;
+    //         $classroom = Classroom::where([
+    //             'class_code' => $classcode, 
+    //             'user_code' => $teacher_code
+    //             ])
+    //             ->select('class_code')->first();
 
-            if(!$classroom){
-                return response()->json([
-                    'message' => 'Không tìm thấy lớp học nào!'], 404
-                );
-            }
+    //         if(!$classroom){
+    //             return response()->json([
+    //                 'message' => 'Không tìm thấy lớp học nào!'], 404
+    //             );
+    //         }
 
 
-            $student_codes = DB::table('classroom_user')
-            ->where('class_code', $classroom->class_code)->pluck('user_code');
+    //         $student_codes = DB::table('classroom_user')
+    //         ->where('class_code', $classroom->class_code)->pluck('user_code');
             
-            if($student_codes->isEmpty()){
-                return response()->json('Không có sinh viên nào!',404);
-            }
-            $list_students = User::whereIn('user_code', $student_codes)->get();
-            return response()->json($list_students);
-        } catch (\Throwable $th) {
-            return $this->handleErrorNotDefine($th);
-        }
-    }
+    //         if($student_codes->isEmpty()){
+    //             return response()->json('Không có sinh viên nào!',404);
+    //         }
+    //         $list_students = User::whereIn('user_code', $student_codes)->get();
+    //         return response()->json($list_students);
+    //     } catch (\Throwable $th) {
+    //         return $this->handleErrorNotDefine($th);
+    //     }
+    // }
 
 
     /**

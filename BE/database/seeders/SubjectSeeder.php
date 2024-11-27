@@ -151,161 +151,133 @@ class SubjectSeeder extends Seeder
         // ]);
 
         // DB::table('subjects')->insert([
+        //     // Kỳ S1 - Cơ bản lập trình
         //     [
-        //         'subject_code' => 'MH101',
-        //         'subject_name' => 'Toán cao cấp',
-        //         'tuition' => 5000000,
-        //         're_study_fee' => 2000000,
+        //         'subject_code' => 'MOB01',
+        //         'subject_name' => 'Nhập môn lập trình Mobile',
+        //         'tuition' => 1000000,
+        //         're_study_fee' => 500000,
         //         'credit_number' => 3,
-        //         'total_sessions' => 45,
-        //         'description' => 'Môn học về các khái niệm toán học cao cấp',
-        //         'image' => 'toan_cao_cap.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 20,
+        //         'description' => 'Học các khái niệm cơ bản về lập trình, sử dụng ngôn ngữ lập trình như C hoặc Python.',
+        //         'image' => null,
+        //         'semester_code' => 'S1',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
         //     [
-        //         'subject_code' => 'MH102',
-        //         'subject_name' => 'Lập trình web',
-        //         'tuition' => 6000000,
-        //         're_study_fee' => 2500000,
-        //         'credit_number' => 4,
-        //         'total_sessions' => 50,
-        //         'description' => 'Môn học về phát triển web',
-        //         'image' => 'lap_trinh_web.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
-        //         'is_active' => 1,
-        //         'deleted_at' => null,
-        //         'created_at' => Carbon::now(),
-        //         'updated_at' => Carbon::now(),
-        //     ],
-        //     [
-        //         'subject_code' => 'MH103',
+        //         'subject_code' => 'MOB02',
         //         'subject_name' => 'Lập trình hướng đối tượng',
-        //         'tuition' => 5500000,
-        //         're_study_fee' => 2300000,
+        //         'tuition' => 1200000,
+        //         're_study_fee' => 600000,
         //         'credit_number' => 3,
-        //         'total_sessions' => 45,
-        //         'description' => 'Môn học về lập trình hướng đối tượng',
-        //         'image' => 'lap_trinh_hdt.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 22,
+        //         'description' => 'Khám phá các nguyên tắc OOP như kế thừa, đa hình, đóng gói, và trừu tượng.',
+        //         'image' => null,
+        //         'semester_code' => 'S2',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
+        //     // Kỳ S2 - Cơ sở dữ liệu và phân tích hệ thống
         //     [
-        //         'subject_code' => 'MH104',
+        //         'subject_code' => 'MOB03',
         //         'subject_name' => 'Cơ sở dữ liệu',
-        //         'tuition' => 5800000,
-        //         're_study_fee' => 2400000,
+        //         'tuition' => 1300000,
+        //         're_study_fee' => 650000,
         //         'credit_number' => 4,
-        //         'total_sessions' => 48,
-        //         'description' => 'Môn học về cơ sở dữ liệu và quản trị dữ liệu',
-        //         'image' => 'co_so_du_lieu.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 24,
+        //         'description' => 'Học cách thiết kế, triển khai và quản lý cơ sở dữ liệu bằng SQL.',
+        //         'image' => null,
+        //         'semester_code' => 'S3',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
         //     [
-        //         'subject_code' => 'MH105',
-        //         'subject_name' => 'Lập trình di động',
-        //         'tuition' => 6500000,
-        //         're_study_fee' => 2700000,
-        //         'credit_number' => 5,
-        //         'total_sessions' => 55,
-        //         'description' => 'Môn học về phát triển ứng dụng di động',
-        //         'image' => 'lap_trinh_di_dong.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'subject_code' => 'MOB04',
+        //         'subject_name' => 'Phân tích và thiết kế hệ thống',
+        //         'tuition' => 1400000,
+        //         're_study_fee' => 700000,
+        //         'credit_number' => 3,
+        //         'total_sessions' => 25,
+        //         'description' => 'Học cách phân tích yêu cầu, thiết kế hệ thống phần mềm với UML.',
+        //         'image' => null,
+        //         'semester_code' => 'S4',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
+        //     // Kỳ S3 - Ứng dụng web
         //     [
-        //         'subject_code' => 'MH106',
-        //         'subject_name' => 'Mạng máy tính',
-        //         'tuition' => 5900000,
-        //         're_study_fee' => 2500000,
+        //         'subject_code' => 'MOB05',
+        //         'subject_name' => 'Phát triển ứng dụng web',
+        //         'tuition' => 1500000,
+        //         're_study_fee' => 750000,
         //         'credit_number' => 4,
-        //         'total_sessions' => 48,
-        //         'description' => 'Môn học về kiến trúc mạng và quản trị hệ thống mạng',
-        //         'image' => 'mang_may_tinh.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 28,
+        //         'description' => 'Xây dựng ứng dụng web với HTML, CSS, JavaScript và framework như Laravel hoặc Django.',
+        //         'image' => null,
+        //         'semester_code' => 'S4',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
         //     [
-        //         'subject_code' => 'MH107',
-        //         'subject_name' => 'Trí tuệ nhân tạo',
-        //         'tuition' => 7000000,
-        //         're_study_fee' => 3000000,
-        //         'credit_number' => 5,
-        //         'total_sessions' => 60,
-        //         'description' => 'Môn học về trí tuệ nhân tạo và học máy',
-        //         'image' => 'tri_tue_nhan_tao.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
-        //         'is_active' => 1,
-        //         'deleted_at' => null,
-        //         'created_at' => Carbon::now(),
-        //         'updated_at' => Carbon::now(),
-        //     ],
-        //     [
-        //         'subject_code' => 'MH108',
-        //         'subject_name' => 'Phát triển phần mềm',
-        //         'tuition' => 6300000,
-        //         're_study_fee' => 2600000,
+        //         'subject_code' => 'MOB06',
+        //         'subject_name' => 'Phát triển ứng dụng di động',
+        //         'tuition' => 1600000,
+        //         're_study_fee' => 800000,
         //         'credit_number' => 4,
-        //         'total_sessions' => 50,
-        //         'description' => 'Môn học về phát triển phần mềm và quy trình xây dựng phần mềm',
-        //         'image' => 'phat_trien_phan_mem.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 30,
+        //         'description' => 'Phát triển ứng dụng di động với Android (Java/Kotlin) hoặc iOS (Swift).',
+        //         'image' => null,
+        //         'semester_code' => 'S5',
+        //         'major_code' => 'MOB',
+        //         'is_active' => 1,
+        //         'deleted_at' => null,
+        //         'created_at' => Carbon::now(),
+        //         'updated_at' => Carbon::now(),
+        //     ],
+        //     // Kỳ S4 - Kiểm thử phần mềm
+        //     [
+        //         'subject_code' => 'MOB07',
+        //         'subject_name' => 'Kiểm thử phần mềm',
+        //         'tuition' => 1700000,
+        //         're_study_fee' => 850000,
+        //         'credit_number' => 3,
+        //         'total_sessions' => 24,
+        //         'description' => 'Học cách kiểm thử phần mềm, viết unit test và kiểm thử tích hợp.',
+        //         'image' => null,
+        //         'semester_code' => 'S6',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
         //         'updated_at' => Carbon::now(),
         //     ],
         //     [
-        //         'subject_code' => 'MH109',
-        //         'subject_name' => 'Phân tích dữ liệu',
-        //         'tuition' => 6200000,
-        //         're_study_fee' => 2700000,
+        //         'subject_code' => 'MOB08',
+        //         'subject_name' => 'Triển khai ứng dụng phần mềm',
+        //         'tuition' => 1800000,
+        //         're_study_fee' => 900000,
         //         'credit_number' => 4,
-        //         'total_sessions' => 48,
-        //         'description' => 'Môn học về phân tích và xử lý dữ liệu lớn',
-        //         'image' => 'phan_tich_du_lieu.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
-        //         'is_active' => 1,
-        //         'deleted_at' => null,
-        //         'created_at' => Carbon::now(),
-        //         'updated_at' => Carbon::now(),
-        //     ],
-        //     [
-        //         'subject_code' => 'MH110',
-        //         'subject_name' => 'An toàn thông tin',
-        //         'tuition' => 6100000,
-        //         're_study_fee' => 2500000,
-        //         'credit_number' => 4,
-        //         'total_sessions' => 45,
-        //         'description' => 'Môn học về bảo mật và an toàn thông tin',
-        //         'image' => 'an_toan_thong_tin.jpg',
-        //         'semester_code' => 'S01',
-        //         'major_code' => 'CNTT01',
+        //         'total_sessions' => 30,
+        //         'description' => 'Triển khai phần mềm lên các nền tảng cloud như AWS, Azure hoặc Heroku.',
+        //         'image' => null,
+        //         'semester_code' => 'S7',
+        //         'major_code' => 'MOB',
         //         'is_active' => 1,
         //         'deleted_at' => null,
         //         'created_at' => Carbon::now(),
@@ -314,12 +286,16 @@ class SubjectSeeder extends Seeder
         // ]);
 
 
+
+
+
+
         // Thêm admin
         // DB::table('users')->insert([
         //     [
-        //         'user_code' => 'admin01',
+        //         'user_code' => 'admin',
         //         'full_name' => 'Admin',
-        //         'email' => 'admin@example.com',
+        //         'email' => 'admin@gmail.com',
         //         'email_verified_at' => now(),
         //         'password' => bcrypt('password'),
         //         'phone_number' => '0123456789',
@@ -345,9 +321,9 @@ class SubjectSeeder extends Seeder
         // ]);
 
 
-        $majorCodes = ['CNTT01', 'CNTT02', 'CNTT03', 'CNTT04'];
-        $narrowMajorCodes = ['CN04', 'CNTT01'];
-        $semesterCodes = ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07'];
+        $majorCodes = ['WEB', 'MKT', 'MOB'];
+        // $narrowMajorCodes = ['CN04', 'CNTT01'];
+        $semesterCodes = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'];
         // Thêm 10 giáo viên
         // for ($i = 1; $i <= 15; $i++) {
         //     DB::table('users')->insert([
@@ -395,7 +371,7 @@ class SubjectSeeder extends Seeder
         //             'image' => 'mon_hoc_' . $i . '.jpg', // Tên ảnh cho mỗi môn học
         //             'semester_code' => 'S0' . $i,
         //             // 'semester_code' => $semesterCodes[array_rand($semesterCodes)],
-        //             'major_code' => 'CNTT04', // Chọn ngẫu nhiên mã ngành
+        //             'major_code' => 'CN0'. rand(1,5), // Chọn ngẫu nhiên mã ngành
         //             'is_active' => 1,
         //             'deleted_at' => null,
         //             'created_at' => Carbon::now(),
@@ -404,30 +380,79 @@ class SubjectSeeder extends Seeder
         //     ]);
         // }
 
-        for ($i = 301; $i <= 350; $i++) {
-            DB::table('users')->insert([
+        // for ($i = 0; $i <= 1000; $i++) {
+        //     DB::table('users')->insert([
+        //         [
+        //             'user_code' => 'FE0' . sprintf('%02d', $i), // FE01, FE02, ...
+        //             'full_name' => 'Student CNTT03 ' . $i,
+        //             'email' => 'FE' . $i . '@gmail.com',
+        //             'email_verified_at' => now(),
+        //             'password' => bcrypt('password123'),
+        //             'phone_number' => '01234567' . sprintf('%02d', $i),
+        //             'address' => '123 Student Street',
+        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Ngẫu nhiên: Nữ nếu $i chẵn, Nam nếu $i lẻ
+        //             'birthday' => '2000-01-0' . (($i % 9) + 1), // Sinh ngày từ 01-01 đến 01-09
+        //             'citizen_card_number' => '12345678' . $i,
+        //             'issue_date' => '2020-01-01',
+        //             'place_of_grant' => 'Hà Nội',
+        //             'nation' => 'Kinh',
+        //             'avatar' => null,
+        //             'role' => "3", // Quyền 3 (Sinh viên)
+        //             'is_active' => 1,
+        //             'major_code' => $majorCodes[array_rand($majorCodes)], // Lấy ngẫu nhiên từ danh sách mã ngành
+        //             'narrow_major_code' => null, // Bạn có thể thêm narrow_major_code nếu cần
+        //             'semester_code' => $semesterCodes[array_rand($semesterCodes)], // Lấy ngẫu nhiên từ danh sách kỳ học
+        //             'course_code' => 'K01',
+        //             'remember_token' => Str::random(10),
+        //             'deleted_at' => null,
+        //             'created_at' => Carbon::now(),
+        //             'updated_at' => Carbon::now(),
+        //         ],
+        //     ]);
+        // }
+
+        // for ($i = 0; $i <= 30; $i++) {
+        //     DB::table('users')->insert([
+        //         [
+        //             'user_code' => 'TC0' . sprintf('%02d', $i), // FE01, FE02, ...
+        //             'full_name' => 'teacher ' . $i,
+        //             'email' => 'TC0' . $i . '@gmail.com',
+        //             'email_verified_at' => now(),
+        //             'password' => bcrypt('password123'),
+        //             'phone_number' => '01234567' . sprintf('%02d', $i),
+        //             'address' => '123 Student Street',
+        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Ngẫu nhiên: Nữ nếu $i chẵn, Nam nếu $i lẻ
+        //             'birthday' => '2000-01-0' . (($i % 9) + 1), // Sinh ngày từ 01-01 đến 01-09
+        //             'citizen_card_number' => '12345678' . $i,
+        //             'issue_date' => '2020-01-01',
+        //             'place_of_grant' => 'Hà Nội',
+        //             'nation' => 'Kinh',
+        //             'avatar' => null,
+        //             'role' => "2", // Quyền 3 (Sinh viên)
+        //             'is_active' => 1,
+        //             'major_code' => $majorCodes[array_rand($majorCodes)], // Lấy ngẫu nhiên từ danh sách mã ngành
+        //             'narrow_major_code' => null, // Bạn có thể thêm narrow_major_code nếu cần
+        //             'semester_code' => null, // Lấy ngẫu nhiên từ danh sách kỳ học
+        //             'course_code' => null,
+        //             'remember_token' => Str::random(10),
+        //             'deleted_at' => null,
+        //             'created_at' => Carbon::now(),
+        //             'updated_at' => Carbon::now(),
+        //         ],
+        //     ]);
+        // }
+
+        for ($i = 0; $i <= 30; $i++) {
+            DB::table('categories')->insert([
                 [
-                    'user_code' => 'CNTT03_' . sprintf('%02d', $i), // student01, student02, ...
-                    'full_name' => 'Student CNTT03 ' . $i,
-                    'email' => 'studentCNTT03_' . $i . '@example.com',
-                    'email_verified_at' => now(),
-                    'password' => bcrypt('password123'),
-                    'phone_number' => '01234567' . sprintf('%02d', $i),
-                    'address' => '123 Student Street',
-                    'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
-                    'birthday' => '2000-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
-                    'citizen_card_number' => '12345678' . $i,
-                    'issue_date' => '2020-01-01',
-                    'place_of_grant' => 'Hà Nội',
-                    'nation' => 'Kinh',
-                    'avatar' => null,
-                    'role' => '3',
+                    'cate_code' => 'P' . sprintf('%02d', $i), // FE01, FE02, ...
+                    'cate_name' => 'P' . sprintf('%02d', $i),
+                    'value' => 40,
+                    'image' => null,
+                    'description' => "",
+                    'parent_code' => null,
+                    'type' => 'school_room',
                     'is_active' => 1,
-                    'major_code' => 'CNTT03', // Chọn ngẫu nhiên mã ngành
-                    'narrow_major_code' => null, // Chọn ngẫu nhiên narrow_major_code
-                    'semester_code' => 'S07',
-                    'course_code' => 'k18',
-                    'remember_token' => Str::random(10),
                     'deleted_at' => null,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

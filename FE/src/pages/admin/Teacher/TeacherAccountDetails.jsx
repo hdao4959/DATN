@@ -5,24 +5,29 @@ import api from "../../../config/axios";
 
 const TeacherAccountDetails = () => {
     const { user_code } = useParams();
-    console.log(user_code);
-
     const [showModal, setShowModal] = useState(false);
 
     const {
         data: user,
         isLoading,
         isError,
+        error,
     } = useQuery({
         queryKey: ["user", user_code],
         queryFn: async () => {
-            const response = await api.get(`/admin/students/${user_code}`);
+            const response = await api.get(`/admin/teachers/${user_code}`);
+
+            if (response?.data?.message) {
+                throw new Error(response.data.message); // Throw an error with the message
+            }
+
             return response.data;
         },
     });
 
     if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error loading user data</div>;
+    if (isError)
+        return <div>Error: {error.message || "An error occurred"}</div>;
 
     const handleSupportClick = () => setShowModal(true);
     const handleModalClose = () => setShowModal(false);

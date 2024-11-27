@@ -48,46 +48,46 @@ class CategoryController extends Controller
         try {
 
             $search = $request->input('search');
-            $categories = Category::with(['childrens' => function($query){
+            $categories = Category::with(['childrens' => function ($query) {
                 $query->select('cate_code', 'cate_name', 'is_active');
             }])->select('cate_code', 'cate_name', 'image', 'parent_code', 'is_active')
-            ->whereNull('parent_code')
-            ->where('type', '=', 'category')
+                ->whereNull('parent_code')
+                ->where('type', '=', 'category')
                 ->when($search, function ($query, $search) {
                     return $query
                         ->where('cate_name', 'like', "%{$search}%")
-                        ->orWhereHas('childrens', function($childrenQuery) use ($search){
+                        ->orWhereHas('childrens', function ($childrenQuery) use ($search) {
                             return $childrenQuery->where('cate_name', 'like', "%$search%");
                         });
                 })
                 ->paginate(4);
 
-//             // Tìm kiếm theo cate_name
-//             $search = $request->input('search');
-//             // $data = Category::with([
-//             //     'childrens' => query
-//             // ]
-//             // )->where('type', '=', 'category')
-//             //     ->when($search, function ($query, $search) {
-//             //         return $query
-//             //             ->where('cate_name', 'like', "%{$search}%");
-//             //     })
-//             //     ->paginate(4);
+            //             // Tìm kiếm theo cate_name
+            //             $search = $request->input('search');
+            //             // $data = Category::with([
+            //             //     'childrens' => query
+            //             // ]
+            //             // )->where('type', '=', 'category')
+            //             //     ->when($search, function ($query, $search) {
+            //             //         return $query
+            //             //             ->where('cate_name', 'like', "%{$search}%");
+            //             //     })
+            //             //     ->paginate(4);
 
 
-//                 $categories = Category::with(
-//                     ['childrens' => function ($query) {
-//     $query->select('cate_code', 'cate_name', 'parent_code', 'is_active');
-//                 }])
-//                 ->whereNull('parent_code')
-//                 ->where('type', '=', 'major')
-//                 ->select('cate_code', 'cate_name', 'is_active')
-//                 ->when($search, function($query, $search){
-//                         return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
-//                             $childQuerry->where('cate_name', 'like', "%$search%");
-//                         });
-//                     })
-//                     ->get();
+            //                 $categories = Category::with(
+            //                     ['childrens' => function ($query) {
+            //     $query->select('cate_code', 'cate_name', 'parent_code', 'is_active');
+            //                 }])
+            //                 ->whereNull('parent_code')
+            //                 ->where('type', '=', 'major')
+            //                 ->select('cate_code', 'cate_name', 'is_active')
+            //                 ->when($search, function($query, $search){
+            //                         return $query->where('cate_name', 'like', "%$search%")->orWhereHas("childrens", function($childQuerry) use ($search){
+            //                             $childQuerry->where('cate_name', 'like', "%$search%");
+            //                         });
+            //                     })
+            //                     ->get();
 
 
             // Tìm kiếm theo cate_name
@@ -108,29 +108,30 @@ class CategoryController extends Controller
         }
     }
 
-    public function listParentCategories(){
+    public function listParentCategories()
+    {
         try {
             $parent_category = Category::select('cate_code', 'cate_name')
-            ->where([
-                'type' =>  'category', 
-                'is_active' => true
-            ])->whereNull('parent_code')->get();
-    
+                ->where([
+                    'type' =>  'category',
+                    'is_active' => true
+                ])->whereNull('parent_code')->get();
+
             return response()->json($parent_category);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-        
     }
 
-    public function listChildrenCategories(string $parent_code){
+    public function listChildrenCategories(string $parent_code)
+    {
         try {
             $children_categories = Category::where([
                 'parent_code' => $parent_code,
                 'type' => 'category',
                 'is_active' => true
             ])->select('cate_code', 'cate_name')->get();
-            return response()->json($children_categories,200);
+            return response()->json($children_categories, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -906,7 +907,7 @@ class CategoryController extends Controller
             ->whereNull('classroom_user.class_code')
             ->leftJoin('categories', 'schedules.room_code', '=', 'categories.cate_code')
             ->where('categories.is_active', true)
-            ->where('classrooms.id', '>=', 281)
+            ->where('categories.type', 'school_room')
             ->orderBy('categories.value', 'desc')
             ->select(
                 'categories.cate_code',
@@ -922,6 +923,81 @@ class CategoryController extends Controller
 
         return $data;
     }
+
+    public function generateSchedule()
+    {
+        $data = DB::table('schedules')
+            ->leftJoin('classrooms', 'classrooms.class_code', '=', 'schedules.class_code')
+            ->leftJoin('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
+            ->select(
+                'schedules.*',
+                'subjects.total_sessions'
+            )
+            ->get();
+
+        $createdDates = []; // Mảng lưu các ngày cần tạo
+        $insertData = []; // Mảng để lưu dữ liệu chờ insert vào DB
+
+        foreach ($data as $item) {
+            $startDate = Carbon::parse($item->date); // Ngày ban đầu
+            $totalSessions = $item->total_sessions; // Số buổi cần tạo
+            $currentSession = 0; // Biến đếm số buổi đã tạo
+
+            // Xác định ngày trong tuần ban đầu
+            $startDayOfWeek = $startDate->dayOfWeek;
+
+            // Mảng chứa các ngày trong tuần sẽ tạo
+            $weekDays = [];
+
+            // Xác định ngày tiếp theo cần lấy (thứ 2-4-6, hoặc thứ 3-5-7,...)
+            if ($startDayOfWeek == 1) { // Thứ 2
+                $weekDays = [1, 3, 5]; // Thứ 2, thứ 4, thứ 6
+            } elseif ($startDayOfWeek == 2) { // Thứ 3
+                $weekDays = [2, 4, 6]; // Thứ 3, thứ 5, thứ 7
+            } elseif ($startDayOfWeek == 3) { // Thứ 4
+                $weekDays = [3, 5]; // Thứ 4, thứ 6
+            } elseif ($startDayOfWeek == 4) { // Thứ 5
+                $weekDays = [4, 6]; // Thứ 5, thứ 7
+            } elseif ($startDayOfWeek == 5) { // Thứ 6
+                $weekDays = [5, 7]; // Thứ 6, thứ 2 tuần sau
+            } elseif ($startDayOfWeek == 6) { // Thứ 7
+                $weekDays = [6, 1]; // Thứ 7, thứ 3 tuần sau
+            } else { // Chủ nhật
+                $weekDays = [7, 2]; // Chủ nhật, thứ 4 tuần sau
+            }
+
+            // Lặp tạo ngày cho đến khi đạt đủ total_sessions
+            while ($currentSession < $totalSessions) {
+                if (in_array($startDate->dayOfWeek, $weekDays)) {
+                    // Nếu ngày hiện tại nằm trong các ngày cần tạo (theo tuần)
+                    $createdDates[] = $startDate->format('Y-m-d');
+
+                    // Chuẩn bị dữ liệu để thêm vào DB
+                    $insertData[] = [
+                        'date' => $startDate->format('Y-m-d'),
+                        'room_code' => $item->room_code ?? null,
+                        'classroom_code' => $item->classroom_code ?? null,
+                        'class_code' => $item->class_code,
+                        'session_code' => $currentSession + 1 // Mã buổi học (nếu cần)
+                    ];
+
+                    $currentSession++;
+                }
+
+                // Tiến đến ngày tiếp theo
+                $startDate->addDay();
+            }
+        }
+
+        // Chèn dữ liệu vào bảng schedules
+        DB::table('schedules')->insert($insertData);
+
+        return response()->json([
+            'created_dates' => $createdDates,
+            'message' => 'Schedules have been generated and inserted successfully!'
+        ]);
+    }
+
 
     // public function getListStudentByMajor()
     // {
@@ -1016,57 +1092,48 @@ class CategoryController extends Controller
     // }
 
     public function addStudent()
-{
-    $classRooms = $this->getClassrooms();  // Lấy danh sách lớp học
-    $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
-    $classRoomIndex = 0; // Chỉ số lớp học hiện tại, để bắt đầu từ lớp tiếp theo khi chuyển qua môn khác
+    {
+        $classRooms = $this->getClassrooms();  // Lấy danh sách lớp học
+        $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
+        $classRoomIndex = 0; // Chỉ số lớp học hiện tại, để bắt đầu từ lớp tiếp theo khi chuyển qua môn khác
+        // return dd($classRooms);
 
-    // Duyệt qua từng chuyên ngành
-    foreach ($students as $major) {
-        foreach ($major['subjects'] as $subject) {
-            foreach ($subject['students'] as $student) {
-                $assigned = false;
+        // Duyệt qua từng chuyên ngành
+        foreach ($students as $major) {
+            foreach ($major['subjects'] as $subject) {
+                foreach ($subject['students'] as $student) {
+                    $assigned = false;
+                    while ($classRoomIndex < count($classRooms)) {
+                        $classRoom = $classRooms[$classRoomIndex];
+                        $currentStudentCount = DB::table('classroom_user')
+                            ->where('class_code', $classRoom->class_code)
+                            ->count();
+                        if ($currentStudentCount < intval($classRoom->value)) {
+                            if ($this->canAssignStudentToClass($student, $classRoom)) {
+                                DB::table('classroom_user')->insert([
+                                    'class_code' => $classRoom->class_code,
+                                    'user_code' => $student['user_code']
+                                ]);
 
-                // Bắt đầu từ lớp hiện tại, không phải từ đầu danh sách lớp
-                while ($classRoomIndex < count($classRooms)) {
-                    $classRoom = $classRooms[$classRoomIndex];
-
-                    // Đếm số lượng sinh viên hiện tại trong lớp
-                    $currentStudentCount = DB::table('classroom_user')
-                        ->where('class_code', $classRoom->class_code)
-                        ->count();
-
-                    // Nếu lớp còn chỗ trống thì gán sinh viên vào lớp này
-                    if ($currentStudentCount < intval($classRoom->value)) {
-                        if ($this->canAssignStudentToClass($student, $classRoom)) {
-                            DB::table('classroom_user')->insert([
-                                'class_code' => $classRoom->class_code,
-                                'user_code' => $student['user_code']
-                            ]);
-
-                            $this->updateClassroomForSubject($classRoom, $subject);
-                            $assigned = true;
-                            break;
+                                $this->updateClassroomForSubject($classRoom, $subject);
+                                $assigned = true;
+                                break;
+                            }
+                        } else {
+                            // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
+                            $classRoomIndex++;
                         }
-                    } else {
-                        // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
-                        $classRoomIndex++;
+                    }
+                    if (!$assigned) {
+                        continue;
                     }
                 }
-
-                // Nếu không có lớp nào phù hợp cho sinh viên này, tiếp tục với sinh viên tiếp theo
-                if (!$assigned) {
-                    continue;
-                }
+                $classRoomIndex++;
             }
-
-            // Sau khi xong môn học, tăng chỉ số lớp học để bắt đầu từ lớp tiếp theo
-            $classRoomIndex++;
         }
-    }
 
-    return response()->json(['message' => 'Students assigned to classrooms successfully']);
-}
+        return response()->json(['message' => 'Students assigned to classrooms successfully']);
+    }
 
 
     public function updateClassroomForSubject($classRoom, $subject)
@@ -1146,6 +1213,8 @@ class CategoryController extends Controller
                         'session_code' => $session->cate_code,
                         'date' => $date->format('Y-m-d')
                     ]);
+
+                    // return dd($dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index);
                 }
             }
             $index++;

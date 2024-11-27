@@ -29,7 +29,7 @@ class DeleteTeacherRequest extends FormRequest
     public function messages(){
         return [
              'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này!',
-                'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
         ];
     }
 }

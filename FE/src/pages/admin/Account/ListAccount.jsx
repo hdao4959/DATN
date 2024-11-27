@@ -76,7 +76,13 @@ const ListAccount = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+                            <a href="/admin/students/edit/${row.user_code}">
+               <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+            </a>
+                             <a href="/admin/students/${row.user_code}">
+                <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
+            </a>
+                                
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
                             </div>
                         `,

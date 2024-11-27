@@ -12,7 +12,7 @@ class Schedule extends Model
     protected $fillable = [
         'date', 
         'room_code',
-        'classroom_code',
+        'class_code',
         'session_code'
     ];
 
@@ -38,6 +38,7 @@ class Schedule extends Model
             ],
             'room' => [
                 'cate_name' => $this->room->cate_name ?? null,
+                'value' => $this->room->value ?? null,
             ],
             'session' => [
                 'cate_code' => $this->session->cate_code ?? null,

@@ -35,9 +35,7 @@ const StudentWalletList = () => {
                         const response = await api.get(`/admin/fees`, {
                             params: { page, per_page: data.length },
                         });
-
                         const result = response.data;
-
                         callback({
                             draw: data.draw,
                             recordsTotal: result.total,
@@ -59,12 +57,12 @@ const StudentWalletList = () => {
                         }
                     },
                     { title: "Mã sinh viên", data: "user_code" },
-                    {
-                        title: "Họ và tên", data: "user",
-                        render: (data, type, row) => {
-                            return data?.full_name;
-                        }
-                    },
+                    // {
+                    //     title: "Họ và tên", data: "user",
+                    //     render: (data, type, row) => {
+                    //         return data?.full_name;
+                    //     }
+                    // },
                     {
                         title: "Email", data: "user",
                         render: (data, type, row) => {
@@ -72,21 +70,29 @@ const StudentWalletList = () => {
                         }
                     },
 
-                    {
-                        title: "Số điện thoại",
-                        data: "user",
-                        render: (data, type, row) => {
-                            return data?.phone_number;
-                        }
-                    },
+                    // {
+                    //     title: "Số điện thoại",
+                    //     data: "user",
+                    //     render: (data, type, row) => {
+                    //         return data?.phone_number;
+                    //     }
+                    // },
                     {
                         title: "Học kỳ",
                         className: 'text-center',
-                        data: "semester"
+                        data: "semester_code"
                     },
-
                     {
                         title: "Học phí",
+                        data: "total_amount",
+                        render: function (data, type, row) {
+                            // Định dạng tiền Việt Nam
+                            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data);
+                        }
+
+                    },
+                    {
+                        title: "Đã đóng",
                         data: "amount",
                         render: function (data, type, row) {
                             // Định dạng tiền Việt Nam
@@ -117,7 +123,7 @@ const StudentWalletList = () => {
                         render: (data, type, row) => {
                             return `
                                 <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
-                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.id}" id="edit_${row.id}"></i>
                                 </div>
                             `;
                         }
@@ -139,13 +145,13 @@ const StudentWalletList = () => {
                     //         // handleDelete(classCode);
                     //     });
 
-                    //     $(row).find('.fa-edit').on('click', function () {
-                    //         const classCode = $(this).data('id');
-                    //         console.log(classCode);
+                        $(row).find('.fa-edit').on('click', function () {
+                            const classCode = $(this).data('id');
+                            console.log(classCode);
 
-                    //         navigate(`/admin/wallets/${classCode}/edit`);
+                            navigate(`/admin/wallets/${classCode}/edit`);
 
-                    //     });
+                        });
 
                     $('#select_all').on('click', function () {
                         const isChecked = $(this).is(':checked');

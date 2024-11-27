@@ -43,4 +43,5 @@ Route::get('send-email',function(){
 });
 
 Route::get('total_momo', [CheckoutController::class, 'momo_payment']);
-
+Route::post('/payment-callback', [CheckoutController::class, 'handleCallback']);
+Route::get('/payment-success', [CheckoutController::class, 'handleCallback']);

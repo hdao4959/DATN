@@ -64,8 +64,6 @@ const Signin = () => {
 
     const onSubmit = (values) => {
         if (isForgotPassword) {
-            console.log(values);
-
             toast.info("Tính năng quên mật khẩu chưa được triển khai.");
         } else {
             mutate(values);

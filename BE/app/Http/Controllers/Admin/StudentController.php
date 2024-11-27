@@ -179,9 +179,9 @@ class StudentController extends Controller
             $data = $request->validated();
 
             // Kiểm tra updated at trong db có khác với updated at ở phiên hiện tại hay không
-            if ($student->updated_at->toDateTimeString() !== $data['updated_at']) {
-                return $this->handleConflict();
-            }
+            // if ($student->updated_at->toDateTimeString() !== $data['updated_at']) {
+            //     return $this->handleConflict();
+            // }
 
             if (!isset($data['narrow_major_code'])) {
                 $data['narrow_major_code'] = null;
@@ -202,11 +202,11 @@ class StudentController extends Controller
     }
 
 
-    public function destroy(DeleteStudentRequest $request, string $user_code)
+    public function destroy(string $user_code)
     {
         DB::beginTransaction();
         try {
-            $data = $request->validated();
+          
 
             $student = User::where('user_code', $user_code)->lockForUpdate()->first();
 
@@ -214,9 +214,7 @@ class StudentController extends Controller
                 return $this->handleInvalidId();
             }
 
-            if ($student->updated_at->toDateTimeString() !== $data['updated_at']) {
-                return $this->handleConflict();
-            }
+
 
             $student->delete();
 

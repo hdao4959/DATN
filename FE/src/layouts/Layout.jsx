@@ -88,7 +88,10 @@ const AdminLayout = () => {
                                     />
                                 </div>
                             </nav> */}
-                            <ul className="navbar-nav topbar-nav ms-md-auto align-items-center" style={{ marginRight: "10px", }}>
+                            <ul
+                                className="navbar-nav topbar-nav ms-md-auto align-items-center"
+                                style={{ marginRight: "10px" }}
+                            >
                                 <li className="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
                                     <a
                                         className="nav-link dropdown-toggle"
@@ -446,7 +449,10 @@ const AdminLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                src={
+                                                    user?.avatar ||
+                                                    "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                }
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -487,9 +493,10 @@ const AdminLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${user?.user_code ||
+                                                            to={
+                                                                `/admin/account` ||
                                                                 ""
-                                                                }`}
+                                                            }
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -500,8 +507,7 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${user?.user_code || ""
-                                                        }`}
+                                                    to={`/admin/account`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
@@ -551,8 +557,8 @@ const AdminLayout = () => {
                         <Outlet />
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

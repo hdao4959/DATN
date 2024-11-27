@@ -77,8 +77,10 @@
     <p><strong>4. Đối với sinh viên thiếu nợ môn Tiếng Anh:</strong> Chủ động đăng ký trả nợ môn, sử dụng số dư Ví Học
         Lại (nếu có).</p>
 
-    <p><strong>5. Hình thức nộp tiền:</strong> Sinh viên truy cập hệ thống <a
-            href="https://dng.fpt.edu.vn">dng.fpt.edu.vn</a> để xem hướng dẫn nộp tiền.</p>
+    <p><strong>5. Hình thức nộp tiền:</strong> Sinh viên truy cập hệ thống để
+        {{-- <a href="http://127.0.0.1:8000/total_momo?fee_id={{ $data['id'] }}">dng.fpt.edu.vn</a> để xem hướng dẫn nộp tiền.  --}}
+        <a href="http://127.0.0.1:8000/total_momo?fee_id={{ $data['id'] }}">Thanh toán ngay</a>
+    </p>
 
     <h2>Hướng dẫn tra cứu học phí đã nộp</h2>
     <ul>

@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-    useMutation,
-    useQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
 import "datatables.net-dt/css/dataTables.dataTables.css";
@@ -13,6 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ShowGrades from "../Grades/pages";
 import ShowAttendance from "../Attendance/page";
+import Modal from "../../../components/Modal/Modal";
 const ClassRoomsList = () => {
     const accessToken = getToken();
     const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
@@ -22,6 +20,10 @@ const ClassRoomsList = () => {
         selectedClassCodeForAttendances,
         setSelectedClassCodeForAttendances,
     ] = useState(null);
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const [currentClassCode, setCurrentClassCode] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
+
     const {
         data,
         refetch,
@@ -39,7 +41,6 @@ const ClassRoomsList = () => {
         },
     });
     const classrooms = data?.data;
-    console.log(classrooms);
 
     const { mutate, isLoading } = useMutation({
         mutationFn: (class_code) =>
@@ -76,32 +77,48 @@ const ClassRoomsList = () => {
         setSelectedClassCodeForGrades(null);
         setSelectedClassCodeForAttendances(null);
     };
-
-    const { mutate: updateStatus } = useMutation({
-        mutationFn: async (data) => {
-            return api.put('/admin/classrooms/bulk-update-type', data, {
+    const deleteClassMutation = useMutation({
+        mutationFn: (classCode) =>
+            api.delete(`/admin/classrooms/${classCode}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
-            });
-        },
+            }),
         onSuccess: () => {
-            toast.success("Cập nhật trạng thái thành công!");
-            refetch(); // Reload lại danh sách classrooms
+            toast.success("Xóa lớp học thành công");
+            refetch();
+            setDeleteModalOpen(false); // Đóng modal khi xóa thành công
         },
         onError: (error) => {
-            // console.error("onError Callback:", error.response || error.message || error); // Log lỗi trong onError
-            toast.error("Có lỗi xảy ra khi cập nhật trạng thái!");
+            toast.error(error.response.data.message);
         },
     });
+
+    // Mở/đóng modal xác nhận xóa lớp học
+    const toggleDeleteModal = (classCode) => {
+        setCurrentClassCode(classCode);
+        setDeleteModalOpen((prev) => !prev);
+    };
+
+    // Xác nhận xóa lớp học
+    const confirmDeleteClass = () => {
+        if (currentClassCode) {
+            deleteClassMutation.mutate(currentClassCode);
+        }
+    };
+
+    // Khi nhấn vào biểu tượng xóa lớp học
+    const handleDeleteClass = (classCode) => {
+        toggleDeleteModal(classCode);
+    };
 
     useEffect(() => {
         if (classrooms) {
             $("#classroomsTable").DataTable({
                 data: classrooms,
-                // processing: true,
-                // serverSide: true,
+                processing: true,
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         // Tính toán số trang
@@ -143,16 +160,7 @@ const ClassRoomsList = () => {
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
                     { title: "Mã môn", data: "subject_code" },
-                    {
-                        title: "Trạng thái",
-                        data: "is_active",
-                        className: "text-center",
-                        render: (data) => {
-                            return data
-                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
-                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
-                        },
-                    },
+
                     {
                         title: "Hành động",
                         className: "text-center",
@@ -176,12 +184,7 @@ const ClassRoomsList = () => {
                                         title="Xem điểm danh">
                                         Xem điểm danh
                                     </button>
-                                    <i class="fas fa-edit" 
-                                        style="cursor: pointer; font-size: 20px;" 
-                                        data-id="${row.class_code}" 
-                                        id="edit_${row.class_code}" 
-                                        title="Chỉnh sửa"></i>
-                                    <i class="fas fa-trash" 
+                                    <i class="fas fa-trash delete-btn" 
                                         style="cursor: pointer; color: red; font-size: 20px;" 
                                         data-id="${row.class_code}" 
                                         id="delete_${row.class_code}" 
@@ -201,35 +204,9 @@ const ClassRoomsList = () => {
                 },
                 destroy: true,
                 createdRow: (row, data, dataIndex) => {
-                    // Gắn sự kiện xóa sau khi bảng được vẽ
                     $(row)
-                        .find(".fa-trash")
-                        .on("click", function () {
-                            const classCode = $(this).data("id");
-                            handleDelete(classCode);
-                        });
-
-                    $(row)
-                        .find(".fa-edit")
-                        .on("click", function () {
-                            const classCode = $(this).data("id");
-                            console.log(classCode);
-
-                            navigate(`/admin/classrooms/edit/${classCode}`);
-                        });
-                    $(row)
-                        .find(".toggleStatus")
-                        .on("click", function () {
-                            const currentStatus = data.is_active;
-                            const newStatus = !currentStatus;
-
-                            // Gọi API thay đổi trạng thái
-                            updateStatus({
-                                is_active: {
-                                    [data.class_code]: newStatus,
-                                },
-                            });
-                        });
+                        .find(".delete-btn")
+                        .on("click", () => handleDeleteClass(data.class_code));
                 },
             });
             // Lắng nghe sự kiện click cho nút "Xem điểm"
@@ -283,9 +260,15 @@ const ClassRoomsList = () => {
                 )}
                 {(selectedClassCodeForGrades ||
                     selectedClassCodeForAttendances) && (
-                        <div className="modal-backdrop fade show"></div>
-                    )}
+                    <div className="modal-backdrop fade show"></div>
+                )}
                 <div className="card-body">
+                    {isLoadingClasses && (
+                        <>
+                            <div className="spinner-border" role="status"></div>
+                            <p>Đang tải dữ liệu</p>
+                        </>
+                    )}
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>
                         {/* <table className="display table table-striped table-hover">
@@ -355,6 +338,17 @@ const ClassRoomsList = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal xác nhận xóa lớp học */}
+            <Modal
+                title="Xóa lớp học"
+                description="Bạn có chắc chắn muốn xóa lớp học này?"
+                visible={deleteModalOpen}
+                onVisible={toggleDeleteModal}
+                onOk={confirmDeleteClass}
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+            />
         </>
     );
 };
