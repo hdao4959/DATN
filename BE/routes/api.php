@@ -69,7 +69,7 @@ Route::apiResource('teachers', TeacherController::class);
 
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
-
+Route::get('export', [TeacherClassroomController::class, 'exportScore']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập

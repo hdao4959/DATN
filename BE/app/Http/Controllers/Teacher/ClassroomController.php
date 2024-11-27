@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Http\Controllers\Controller;
-use App\Models\Classroom;
 use App\Models\User;
+use App\Models\Classroom;
+use App\Exports\ScoreExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class ClassroomController extends Controller
@@ -129,5 +131,18 @@ class ClassroomController extends Controller
         //
     }
 
-
+    public function exportScore()
+    {
+        $listClassroom = Classroom::where('class_code', '_MH001.1')
+                        ->get(['class_code', 'class_name', 'score'])
+                        ->map(function($classroom) {
+                            $score = json_decode($classroom['score'], true);
+                            return [
+                                'class_code' => $classroom->class_code,
+                                'class_name' => $classroom->class_name,
+                                'score' => $score,
+                            ];
+                        });
+        return Excel::download(new ScoreExport($listClassroom), 'bang_diem.xlsx');
+    }
 }
