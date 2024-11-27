@@ -31,6 +31,9 @@ const ClassRoomsList = () => {
     const [currentClassCode, setCurrentClassCode] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
 
+    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] = useState(null);
+    const [selectedClassCodeForAttendances, setSelectedClassCodeForAttendances] = useState(null);
+
     // Mutation cập nhật trạng thái lớp học
     const updateStatusMutation = useMutation({
         mutationFn: (classCode) =>
@@ -107,6 +110,19 @@ const ClassRoomsList = () => {
     // Khi nhấn vào biểu tượng xóa lớp học
     const handleDeleteClass = (classCode) => {
         toggleDeleteModal(classCode);
+    };
+
+    const handleViewGrades = (classCode) => {
+        setSelectedClassCodeForGrades(classCode);
+    };
+
+    const handleViewAttendances = (classCode) => {
+        setSelectedClassCodeForAttendances(classCode);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedClassCodeForGrades(null);
+        setSelectedClassCodeForAttendances(null);
     };
 
     // Chuyển đổi dữ liệu thành định dạng DataTable
