@@ -1,89 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { useQuery } from '@tanstack/react-query';
-import api from '../../../config/axios';
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
 
 const AttendanceTeacher = () => {
     const [selectedClassCode, setSelectedClassCode] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [attendanceStudentDetailsStatus, setAttendanceStudentDetailsStatus] = useState([]);
-    const [attendanceStudentDetails, setAttendanceStudentDetails] = useState([]);
+    const [attendanceStudentDetailsStatus, setAttendanceStudentDetailsStatus] =
+        useState([]);
+    const [attendanceStudentDetails, setAttendanceStudentDetails] = useState(
+        []
+    );
     const [viewMode, setViewMode] = useState("");
     const [expandedRows, setExpandedRows] = useState({});
     const [schedules, setSchedules] = useState([]);
 
-    const { data: classes, isLoading: isLoadingClasses, refetch } = useQuery({
+    const {
+        data: classes,
+        isLoading: isLoadingClasses,
+        refetch,
+    } = useQuery({
         queryKey: ["LIST_ATTENDANCE_CLASS"],
         queryFn: async () => {
             const response = await api.get(`/teacher/attendances`);
             return response?.data;
-        }
+        },
     });
     const classe = classes || [];
-    const { data: attendanceData, refetch: fetchAttendanceData, isLoading: isLoadingAtt } = useQuery({
+    const {
+        data: attendanceData,
+        refetch: fetchAttendanceData,
+        isLoading: isLoadingAtt,
+    } = useQuery({
         queryKey: ["ATTENDANCE", selectedClassCode],
         queryFn: async () => {
             setSelectedClassCode(selectedClassCode);
-            const response = await api.get(`/teacher/attendances/${selectedClassCode}/${selectedDate}`);
+            const response = await api.get(
+                `/teacher/attendances/${selectedClassCode}/${selectedDate}`
+            );
             const res = response?.data;
             setAttendanceStudentDetails(res);
             return res;
         },
-        enabled: false
+        enabled: false,
     });
-    const { data: AllAttendance, refetch: fetchAllAttendanceData, isLoading: isLoadingAllAtt } = useQuery({
+    const {
+        data: AllAttendance,
+        refetch: fetchAllAttendanceData,
+        isLoading: isLoadingAllAtt,
+    } = useQuery({
         queryKey: ["ALL_ATTENDANCE", selectedClassCode],
         queryFn: async () => {
-            const response = await api.get(`/teacher/attendances/showAllAttendance/${selectedClassCode}`);
+            const response = await api.get(
+                `/teacher/attendances/showAllAttendance/${selectedClassCode}`
+            );
             const res = response?.data;
             return res;
         },
-        enabled: false
+        enabled: false,
     });
     function getAttendanceSchedule(classCode, classes) {
-        const classData = classes?.find(cls => cls.class_code === classCode);
+        const classData = classes?.find((cls) => cls.class_code === classCode);
 
         if (!classData || !classData.schedules) return [];
 
         return classData.schedules
-            .map(schedule => schedule.date)
+            .map((schedule) => schedule.date)
             .sort((a, b) => new Date(a) - new Date(b));
     }
     useEffect(() => {
         const schedules = getAttendanceSchedule(selectedClassCode, classes);
         setSchedules(schedules);
-    }, [selectedClassCode])
+    }, [selectedClassCode]);
 
     useEffect(() => {
-        if (viewMode === 'overview') {
-            fetchAllAttendanceData(); 
+        if (viewMode === "overview") {
+            fetchAllAttendanceData();
         } else {
-            fetchAttendanceData(); 
+            fetchAttendanceData();
         }
-      }, [viewMode, fetchAllAttendanceData, fetchAttendanceData, selectedClassCode]);
+    }, [
+        viewMode,
+        fetchAllAttendanceData,
+        fetchAttendanceData,
+        selectedClassCode,
+    ]);
 
     const handleShowDetails = (classItem, mode, date) => {
         setSelectedClassCode(classItem.class_code);
         setViewMode(mode);
         setSelectedDate(date);
-        const modal = new window.bootstrap.Modal(document.getElementById('attendanceModal'));
+        const modal = new window.bootstrap.Modal(
+            document.getElementById("attendanceModal")
+        );
         modal.show();
     };
 
     const handleToggleStatus = (student) => {
         const attendance = student.attendance[0];
-        const newStatus = attendance.status === 'present' ? 'absent' : 'present';
+        const newStatus =
+            attendance.status === "present" ? "absent" : "present";
         const updatedAttendance = {
             student_code: student.student_code,
             class_code: selectedClassCode,
             date: attendance.date,
             status: newStatus,
-            noted: attendance.noted || '',
+            noted: attendance.noted || "",
         };
 
         setAttendanceStudentDetailsStatus((prevState) => {
             const existingIndex = prevState.findIndex(
-                (item) => item.student_code === updatedAttendance.student_code && item.date === updatedAttendance.date
+                (item) =>
+                    item.student_code === updatedAttendance.student_code &&
+                    item.date === updatedAttendance.date
             );
             if (existingIndex !== -1) {
                 const newState = [...prevState];
@@ -99,11 +128,12 @@ const AttendanceTeacher = () => {
                 if (studentItem.student_code === student.student_code) {
                     const updatedAttendance = {
                         ...studentItem.attendance[0],
-                        status: studentItem.attendance[0].status === "present"
-                            ? "absent"
-                            : studentItem.attendance[0].status === "absent"
-                            ? "present"
-                            : "absent", // Nếu status ban đầu là null, gán "absent"
+                        status:
+                            studentItem.attendance[0].status === "present"
+                                ? "absent"
+                                : studentItem.attendance[0].status === "absent"
+                                ? "present"
+                                : "absent", // Nếu status ban đầu là null, gán "absent"
                         noted: studentItem.attendance[0].noted || "",
                     };
                     return {
@@ -114,17 +144,21 @@ const AttendanceTeacher = () => {
                 return studentItem;
             })
         );
-        
     };
 
     const handleSaveAttendance = async () => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split("T")[0];
         if (selectedDate !== today) {
-            toast.error('Chỉ có thể cập nhật điểm danh trong thời gian cho phép!');
-            return; 
+            toast.error(
+                "Chỉ có thể cập nhật điểm danh trong thời gian cho phép!"
+            );
+            return;
         }
         try {
-            const response = await api.put(`/teacher/attendances/${selectedClassCode}`, attendanceStudentDetailsStatus);
+            const response = await api.put(
+                `/teacher/attendances/${selectedClassCode}`,
+                attendanceStudentDetailsStatus
+            );
             if (response.data.success) {
                 toast.success("Lưu điểm danh thành công!");
             } else {
@@ -132,7 +166,7 @@ const AttendanceTeacher = () => {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            toast.error('Lưu điểm danh thất bại!');
+            toast.error("Lưu điểm danh thất bại!");
         }
     };
 
@@ -162,7 +196,7 @@ const AttendanceTeacher = () => {
                 <div className="card-body">
                     {isLoadingClasses ? (
                         <div className="loading-spinner">
-                            <div className='spinner-border' role='status'></div>
+                            <div className="spinner-border" role="status"></div>
                             <p>Đang tải dữ liệu...</p>
                         </div>
                     ) : (
@@ -171,7 +205,7 @@ const AttendanceTeacher = () => {
                                 <tr>
                                     <th>Mã lớp</th>
                                     <th>Tên lớp</th>
-                                    <th className='text-center'>Điểm danh</th>
+                                    <th className="text-center">Điểm danh</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -180,62 +214,130 @@ const AttendanceTeacher = () => {
                                         <tr key={classItem.id}>
                                             <td>{classItem.class_code}</td>
                                             <td>{classItem.class_name}</td>
-                                            <td className='text-center text-nowrap'>
+                                            <td className="text-center text-nowrap">
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={() => toggleRow(classItem.class_code)}
+                                                    onClick={() =>
+                                                        toggleRow(
+                                                            classItem.class_code
+                                                        )
+                                                    }
                                                 >
                                                     Xem lịch điểm danh
                                                 </button>
                                                 <button
                                                     className="btn btn-secondary ml-2"
-                                                    onClick={() => handleShowDetails(classItem, 'overview', '')}
+                                                    onClick={() =>
+                                                        handleShowDetails(
+                                                            classItem,
+                                                            "overview",
+                                                            ""
+                                                        )
+                                                    }
                                                 >
                                                     Xem tổng quan
                                                 </button>
                                             </td>
                                         </tr>
-                                        {expandedRows == classItem.class_code && (
+                                        {expandedRows ===
+                                            classItem.class_code && (
                                             <tr className="nested-row">
                                                 <td colSpan={3}>
-                                                    <div style={{ paddingLeft: '20px' }}>
-                                                        {schedules?.map((date, index) => {
-                                                            const isToday = new Date(date).toDateString() === new Date().toDateString();
-                                                            // const isToday = true;
-                                                            return (
-                                                                <div key={index} className='' style={{ position: 'relative', display: 'inline-block', marginRight: '10px', marginBottom: '5px' }}>
-                                                                    <button
-                                                                        className={`btn btn-success ${isToday && 'border-5 border-success rounded'}`}
-                                                                        onClick={() => handleShowDetails(classItem, 'detail', date)}
-                                                                        style={{ position: 'relative', zIndex: 1 }}
-                                                                    >
-                                                                        <strong>{formatDate(date)}</strong>
-                                                                    </button>
-                                                                    {isToday && (
-                                                                        <span
+                                                    <div
+                                                        style={{
+                                                            paddingLeft: "20px",
+                                                        }}
+                                                    >
+                                                        {schedules?.length >
+                                                        0 ? (
+                                                            schedules.map(
+                                                                (
+                                                                    date,
+                                                                    index
+                                                                ) => {
+                                                                    const isToday =
+                                                                        new Date(
+                                                                            date
+                                                                        ).toDateString() ===
+                                                                        new Date().toDateString();
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            className=""
                                                                             style={{
-                                                                                position: 'absolute',
-                                                                                top: '-15px',
-                                                                                right: '-5px',
-                                                                                backgroundColor: 'red',
-                                                                                color: 'white',
-                                                                                padding: '2px 5px',
-                                                                                fontSize: '10px',
-                                                                                borderRadius: '5px',
-                                                                                zIndex: 2,
+                                                                                position:
+                                                                                    "relative",
+                                                                                display:
+                                                                                    "inline-block",
+                                                                                marginRight:
+                                                                                    "10px",
+                                                                                marginBottom:
+                                                                                    "5px",
                                                                             }}
                                                                         >
-                                                                            Hôm nay
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
+                                                                            <button
+                                                                                className={`btn btn-success ${
+                                                                                    isToday &&
+                                                                                    "border-5 border-success rounded"
+                                                                                }`}
+                                                                                onClick={() =>
+                                                                                    handleShowDetails(
+                                                                                        classItem,
+                                                                                        "detail",
+                                                                                        date
+                                                                                    )
+                                                                                }
+                                                                                style={{
+                                                                                    position:
+                                                                                        "relative",
+                                                                                    zIndex: 1,
+                                                                                }}
+                                                                            >
+                                                                                <strong>
+                                                                                    {formatDate(
+                                                                                        date
+                                                                                    )}
+                                                                                </strong>
+                                                                            </button>
+                                                                            {isToday && (
+                                                                                <span
+                                                                                    style={{
+                                                                                        position:
+                                                                                            "absolute",
+                                                                                        top: "-15px",
+                                                                                        right: "-5px",
+                                                                                        backgroundColor:
+                                                                                            "red",
+                                                                                        color: "white",
+                                                                                        padding:
+                                                                                            "2px 5px",
+                                                                                        fontSize:
+                                                                                            "10px",
+                                                                                        borderRadius:
+                                                                                            "5px",
+                                                                                        zIndex: 2,
+                                                                                    }}
+                                                                                >
+                                                                                    Hôm
+                                                                                    nay
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            )
+                                                        ) : (
+                                                            <p className="text-danger">
+                                                                Không có lịch
+                                                                điểm danh nào!
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
                                         )}
-
                                     </React.Fragment>
                                 ))}
                             </tbody>
@@ -252,15 +354,15 @@ const AttendanceTeacher = () => {
                         <div className="modal-dialog modal-xl">
                             <div
                                 className="modal-content"
-                                style={{ width: "100%",minHeight: "100vh" }}
+                                style={{ width: "100%", minHeight: "100vh" }}
                             >
                                 <div className="modal-header">
                                     <h5 className="modal-title strong text-lg">
                                         Bảng điểm danh{" "}
                                         {viewMode === "detail"
                                             ? `- Ngày ${formatDate(
-                                                selectedDate
-                                            )} - Lớp ${selectedClassCode}`
+                                                  selectedDate
+                                              )} - Lớp ${selectedClassCode}`
                                             : `- Lớp ${selectedClassCode}`}
                                     </h5>
                                     <button
@@ -273,73 +375,169 @@ const AttendanceTeacher = () => {
                                     </button>
                                 </div>
                                 <div className="modal-body table-responsive">
-                                    {(isLoadingAtt || isLoadingAllAtt) ? (
+                                    {isLoadingAtt || isLoadingAllAtt ? (
                                         <div className="loading-spinner">
-                                            <div className='spinner-border' role='status'></div>
+                                            <div
+                                                className="spinner-border"
+                                                role="status"
+                                            ></div>
                                             <p>Đang tải dữ liệu...</p>
                                         </div>
                                     ) : (
-                                        <table id='modalAttendanceTable' className="table">
+                                        <table
+                                            id="modalAttendanceTable"
+                                            className="table"
+                                        >
                                             <thead>
                                                 <tr>
                                                     <th>Mã sinh viên</th>
                                                     <th>Họ và tên</th>
-                                                    {viewMode === 'overview' && schedules.map((date, index) => (
-                                                        <th key={index} className='text-center'>{formatDate(date)}</th>
-                                                    ))}
-                                                    {viewMode === 'detail' && <th className='text-center'>Trạng thái</th>}
+                                                    {viewMode === "overview" &&
+                                                        schedules.map(
+                                                            (date, index) => (
+                                                                <th
+                                                                    key={index}
+                                                                    className="text-center"
+                                                                >
+                                                                    {formatDate(
+                                                                        date
+                                                                    )}
+                                                                </th>
+                                                            )
+                                                        )}
+                                                    {viewMode === "detail" && (
+                                                        <th className="text-center">
+                                                            Trạng thái
+                                                        </th>
+                                                    )}
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {viewMode === 'overview' && AllAttendance?.map((student, index) => {
-                                                    const attendanceByDate = student.attendance.reduce((acc, att) => {
-                                                        acc[att.date] = att; 
-                                                        return acc;
-                                                    }, {});
+                                                {viewMode === "overview" &&
+                                                    AllAttendance?.map(
+                                                        (student, index) => {
+                                                            const attendanceByDate =
+                                                                student.attendance.reduce(
+                                                                    (
+                                                                        acc,
+                                                                        att
+                                                                    ) => {
+                                                                        acc[
+                                                                            att.date
+                                                                        ] = att;
+                                                                        return acc;
+                                                                    },
+                                                                    {}
+                                                                );
 
-                                                    return (
-                                                        <tr key={student.student_code}>
-                                                            <td>{student.student_code}</td>
-                                                            <td>{student.full_name}</td>
-                                                            {schedules?.map((date) => (
-                                                                <td key={date} className="text-center">
-                                                                    <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                        <input
-                                                                            className="form-check-input attendance-checkbox btn-sm"
-                                                                            type="checkbox"
-                                                                            disabled
-                                                                            style={{ transform: 'scale(2.5)' }}
-                                                                            checked={attendanceByDate[date]?.status === 'present'}
-                                                                        />
-                                                                    </div>
-                                                                </td>
-                                                            ))}
-                                                        </tr>
-                                                    );
-                                                })}
+                                                            return (
+                                                                <tr
+                                                                    key={
+                                                                        student.student_code
+                                                                    }
+                                                                >
+                                                                    <td>
+                                                                        {
+                                                                            student.student_code
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {
+                                                                            student.full_name
+                                                                        }
+                                                                    </td>
+                                                                    {schedules?.map(
+                                                                        (
+                                                                            date
+                                                                        ) => (
+                                                                            <td
+                                                                                key={
+                                                                                    date
+                                                                                }
+                                                                                className="text-center"
+                                                                            >
+                                                                                <div className="form-check form-switch d-flex align-items-center justify-content-center">
+                                                                                    <input
+                                                                                        className="form-check-input attendance-checkbox btn-sm"
+                                                                                        type="checkbox"
+                                                                                        disabled
+                                                                                        style={{
+                                                                                            transform:
+                                                                                                "scale(2.5)",
+                                                                                        }}
+                                                                                        checked={
+                                                                                            attendanceByDate[
+                                                                                                date
+                                                                                            ]
+                                                                                                ?.status ===
+                                                                                            "present"
+                                                                                        }
+                                                                                    />
+                                                                                </div>
+                                                                            </td>
+                                                                        )
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        }
+                                                    )}
 
-                                                {viewMode === 'detail' && attendanceStudentDetails?.map((student, index) => {
-                                                    const isToday = new Date(student.attendance[0].date).toDateString() === new Date().toDateString();
-                                                    // const isToday = true;
-                                                    return (
-                                                        <tr key={student.student_code}>
-                                                            <td>{student.student_code}</td>
-                                                            <td>{student.full_name}</td>
-                                                            <td className="text-center">
-                                                                <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                    <input
-                                                                        className="form-check-input attendance-checkbox btn-sm"
-                                                                        type="checkbox"
-                                                                        checked={student?.attendance[0]?.status === 'present'}
-                                                                        style={{ transform: 'scale(2.5)' }}
-                                                                        onChange={() => handleToggleStatus(student)}
-                                                                        disabled={isToday === false}
-                                                                    />
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
+                                                {viewMode === "detail" &&
+                                                    attendanceStudentDetails?.map(
+                                                        (student, index) => {
+                                                            const isToday =
+                                                                new Date(
+                                                                    student.attendance[0].date
+                                                                ).toDateString() ===
+                                                                new Date().toDateString();
+                                                            // const isToday = true;
+                                                            return (
+                                                                <tr
+                                                                    key={
+                                                                        student.student_code
+                                                                    }
+                                                                >
+                                                                    <td>
+                                                                        {
+                                                                            student.student_code
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {
+                                                                            student.full_name
+                                                                        }
+                                                                    </td>
+                                                                    <td className="text-center">
+                                                                        <div className="form-check form-switch d-flex align-items-center justify-content-center">
+                                                                            <input
+                                                                                className="form-check-input attendance-checkbox btn-sm"
+                                                                                type="checkbox"
+                                                                                checked={
+                                                                                    student
+                                                                                        ?.attendance[0]
+                                                                                        ?.status ===
+                                                                                    "present"
+                                                                                }
+                                                                                style={{
+                                                                                    transform:
+                                                                                        "scale(2.5)",
+                                                                                }}
+                                                                                onChange={() =>
+                                                                                    handleToggleStatus(
+                                                                                        student
+                                                                                    )
+                                                                                }
+                                                                                disabled={
+                                                                                    isToday ===
+                                                                                    false
+                                                                                }
+                                                                            />
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        }
+                                                    )}
                                             </tbody>
                                         </table>
                                     )}
