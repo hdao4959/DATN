@@ -136,9 +136,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
         Route::apiResource('sessions', SessionController::class);
         Route::apiResource('semesters', SemesterController::class);
-        Route::apiResource('grades', GradesController::class);
-        Route::get('grades', [GradesController::class, 'getByParam']);
-        Route::patch('grades/{id}', [GradesController::class, 'update']);
+
+
+        Route::get('classrooms/{class_code}/grades', [GradesController::class, 'show']);
+        Route::patch('classrooms/{class_code}/grades', [GradesController::class, 'update']);
         Route::apiResource('schoolrooms', SchoolRoomController::class);
         Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
         Route::apiResource('pointheads', PointHeadController::class);
