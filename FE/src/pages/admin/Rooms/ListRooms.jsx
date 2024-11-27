@@ -8,6 +8,8 @@ import Modal from "../../../components/Modal/Modal";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 import $ from "jquery";
 import "datatables.net";
+import ShowGrades from "../Grades/pages";
+import ShowAttendance from "../Attendance/page";
 
 const ClassRoomsList = () => {
     const accessToken = getToken();
@@ -28,6 +30,9 @@ const ClassRoomsList = () => {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [currentClassCode, setCurrentClassCode] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
+
+    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] = useState(null);
+    const [selectedClassCodeForAttendances, setSelectedClassCodeForAttendances] = useState(null);
 
     // Mutation cập nhật trạng thái lớp học
     const updateStatusMutation = useMutation({
@@ -107,6 +112,19 @@ const ClassRoomsList = () => {
         toggleDeleteModal(classCode);
     };
 
+    const handleViewGrades = (classCode) => {
+        setSelectedClassCodeForGrades(classCode);
+    };
+
+    const handleViewAttendances = (classCode) => {
+        setSelectedClassCodeForAttendances(classCode);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedClassCodeForGrades(null);
+        setSelectedClassCodeForAttendances(null);
+    };
+
     // Chuyển đổi dữ liệu thành định dạng DataTable
     useEffect(() => {
         if (classrooms) {
@@ -164,6 +182,26 @@ const ClassRoomsList = () => {
                     search: "Tìm kiếm:",
                 },
             });
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_grades_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForGrades(classCode);
+                    handleViewGrades(classCode);
+                }
+            );
+
+            // Lắng nghe sự kiện click cho nút "Xem điểm danh"
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_attendance_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForAttendances(classCode);
+                    handleViewAttendances(classCode);
+                }
+            );
         }
 
         return () => {
@@ -185,6 +223,22 @@ const ClassRoomsList = () => {
                 <div className="card-header">
                     <h4 className="card-title">Quản lý lớp học</h4>
                 </div>
+                {selectedClassCodeForGrades && (
+                    <ShowGrades
+                        classCode={selectedClassCodeForGrades}
+                        onClose={handleCloseModal}
+                    />
+                )}
+                {selectedClassCodeForAttendances && (
+                    <ShowAttendance
+                        classCode={selectedClassCodeForAttendances}
+                        onClose={handleCloseModal}
+                    />
+                )}
+                {(selectedClassCodeForGrades ||
+                    selectedClassCodeForAttendances) && (
+                        <div className="modal-backdrop fade show"></div>
+                    )}
                 <div className="card-body">
                     {isLoading && (
                         <>
