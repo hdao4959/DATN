@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Schedule\CreateTransferScheduleTimeframe;
 use App\Models\Classroom;
 use App\Models\ClassroomUser;
 use App\Models\Schedule;
@@ -79,33 +80,47 @@ class ScheduleController extends Controller
         }
     }
 
-    public function create_transfer_schedule_timeframe(Request $request)
+
+    public function transfer_schedule_timeframe()
+    {
+        try {
+            $timeframe = TransferScheduleTimeframe::select('start_time', 'end_time')->first();
+            
+            return response()->json($timeframe);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
+    public function create_transfer_schedule_timeframe(CreateTransferScheduleTimeframe $request)
     {
 
-        DB::beginTransaction();
         try {
+            $data = $request->validated();
 
-            $data = $request->validate([
-                'start_time' => 'required',
-                'end_time' => 'required'
-            ]);
+            if ($data['start_time'] >= $data['end_time']) {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu!'
+                    ],
+                    403
+                );
+            }
+
             TransferScheduleTimeframe::updateOrCreate(
                 [
                     'id' => 1
                 ],
                 [
-
                     'start_time' => $data['start_time'],
                     'end_time' => $data['end_time']
                 ]
             );
-            DB::commit();
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Đặt thời gian đổi lịch cho sinh viên thành công!'
             ]);
         } catch (\Throwable $th) {
-            DB::rollback();
             return $this->handleErrorNotDefine($th);
         }
     }

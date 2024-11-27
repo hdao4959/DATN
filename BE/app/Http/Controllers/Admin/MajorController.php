@@ -129,7 +129,7 @@ class MajorController extends Controller
             return $this->handleInvalidId();
         } else {
             $params = $request->except('_token', '_method');
-            // return response()->json($params, 201);
+            // Kiểm tra parent_code hợp lệ hoặc null
 
             if ($request->hasFile('image')) {
                 if ($listMajor->image && Storage::disk('public')->exists($listMajor->image)) {

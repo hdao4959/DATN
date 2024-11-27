@@ -309,10 +309,20 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
+                                to="/admin/viewtimeframes"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Xem khung thời gian </p>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
                                 to="/admin/timeframes"
                                 className={`${styles.menuItem} group`}
                             >
-                                <p className="sub-item">Khung giờ đổi lịch </p>
+                                <p className="sub-item">
+                                    Thêm khung thời gian{" "}
+                                </p>
                             </NavLink>
                         </li>
                     </ul>

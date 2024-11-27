@@ -63,6 +63,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
+Route::get('generateSchedule', [CategoryController::class, 'generateSchedule']);
 Route::get('/students/{student_code}', [StudentController::class, 'show']);
 
 Route::apiResource('teachers', TeacherController::class);
@@ -107,11 +108,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+            Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
             Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
             Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-             Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
-
+            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
         });
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {

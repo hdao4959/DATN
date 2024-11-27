@@ -71,6 +71,9 @@ import Debt from "./pages/student/Wallets/Debt.jsx";
 import ScheduleTimeFrame from "./pages/admin/ScheduleTimeFrame/ScheduleTimeFrame.jsx";
 import ViewSchedulesForClass from "./pages/student/Classrooms/ViewSchedulesForClass.jsx";
 import StudentAccountDetails from "./pages/admin/Account/StudentAccountDetails.jsx";
+import EditStudentAccount from "./pages/admin/Account/EditStudentAccount.jsx";
+import EditTeacherAccount from "./pages/admin/Teacher/EditTeacherAccount.jsx";
+import ViewTimeFrame from "./pages/admin/ScheduleTimeFrame/ViewTimeFrame.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -107,6 +110,10 @@ function App() {
                     element: <StudentAccountDetails />,
                 },
                 {
+                    path: "students/edit/:user_code",
+                    element: <EditStudentAccount />,
+                },
+                {
                     path: "account",
                     element: <ViewMyAccount />,
                 },
@@ -117,6 +124,10 @@ function App() {
                 {
                     path: "teachers/create",
                     element: <CreateTeacherAccount />,
+                },
+                {
+                    path: "teachers/edit/:user_code",
+                    element: <EditTeacherAccount />,
                 },
                 {
                     path: "teachers/:user_code",
@@ -258,6 +269,10 @@ function App() {
                 {
                     path: "timeframes",
                     element: <ScheduleTimeFrame />,
+                },
+                {
+                    path: "viewtimeframes",
+                    element: <ViewTimeFrame />,
                 },
             ],
         },

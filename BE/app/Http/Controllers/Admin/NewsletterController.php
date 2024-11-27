@@ -210,7 +210,7 @@ class NewsletterController extends Controller
                 if ($newsletters->image && Storage::disk('public')->exists($newsletters->image)) {
                     Storage::disk('public')->delete($newsletters->image);
                 }
-                $newsletters->delete($newsletters);
+                $newsletters->delete();
                 DB::commit();
 
                 return response()->json([

@@ -136,8 +136,17 @@ const TransferSchedule = () => {
 
     return (
         <div className="container mt-4">
-            <h1>
-                <i style={{ color: "blue" }} className="fa fa-calendar"></i>{" "}
+            <h1
+                style={{
+                    fontSize: "1.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <i
+                    style={{ color: "blue", marginRight: "0.5rem" }}
+                    className="fa fa-calendar"
+                ></i>
                 Thay đổi lịch học
             </h1>
             <div className="row mt-5">

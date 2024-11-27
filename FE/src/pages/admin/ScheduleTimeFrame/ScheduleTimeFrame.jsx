@@ -47,7 +47,7 @@ const ScheduleTimeFrame = () => {
         <div className="container mt-5">
             <div className="card p-4 shadow">
                 <h4 className="card-title text-center mb-4">
-                    Tạo khung thời gian
+                    Thêm khung thời gian
                 </h4>
                 <form onSubmit={onSubmit}>
                     <div className="mb-3">

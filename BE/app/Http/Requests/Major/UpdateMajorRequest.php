@@ -26,7 +26,7 @@ class UpdateMajorRequest extends FormRequest
         return [
             'cate_code' => 'required|unique:categories,cate_code,' . $this->route('major') . ',cate_code',
             'cate_name' => 'required|max:255|regex:/^[^<>{}]*$/',
-            'value' => 'regex:/^[^<>{}]*$/',
+            'value' => 'nullable|regex:/^[^<>{}]*$/',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'description' => 'nullable|regex:/^[^<>{}]*$/',
             'parent_code' => 'nullable|regex:/^[^<>{}]*$/',
