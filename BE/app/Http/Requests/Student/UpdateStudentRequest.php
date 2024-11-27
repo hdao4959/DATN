@@ -39,7 +39,7 @@ class UpdateStudentRequest extends FormRequest
             'narrow_major_code' => 'nullable|exists:categories,cate_code',
             'semester_code' => 'required|exists:categories,cate_code',
             'course_code' => 'required|exists:categories,cate_code',
-            'updated_at' =>'required|date_format:Y-m-d H:i:s',
+            // 'updated_at' =>'required|date_format:Y-m-d H:i:s',
         ];
     }
 
@@ -91,8 +91,8 @@ class UpdateStudentRequest extends FormRequest
             'semester_code.exists' => 'Kỳ học không tồn tại!',
             'course_code.required' =>  'Bạn chưa chọn khoá học!',
             'course_code.exists' => 'Khoá học này không tồn tại!',
-            'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
-            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+            // 'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
+            // 'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
         ];
     }
     protected $stopOnFirstFailure = true;

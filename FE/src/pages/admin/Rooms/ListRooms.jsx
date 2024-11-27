@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-    useMutation,
-    useQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
 import "datatables.net-dt/css/dataTables.dataTables.css";
@@ -98,24 +95,10 @@ const ClassRoomsList = () => {
         },
     });
 
-    // Mở/đóng modal xác nhận trạng thái
-    const toggleConfirmationModal = (classCode) => {
-        setCurrentClassCode(classCode);
-        setConfirmationModalOpen((prev) => !prev);
-    };
-
     // Mở/đóng modal xác nhận xóa lớp học
     const toggleDeleteModal = (classCode) => {
         setCurrentClassCode(classCode);
         setDeleteModalOpen((prev) => !prev);
-    };
-
-    // Xác nhận cập nhật trạng thái
-    const confirmUpdateStatus = () => {
-        if (currentClassCode) {
-            updateStatusMutation.mutate(currentClassCode);
-        }
-        setConfirmationModalOpen(false);
     };
 
     // Xác nhận xóa lớp học
@@ -125,35 +108,10 @@ const ClassRoomsList = () => {
         }
     };
 
-    // Khi nhấn vào biểu tượng trạng thái, thay đổi trạng thái lớp học
-    const handleToggleStatus = (classCode) => {
-        toggleConfirmationModal(classCode);
-    };
-
     // Khi nhấn vào biểu tượng xóa lớp học
     const handleDeleteClass = (classCode) => {
         toggleDeleteModal(classCode);
     };
-
-
-    const { mutate: updateStatus } = useMutation({
-        mutationFn: async (data) => {
-            return api.put('/admin/classrooms/bulk-update-type', data, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-        },
-        onSuccess: () => {
-            toast.success("Cập nhật trạng thái thành công!");
-            refetch(); // Reload lại danh sách classrooms
-        },
-        onError: (error) => {
-            // console.error("onError Callback:", error.response || error.message || error); // Log lỗi trong onError
-            toast.error("Có lỗi xảy ra khi cập nhật trạng thái!");
-        },
-    });
 
     useEffect(() => {
         if (classrooms) {
@@ -202,16 +160,7 @@ const ClassRoomsList = () => {
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
                     { title: "Mã môn", data: "subject_code" },
-                    {
-                        title: "Trạng thái",
-                        data: "is_active",
-                        className: "text-center",
-                        render: (data) => {
-                            return data
-                                ? `<i class="fas fa-check-circle toggle-status" style="color: green; font-size: 20px; cursor: pointer;"></i>`
-                                : `<i class="fas fa-times-circle toggle-status" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
-                        },
-                    },
+
                     {
                         title: "Hành động",
                         className: "text-center",
@@ -255,12 +204,6 @@ const ClassRoomsList = () => {
                 },
                 destroy: true,
                 createdRow: (row, data, dataIndex) => {
-                    // Lắng nghe sự kiện toggle trạng thái
-                    $(row)
-                        .find(".toggle-status")
-                        .on("click", () => handleToggleStatus(data.class_code));
-
-                    // Lắng nghe sự kiện xóa lớp học
                     $(row)
                         .find(".delete-btn")
                         .on("click", () => handleDeleteClass(data.class_code));
@@ -317,13 +260,13 @@ const ClassRoomsList = () => {
                 )}
                 {(selectedClassCodeForGrades ||
                     selectedClassCodeForAttendances) && (
-                        <div className="modal-backdrop fade show"></div>
-                    )}
+                    <div className="modal-backdrop fade show"></div>
+                )}
                 <div className="card-body">
                     {isLoadingClasses && (
                         <>
-                        <div className="spinner-border" role="status"></div>
-                        <p>Đang tải dữ liệu</p>
+                            <div className="spinner-border" role="status"></div>
+                            <p>Đang tải dữ liệu</p>
                         </>
                     )}
                     <div className="table-responsive">
@@ -395,15 +338,6 @@ const ClassRoomsList = () => {
                     </div>
                 </div>
             </div>
-            <Modal
-                title="Cập nhật trạng thái"
-                description="Bạn có chắc chắn muốn thay đổi trạng thái của lớp học này?"
-                visible={confirmationModalOpen}
-                onVisible={toggleConfirmationModal}
-                onOk={confirmUpdateStatus}
-                closeTxt="Huỷ"
-                okTxt="Xác nhận"
-            />
 
             {/* Modal xác nhận xóa lớp học */}
             <Modal
