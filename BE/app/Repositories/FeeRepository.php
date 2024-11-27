@@ -39,6 +39,7 @@ class FeeRepository implements FeeRepositoryInterface {
         $students = User::with(['semester' => function ($query) {
             $query->select('cate_code', 'value'); // chỉ lấy cate_code và name từ bảng categories
         }])
+        ->where('role', "3")
         ->select('id', 'full_name','user_code','semester_code')
         ->get();
 
@@ -51,7 +52,7 @@ class FeeRepository implements FeeRepositoryInterface {
             }
 
 
-            $semesterCode = 'S0'.$nextSemester;
+            $semesterCode = 'S'.$nextSemester;
             $subjects = Subject::whereHas('semester', function ($query) use ($nextSemester) {
                 $query->where('value', $nextSemester);
             })
@@ -74,15 +75,31 @@ class FeeRepository implements FeeRepositoryInterface {
                 'status'  => 'unpaid'
             ];
 
-            try{
+            // try{
+            //     $fee = Fee::create($feeData);
+            //     $message[] = "Tạo fee thành công";
+            // }catch(QueryException $e){
+            //     if ($e->getCode() === '23000') {
+            //         $message[] = "Lỗi trùng lặp";
+            //         continue;
+            //     }
+            // }
+            try {
+                $existingFee = Fee::where('user_code', $stu->user_code)
+                    ->where('semester_code', $semesterCode)
+                    ->first();
+            
+                if ($existingFee) {
+                    $message[] = "Fee đã tồn tại cho user_code: {$stu->user_code} và semester_code: {$semesterCode}";
+                    continue; // Bỏ qua nếu đã tồn tại
+                }
+            
                 $fee = Fee::create($feeData);
                 $message[] = "Tạo fee thành công";
-            }catch(QueryException $e){
-                if ($e->getCode() === '23000') {
-                    $message[] = "Lỗi trùng lặp";
-                    continue;
-                }
+            } catch (QueryException $e) {
+                $message[] = "Lỗi không xác định: {$e->getMessage()}";
             }
+            
 
 
         //     // $totalFees = Fee::where('user_id', $fee->user_id)->sum('amount');

@@ -45,7 +45,7 @@ class FeeController extends Controller
      */
     public function store()
     {
-        // return response()->json(['data' => $request]);
+        // return response()->json(['data']);
         try {
             $data = $this->feeRepository->createAll();
             return response()->json(['message' => $data]);

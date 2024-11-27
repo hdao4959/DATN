@@ -15,7 +15,7 @@ const StudentLayout = () => {
     const { data: notifications, refetch } = useQuery({
         queryKey: ["LIST_NOTI"],
         queryFn: async () => {
-            const res = await api.get("/notifications");
+            const res = await api.get("student/notifications");
             return res.data;
         },
     });

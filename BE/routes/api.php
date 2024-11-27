@@ -79,7 +79,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('notifications', [StudentNewsletterController::class, 'showNoti']);
 
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
@@ -228,6 +227,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/classrooms', 'index');
             Route::get('/classrooms/{class_code}', 'show');
         });
+        Route::get('notifications', [StudentNewsletterController::class, 'showNoti']);
 
 
         // Các route cho lịch học
