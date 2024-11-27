@@ -23,7 +23,7 @@ class MajorController extends Controller
             'message' => 'Không có chuyên ngành nào!',
         ], 404);
     }
-
+  
     //  Hàm trả về json khi lỗi không xác định (500)
     public function handleErrorNotDefine($th)
     {

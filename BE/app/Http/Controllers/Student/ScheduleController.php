@@ -50,7 +50,7 @@ class ScheduleController extends Controller
             if (!$classroom_codes) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Không có lớp học nào'
+                    'message' => 'Không có lớp học nào!'
                 ], 200);
             }
 
