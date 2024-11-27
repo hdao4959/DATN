@@ -185,6 +185,22 @@ const ClassRoomsList = () => {
                 <div className="card-header">
                     <h4 className="card-title">Quản lý lớp học</h4>
                 </div>
+                {selectedClassCodeForGrades && (
+                    <ShowGrades
+                        classCode={selectedClassCodeForGrades}
+                        onClose={handleCloseModal}
+                    />
+                )}
+                {selectedClassCodeForAttendances && (
+                    <ShowAttendance
+                        classCode={selectedClassCodeForAttendances}
+                        onClose={handleCloseModal}
+                    />
+                )}
+                {(selectedClassCodeForGrades ||
+                    selectedClassCodeForAttendances) && (
+                        <div className="modal-backdrop fade show"></div>
+                    )}
                 <div className="card-body">
                     {isLoading && (
                         <>
