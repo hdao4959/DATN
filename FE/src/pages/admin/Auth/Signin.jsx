@@ -59,12 +59,13 @@ const Signin = () => {
         register,
         formState: { errors },
         handleSubmit,
+        getValues,
     } = useForm();
 
     const onSubmit = (values) => {
         if (isForgotPassword) {
             console.log(values);
-            
+
             toast.info("Tính năng quên mật khẩu chưa được triển khai.");
         } else {
             mutate(values);
@@ -149,7 +150,7 @@ const Signin = () => {
                                                     style={{ width: "185px" }}
                                                 />
                                                 <h4
-                                                    className="mt-3 mb-5 pb-1"
+                                                    className="mt-3 mb-5 pb-1 text-center"
                                                     style={{
                                                         fontWeight: "600",
                                                     }}
@@ -273,6 +274,45 @@ const Signin = () => {
                                                             <p className="text-danger">
                                                                 {errors.phone.message}
                                                             </p>
+                                                        )}
+                                                    </div>
+                                                    {/* Trường Mật khẩu mới */}
+                                                    <div className="form-outline mb-4">
+                                                        <label className="form-label">Mật khẩu mới</label>
+                                                        <label className="form-label text-danger">*</label>
+                                                        <input
+                                                            type="password"
+                                                            className="form-control"
+                                                            placeholder="Nhập mật khẩu mới"
+                                                            {...register("newPassword", {
+                                                                required: "Vui lòng nhập mật khẩu mới",
+                                                                minLength: {
+                                                                    value: 6,
+                                                                    message: "Mật khẩu phải có ít nhất 6 ký tự",
+                                                                },
+                                                            })}
+                                                        />
+                                                        {errors.newPassword && (
+                                                            <p className="text-danger">{errors.newPassword.message}</p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Trường Nhập lại mật khẩu mới */}
+                                                    <div className="form-outline mb-4">
+                                                        <label className="form-label">Nhập lại mật khẩu mới</label>
+                                                        <label className="form-label text-danger">*</label>
+                                                        <input
+                                                            type="password"
+                                                            className="form-control"
+                                                            placeholder="Nhập lại mật khẩu mới"
+                                                            {...register("confirmPassword", {
+                                                                required: "Vui lòng nhập lại mật khẩu",
+                                                                validate: (value) =>
+                                                                    value === getValues("newPassword") || "Mật khẩu không khớp",
+                                                            })}
+                                                        />
+                                                        {errors.confirmPassword && (
+                                                            <p className="text-danger">{errors.confirmPassword.message}</p>
                                                         )}
                                                     </div>
                                                 </>
