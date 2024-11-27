@@ -71,7 +71,6 @@ Route::apiResource('teachers', TeacherController::class);
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
 
-
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập
     Route::get('/user', function (Request $request) {
@@ -218,6 +217,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(TeacherAttendanceController::class)->group(function () {
             Route::post('/import-attendances', 'importAttendance');
             Route::get('/export-attendances', 'exportAttendance');
+        });
+
+        Route::controller(TeacherClassroomController::class)->group(function () {
+            // Route::post('/import-scores', 'importScore');
+            Route::get('/export-scores', 'exportScore');
         });
 
     });

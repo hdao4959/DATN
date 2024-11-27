@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const AddClassroom = () => {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
+    const [resForm1, setResForm1] = useState(null);
     const [formData, setFormData] = useState({
         course_code: "",
         semester_code: "",
@@ -252,13 +253,14 @@ const AddClassroom = () => {
     const handleNext = async () => {
         try {
             if (currentStep === 1) {
-                await api.post("/admin/classrooms/handleStep1", {
+                const res = await api.post("/admin/classrooms/handleStep1", {
                     course_code: formData.course_code,
                     semester_code: formData.semester_code,
                     major_code: formData.major_code,
                     major_sub_code: formData.major_sub_code,
                     subject_code: formData.subject_code,
                 });
+                setResForm1(res.data);
             } else if (currentStep === 2) {
                 const response = await api.post(
                     "/admin/classrooms/handleStep2",
@@ -291,7 +293,6 @@ const AddClassroom = () => {
             );
         }
     };
-
     const handlePrev = () => {
         setCurrentStep((prev) => prev - 1);
     };
@@ -433,6 +434,13 @@ const AddClassroom = () => {
                     <h3>Thông tin lịch học</h3>
                 </div>
                 <div className="card-body">
+                    <label className="form-label">
+                        Có{" "}
+                        <span style={{ color: "red", fontWeight: "bold" }}>
+                            {resForm1}
+                        </span>{" "}
+                        sinh viên có thể xếp lớp
+                    </label>
                     <div className="mb-3">
                         <label className="form-label">Ngày bắt đầu</label>
                         <input
