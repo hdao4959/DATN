@@ -13,6 +13,7 @@ class Schedule extends Model
         'date', 
         'room_code',
         'classroom_code',
+        'class_code',
         'session_code'
     ];
 
