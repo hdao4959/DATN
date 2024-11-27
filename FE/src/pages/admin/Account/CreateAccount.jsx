@@ -492,7 +492,7 @@ const CreateAccount = () => {
                                 >
                                     Quay lại danh sách
                                 </button> */}
-                                <Link to="/admin/account">
+                                <Link to="/admin/students">
                                     <button className="btn btn-primary">
                                         Quay lại danh sách
                                     </button>

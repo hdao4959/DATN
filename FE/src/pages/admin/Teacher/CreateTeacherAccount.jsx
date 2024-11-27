@@ -416,7 +416,7 @@ const CreateTeacherAccount = () => {
                                 >
                                     Quay lại danh sách
                                 </button> */}
-                                <Link to="/admin/account">
+                                <Link to="/admin/teachers">
                                     <button className="btn btn-primary">
                                         Quay lại danh sách
                                     </button>
