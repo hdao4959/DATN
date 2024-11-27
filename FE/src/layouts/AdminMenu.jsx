@@ -6,7 +6,7 @@ const AdminMenu = () => {
     return (
         <ul className="nav nav-secondary">
             <li className="nav-item">
-                <NavLink to="/" className={`${styles.menuItem} group`}>
+                <NavLink to="/admin" className={`${styles.menuItem} group`}>
                     <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                     <p className="text-[#b9babf]">Dashboard</p>
                 </NavLink>
