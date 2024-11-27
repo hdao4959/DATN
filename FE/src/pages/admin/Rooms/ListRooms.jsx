@@ -8,6 +8,8 @@ import Modal from "../../../components/Modal/Modal";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 import $ from "jquery";
 import "datatables.net";
+import ShowGrades from "../Grades/pages";
+import ShowAttendance from "../Attendance/page";
 
 const ClassRoomsList = () => {
     const accessToken = getToken();
@@ -164,6 +166,26 @@ const ClassRoomsList = () => {
                     search: "Tìm kiếm:",
                 },
             });
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_grades_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForGrades(classCode);
+                    handleViewGrades(classCode);
+                }
+            );
+
+            // Lắng nghe sự kiện click cho nút "Xem điểm danh"
+            $("#classroomsTable").on(
+                "click",
+                '[id^="view_attendance_"]',
+                function () {
+                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
+                    setSelectedClassCodeForAttendances(classCode);
+                    handleViewAttendances(classCode);
+                }
+            );
         }
 
         return () => {
