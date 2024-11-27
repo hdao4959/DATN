@@ -27,7 +27,7 @@ class TransactionController extends Controller
             ->whereHas('fee', function ($query) use ($userCode) {
                 $query->where('user_code', $userCode);
             })
-            ->orderBy('payment_date','desc')
+            ->orderBy('id','desc')
             ->get();
             $wallets = Wallet::where('user_code', $userCode)->get();
             return response()->json([

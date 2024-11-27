@@ -9,7 +9,7 @@ const Sidebar = () => {
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
                 <div className="logo-header" data-background-color="dark">
-                    <NavLink to="/" className="logo">
+                    <NavLink to="/admin" className="logo">
                         <img
                             src="https://ap.poly.edu.vn/images/whiteLogo.png"
                             width={150}

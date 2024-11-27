@@ -30,16 +30,31 @@ const StudentWalletList = () => {
                 data: transactions,
                 // processing: true,
                 // serverSide: true,
+                // searching: false,
                 ajax: async (data, callback) => {
                 },
                 columns: [
                     {
+                        title: "ID",
+                        data: "id",
+                        visible: false // Ẩn cột ID nếu không cần hiển thị
+                    },
+                    {
+                        title: "STT",
+                        data: null, // Không cần lấy dữ liệu từ API
+                        className: "text-center",
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1; // Tính số thứ tự dựa trên index của hàng
+                        }
+                    },
+                    
+                    {
                         title: "Số tiền",
-                        className: 'fw-bold',
+                        className: 'fw-bold text-center fs-5',
                         data: "amount_paid",
                         render: function (data, type, row) {
                             const sign = row.is_deposit ? '+' : '-';
-                            return `<span >${sign} ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data)}</span>`;
+                            return `<span>${sign} ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data)}</span>`;
                         }
                     },
                     {
@@ -50,9 +65,9 @@ const StudentWalletList = () => {
                             return data?.semester_code;
                         }
                     },
-
                     {
                         title: "Phương thức thanh toán",
+                        className: 'text-center',
                         data: "payment_method",
                         render: (data, type, row) => {
                             if (data == 'transfer') {
@@ -63,7 +78,6 @@ const StudentWalletList = () => {
                                 return `<span >Thanh toán online</span>`
                             }
                         }
-
                     },
                     {
                         title: "Ngày",
@@ -83,6 +97,7 @@ const StudentWalletList = () => {
                         }
                     },
                 ],
+                order: [[0, 'desc']], // Sắp xếp theo cột ID giảm dần
                 rowCallback: function (row, data) {
                     // Nếu is_deposit = true thì đổi màu nền thành xanh
                     if (data.is_deposit) {
@@ -101,6 +116,7 @@ const StudentWalletList = () => {
                     search: 'Tìm kiếm:'
                 },
                 destroy: true,
+                dom: 'tip' ,
                 createdRow: (row, data, dataIndex) => {
                     $('#select_all').on('click', function () {
                         const isChecked = $(this).is(':checked');
@@ -127,7 +143,7 @@ const StudentWalletList = () => {
                             <div>
                                 <div>
                                     {wallets?.length > 0 && wallets[0]?.total && wallets[0]?.paid
-                                        ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(wallets[0].total - wallets[0].paid)
+                                        ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(wallets[0].paid - wallets[0].total)
                                         : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(0)}
                                 </div>
 

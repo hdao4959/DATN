@@ -107,11 +107,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+            Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
             Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
             Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-             Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
-
+            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
         });
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
@@ -215,6 +215,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
         Route::apiResource('categories', CategoryController::class);
 
+        Route::controller(TeacherAttendanceController::class)->group(function () {
+            Route::post('/import-attendances', 'importAttendance');
+            Route::get('/export-attendances', 'exportAttendance');
+        });
+
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -288,7 +293,6 @@ Route::post('services/provide-student-card/{user_code}',    [ServiceController::
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
-
-
 Route::apiResource('fees', FeeController::class);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
+

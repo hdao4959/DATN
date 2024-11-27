@@ -127,7 +127,14 @@ class TeacherController extends Controller
                     'major_code',
                     'created_at',
                     'updated_at'
-                )->get();
+                )->first();
+
+                if(!$teacher){
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Giảng viên này không tồn tại!'
+                    ]);
+                }
             return response()->json($teacher);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);

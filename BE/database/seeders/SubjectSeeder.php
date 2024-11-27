@@ -404,7 +404,7 @@ class SubjectSeeder extends Seeder
         //     ]);
         // }
 
-        for ($i = 0; $i <= 10; $i++) {
+        for ($i = 0; $i <= 2; $i++) {
             DB::table('users')->insert([
                 [
                     'user_code' => 'CNTT03_' . sprintf('%02d', $i), // student01, student02, ...
