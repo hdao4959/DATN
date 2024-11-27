@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import $ from 'jquery';
+import 'datatables.net';
 
 const ClassroomList = () => {
     const [classrooms, setClassrooms] = useState([]);
@@ -52,70 +55,96 @@ const ClassroomList = () => {
         fetchClassrooms();
     }, []);
 
+    useEffect(() => {
+        if (classrooms.length) {
+            $("#classroomTable").DataTable({
+                data: classrooms,
+                paging: true,
+                searching: true,
+                ordering: true,
+                destroy: true,
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        previous: 'Trước',
+                        next: 'Tiếp theo',
+                    },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
+                    search: 'Tìm kiếm:',
+                },
+                columns: [
+                    {
+                        title: "Mã lớp",
+                        data: "class_code",
+                        render: (data) => (
+                            `<a href='/teacher/class/${data}/students'>
+                                ${data}
+                            </a>`
+                        ),
+                    },
+                    {
+                        title: "Tên lớp",
+                        data: "class_name",
+                    },
+                    {
+                        title: "Tên môn học",
+                        data: "subject",
+                        render: (data) => {
+                            return data && data.subject_name
+                                ? data.subject_name
+                                : "Chưa có dữ liệu";
+                        },
+                    },
+                    {
+                        title: "Lịch học",
+                        data: "class_code",
+                        render: (data) => (
+                            `<a
+                                href='/teacher/class/${data}/schedules'
+                            >
+                                <i class="fas fa-eye"></i>
+                            </a>`
+                        ),
+                    },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        render: (data) => {
+                            return data ? (
+                                `<i class="fas fa-check-circle text-green-500" ></i>`
+                            ) : (
+                                `<i class="fas fa-times-circle text-red-500"></i>`
+                            );
+                        },
+                    }
+                ],
+            });
+        }
+    }, [classrooms]);
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container mt-4">
             <h1 className="text-center mb-4 fs-5">Danh sách lớp học</h1>
 
-            {loading ? (
-                <div className="d-flex justify-content-center">
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                </div>
-            ) : errorMessage ? (
+            {errorMessage ? (
                 <div className="alert alert-danger" role="alert">
                     {errorMessage}
                 </div>
             ) : (
-                <table className="table table-hover table-bordered text-center">
-                    <thead className="thead-dark">
-                        <tr>
-                            <th scope="col">Mã lớp</th>
-                            <th scope="col">Tên lớp</th>
-                            <th scope="col">Tên môn học</th>
-                            <th scope="col">Lịch học</th>
-                            <th scope="col">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {classrooms.map((classroom, index) => (
-                            <tr key={index}>
-                                <td>
-                                    <Link
-                                        to={`/teacher/class/${classroom.class_code}/students`}
-                                    >
-                                        {classroom.class_code}
-                                    </Link>
-                                </td>
-                                <td>{classroom.class_name}</td>
-                                <td>{classroom.subject.subject_name}</td>
-                                <td>
-                                    <Link
-                                        to={`/teacher/class/${classroom.class_code}/schedules`}
-                                    >
-                                        <i className="fas fa-eye"></i>
-                                    </Link>
-                                </td>
-                                <td>
-                                    {classroom.is_active ? (
-                                        <i
-                                            className="fas fa-check-circle"
-                                            style={{
-                                                color: "green",
-                                            }}
-                                        ></i>
-                                    ) : (
-                                        <i
-                                            className="fas fa-times-circle"
-                                            style={{
-                                                color: "red",
-                                            }}
-                                        ></i>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+                <table
+                    id="classroomTable" className="table table-hover table-bordered text-center">
                 </table>
             )}
         </div>
