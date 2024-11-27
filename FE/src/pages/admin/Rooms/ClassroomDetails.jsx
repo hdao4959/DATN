@@ -52,86 +52,95 @@ const ClassRoomDetails = () => {
     const schedules = scheduleData || [];
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h4>Chi Tiết Lớp Học</h4>
-            </div>
-            <div className="card-body">
-                {/* Thông tin lớp học */}
-                <div className="mb-3">
-                    <strong>ID:</strong> {classroom.class_code}
+        <>
+            <div className="card">
+                <div className="card-header">
+                    <h4>Chi Tiết Lớp Học</h4>
                 </div>
-                <div className="mb-3">
-                    <strong>Mã lớp học:</strong> {classroom.class_code}
-                </div>
-                <div className="mb-3">
-                    <strong>Tên lớp học:</strong> {classroom.class_name}
-                </div>
-                <div className="mb-3">
-                    <strong>Mô tả:</strong>{" "}
-                    {classroom.description ?? "Không có"}
-                </div>
-                <div className="mb-3">
-                    <strong>Mã môn học:</strong>{" "}
-                    {classroom.subject.subject_code}
-                </div>
-                <div className="mb-3">
-                    <strong>Môn học:</strong> {classroom.subject.subject_name}
-                </div>
-                <div className="mb-3">
-                    <strong>Ngày tạo:</strong>{" "}
-                    {new Date(classroom.created_at).toLocaleDateString()}
-                </div>
-                <div className="mb-3">
-                    <strong>Giảng viên:</strong> {classroom.teacher.full_name}
-                </div>
-                <div className="mb-3">
-                    <strong>Mã giảng viên:</strong>{" "}
-                    {classroom.teacher.user_code}
-                </div>
-
-                <div className="mt-4">
-                    <strong>Lịch Học:</strong>
-                    {schedules.length > 0 ? (
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Ngày</th>
-                                    <th>Ca học</th>
-                                    <th>Phòng học</th>
-                                    <th>Thời gian</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {schedules.map((schedule, index) => {
-                                    const session = JSON.parse(
-                                        schedule.session.value
-                                    );
-                                    return (
-                                        <tr key={index}>
-                                            <td>
-                                                {new Date(
-                                                    schedule.date
-                                                ).toLocaleDateString()}
-                                            </td>
-                                            <td>
-                                                {schedule.session.cate_name}
-                                            </td>
-                                            <td>{schedule.room.cate_name}</td>
-                                            <td>
-                                                {session.start} - {session.end}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>Không có lịch học</p>
-                    )}
+                <div className="card-body">
+                    {/* Thông tin lớp học */}
+                    <div className="mb-3">
+                        <strong>ID:</strong> {classroom.class_code}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Mã lớp học:</strong> {classroom.class_code}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Tên lớp học:</strong> {classroom.class_name}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Mô tả:</strong>{" "}
+                        {classroom.description ?? "Không có"}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Mã môn học:</strong>{" "}
+                        {classroom.subject.subject_code}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Môn học:</strong>{" "}
+                        {classroom.subject.subject_name}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Ngày tạo:</strong>{" "}
+                        {new Date(classroom.created_at).toLocaleDateString()}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Giảng viên:</strong>{" "}
+                        {classroom.teacher
+                            ? classroom.teacher.full_name
+                            : "Chưa cập nhật"}
+                    </div>
+                    <div className="mb-3">
+                        <strong>Mã giảng viên:</strong>{" "}
+                        {classroom.teacher
+                            ? classroom.teacher.user_code
+                            : "Chưa cập nhật"}
+                    </div>
                 </div>
             </div>
-        </div>
+            <div className="card">
+                <div className="card-header">
+                    <h4>Lịch học</h4>
+                </div>
+                {schedules.length > 0 ? (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Tên lớp</th>
+                                <th>Ca học</th>
+                                <th>Phòng học</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {schedules.map((schedule, index) => {
+                                const session = JSON.parse(
+                                    schedule.session.value
+                                );
+                                return (
+                                    <tr key={index}>
+                                        <td>
+                                            {new Date(
+                                                schedule.date
+                                            ).toLocaleDateString()}
+                                        </td>
+                                        <td>{schedule.classroom.cate_name}</td>
+                                        <td>{schedule.session.cate_name}</td>
+                                        <td>{schedule.room.cate_name}</td>
+                                        <td>
+                                            {session.start} - {session.end}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p className="card-footer text-danger">Không có lịch học</p>
+                )}
+            </div>
+        </>
     );
 };
 
