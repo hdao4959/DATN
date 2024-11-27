@@ -184,6 +184,12 @@ const ClassRoomsList = () => {
                                         title="Xem điểm danh">
                                         Xem điểm danh
                                     </button>
+                                     <button class="btn btn-warning btn-sm"  >
+                                        <a href="/admin/classrooms/view/${row.class_code}">
+               Xem thông tin lớp
+            </a>
+                                    </button>
+                                   
                                     <i class="fas fa-trash delete-btn" 
                                         style="cursor: pointer; color: red; font-size: 20px;" 
                                         data-id="${row.class_code}" 
@@ -271,70 +277,6 @@ const ClassRoomsList = () => {
                     )}
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>
-                        {/* <table className="display table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Mã lớp học</th>
-                                        <th>Tên lớp</th>
-                                        <th>Số lượng sinh viên</th>
-                                        <th>Môn học</th>
-                                        <th>Trạng thái</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {classrooms.map((it, index) => (
-                                        <tr key={index} className="odd text-center">
-                                            <Link
-                                                to={`/admin/classrooms/view/${it.class_code}`}
-                                                style={{ display: "contents" }}
-                                            >
-                                                <td>{it.id}</td>
-                                                <td>{it.class_code}</td>
-                                                <td>{it.class_name}</td>
-                                                <td>30</td>
-                                                <td>LTWE</td>
-                                                <td>
-                                                    {it.is_active == true ? (
-                                                        <i
-                                                            className="fas fa-check-circle"
-                                                            style={{
-                                                                color: "green",
-                                                            }}
-                                                        ></i>
-                                                    ) : (
-                                                        <i
-                                                            className="fas fa-times-circle"
-                                                            style={{
-                                                                color: "red",
-                                                            }}
-                                                        ></i>
-                                                    )}
-                                                </td>
-                                            </Link>
-                                            <td>
-                                                <div>
-                                                    <Link
-                                                        to={`/admin/classrooms/edit/${it.class_code}`}
-                                                    >
-                                                        <i className="fas fa-edit"></i>
-                                                    </Link>
-                                                    <i
-                                                        className="fas fa-trash ml-6"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                it.class_code
-                                                            )
-                                                        }
-                                                        disabled={isLoading}
-                                                    ></i>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table> */}
                     </div>
                 </div>
             </div>
