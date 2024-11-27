@@ -35,7 +35,7 @@ class UpdateTeacherRequest extends FormRequest
             'nation' => 'required|max:50',
             'major_code' => 'required|exists:categories,cate_code',
             'narrow_major_code' => 'nullable|exists:categories,cate_code',
-            'updated_at' =>'required|date_format:Y-m-d H:i:s',
+            // 'updated_at' =>'required|date_format:Y-m-d H:i:s',
         ];
     }
 
@@ -83,8 +83,8 @@ class UpdateTeacherRequest extends FormRequest
             'major_code.required' => 'Bạn chưa chọn chuyên ngành!',
             'major_code.exists' => 'Chuyên ngành này không tồn tại!',
             'narrow_major_code.exists' => 'Chuyên ngành con này không tồn tại!',
-            'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
-            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+            // 'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
+            // 'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
         ];
     }
     protected $stopOnFirstFailure = true;

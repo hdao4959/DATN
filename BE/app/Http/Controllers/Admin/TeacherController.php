@@ -148,27 +148,28 @@ class TeacherController extends Controller
      */
     public function update(UpdateTeacherRequest $request, string $teacher_code)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             $data = $request->validated();
-
-            $teacher = User::where('user_code', $teacher_code)->first();
+            // return response()->json($data);
+            $teacher = User::where('user_code', $teacher_code)->lockForUpdate()->first();
 
             if(!$teacher){
                 return $this->handleInvalidId();
             }
 
-            if($teacher->updated_at->toDateTimeString() !== $data['updated_at']){
-                return $this->handleConflict();
-            }
+            // if($teacher->updated_at->toDateTimeString() !== $data['updated_at']){
+            //     return $this->handleConflict();
+            // }
 
             if(!isset($data['narrow_major_code'])){
                 $data['narrow_major_code'] = null;
             }
 
             $teacher->update($data);
+            DB::commit();
             return response()->json([
-                'status' => true, 
+                'status' => true,
                 'message' => 'Chỉnh sửa thông tin giảng viên thành công!'
             ],200);
         } catch (\Throwable $th) {
@@ -180,11 +181,11 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DeleteTeacherRequest $request,  $teacher_code)
+    public function destroy($teacher_code)
     {
         DB::beginTransaction();
         try {
-            $data = $request->validated();
+            // $data = $request->validated();
 
             $teacher = User::where('user_code', $teacher_code)->lockForUpdate()->first();
 
@@ -192,12 +193,12 @@ class TeacherController extends Controller
                 return $this->handleInvalidId();
             }
 
-            if ($teacher->updated_at->toDateTimeString() !== $data['updated_at']) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Bản ghi này đã có cập nhật trước đó, vui lòng cập nhật lại trang!'
-                ], 409);
-            }
+            // if ($teacher->updated_at->toDateTimeString() !== $data['updated_at']) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Bản ghi này đã có cập nhật trước đó, vui lòng cập nhật lại trang!'
+            //     ], 409);
+            // }
 
             $teacher->delete();
             DB::commit();
