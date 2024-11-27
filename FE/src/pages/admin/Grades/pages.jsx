@@ -177,9 +177,6 @@ const ShowGrades = ({ classCode, onClose }) => {
                             ) : (
                                 <p>Đang tải dữ liệu...</p>
                             )}
-                            {selectedGrade?.score && selectedGrade.score.length === 0 && (
-                                <p>Chưa có dữ liệu</p>
-                            )}
                         </div>
                         <div className="modal-footer">
                             <button

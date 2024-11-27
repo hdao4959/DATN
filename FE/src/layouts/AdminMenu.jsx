@@ -163,7 +163,7 @@ const AdminMenu = () => {
             <li className="nav-item ">
                 <a data-bs-toggle="collapse" href="#categories">
                     <i className="fas fa-layer-group" />
-                    <p>Quản lý danh mục</p>
+                    <p>Danh mục bài viết</p>
                     <span className="caret" />
                 </a>
                 <div className="collapse" id="categories">
