@@ -237,7 +237,52 @@ const ClassRoomsList = () => {
                 }
             );
         }
+        $('#AutoSchedule').off('click').on('click', handleAutoSchedule);
+
     }, [classrooms]);
+
+    const { mutate: autoSchedule, isLoading: isAutoScheduling } = useMutation({
+        mutationKey: ["AUTO_SCHEDULE_CLASSES"],
+        mutationFn: async () => {
+            const payload = {
+                startDates: ["2024-12-2", "2024-12-3"],
+            };
+            // Bước 1: Gọi API getListClassByRoomAndSession
+            const res1 = await api.post("/getListClassByRoomAndSession", payload, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            const res2 = await api.get("/addStudent", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            const res3 = await api.get("/generateSchedule", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            return { res1, res2, res3 };
+
+        },
+        onSuccess: (response) => {
+            toast.success("Tạo lịch tự động thành công!");
+            console.log("Response:", response);
+            refetch(); // Refetch danh sách lớp học
+        },
+        onError: (error) => {
+            console.error("Error:", error);
+            toast.error("Có lỗi xảy ra khi tạo lịch tự động.");
+        },
+    });
+
+    function handleAutoSchedule() {
+        autoSchedule();
+    }
 
     // if (!isLoadingClasses) return <div><div className='spinner-border' role='status'></div><p>Đang tải dữ liệu</p></div>;
     return (
@@ -249,8 +294,11 @@ const ClassRoomsList = () => {
             </div>
 
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Quản lý lớp học</h4>
+                    <div>
+                        <button className='btn btn-primary ml-3' id="AutoSchedule"><i class="fa fa-calendar"></i> Tạo tự động</button>
+                    </div>
                 </div>
                 {selectedClassCodeForGrades && (
                     <ShowGrades
@@ -266,8 +314,8 @@ const ClassRoomsList = () => {
                 )}
                 {(selectedClassCodeForGrades ||
                     selectedClassCodeForAttendances) && (
-                    <div className="modal-backdrop fade show"></div>
-                )}
+                        <div className="modal-backdrop fade show"></div>
+                    )}
                 <div className="card-body">
                     {isLoadingClasses && (
                         <>

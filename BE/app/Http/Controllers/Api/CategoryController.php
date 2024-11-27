@@ -969,19 +969,25 @@ class CategoryController extends Controller
             // Lặp tạo ngày cho đến khi đạt đủ total_sessions
             while ($currentSession < $totalSessions) {
                 if (in_array($startDate->dayOfWeek, $weekDays)) {
-                    // Nếu ngày hiện tại nằm trong các ngày cần tạo (theo tuần)
-                    $createdDates[] = $startDate->format('Y-m-d');
+                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
+                    $exists = DB::table('schedules')
+                        ->where('date', $startDate->format('Y-m-d'))
+                        ->where('class_code', $item->class_code)
+                        ->where('room_code', $item->room_code ?? null)
+                        ->where('session_code', $item->session_code)
+                        ->exists();
 
-                    // Chuẩn bị dữ liệu để thêm vào DB
-                    $insertData[] = [
-                        'date' => $startDate->format('Y-m-d'),
-                        'room_code' => $item->room_code ?? null,
-                        'classroom_code' => $item->classroom_code ?? null,
-                        'class_code' => $item->class_code,
-                        'session_code' => $currentSession + 1 // Mã buổi học (nếu cần)
-                    ];
+                    if (!$exists) {
+                        $createdDates[] = $startDate->format('Y-m-d');
+                        $insertData[] = [
+                            'date' => $startDate->format('Y-m-d'),
+                            'room_code' => $item->room_code ?? null,
+                            'class_code' => $item->class_code,
+                            'session_code' => $item->session_code
+                        ];
 
-                    $currentSession++;
+                        $currentSession++;
+                    }
                 }
 
                 // Tiến đến ngày tiếp theo
@@ -1131,9 +1137,50 @@ class CategoryController extends Controller
                 $classRoomIndex++;
             }
         }
-
+        $this->updateClassroomCodes();
         return response()->json(['message' => 'Students assigned to classrooms successfully']);
     }
+
+
+    public function updateClassroomCodes()
+{
+    // Lấy danh sách các classrooms, sắp xếp theo `subject_code` và `id`
+    $classrooms = DB::table('classrooms')
+        ->whereNotNull('subject_code')
+        ->orderBy('subject_code')
+        ->orderBy('id')
+        ->get();
+
+    // Mảng lưu số thứ tự lớp học cho mỗi môn
+    $subjectCounters = [];
+
+    foreach ($classrooms as $classroom) {
+        $subjectCode = $classroom->subject_code;
+
+        // Nếu chưa tồn tại số thứ tự cho môn này, khởi tạo
+        if (!isset($subjectCounters[$subjectCode])) {
+            $subjectCounters[$subjectCode] = 1;
+        }
+
+        // Tạo class_code và class_name mới
+        $newClassCode = "{$subjectCode}_{$subjectCounters[$subjectCode]}";
+        $newClassName = "Lớp_{$classroom->subject_code}_{$subjectCounters[$subjectCode]}";
+
+        // Cập nhật `class_code` và `class_name` vào DB
+        DB::table('classrooms')
+            ->where('id', $classroom->id)
+            ->update([
+                'class_code' => $newClassCode,
+                'class_name' => $newClassName,
+            ]);
+
+        // Tăng số thứ tự cho môn học
+        $subjectCounters[$subjectCode]++;
+    }
+
+    return response()->json(['message' => 'Classrooms updated successfully']);
+}
+
 
 
     public function updateClassroomForSubject($classRoom, $subject)
@@ -1189,6 +1236,8 @@ class CategoryController extends Controller
         $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
         $index = 1;
         $createdClassrooms = [];
+        // return response()->json([$sessions]);
+
         foreach ($schoolRoom as $room) {
             foreach ($sessions as $session) {
                 foreach ($startDates as $startDate) {

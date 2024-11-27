@@ -64,7 +64,9 @@ class ClassroomController extends Controller
                     $query->select('subject_code', 'subject_name');
                 }
             ])
-                ->where('is_active', true)->select('class_code', 'class_name', 'subject_code')->paginate($perPage);
+                ->where('is_active', true)->select('class_code', 'class_name', 'subject_code')
+                ->orderBy('subject_code','DESC')
+                ->paginate($perPage);
             return response()->json([
                 'status' => true,
                 'classrooms' => $classrooms

@@ -125,7 +125,7 @@ const ClassRoomDetails = () => {
                                                 schedule.date
                                             ).toLocaleDateString()}
                                         </td>
-                                        <td>{schedule.classroom.cate_name}</td>
+                                        <td>{schedule.classroom.class_name}</td>
                                         <td>{schedule.session.cate_name}</td>
                                         <td>{schedule.room.cate_name}</td>
                                         <td>

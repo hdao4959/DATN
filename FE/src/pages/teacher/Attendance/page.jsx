@@ -19,7 +19,7 @@ const AttendanceTeacher = () => {
             return response?.data;
         }
     });
-
+    const classe = classes || [];
     const { data: attendanceData, refetch: fetchAttendanceData, isLoading: isLoadingAtt } = useQuery({
         queryKey: ["ATTENDANCE", selectedClassCode],
         queryFn: async () => {
@@ -175,7 +175,7 @@ const AttendanceTeacher = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {classes?.map((classItem) => (
+                                {classe?.map((classItem) => (
                                     <React.Fragment key={classItem.id}>
                                         <tr key={classItem.id}>
                                             <td>{classItem.class_code}</td>

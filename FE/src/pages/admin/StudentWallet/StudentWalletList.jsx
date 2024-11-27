@@ -171,6 +171,7 @@ const StudentWalletList = () => {
             if (selectedUserCodes.length == 0) {
                 return toast.error('Vui lòng chọn sinh viên muốn gửi mail')
             }
+            
             await api.get(`/send-email2`, {
                 params: { UserCode: selectedUserCodes },
             });
@@ -189,50 +190,60 @@ const StudentWalletList = () => {
 
         return userCodes;
     }
-
+    const [isLoading, setIsLoading] = useState(false); // State loading
+    const { mutate } = useMutation({
+        mutationKey: ["ADD_FEES_ALL"],
+        mutationFn: async () => {
+            return await api.post("/fees");
+        },
+        onSuccess: () => {
+            setIsLoading(false); // Bắt đầu loading
+            toast.success("Tạo học phí cho kỳ mới thành công");
+            refetch(); // Làm mới danh sách
+        },
+        onError: (error) => {
+            const msg = formatErrors(error);
+            toast.error(msg || "Có lỗi xảy ra");
+        },
+        onSettled: () => {
+            setIsLoading(false); // Tắt loading sau khi hoàn thành
+        },
+    });
     function handleCreateFee() {
-        
-        const [isLoading, setIsLoading] = useState(false); // State loading
-    
-        const { mutate } = useMutation({
-            mutationKey: ["ADD_FEES_ALL"],
-            mutationFn: async (data) => {
-                setIsLoading(true); // Bắt đầu loading
-                return await api.post("/fees", data);
-            },
-            onSuccess: () => {
-                toast.success("Tạo học phí cho kỳ mới thành công");
-                refetch(); // Làm mới danh sách
-            },
-            onError: (error) => {
-                const msg = formatErrors(error);
-                toast.error(msg || "Có lỗi xảy ra");
-            },
-            onSettled: () => {
-                setIsLoading(false); // Tắt loading sau khi hoàn thành
-            },
-        });
-
-        if (isLoading ) {
-            return (
-                <div
-                    className="d-flex justify-content-center align-items-center"
-                    style={{ height: "100vh" }}
-                >
-                    {/* Bootstrap Spinner */}
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            );
-        }
+        setIsLoading(true); // Bắt đầu loading
+        console.log(isLoading);
+        mutate();
     }
-    
-    
+
+
 
     return (
         <>
-        
+            {isLoading &&
+                (
+                    <>
+                        <div
+                            className="modal fade show d-block text-center my-auto d-flex justify-content-center align-items-center"
+                            tabIndex="-1"
+                            aria-labelledby="gradesModalLabel"
+                            role="dialog"
+                        >
+                            <div
+                                className=""
+
+                            >
+                                {/* Bootstrap Spinner */}
+
+                                <div className="spinner-border text-primary" role="status">
+
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal-backdrop fade show"></div>
+                    </>
+                )
+            }
             <div className="card">
                 <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Học phí sinh viên</h4>
