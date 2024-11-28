@@ -18,8 +18,7 @@ class Classroom extends Model
         'description',
         'is_active',
         'subject_code',
-        'user_code',
-        'score'
+
     ];
 
     protected $casts = [
@@ -38,9 +37,7 @@ class Classroom extends Model
         return $this->belongsTo(Subject::class, 'subject_code', 'subject_code');
     }
 
-    public function teacher(){
-        return $this->belongsTo(User::class, 'user_code', 'user_code');
-    }
+
 
 
     public function users(){
