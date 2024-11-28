@@ -1052,8 +1052,8 @@ class CategoryController extends Controller
                             'room_code' => $item->room_code ?? null,
                             'class_code' => $item->class_code,
                             'session_code' => $item->session_code,
-                            'teacher_code' => $item->teacher_code
-
+                            'teacher_code' => $item->teacher_code,
+                            'type' => 'study'
                         ];
 
                         $currentSession++;
@@ -1063,6 +1063,41 @@ class CategoryController extends Controller
                 // Tiến đến ngày tiếp theo
                 $startDate->addDay();
             }
+            // Sau khi hoàn tất các buổi học, tạo 3 buổi thi cách 1 tuần
+            $examDays = [];
+            $startDate->addWeek(); // Cách 1 tuần sau buổi học cuối cùng
+            $examCount = 0; // Biến đếm số buổi thi
+
+            while ($examCount < 3) {
+                if (in_array($startDate->dayOfWeek, $weekDays)) {
+                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
+                    $exists = DB::table('schedules')
+                        ->where('date', $startDate->format('Y-m-d'))
+                        ->where('class_code', $item->class_code)
+                        ->where('room_code', $item->room_code ?? null)
+                        ->where('session_code', $item->session_code)
+                        ->exists();
+
+                    if (!$exists) {
+                        $examDays[] = $startDate->format('Y-m-d');
+                        $insertData[] = [
+                            'date' => $startDate->format('Y-m-d'),
+                            'room_code' => $item->room_code ?? null,
+                            'class_code' => $item->class_code,
+                            'session_code' => $item->session_code,
+                            'teacher_code' => $item->teacher_code,
+                            'type' => 'exam' // Loại buổi thi
+                        ];
+
+                        $examCount++;
+                    }
+                }
+
+                // Tiến đến ngày tiếp theo
+                $startDate->addDay();
+            }
+
+            $createdDates = array_merge($createdDates, $examDays); // Gộp các ngày đã tạo
         }
 
         // Chèn dữ liệu vào bảng schedules
@@ -1464,14 +1499,14 @@ class CategoryController extends Controller
             $subjectCounters[$subjectCode][$courseCode][$majorCode]++;
         }
         DB::table('classrooms')
-        ->whereNotExists(function ($query) {
-            $query->select(DB::raw(1))
-                ->from('classroom_user')
-                ->whereColumn('classroom_user.class_code', 'classrooms.class_code');
-        })
-        ->orWhereNull('classrooms.subject_code')
-        ->delete();
-    
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('classroom_user')
+                    ->whereColumn('classroom_user.class_code', 'classrooms.class_code');
+            })
+            ->orWhereNull('classrooms.subject_code')
+            ->delete();
+
         return response()->json(['message' => 'Classrooms updated successfully']);
     }
 
@@ -1520,51 +1555,71 @@ class CategoryController extends Controller
 
     public function getListClassByRoomAndSession(Request $request)
     {
-        $startDates = $request->input('startDates');
-        if (!$startDates || !is_array($startDates)) {
-            return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
-        }
-        $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
-        $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
-        $index = 1;
-        $createdClassrooms = [];
-        // return response()->json([$sessions]);
+        try {
+            $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
+            $startDates = []; // Mảng chứa các ngày cần lấy
 
-        foreach ($schoolRoom as $room) {
-            foreach ($sessions as $session) {
-                foreach ($startDates as $startDate) {
-                    try {
-                        $date = Carbon::parse($startDate);
-                        $timestamp = $date->timestamp;
-                    } catch (\Exception $e) {
-                        return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
-                    }
+            // Thêm ngày hiện tại vào mảng
+            $startDates[] = $startDate->format('Y-m-d');
 
-                    $classroom = Classroom::firstOrCreate([
-                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'class_name' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'is_active' => true
-                    ]);
+            // Lấy ngày tiếp theo, bỏ Chủ nhật
+            $startDate->addDay(); // Thêm 1 ngày
 
-                    $createdClassrooms[] = $classroom;
-
-                    Schedule::firstOrCreate([
-                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'room_code' => $room->cate_code,
-                        'session_code' => $session->cate_code,
-                        'date' => $date->format('Y-m-d')
-                    ]);
-
-                    // return dd($dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index);
-                }
+            // Kiểm tra xem ngày tiếp theo có phải là Chủ nhật không
+            if ($startDate->dayOfWeek != Carbon::SUNDAY) {
+                $startDates[] = $startDate->format('Y-m-d');
+            } else {
+                // Nếu là Chủ nhật thì thêm 1 ngày nữa (là thứ 2 tuần sau)
+                $startDate->addDay();
+                $startDates[] = $startDate->format('Y-m-d');
             }
-            $index++;
-        }
+            if (!$startDates || !is_array($startDates)) {
+                return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
+            }
+            $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
+            $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
+            $index = 1;
+            $createdClassrooms = [];
+            // return response()->json([$sessions]);
 
-        return response()->json([
-            'count' => count($createdClassrooms),
-            'startDates' => $startDates
-        ]);
+            foreach ($schoolRoom as $room) {
+                foreach ($sessions as $session) {
+                    foreach ($startDates as $startDate) {
+                        try {
+                            $date = Carbon::parse($startDate);
+                            $timestamp = $date->timestamp;
+                        } catch (\Exception $e) {
+                            return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
+                        }
+
+                        $classroom = Classroom::firstOrCreate([
+                            'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'class_name' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'is_active' => true
+                        ]);
+
+                        $createdClassrooms[] = $classroom;
+
+                        Schedule::firstOrCreate([
+                            'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'room_code' => $room->cate_code,
+                            'session_code' => $session->cate_code,
+                            'date' => $date->format('Y-m-d')
+                        ]);
+
+                        // return dd($dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index);
+                    }
+                }
+                $index++;
+            }
+
+            return response()->json([
+                'count' => count($createdClassrooms),
+                'startDates' => $startDates
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => true, 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động'], 400);
+        }
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)

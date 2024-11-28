@@ -23,7 +23,7 @@ const ClassRoomsList = () => {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [currentClassCode, setCurrentClassCode] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
-
+    const [startDate, setStartDate] = useState("");
     const {
         data,
         refetch,
@@ -245,36 +245,53 @@ const ClassRoomsList = () => {
     const { mutate: autoSchedule, isLoading: isAutoScheduling } = useMutation({
         mutationKey: ["AUTO_SCHEDULE_CLASSES"],
         mutationFn: async () => {
-            const payload = {
-                startDates: ["2024-12-2", "2024-12-3"],
-            };
-            // Bước 1: Gọi API getListClassByRoomAndSession
-            const res1 = await api.post("/getListClassByRoomAndSession", payload, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res2 = await api.get("/addStudent", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res3 = await api.get("/addTeacher", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res4 = await api.get("/generateSchedule", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            return { res1, res2, res3, res4};
+            if (!startDate) {
+                toast.error("Vui lòng chọn ngày bắt đầu.");
+            }
+            try {
 
+                // Bước 1: Gọi API getListClassByRoomAndSession
+                const res1 = await api.post("/getListClassByRoomAndSession", startDate, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res1.data.error) {
+                    return toast.error(res1.data.message || "Có lỗi xảy ra khi lấy thông tin lớp học.");
+                }
+                const res2 = await api.get("/addStudent", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res2.data.error) {
+                    return toast.error(res2.data.message || "Có lỗi xảy ra khi thêm sinh viên vào lớp học.");
+                }
+                const res3 = await api.get("/addTeacher", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res3.data.error) {
+                    return toast.error(res3.data.message || "Có lỗi xảy ra khi thêm giảng viên vào lớp học.");
+                }
+                const res4 = await api.get("/generateSchedule", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res4.data.error) {
+                    return toast.error(res4.data.message || "Có lỗi xảy ra khi tạo lịch học và lịch thi.");
+                }
+                return { res1, res2, res3, res4 };
+
+            } catch (error) {
+                return toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
+            }
         },
         onSuccess: (response) => {
             toast.success("Tạo lịch tự động thành công!");
@@ -303,8 +320,16 @@ const ClassRoomsList = () => {
             <div className="card">
                 <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Quản lý lớp học</h4>
-                    <div>
-                        <button className='btn btn-primary ml-3' id="AutoSchedule"><i class="fa fa-calendar"></i> Tạo tự động</button>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            placeholder="Chọn ngày bắt đầu"
+                            min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
+                        />
+                        <button className='btn btn-primary w-100' id="AutoSchedule"><i class="fa fa-calendar"></i> Tạo tự động</button>
                     </div>
                 </div>
                 {selectedClassCodeForGrades && (
