@@ -58,19 +58,64 @@ class ClassroomController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
-            $classrooms = Classroom::with([
-                'subject' => function ($query) {
-                    $query->select('subject_code', 'subject_name');
+            // $perPage = $request->input('per_page', 10);
+            $classrooms = Classroom::with(['subject' => function($query){
+                                $query->select('subject_code', 'subject_name');
+
+                            },
+                            'teacher' => function($query) {
+                                $query->select('user_code', 'full_name');
+                                
+                            },
+                            'users' => function($query) {
+                                $query->select('users.user_code', 'users.full_name');
+                                
+                            },
+                            'schedules.room' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            },
+                            'schedules.session' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            }])->get(['class_code', 'class_name', 'user_code', 'is_active', 'subject_code']);
+            $result = $classrooms->map(function($classroom) {
+                $firstSchedule = $classroom->schedules->first(); // Chỉ lấy lịch đầu tiên
+                $students = $classroom->users;
+                $totalStudent = $students->count();
+            
+                // Nếu không có lịch, trả về giá trị mặc định
+                if (!$firstSchedule) {
+                    $scheduleData = [
+                        'room_name' => null,
+                        'date' => null,
+                        'session_name' => null,
+                        'value' => null,
+                    ];
+                } else {
+                    $studyTime = json_decode($firstSchedule->session['value'], true); // Decode JSON
+                    $scheduleData = [
+                        'room_name' => $firstSchedule->room->cate_name ?? null,
+                        'session_name' => $firstSchedule->session->cate_name ?? null,
+                        'value' => $studyTime ?? null,
+                    ];
                 }
-            ])
-                ->where('is_active', true)->select('class_code', 'class_name', 'subject_code','user_code')
-                ->orderBy('subject_code','DESC')
-                ->paginate($perPage);
-            return response()->json([
-                'status' => true,
-                'classrooms' => $classrooms
-            ], 200);
+            
+                return [
+                    'class_code' => $classroom->class_code ?? null,
+                    'class_name' => $classroom->class_name ?? null,
+                    'subject_name' => $classroom->subject->subject_name ?? null,
+                    'teacher_name' => $classroom->teacher->full_name ?? null,
+                    'total_student' => $totalStudent,
+                    'schedule' => $scheduleData,
+                ];
+            });
+            if($classrooms->isEmpty()){
+                return response()->json(
+                    ['message' => "Không có lớp học nào!"], 204
+                );
+            }
+            return response()->json($result,200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
