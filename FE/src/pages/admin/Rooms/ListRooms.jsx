@@ -249,9 +249,12 @@ const ClassRoomsList = () => {
                 toast.error("Vui lòng chọn ngày bắt đầu.");
             }
             try {
-
+                const payload = {
+                    startDate: startDate // hoặc format lại startDate nếu cần
+                };
+                
                 // Bước 1: Gọi API getListClassByRoomAndSession
-                const res1 = await api.post("/getListClassByRoomAndSession", startDate, {
+                const res1 = await api.post("/getListClassByRoomAndSession", payload, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         "Content-Type": "application/json",

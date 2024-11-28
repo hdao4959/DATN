@@ -984,6 +984,7 @@ class CategoryController extends Controller
                 'classrooms.class_code',
                 'classrooms.class_name',
                 'classrooms.subject_code',
+                'schedules.session_code',
                 'classrooms.user_code'
             )
             ->get()
@@ -1202,50 +1203,6 @@ class CategoryController extends Controller
     //     return $data;
     // }
 
-    // public function addStudent()
-    // {
-    //     // return $this->addTeacher();
-
-    //     $classRooms = $this->getClassrooms();
-    //     $majors = $this->getListByMajor();
-    //     $classRoomIndex = 0;
-    //     foreach ($majors as $major) {
-    //         foreach ($major['subjects'] as $subject) {
-    //             foreach ($subject['students'] as $student) {
-    //                 $assigned = false;
-    //                 while ($classRoomIndex < count($classRooms)) {
-    //                     $classRoom = $classRooms[$classRoomIndex];
-    //                     $currentStudentCount = DB::table('classroom_user')
-    //                         ->where('class_code', $classRoom->class_code)
-    //                         ->count();
-    //                     if ($currentStudentCount < intval($classRoom->value)) {
-
-    //                         if ($this->canAssignStudentToClass($student, $classRoom)) {
-
-    //                             DB::table('classroom_user')->insert([
-    //                                 'class_code' => $classRoom->class_code,
-    //                                 'user_code' => $student['user_code']
-    //                             ]);
-
-    //                             $assigned = true;
-    //                             break;
-    //                         }
-    //                     } else {
-    //                         // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
-    //                         $classRoomIndex++;
-    //                     }
-    //                 }
-    //                 if (!$assigned) {
-    //                     continue;
-    //                 }
-    //             }
-    //             $classRoomIndex++;
-    //         }
-    //     }
-    //     // return response()->json(['message' => 'Students assigned to classrooms successfully']);
-    //     // $this->addTeacher();
-    // }
-
     public function addStudent()
     {
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
@@ -1273,24 +1230,35 @@ class CategoryController extends Controller
                 foreach ($subject['students'] as $student) {
                     $assigned = false;
 
+                    // Kiểm tra tất cả các lớp học cho môn này
                     while ($classRoomIndex < count($classRooms)) {
                         $classRoom = $classRooms[$classRoomIndex];
                         $currentStudentCount = $classroomStudentCounts[$classRoom->class_code];
                         $classCapacity = intval($classRoom->value);
 
+                        // Nếu lớp chưa đầy, kiểm tra sinh viên có thể học lớp này không
                         if ($currentStudentCount < $classCapacity) {
-                            if ($this->canAssignStudentToClass($student, $classRoom)) {
-                                // Thêm dữ liệu vào batch insert
-                                $batchInsertData[] = [
-                                    'class_code' => $classRoom->class_code,
-                                    'user_code' => $student['user_code'],
-                                ];
+                            // Kiểm tra không trùng ca học trong ngày
+                            $existingSchedule = DB::table('schedules')
+                                ->where('class_code', $classRoom->class_code)
+                                ->where('date', '=', $student['semester'])
+                                ->where('session_code', '=', $classRoom->session_code)
+                                ->exists();
 
-                                // Cập nhật số lượng sinh viên hiện tại
-                                $classroomStudentCounts[$classRoom->class_code]++;
-                                $this->updateClassroomForSubject($classRoom, $subject);
-                                $assigned = true;
-                                break;
+                            if (!$existingSchedule) {
+                                if ($this->canAssignStudentToClass($student, $classRoom)) {
+                                    // Thêm dữ liệu vào batch insert
+                                    $batchInsertData[] = [
+                                        'class_code' => $classRoom->class_code,
+                                        'user_code' => $student['user_code'],
+                                    ];
+
+                                    // Cập nhật số lượng sinh viên hiện tại
+                                    $classroomStudentCounts[$classRoom->class_code]++;
+                                    $this->updateClassroomForSubject($classRoom, $subject);
+                                    $assigned = true;
+                                    break;
+                                }
                             }
                         } else {
                             // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
@@ -1299,6 +1267,7 @@ class CategoryController extends Controller
                     }
 
                     if (!$assigned) {
+                        // Nếu không gán được sinh viên vào lớp hiện tại, tiếp tục vòng lặp
                         continue;
                     }
                 }
@@ -1313,6 +1282,75 @@ class CategoryController extends Controller
 
         return response()->json(['message' => 'Students assigned to classrooms successfully']);
     }
+
+
+    // public function addStudent()
+    // {
+    //     $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
+    //     $majors = $this->getListByMajor();   // Lấy danh sách sinh viên theo chuyên ngành
+
+    //     // Tạo một bộ nhớ tạm cho số lượng sinh viên đã gán vào mỗi lớp
+    //     $classroomStudentCounts = DB::table('classroom_user')
+    //         ->select('class_code', DB::raw('COUNT(*) as current_count'))
+    //         ->groupBy('class_code')
+    //         ->pluck('current_count', 'class_code')
+    //         ->toArray();
+
+    //     // Gán số lượng hiện tại là 0 nếu lớp chưa có dữ liệu
+    //     foreach ($classRooms as $classRoom) {
+    //         if (!isset($classroomStudentCounts[$classRoom->class_code])) {
+    //             $classroomStudentCounts[$classRoom->class_code] = 0;
+    //         }
+    //     }
+
+    //     $classRoomIndex = 0;
+    //     $batchInsertData = []; // Lưu dữ liệu batch insert
+
+    //     foreach ($majors as $major) {
+    //         foreach ($major['subjects'] as $subject) {
+    //             foreach ($subject['students'] as $student) {
+    //                 $assigned = false;
+
+    //                 while ($classRoomIndex < count($classRooms)) {
+    //                     $classRoom = $classRooms[$classRoomIndex];
+    //                     $currentStudentCount = $classroomStudentCounts[$classRoom->class_code];
+    //                     $classCapacity = intval($classRoom->value);
+
+    //                     if ($currentStudentCount < $classCapacity) {
+    //                         if ($this->canAssignStudentToClass($student, $classRoom)) {
+    //                             // Thêm dữ liệu vào batch insert
+    //                             $batchInsertData[] = [
+    //                                 'class_code' => $classRoom->class_code,
+    //                                 'user_code' => $student['user_code'],
+    //                             ];
+
+    //                             // Cập nhật số lượng sinh viên hiện tại
+    //                             $classroomStudentCounts[$classRoom->class_code]++;
+    //                             $this->updateClassroomForSubject($classRoom, $subject);
+    //                             $assigned = true;
+    //                             break;
+    //                         }
+    //                     } else {
+    //                         // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
+    //                         $classRoomIndex++;
+    //                     }
+    //                 }
+
+    //                 if (!$assigned) {
+    //                     continue;
+    //                 }
+    //             }
+    //             $classRoomIndex++;
+    //         }
+    //     }
+
+    //     // Thực hiện batch insert để chèn tất cả sinh viên cùng lúc
+    //     if (!empty($batchInsertData)) {
+    //         DB::table('classroom_user')->insert($batchInsertData);
+    //     }
+
+    //     return response()->json(['message' => 'Students assigned to classrooms successfully']);
+    // }
 
 
     public function addTeacher()
@@ -1576,6 +1614,7 @@ class CategoryController extends Controller
             if (!$startDates || !is_array($startDates)) {
                 return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
             }
+            
             $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
             $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
             $index = 1;
