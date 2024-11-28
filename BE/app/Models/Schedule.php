@@ -14,7 +14,6 @@ class Schedule extends Model
         'room_code',
         'class_code',
         'session_code',
-
         'teacher_code',
         'type',
     ];
