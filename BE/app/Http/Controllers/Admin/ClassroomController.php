@@ -57,7 +57,7 @@ class ClassroomController extends Controller
 
     public function index(Request $request)
     {
-        try {
+        // try {
             // $perPage = $request->input('per_page', 10);
             $classrooms = Classroom::with(['subject' => function($query){
                                 $query->select('subject_code', 'subject_name');
@@ -116,9 +116,9 @@ class ClassroomController extends Controller
                 );
             }
             return response()->json($result,200);
-        } catch (\Throwable $th) {
-            return $this->handleErrorNotDefine($th);
-        }
+        // } catch (\Throwable $th) {
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
 
