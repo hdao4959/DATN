@@ -37,10 +37,10 @@ return new class extends Migration
             $table->string('teacher_code',40)->nullable()->comment('Mã giảng viên');
             $table->foreign('teacher_code')->references('user_code')->on('users')
                     ->restrictOnDelete()->restrictOnUpdate();
+            $table->enum('type', ['study', 'exam'])->default('study');
+            $table->unique(['class_code', 'room_code', 'session_code', 'date', 'type']);
 
-            $table->unique(['class_code', 'room_code', 'session_code', 'date']);
-
-            $table->unique(['room_code', 'session_code', 'teacher_code', 'date']);
+            $table->unique(['room_code', 'session_code', 'teacher_code', 'date' , 'type']);
             $table->index('date');
             $table->timestamps();
         });
