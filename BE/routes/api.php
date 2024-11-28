@@ -63,13 +63,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('automaticClassroom', [CategoryController::class, 'automaticClassroom']);
 Route::post('getListClassByRoomAndSession', [CategoryController::class, 'getListClassByRoomAndSession']);
 Route::get('addStudent', [CategoryController::class, 'addStudent']);
+Route::get('generateSchedule', [CategoryController::class, 'generateSchedule']);
 Route::get('/students/{student_code}', [StudentController::class, 'show']);
 
 Route::apiResource('teachers', TeacherController::class);
 
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
-
+Route::controller(TeacherClassroomController::class)->group(function () {
+    Route::post('/import-scores', 'importScore');
+    Route::get('/export-scores', 'exportScore');
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập
@@ -78,7 +82,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('notifications', [StudentNewsletterController::class, 'showNoti']);
 
     // Route::apiResource('grades', GradesController::class);
     Route::get('grades/{classCode}', [GradesController::class, 'index']);
@@ -107,11 +110,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+            Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
             Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
             Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-             Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
-
+            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
         });
 
         Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
@@ -137,9 +140,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
         Route::apiResource('sessions', SessionController::class);
         Route::apiResource('semesters', SemesterController::class);
-        Route::apiResource('grades', GradesController::class);
-        Route::get('grades', [GradesController::class, 'getByParam']);
-        Route::patch('grades/{id}', [GradesController::class, 'update']);
+
+
+        Route::get('classrooms/{class_code}/grades', [GradesController::class, 'show']);
+        Route::patch('classrooms/{class_code}/grades', [GradesController::class, 'update']);
         Route::apiResource('schoolrooms', SchoolRoomController::class);
         Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
         Route::apiResource('pointheads', PointHeadController::class);
@@ -215,6 +219,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
         Route::apiResource('categories', CategoryController::class);
 
+        Route::controller(TeacherAttendanceController::class)->group(function () {
+            Route::post('/import-attendances', 'importAttendance');
+            Route::get('/export-attendances', 'exportAttendance');
+        });
+
+
+
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -222,6 +233,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/classrooms', 'index');
             Route::get('/classrooms/{class_code}', 'show');
         });
+        Route::get('notifications', [StudentNewsletterController::class, 'showNoti']);
 
 
         // Các route cho lịch học

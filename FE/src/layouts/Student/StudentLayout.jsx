@@ -15,7 +15,7 @@ const StudentLayout = () => {
     const { data: notifications, refetch } = useQuery({
         queryKey: ["LIST_NOTI"],
         queryFn: async () => {
-            const res = await api.get("/notifications");
+            const res = await api.get("student/notifications");
             return res.data;
         },
     });
@@ -135,7 +135,9 @@ const StudentLayout = () => {
                                         aria-expanded="false"
                                     >
                                         <i className="fa fa-bell fs-4" />
-                                        <span className="notification">{notifications?.count || 0}</span>
+                                        <span className="notification">
+                                            {notifications?.count || 0}
+                                        </span>
                                     </a>
                                     <ul
                                         className="dropdown-menu notif-box animated fadeIn"
@@ -143,28 +145,46 @@ const StudentLayout = () => {
                                     >
                                         <li>
                                             <div className="dropdown-title">
-                                                Bạn có {notifications?.count || 0} thông báo
+                                                Bạn có{" "}
+                                                {notifications?.count || 0}{" "}
+                                                thông báo
                                             </div>
                                         </li>
                                         <li>
                                             <div className="notif-scroll scrollbar-outer">
                                                 <div className="notif-center">
-                                                    {notifications?.data?.map((notification) => (
-                                                        <NavLink to={`/student/news/${notification.code}/detail`} key={notification.code}>
-                                                            <div className="notif-icon notif-primary" style={{ minWidth: "40px" }}
+                                                    {notifications?.data?.map(
+                                                        (notification) => (
+                                                            <NavLink
+                                                                to={`/student/news/${notification.code}/detail`}
+                                                                key={
+                                                                    notification.code
+                                                                }
                                                             >
-                                                                <i className="fa fa-bell" />
-                                                            </div>
-                                                            <div className="notif-content">
-                                                                <span className="block">
-                                                                    {notification.title}
-                                                                </span>
-                                                                <span className="time">
-                                                                    {new Date(notification.created_at).toLocaleString()}
-                                                                </span>
-                                                            </div>
-                                                        </NavLink>
-                                                    ))}
+                                                                <div
+                                                                    className="notif-icon notif-primary"
+                                                                    style={{
+                                                                        minWidth:
+                                                                            "40px",
+                                                                    }}
+                                                                >
+                                                                    <i className="fa fa-bell" />
+                                                                </div>
+                                                                <div className="notif-content">
+                                                                    <span className="block">
+                                                                        {
+                                                                            notification.title
+                                                                        }
+                                                                    </span>
+                                                                    <span className="time">
+                                                                        {new Date(
+                                                                            notification.created_at
+                                                                        ).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                            </NavLink>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </li>
@@ -188,7 +208,10 @@ const StudentLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                src={
+                                                    user?.avatar ||
+                                                    "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                }
                                                 alt="..."
                                                 className="avatar-img rounded-circle"
                                             />
@@ -206,7 +229,10 @@ const StudentLayout = () => {
                                                 <div className="user-box">
                                                     <div className="avatar-lg">
                                                         <img
-                                                            src={user?.avatar || "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"}
+                                                            src={
+                                                                user?.avatar ||
+                                                                "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                            }
                                                             alt="image profile"
                                                             className="avatar-img rounded"
                                                         />
@@ -225,7 +251,7 @@ const StudentLayout = () => {
                                                             View Profile
                                                         </a> */}
                                                         <Link
-                                                            to={`account/details/${user.user_code}`}
+                                                            to={`account`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile
@@ -236,7 +262,7 @@ const StudentLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`account/details/${user.user_code}`}
+                                                    to={`account`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >

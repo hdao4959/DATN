@@ -20,6 +20,21 @@ const CreateAccount = () => {
         },
     });
 
+    const { data: semesters } = useQuery({
+        queryKey: ["LIST_SEMESTERS"],
+        queryFn: async () => {
+            const res = await api.get("/listSemestersForForm");
+            return res.data;
+        },
+    });
+    const { data: courses } = useQuery({
+        queryKey: ["LIST_COURSES"],
+        queryFn: async () => {
+            const res = await api.get("/listCoursesForForm");
+            return res.data;
+        },
+    });
+
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
         mutationFn: (data) => {
             return api.post("/admin/students", data);
@@ -34,7 +49,8 @@ const CreateAccount = () => {
     });
 
     const majors = data || [];
-    console.log(majors);
+    const allSemesters = semesters || [];
+    const allCourses = courses || [];
 
     const onSubmit = (data) => {
         mutate(data);
@@ -76,6 +92,38 @@ const CreateAccount = () => {
                                             {errors.full_name && (
                                                 <p className="text-danger">
                                                     {errors.full_name.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <div className="form-group">
+                                            <label htmlFor="exampleFormControlSelect1">
+                                                Khóa học
+                                            </label>
+                                            <select
+                                                className="form-select"
+                                                {...register("course_code", {
+                                                    required:
+                                                        "Vui lòng chọn khóa học",
+                                                })}
+                                            >
+                                                <option value="">
+                                                    Khóa học
+                                                </option>
+                                                {allCourses.map((course) => (
+                                                    <option
+                                                        key={course.cate_code}
+                                                        value={course.cate_code}
+                                                    >
+                                                        {course.cate_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.course_code && (
+                                                <p className="text-danger">
+                                                    {errors.course_code.message}
                                                 </p>
                                             )}
                                         </div>
@@ -344,14 +392,40 @@ const CreateAccount = () => {
                                 <div className="row">
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label htmlFor="email2">
-                                                Ảnh đại diện
+                                            <label htmlFor="exampleFormControlSelect1">
+                                                Kỳ học
                                             </label>
-                                            <input
-                                                type="file"
-                                                className="form-control"
-                                                {...register("avatar")}
-                                            />
+                                            <select
+                                                className="form-select"
+                                                {...register("semester_code", {
+                                                    required:
+                                                        "Vui lòng chọn kỳ học",
+                                                })}
+                                            >
+                                                <option value="">Kỳ học</option>
+                                                {allSemesters.map(
+                                                    (semester) => (
+                                                        <option
+                                                            key={
+                                                                semester.cate_code
+                                                            }
+                                                            value={
+                                                                semester.cate_code
+                                                            }
+                                                        >
+                                                            {semester.cate_name}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                            {errors.semester_code && (
+                                                <p className="text-danger">
+                                                    {
+                                                        errors.semester_code
+                                                            .message
+                                                    }
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -418,7 +492,7 @@ const CreateAccount = () => {
                                 >
                                     Quay lại danh sách
                                 </button> */}
-                                <Link to="/admin/account">
+                                <Link to="/admin/students">
                                     <button className="btn btn-primary">
                                         Quay lại danh sách
                                     </button>

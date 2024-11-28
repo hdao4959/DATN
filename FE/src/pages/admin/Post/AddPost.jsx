@@ -59,7 +59,9 @@ const AddPost = () => {
         formData.append("notification_object", values.notification_object);
         formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-        formData.append("image", values.image[0]);
+         if (values.image && values.image.length > 0) {
+            formData.append("image", values.image[0]);
+        }
 
         mutate(formData);
     };
@@ -186,17 +188,11 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="image">
                                             Ảnh bìa
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image", {
-                                                required:
-                                                    "Vui lòng chọn hình ảnh",
-                                            })}
+                                            {...register("image")}
                                         />
                                         {errors.image && (
                                             <span className="text-danger">
@@ -295,7 +291,7 @@ const AddPost = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className="form-group hidden">
                                         <label htmlFor="notification_object">
                                             Đối tượng
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -308,11 +304,7 @@ const AddPost = () => {
                                             className="form-control"
                                             id="notification_object"
                                             {...register(
-                                                "notification_object",
-                                                {
-                                                    required:
-                                                        "Vui lòng nhập đối tượng",
-                                                }
+                                                "notification_object"
                                             )}
                                         />
 

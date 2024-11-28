@@ -44,7 +44,9 @@ const AddMajor = () => {
         formData.append("type", "major");
 
         // Thêm file vào FormData
-        formData.append("image", data.image[0]);
+        if (data.image && data.image.length > 0) {
+            formData.append("image", data.image[0]);
+        }
 
         mutate(formData);
     };
@@ -117,16 +119,10 @@ const AddMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="parent_code">
                                             Chuyên ngành cha
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <select
                                             className="form-select"
-                                            {...register("parent_code", {
-                                                required:
-                                                    "Vui lòng chọn chuyên ngành cha",
-                                            })}
+                                            {...register("parent_code")}
                                         >
                                             <option value="">
                                                 -- Lựa chọn --
@@ -155,17 +151,11 @@ const AddMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="value">
                                             Giá trị
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("value", {
-                                                required:
-                                                    "Vui lòng nhập giá trị",
-                                            })}
+                                            {...register("value")}
                                             placeholder="Nhập giá trị"
                                         />
 
@@ -200,9 +190,6 @@ const AddMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="image">
                                             Hình ảnh
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="file"
@@ -219,9 +206,6 @@ const AddMajor = () => {
                                     <div className="form-group">
                                         <label htmlFor="description">
                                             Mô tả
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <textarea
                                             className="form-control"

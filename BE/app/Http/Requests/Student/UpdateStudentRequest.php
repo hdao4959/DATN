@@ -26,7 +26,7 @@ class UpdateStudentRequest extends FormRequest
 
             'full_name' => 'required|max:50',
             'email' => 'required|email|max:255|unique:users,email,' . $this->route('student') . ',user_code',
-            'password' => 'required|max:255|min:6',
+            // 'password' => 'required|max:255|min:6',
             'phone_number' => 'required|max:20|regex:/^(0[3-9][0-9]{8})$/',
             'address' => 'required|max:200',
             'sex' => 'required|in:male,female',
@@ -39,7 +39,7 @@ class UpdateStudentRequest extends FormRequest
             'narrow_major_code' => 'nullable|exists:categories,cate_code',
             'semester_code' => 'required|exists:categories,cate_code',
             'course_code' => 'required|exists:categories,cate_code',
-            'updated_at' =>'required|date_format:Y-m-d H:i:s',
+            // 'updated_at' =>'required|date_format:Y-m-d H:i:s',
         ];
     }
 
@@ -55,9 +55,9 @@ class UpdateStudentRequest extends FormRequest
             'email.max' => 'Email không được quá :max ký tự',
 
             'email.unique' => 'Email này đã được sử dụng!',
-            'password.required' => 'Bạn chưa nhập password!',
-            'password.min' => 'Mật khẩu phải có ít nhất :min ký tự!',
-            'password.max' => 'Mật khẩu không được quá :max ký tự!',
+            // 'password.required' => 'Bạn chưa nhập password!',
+            // 'password.min' => 'Mật khẩu phải có ít nhất :min ký tự!',
+            // 'password.max' => 'Mật khẩu không được quá :max ký tự!',
 
             'phone_number.required' => 'Bạn chưa nhập số đt!',
             'phone_number.regex' => 'Số điện thoại không hợp lệ!',
@@ -91,8 +91,8 @@ class UpdateStudentRequest extends FormRequest
             'semester_code.exists' => 'Kỳ học không tồn tại!',
             'course_code.required' =>  'Bạn chưa chọn khoá học!',
             'course_code.exists' => 'Khoá học này không tồn tại!',
-            'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
-            'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
+            // 'updated_at.required' => 'Thiếu thời gian cập nhật gần đây của bản ghi này',
+            // 'updated_at.date_format' => 'Thời gian cập nhật gần đây có định dạng không hợp lệ!'
         ];
     }
     protected $stopOnFirstFailure = true;

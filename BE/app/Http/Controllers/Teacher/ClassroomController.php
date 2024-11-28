@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Http\Controllers\Controller;
-use App\Models\Classroom;
 use App\Models\User;
+use App\Models\Classroom;
+use App\Exports\ScoreExport;
+use App\Imports\ScoreImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class ClassroomController extends Controller
@@ -129,5 +132,66 @@ class ClassroomController extends Controller
         //
     }
 
+    public function exportScore(string $classCode)
+    {
+        $listClassroom = Classroom::where('class_code', $classCode)
+                        ->get(['class_code', 'class_name', 'score'])
+                        ->map(function($classroom) {
+                            $score = json_decode($classroom['score'], true);
+                            return [
+                                'class_code' => $classroom->class_code,
+                                'class_name' => $classroom->class_name,
+                                'score' => $score,
+                            ];
+                        });
+        return Excel::download(new ScoreExport($listClassroom), 'bang_diem.xlsx');
+    }
 
+    public function importScore(Request $request)
+    {
+        // Kiểm tra file upload
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        // Lấy mã lớp từ tiêu đề
+        $classCode = $this->extractClassCodeFromFile($request->file('file'));
+
+        if (!$classCode) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xác định mã lớp từ file!',
+            ]);
+        }
+
+        // Thực hiện import dữ liệu
+        Excel::import(new ScoreImport($classCode), $request->file('file'));
+
+        return response()->json([
+            'class_code' => $classCode,
+            'success' => true,
+            'message' => 'Import dữ liệu thành công!',
+        ]);
+    }
+
+    /**
+     * Trích xuất mã lớp từ tiêu đề file Excel
+     */
+    private function extractClassCodeFromFile($file)
+    {
+        $data = Excel::toArray([], $file);
+       
+        $firstRow = $data[0][0][0] ?? null;
+
+        if (is_array($firstRow)) {
+            $firstRow = implode(' ', $firstRow);
+        }
+
+        if ($firstRow) {
+            preg_match('/lớp\s(.+?)$/i', $firstRow, $matches);
+            return $matches[1] ?? null;
+        }
+
+        return null;
+    }
 }

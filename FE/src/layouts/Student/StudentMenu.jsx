@@ -7,7 +7,7 @@ const StudentMenu = () => {
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
                 <div className="logo-header" data-background-color="dark">
-                    <Link to={"/admin"} className="logo">
+                    <Link to={"/student"} className="logo">
                         <img
                             src="https://ap.poly.edu.vn/images/whiteLogo.png"
                             width={150}
@@ -44,17 +44,6 @@ const StudentMenu = () => {
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
-
-                        {/* <li className="menu-item">
-
-                            <NavLink to="/student" className={`${styles.menuItem} group`}>
-
-
-
-                                <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
-                                <p className="text-[#b9babf]">Trang Chủ</p>
-                            </NavLink>
-                        </li> */}
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#attendances">
                                 <i className="fas fa-clipboard-list" />

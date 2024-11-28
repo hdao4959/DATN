@@ -35,6 +35,8 @@ class StudentGradesController extends Controller
                     ->orderBy('cate_code', 'asc')
                     ->select('cate_code', 'cate_name')
                     ->get();
+                
+                $userInfo = User::where('user_code', $studentCode)->select('full_name', 'user_code')->first();
                
                 $classes = DB::table('classroom_user')
                 ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
@@ -57,7 +59,7 @@ class StudentGradesController extends Controller
                     $scoreJson = $class->score;
                     $scoreArray = json_decode($scoreJson, true);
                     $studentScore = null;
-                    if (is_array($scoreArray)) {
+                    if (is_array($scoreArray) && !empty($scoreArray)) {
                         foreach ($scoreArray as $score) {
                             if (isset($score['student_code']) && $score['student_code'] === $studentCode) {
                                 $studentScore = [
@@ -70,6 +72,35 @@ class StudentGradesController extends Controller
                             }
                         }
                     }
+                     // Lấy subject_code từ lớp học
+                     $subjectCode = $class->subject_code;
+                     // Tiến hành nối với bảng subjects để lấy assessments
+                     $subject = DB::table('subjects')
+                         ->where('subjects.subject_code', $subjectCode)
+                         ->select('subjects.subject_code', 'subjects.assessments')
+                         ->first();
+                     // Giải mã chuỗi assessments
+                     $assessments = json_decode($subject->assessments, true);
+                    //  dd($assessments);
+                     $scores = [];
+                     if(is_array($assessments) && !empty($assessments)) {
+                        foreach ($assessments as $assessmentName => $assessmentValue) {
+                            $scores[] = [
+                                'name' => $assessmentName, // Lấy tên điểm (ví dụ: final, midterm)
+                                'note' => '', // Ghi chú (mặc định rỗng)
+                                'score' => 0, // Điểm (mặc định là 0)
+                                'value' => $assessmentValue // Lấy giá trị trọng số từ assessments
+                            ];
+                        }
+                    }
+                     if (empty($scoreArray) || $scoreArray == []) {
+                        $studentScore = [
+                            'scores' => $scores,
+                            'student_code' => $userInfo->user_code,
+                            'student_name' => $userInfo->full_name,
+                            'average_score' => 0,
+                        ];
+                     }
 
                     $classScores[] = [
                         'class_code' => $class->class_code,
@@ -86,6 +117,7 @@ class StudentGradesController extends Controller
                     'data' => $classScores,
                     'semesters' => $listSemester,
                     'semesterCode' => $semesterCode,
+                    'semesterCode' => $assessments
 
                 ]);
             } catch (\Throwable $th) {

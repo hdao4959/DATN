@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Grades;
 use App\Http\Requests\UpdateGradesRequest;
 use App\Models\ClassRoom;
+use App\Models\ClassroomUser;
 use App\Models\Subject;
 use App\Repositories\Contracts\GradeRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,53 +19,81 @@ class GradesController extends Controller
     // public function __construct(GradeRepositoryInterface $gradeRepository){
     //     $this->gradeRepository = $gradeRepository;
     // }
-    public function index($classCode)
-    {
-        try {
-        $class = DB::table('classrooms')->where([
-        'class_code' => $classCode,
-        'is_active' => true
-    ])->select('class_name', 'score', 'class_code')->first();
-    // dd($class);
-    if ($class) {
-        $scoreJson = $class->score;
-        $scoreArray = json_decode($scoreJson, true);
-        $defaultScores = [
-            ['name' => 'Lab1', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab2', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab3', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab4', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab5', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab6', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab7', 'score' => 0, 'note' => '', 'value' => 0],
-            ['name' => 'Lab8', 'score' => 0, 'note' => '', 'value' => 0],
-        ];
+    // public function index($classCode)
+    // {
+    //     try {
+
+    //         return response()->json($classCode);
+    //         // Lấy thông tin lớp học từ bảng classrooms
+    //         $class = DB::table('classrooms')->where([
+    //             'class_code' => $classCode,
+    //             'is_active' => true
+    //         ])->select('class_name', 'score', 'class_code', 'subject_code')->first();
+            
+    //         // Lấy danh sách sinh viên từ bảng classroom_user và nối với bảng users
+    //         $listStudents = DB::table('classroom_user')
+    //             ->join('users', 'classroom_user.user_code', '=', 'users.user_code')
+    //             ->where('classroom_user.class_code', $classCode)
+    //             ->select('users.full_name', 'classroom_user.user_code')
+    //             ->get();
+            
+    //         // Lấy subject_code từ lớp học
+    //         $subjectCode = $class->subject_code;
+            
+    //         // Tiến hành nối với bảng subjects để lấy assessments
+    //         $subject = DB::table('subjects')
+    //             ->where('subjects.subject_code', $subjectCode)
+    //             ->select('subjects.subject_code', 'subjects.assessments')
+    //             ->first();
+            
+    //         // Giải mã chuỗi assessments
+    //         $assessments = json_decode($subject->assessments, true);
+            
+    //         // Giải mã chuỗi score nếu có
+    //         $scoreArray = json_decode($class->score, true) ?? [];
     
-        foreach ($scoreArray as &$studentScore) {
-            if (empty($studentScore['scores'])) {
-                $studentScore['scores'] = $defaultScores;
-                $studentScore['average_score'] = 0;
-            }
-        }
-        
-        return response()->json([
-            'classCode' => $class->class_code,
-            'className' => $class->class_name,
-            'score' => $scoreArray ?? [],
-        ]);
-    } else {
-        return response()->json([
-            'message' => 'Không tìm thấy lớp học',
-            'error' => true,
-        ]);
-    }
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Có lỗi xảy ra',
-                'error' => true,
-            ]);
-        }
-    }
+    //         // Kiểm tra nếu scoreArray là mảng rỗng, tạo điểm mặc định
+    //         if (empty($scoreArray)) {
+    //             $scoreArray = []; // Khởi tạo lại scoreArray nếu rỗng
+                
+    //             // Lặp qua danh sách sinh viên để thêm thông tin điểm cho từng người
+    //             foreach ($listStudents as $student) {
+    //                 $scores = []; // Khởi tạo mảng scores cho mỗi sinh viên
+                    
+    //                 // Duyệt qua từng điểm trong assessments và tạo phần tử điểm cho mỗi sinh viên
+    //                 foreach ($assessments as $assessmentName => $assessmentValue) {
+    //                     $scores[] = [
+    //                         'name' => $assessmentName, // Lấy tên điểm (ví dụ: final, midterm)
+    //                         'note' => '', // Ghi chú (mặc định rỗng)
+    //                         'score' => 0, // Điểm (mặc định là 0)
+    //                         'value' => $assessmentValue // Lấy giá trị trọng số từ assessments
+    //                     ];
+    //                 }
+    
+    //                 // Thêm thông tin điểm của sinh viên vào mảng scoreArray
+    //                 $scoreArray[] = [
+    //                     'scores' => $scores, // Các điểm của sinh viên
+    //                     'student_code' => $student->user_code, // Mã sinh viên
+    //                     'student_name' => $student->full_name, // Tên sinh viên
+    //                     'average_score' => 0 // Điểm trung bình (mặc định là 0)
+    //                 ];
+    //             }
+    //         }
+    
+    //         // Trả về dữ liệu JSON cho frontend
+    //         return response()->json([
+    //             'classCode' => $class->class_code,
+    //             'className' => $class->class_name,
+    //             'score' => $scoreArray, // Điểm lớp học (dưới dạng mảng)
+    //         ]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'message' => 'Có lỗi xảy ra ' . $th->getMessage(),
+    //             'error' => true,
+    //         ]);
+    //     }
+    // }
+    
 
 
     public function create()
@@ -72,7 +101,93 @@ class GradesController extends Controller
         //
     }
     
-    public function show(Grades $grades) {}
+    // public function show(string $classCode) {
+
+    //     try {
+    //                 // Lấy thông tin lớp học từ bảng classrooms
+    //                 $class = DB::table('classrooms')->where([
+    //                     'class_code' => $classCode,
+    //                     'is_active' => true
+    //                 ])->select('class_name', 'score', 'class_code', 'subject_code')->first();
+                    
+    //                 // Lấy danh sách sinh viên từ bảng classroom_user và nối với bảng users
+    //                 $listStudents = DB::table('classroom_user')
+    //                     ->join('users', 'classroom_user.user_code', '=', 'users.user_code')
+    //                     ->where('classroom_user.class_code', $classCode)
+    //                     ->select('users.full_name', 'classroom_user.user_code')
+    //                     ->get();
+                    
+    //                 // Lấy subject_code từ lớp học
+    //                 $subjectCode = $class->subject_code;
+                    
+    //                 // Tiến hành nối với bảng subjects để lấy assessments
+    //                 $subject = DB::table('subjects')
+    //                     ->where('subjects.subject_code', $subjectCode)
+    //                     ->select('subjects.subject_code', 'subjects.assessments')
+    //                     ->first();
+                    
+    //                 // Giải mã chuỗi assessments
+    //                 $assessments = json_decode($subject->assessments, true);
+                    
+    //                 // Giải mã chuỗi score nếu có
+    //                 $scoreArray = json_decode($class->score, true) ?? [];
+            
+    //                 // Kiểm tra nếu scoreArray là mảng rỗng, tạo điểm mặc định
+    //                 if (empty($scoreArray)) {
+    //                     $scoreArray = []; // Khởi tạo lại scoreArray nếu rỗng
+                        
+    //                     // Lặp qua danh sách sinh viên để thêm thông tin điểm cho từng người
+    //                     foreach ($listStudents as $student) {
+    //                         $scores = []; // Khởi tạo mảng scores cho mỗi sinh viên
+                            
+    //                         // Duyệt qua từng điểm trong assessments và tạo phần tử điểm cho mỗi sinh viên
+    //                         foreach ($assessments as $assessmentName => $assessmentValue) {
+    //                             $scores[] = [
+    //                                 'name' => $assessmentName, // Lấy tên điểm (ví dụ: final, midterm)
+    //                                 'note' => '', // Ghi chú (mặc định rỗng)
+    //                                 'score' => 0, // Điểm (mặc định là 0)
+    //                                 'value' => $assessmentValue // Lấy giá trị trọng số từ assessments
+    //                             ];
+    //                         }
+            
+    //                         // Thêm thông tin điểm của sinh viên vào mảng scoreArray
+    //                         $scoreArray[] = [
+    //                             'scores' => $scores, // Các điểm của sinh viên
+    //                             'student_code' => $student->user_code, // Mã sinh viên
+    //                             'student_name' => $student->full_name, // Tên sinh viên
+    //                             'average_score' => 0 // Điểm trung bình (mặc định là 0)
+    //                         ];
+    //                     }
+    //                 }
+            
+    //                 // Trả về dữ liệu JSON cho frontend
+    //                 return response()->json([
+    //                     'classCode' => $class->class_code,
+    //                     'className' => $class->class_name,
+    //                     'score' => $scoreArray, // Điểm lớp học (dưới dạng mảng)
+    //                 ]);
+    //             } catch (\Throwable $th) {
+    //                 return response()->json([
+    //                     'message' => 'Có lỗi xảy ra ' . $th->getMessage(),
+    //                     'error' => true,
+    //                 ]);
+    //             }
+
+    // }
+
+    public function show(string $class_code){
+        try {   
+            $classroom = Classroom::with([
+                'subject' => function($query){
+                    $query->select('subject_code','subject_name');
+                }
+            ])->where('class_code', $class_code)->select('class_code', 'class_name', 'score', 'subject_code')->first();
+            
+            return response()->json($classroom);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 
     // public function getByParam(Request $request){
     //     try{

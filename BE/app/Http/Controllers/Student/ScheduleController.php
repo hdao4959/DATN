@@ -50,7 +50,7 @@ class ScheduleController extends Controller
             if (!$classroom_codes) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Không có lớp học nào'
+                    'message' => 'Không có lớp học nào!'
                 ], 200);
             }
 
@@ -108,7 +108,7 @@ class ScheduleController extends Controller
                 $end_time = $end_date_time->format('H:i');
 
                 return response()->json('Thời gian đổi lịch từ ' 
-                . $start_time .' ngày '. $start_date . ' đến ' . $end_time . ', ngày ' . $end_date .  '!');
+                . $start_time .' ngày '. $start_date . ' đến ' . $end_time . ' ngày ' . $end_date .  '!');
             }
 
 

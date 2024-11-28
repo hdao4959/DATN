@@ -18,7 +18,8 @@ class Classroom extends Model
         'description',
         'is_active',
         'subject_code',
-        'user_code'
+        'user_code',
+        'score'
     ];
 
     protected $casts = [

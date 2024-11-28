@@ -68,7 +68,7 @@ const ViewClassrooms = () => {
                                         </td>
                                         <td>
                                             <Link
-                                                to={`/student/classrooms/${classroom.class_code}/schedule`}
+                                                to={`/student/classrooms/schedule/${classroom.class_code}`}
                                             >
                                                 <i class="fas fa-eye"></i>
                                             </Link>

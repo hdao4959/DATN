@@ -6,7 +6,7 @@ const TeacherMenu = () => {
         <div className="sidebar" data-background-color="dark">
             <div className="sidebar-logo">
                 <div className="logo-header" data-background-color="dark">
-                    <Link to={"/admin"} className="logo">
+                    <Link to={"/teacher"} className="logo">
                         <img
                             src="https://ap.poly.edu.vn/images/whiteLogo.png"
                             width={150}
@@ -99,7 +99,10 @@ const TeacherMenu = () => {
                             <div className="collapse" id="grades">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <NavLink to="/teacher/grades" className={`${styles.menuItem} group`}>
+                                        <NavLink
+                                            to="/teacher/grades"
+                                            className={`${styles.menuItem} group`}
+                                        >
                                             <p className="sub-item">
                                                 Bảng điểm
                                             </p>
@@ -117,7 +120,10 @@ const TeacherMenu = () => {
                             <div className="collapse" id="attendances">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <NavLink to="/teacher/attendances" className={`${styles.menuItem} group`}>
+                                        <NavLink
+                                            to="/teacher/attendances"
+                                            className={`${styles.menuItem} group`}
+                                        >
                                             <p className="sub-item">
                                                 Điểm Danh
                                             </p>
@@ -139,12 +145,12 @@ const TeacherMenu = () => {
                                             <p className="sub-item">
                                                 Thông Báo
                                             </p>
+
                                         </NavLink>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-
                     </ul>
                 </div>
             </div>

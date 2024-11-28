@@ -53,6 +53,45 @@ const ListAccount = () => {
             // Khởi tạo DataTable
             $("#usersTable").DataTable({
                 data: users,
+                serverSide: true,
+                processing: true,
+                ajax: async (data, callback) => {
+                    try {
+                        // Tính toán số trang dựa trên DataTables truyền vào
+                        const page = data.start / data.length + 1;
+
+                        // Gửi request đến API với các tham số phù hợp
+                        const response = await api.get(`/admin/students`, {
+                            params: { page, per_page: data.length },
+                            params: {
+                                page: page, // Trang hiện tại
+                                per_page: data.length, // Số bản ghi mỗi trang
+                                // search: data.search.value || "", // Từ khóa tìm kiếm
+                                // order_column: data.order[0].column, // Cột được sắp xếp
+                                // order_dir: data.order[0].dir, // Hướng sắp xếp
+                            },
+                        });
+
+                        // Dữ liệu trả về từ API
+                        const result = response.data;
+
+                        // Gọi callback để DataTables hiển thị dữ liệu
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: 0,
+                            recordsFiltered: 0,
+                            data: [],
+                        });
+                    }
+                },
                 columns: [
                     { title: "Mã sinh viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
@@ -76,7 +115,13 @@ const ListAccount = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+                            <a href="/admin/students/edit/${row.user_code}">
+               <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
+            </a>
+                             <a href="/admin/students/${row.user_code}">
+                <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
+            </a>
+                                
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
                             </div>
                         `,
@@ -119,7 +164,7 @@ const ListAccount = () => {
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Account Management</h4>
+                    <h4 className="card-title">Danh sách sinh viên</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">
