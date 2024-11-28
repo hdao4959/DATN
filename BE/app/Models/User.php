@@ -49,10 +49,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        
+
         'password',
         'remember_token',
-       
+
     ];
 
     /**
@@ -69,7 +69,7 @@ class User extends Authenticatable
     public function setPasswordAttribute($value) {
         $this->attributes['password'] = Hash::make($value);
     }
-    
+
     // Định nghĩa mối quan hệ với bảng 'newsletters'
     public function newsletter()
     {
@@ -80,7 +80,7 @@ class User extends Authenticatable
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
-     
+
     public function narrow_major(){
         return $this->belongsTo(Category::class, 'narrow_major_code', 'cate_code');
     }
