@@ -1,13 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\SessionController;
 use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\AssessmentItem;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CourseController;
 use App\Http\Controllers\GradesController;
-use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\Auth\AuthController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\GetDataForFormController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\PointHeadController;
 use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SchoolRoomController;
 use App\Http\Controllers\DashboardController;
@@ -89,6 +89,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
+
+        Route::apiResource('course', CourseController::class);
+        Route::put('course/{code}',[CourseController::class,'update']);
+        Route::delete('course/{code}',[CourseController::class,'destroy']);
+        Route::apiResource('sessions', SessionController::class);
+        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
+
         Route::apiResource('teachers', TeacherController::class);
         Route::apiResource('students', StudentController::class);
         Route::controller(StudentController::class)->group(function () {
@@ -138,7 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
-        Route::apiResource('sessions', SessionController::class);
+
         Route::apiResource('semesters', SemesterController::class);
 
 
@@ -173,7 +180,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
         Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
         Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
-        Route::apiResource('sessions', SessionController::class);
+
         Route::apiResource('semesters', SemesterController::class);
         Route::apiResource('grades', GradesController::class);
         Route::get('grades', [GradesController::class, 'getByParam']);
@@ -298,6 +305,8 @@ Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::
 Route::post('services/change-info/{user_code}',             [ServiceController::class, 'ChangeInfo']);
 Route::post('services/provide-student-card/{user_code}',    [ServiceController::class, 'provideStudentCard']);
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
+
+
 
 
 Route::apiResource('fees', FeeController::class);

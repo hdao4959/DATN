@@ -6,7 +6,7 @@ interface SessionRepositoryInterface {
 
     public function create(array $data);
 
-    public function update(array $data , int $id);
+    public function update(array $data , string $code);
 
-    public function delete($id);
+    public function delete(string $code);
 }

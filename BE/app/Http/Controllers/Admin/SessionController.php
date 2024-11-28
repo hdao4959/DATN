@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Http\Requests\StoreSessionRequest;
 use App\Http\Requests\UpdateSessionRequest;
@@ -31,25 +32,40 @@ class SessionController extends Controller
 
     public function store(StoreSessionRequest $request){
         try{
-            $model = $this->sessionRepository->create($request->toArray());
+            $cate_code = "TS".$request->session;
+            $cate_name = "Ca ".$request->session;
+            $value = [
+                'start' => $request->time_start,
+                'end'   => $request->time_end
+            ];
+
+            $value_json = json_encode($value);
+            $data = [
+                'cate_code'=>   $cate_code,
+                'cate_name'=>   $cate_name,
+                'value'    =>   $value_json,
+                'type'     =>   'session'
+            ];
+
+            $model = $this->sessionRepository->create($data);
             return response()->json(["message"=> "thêm thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
         }
     }
 
-    public function update(UpdateSessionRequest $request ,int $id){
-        try{
-            $model = $this->sessionRepository->update($request->toArray() , $id);
-            return response()->json(["message"=> "sửa thành công"], 200);
-        }catch(\Throwable $th){
-            return response()->json($th->getMessage(), 400);
-        }
-    }
+    // public function update(UpdateSessionRequest $request ,int $id){
+    //     try{
+    //         $model = $this->sessionRepository->update($request->toArray() , $id);
+    //         return response()->json(["message"=> "sửa thành công"], 200);
+    //     }catch(\Throwable $th){
+    //         return response()->json($th->getMessage(), 400);
+    //     }
+    // }
 
-    public function destroy(int $id){
+    public function destroy(string $code){
         try{
-            $model = $this->sessionRepository->delete($id);
+            $model = $this->sessionRepository->delete($code);
             return response()->json(["message"=> "xóa thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
