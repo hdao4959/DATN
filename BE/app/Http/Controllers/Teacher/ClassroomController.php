@@ -21,18 +21,18 @@ class ClassroomController extends Controller
 
      public function handleInvalidId()
      {
-         return response()->json([
-             'message' => 'Lớp học không tồn tại!',
-         ], 404);
+        return response()->json([
+            'message' => 'Lớp học không tồn tại!',
+        ], 404);
      }
  
      //  Hàm trả về json khi lỗi không xác định (500)
      public function handleErrorNotDefine($th)
      {
-         return response()->json([
-             'message' => "Đã xảy ra lỗi không xác định",
-             'error' => env('APP_DEBUG') ? $th->getMessage() : "Lỗi không xác định"
-         ], 500);
+        return response()->json([
+            'message' => "Đã xảy ra lỗi không xác định",
+            'error' => env('APP_DEBUG') ? $th->getMessage() : "Lỗi không xác định"
+        ], 500);
      }
 
 
@@ -40,18 +40,49 @@ class ClassroomController extends Controller
     {
         try {
             $teacher_code = request()->user()->user_code;
-            $classrooms = Classroom::with([
-                'subject' => function($query){
-                    $query->select('subject_code', 'subject_name');
-                
-                }])->select('class_code', 'class_name', 'description', 'is_active', 'subject_code')->where('user_code', $teacher_code)->get();
+            $classrooms = Classroom::where('user_code', $teacher_code)
+                            ->with(['subject' => function($query){
+                                $query->select('subject_code', 'subject_name');
 
+                            },
+                            'teacher' => function($query) {
+                                $query->select('user_code', 'full_name');
+                                
+                            },
+                            'users' => function($query) {
+                                $query->select('users.user_code', 'users.full_name');
+                                
+                            },
+                            'schedules.room' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            },
+                            'schedules.session' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            }])->get(['class_code', 'class_name', 'user_code', 'is_active', 'subject_code']);
+            $result = $classrooms->map(function($classroom) {
+                $schedules = $classroom->schedules->first();
+                $student = $classroom->users;
+                $totalStudent = $student->count();
+                $studyTime = json_decode($schedules->session['value'], true);
+                return [
+                    'class_code' => $classroom->class_code ?? null,
+                    'class_name' => $classroom->class_name ?? null,
+                    'subject_name' => $classroom->subject->subject_name ?? null,
+                    'teacher_name' => $classroom->teacher->full_name ?? null,
+                    'total_student' => $totalStudent ?? null,
+                    'room_name' => $schedules->room->cate_name ?? null,
+                    'session_name' => $schedules->session->cate_name ?? null,
+                    'value' => $studyTime ?? null,                    
+                ];
+            });
             if($classrooms->isEmpty()){
                 return response()->json(
                     ['message' => "Không có lớp học nào!"], 204
                 );
             }
-            return response()->json($classrooms,200);
+            return response()->json($result,200);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
