@@ -899,6 +899,77 @@ class CategoryController extends Controller
         return $data;
     }
 
+    public function getListByMajor()
+    {
+        // Lấy dữ liệu từ cơ sở dữ liệu
+        $data = DB::table('categories')
+            ->where('categories.is_active', true)
+            ->where('categories.type', 'major')
+            ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
+            ->where('subjects.is_active', true)
+            ->leftJoin('users as major_users', function ($join) {
+                $join->on('categories.cate_code', '=', 'major_users.major_code')
+                    ->orOn('categories.cate_code', '=', 'major_users.narrow_major_code');
+            })
+            ->where('major_users.is_active', true)
+            ->whereIn('major_users.role', ["2", "3"]) // Lọc cả giáo viên (role=2) và sinh viên (role=3)
+            ->select(
+                'categories.cate_code',
+                'categories.cate_name',
+                'subjects.subject_code',
+                'subjects.subject_name',
+                'subjects.semester_code as subject_semester_code',
+                'major_users.user_code as major_user_code',
+                'major_users.full_name as major_user_name',
+                'major_users.semester_code as major_semester_code',
+                'major_users.role as user_role', // Lấy role để phân biệt giáo viên và sinh viên
+            )
+            ->get()
+            ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
+            ->map(function ($subjects, $cate_code) {
+                return [
+                    'cate_code' => $cate_code,
+                    'cate_name' => $subjects->first()->cate_name,
+                    'subjects' => $subjects->groupBy('subject_code')->map(function ($users, $subject_code) {
+                        // Khởi tạo các danh sách sinh viên và giáo viên
+                        $students = collect();
+                        $teachers = collect();
+
+                        foreach ($users as $user) {
+                            // Phân loại theo role (giáo viên hay sinh viên)
+                            if ($user->user_role == "3" && $user->major_semester_code === $user->subject_semester_code) {
+                                // Thêm sinh viên vào danh sách nếu kỳ học trùng với kỳ môn học
+                                $students->push([
+                                    'user_code' => $user->major_user_code,
+                                    'user_name' => $user->major_user_name,
+                                    'semester' => $user->major_semester_code,
+                                ]);
+                            }
+
+                            if ($user->user_role == "2") {
+                                // Thêm giáo viên vào danh sách
+                                $teachers->push([
+                                    'user_code' => $user->major_user_code,
+                                    'user_name' => $user->major_user_name,
+                                ]);
+                            }
+                        }
+
+                        // Trả về dữ liệu với cả sinh viên và giáo viên
+                        return [
+                            'subject_code' => $subject_code,
+                            'subject_name' => $users->first()->subject_name,
+                            'students' => $students->unique('user_code')->values()->toArray(),
+                            'teachers' => $teachers->unique('user_code')->values()->toArray(),
+                        ];
+                    })->values()->toArray() // Sắp xếp lại mảng chỉ số
+                ];
+            })->values()->toArray(); // Trả về kết quả cuối cùng
+
+        return $data;
+    }
+
+
     public function getClassrooms()
     {
         $data = DB::table('classrooms')->where('classrooms.is_active', true)
@@ -1100,12 +1171,11 @@ class CategoryController extends Controller
     public function addStudent()
     {
         $classRooms = $this->getClassrooms();  // Lấy danh sách lớp học
-        $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
-        $classRoomIndex = 0; // Chỉ số lớp học hiện tại, để bắt đầu từ lớp tiếp theo khi chuyển qua môn khác
-        // return dd($classRooms);
-
-        // Duyệt qua từng chuyên ngành
-        foreach ($students as $major) {
+        // return $classRooms;
+        // $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
+        $majors = $this->getListByMajor();
+        $classRoomIndex = 0;
+        foreach ($majors as $major) {
             foreach ($major['subjects'] as $subject) {
                 foreach ($subject['students'] as $student) {
                     $assigned = false;
@@ -1115,7 +1185,21 @@ class CategoryController extends Controller
                             ->where('class_code', $classRoom->class_code)
                             ->count();
                         if ($currentStudentCount < intval($classRoom->value)) {
+
                             if ($this->canAssignStudentToClass($student, $classRoom)) {
+                                // $classCode = $this->generateClassCodeWithTeacher($classRoom, $subject);
+                                // Kiểm tra nếu lớp đã có giáo viên, nếu trùng thì chuyển giáo viên khác
+                                $teacherAssigned = DB::table('classrooms')
+                                    ->where('class_code', $classRoom->class_code)
+                                    ->whereNotNull('user_code') // Kiểm tra lớp đã có giáo viên chưa
+                                    ->first();
+                                // return $subject;
+
+                                if (!$teacherAssigned) {
+                                    // Gán giáo viên vào lớp
+                                    //  $this->assignTeacherToClass($classRoom->class_code, $subject['teachers']);
+                                }
+
                                 DB::table('classroom_user')->insert([
                                     'class_code' => $classRoom->class_code,
                                     'user_code' => $student['user_code']
@@ -1141,47 +1225,105 @@ class CategoryController extends Controller
         return response()->json(['message' => 'Students assigned to classrooms successfully']);
     }
 
-
-    public function updateClassroomCodes()
-{
-    // Lấy danh sách các classrooms, sắp xếp theo `subject_code` và `id`
-    $classrooms = DB::table('classrooms')
-        ->whereNotNull('subject_code')
-        ->orderBy('subject_code')
-        ->orderBy('id')
-        ->get();
-
-    // Mảng lưu số thứ tự lớp học cho mỗi môn
-    $subjectCounters = [];
-
-    foreach ($classrooms as $classroom) {
-        $subjectCode = $classroom->subject_code;
-
-        // Nếu chưa tồn tại số thứ tự cho môn này, khởi tạo
-        if (!isset($subjectCounters[$subjectCode])) {
-            $subjectCounters[$subjectCode] = 1;
-        }
-
-        // Tạo class_code và class_name mới
-        $newClassCode = "{$subjectCode}_{$subjectCounters[$subjectCode]}";
-        $newClassName = "Lớp_{$classroom->subject_code}_{$subjectCounters[$subjectCode]}";
-
-        // Cập nhật `class_code` và `class_name` vào DB
-        DB::table('classrooms')
-            ->where('id', $classroom->id)
-            ->update([
-                'class_code' => $newClassCode,
-                'class_name' => $newClassName,
+    public function assignTeacherToClass($class_code, $teachers)
+    {
+        // Tách class_code thành các phần để lấy thông tin về ngày học và ca học
+        $classCodeParts = explode('_', $class_code);  // Tách phần tử từ class_code
+        $day = $classCodeParts[0];      // Nhóm ngày học (1 hoặc 2)
+        $session = $classCodeParts[1];  // Ca học (TS1, TS2, ...)
+    
+        foreach ($teachers as $teacher) {
+            // Kiểm tra xem giáo viên đã dạy lớp nào trong cùng ca học và ngày học này chưa
+            $conflict = DB::table('classrooms')
+                ->where('classrooms.user_code', $teacher['user_code'])
+                ->join('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
+                ->where('schedules.session_code', $session)  // Kiểm tra trùng ca học
+                ->where(DB::raw("DAYOFWEEK(STR_TO_DATE(schedules.date, '%d/%m/%Y'))"), $day) // Kiểm tra trùng ngày
+                ->exists();
+    
+            if ($conflict) {
+                // Nếu có xung đột, bỏ qua giáo viên này và chuyển sang giáo viên khác
+                continue;
+            }
+    
+            // Nếu không có xung đột và giáo viên còn lịch trống, gán giáo viên vào lớp
+            DB::table('classrooms')->where('class_code', $class_code)->update([
+                'user_code' => $teacher['user_code']
             ]);
+    
+            // Trả về giáo viên đã được gán
+            return response()->json([
+                'message' => 'Đã gán giáo viên thành công',
+                'teacher' => $teacher
+            ]);
+        }
+    
+        // Nếu không tìm được giáo viên phù hợp
+        return response()->json([
+            'message' => 'Không có giáo viên phù hợp cho lớp học này'
+        ], 400);
+    }
+    
 
-        // Tăng số thứ tự cho môn học
-        $subjectCounters[$subjectCode]++;
+    public function mapDayToGroup($dateColumn)
+    {
+        // Lấy ngày từ cột dd/mm/yyyy
+        return DB::raw("CASE 
+            WHEN DAYOFWEEK(STR_TO_DATE($dateColumn, '%d/%m/%Y')) IN (2, 4, 6) THEN 1 
+            ELSE 2 
+        END");
     }
 
-    return response()->json(['message' => 'Classrooms updated successfully']);
-}
+
+    public function updateClassroomCodes()
+    {
+        // Lấy danh sách classrooms kèm thông tin course_code và major_code từ bảng users thông qua classroom_user
+        $classrooms = DB::table('classrooms')
+            ->join('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
+            ->join('users', 'classroom_user.user_code', '=', 'users.user_code')
+            ->select(
+                'classrooms.id',
+                'classrooms.subject_code',
+                'classrooms.class_code',
+                DB::raw('GROUP_CONCAT(DISTINCT users.course_code) as course_code'),
+                DB::raw('GROUP_CONCAT(DISTINCT users.major_code) as major_code')
+            )
+            ->groupBy('classrooms.id', 'classrooms.subject_code', 'classrooms.class_code')
+            ->get();
 
 
+        // Mảng lưu số thứ tự lớp học cho mỗi môn và khóa học
+        $subjectCounters = [];
+
+        foreach ($classrooms as $classroom) {
+            $subjectCode = $classroom->subject_code;
+            $courseCode = $classroom->course_code;
+            $majorCode = $classroom->major_code;
+
+            // Nếu chưa tồn tại số thứ tự cho subject_code, course_code, và major_code, khởi tạo
+            if (!isset($subjectCounters[$subjectCode][$courseCode][$majorCode])) {
+                $subjectCounters[$subjectCode][$courseCode][$majorCode] = 1;
+            }
+
+            // Tạo class_code và class_name mới
+            $newClassCode = "{$majorCode}_{$courseCode}_{$subjectCode}_{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
+            // $newClassName = "Lớp_{$subjectCode}_Khóa_{$courseCode}_Ngành_{$majorCode}_{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
+            $newClassName = "Lớp {$courseCode}.{$subjectCode}.{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
+
+            // Cập nhật `class_code` và `class_name` vào bảng classrooms
+            DB::table('classrooms')
+                ->where('id', $classroom->id)
+                ->update([
+                    'class_code' => $newClassCode,
+                    'class_name' => $newClassName,
+                ]);
+
+            // Tăng số thứ tự
+            $subjectCounters[$subjectCode][$courseCode][$majorCode]++;
+        }
+
+        return response()->json(['message' => 'Classrooms updated successfully']);
+    }
 
     public function updateClassroomForSubject($classRoom, $subject)
     {
@@ -1249,15 +1391,15 @@ class CategoryController extends Controller
                     }
 
                     $classroom = Classroom::firstOrCreate([
-                        'class_code' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
-                        'class_name' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
+                        'class_code' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                        'class_name' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
                         'is_active' => true
                     ]);
 
                     $createdClassrooms[] = $classroom;
 
                     Schedule::firstOrCreate([
-                        'class_code' => $dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index,
+                        'class_code' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
                         'room_code' => $room->cate_code,
                         'session_code' => $session->cate_code,
                         'date' => $date->format('Y-m-d')

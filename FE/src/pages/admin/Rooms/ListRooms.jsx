@@ -160,6 +160,7 @@ const ClassRoomsList = () => {
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
                     { title: "Mã môn", data: "subject_code" },
+                    { title: "Giảng viên", data: "user_code" },
 
                     {
                         title: "Hành động",
