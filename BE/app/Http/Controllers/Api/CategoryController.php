@@ -1054,7 +1054,9 @@ class CategoryController extends Controller
                             'date' => $startDate->format('Y-m-d'),
                             'room_code' => $item->room_code ?? null,
                             'class_code' => $item->class_code,
-                            'session_code' => $item->session_code
+                            'session_code' => $item->session_code,
+                            'teacher_code' => $item->teacher_code
+
                         ];
 
                         $currentSession++;
@@ -1170,6 +1172,8 @@ class CategoryController extends Controller
 
     public function addStudent()
     {
+        // return $this->addTeacher();
+
         $classRooms = $this->getClassrooms();  // Lấy danh sách lớp học
         // return $classRooms;
         // $students = $this->getListStudentByMajor();  // Lấy danh sách sinh viên theo chuyên ngành
@@ -1221,58 +1225,141 @@ class CategoryController extends Controller
                 $classRoomIndex++;
             }
         }
-        $this->updateClassroomCodes();
-        return response()->json(['message' => 'Students assigned to classrooms successfully']);
+        // return response()->json(['message' => 'Students assigned to classrooms successfully']);
+        // $this->addTeacher();
     }
 
-    public function assignTeacherToClass($class_code, $teachers)
+    public function addTeacher()
     {
-        // Tách class_code thành các phần để lấy thông tin về ngày học và ca học
-        $classCodeParts = explode('_', $class_code);  // Tách phần tử từ class_code
-        $day = $classCodeParts[0];      // Nhóm ngày học (1 hoặc 2)
-        $session = $classCodeParts[1];  // Ca học (TS1, TS2, ...)
-    
-        foreach ($teachers as $teacher) {
-            // Kiểm tra xem giáo viên đã dạy lớp nào trong cùng ca học và ngày học này chưa
-            $conflict = DB::table('classrooms')
-                ->where('classrooms.user_code', $teacher['user_code'])
-                ->join('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
-                ->where('schedules.session_code', $session)  // Kiểm tra trùng ca học
-                ->where(DB::raw("DAYOFWEEK(STR_TO_DATE(schedules.date, '%d/%m/%Y'))"), $day) // Kiểm tra trùng ngày
-                ->exists();
-    
-            if ($conflict) {
-                // Nếu có xung đột, bỏ qua giáo viên này và chuyển sang giáo viên khác
-                continue;
+        // $majors = $this->getListByMajor();
+        // $classRoomIndex = 0;
+        // foreach ($majors as $major) {
+        //     foreach ($major['subjects'] as $subject) {
+        //         $classrooms = Classroom::where('subject_code', $subject['subject_code'])->whereNotNull('subject_code')->get();
+        //         foreach ($subject['teachers'] as $teacher) {
+        //             $assigned = false;
+        //             foreach ($classrooms as $classroom) {
+        //                 // Tách class_code thành các phần để lấy thông tin về ngày học và ca học
+        //                 $classCodeParts = explode('_', $classroom['class_code']);  // Tách phần tử từ class_code
+        //                 $day = (Carbon::createFromTimestamp($classCodeParts[0]))->format('Y/m/d');
+        //                 $session = $classCodeParts[1];  // Ca học (TS1, TS2, ...)
+
+        //                 // Check if the teacher is already assigned to a class on the same session and date
+        //                 $existingSchedule = Schedule::where('teacher_code', $teacher['user_code'])
+        //                     ->where('session_code', $session)
+        //                     ->where('date', $day)
+        //                     ->first();
+
+        //                 if ($existingSchedule) {
+        //                     // Teacher already assigned to this session, skip to next classroom
+        //                     continue;
+        //                 }
+
+        //                 // Now check if the teacher is already assigned to the session on the same date
+        //                 $duplicateCheck = Schedule::where('teacher_code', $teacher['user_code'])
+        //                     ->where('session_code', $session)
+        //                     ->whereRaw('DATE(date) = ?', [now()->format('Y-m-d')])  // Check current date
+        //                     ->exists();
+
+        //                 if ($duplicateCheck) {
+        //                     // If a duplicate exists, skip assigning this teacher
+        //                     continue;
+        //                 }
+
+        //                 // Now assign the teacher to this classroom's schedule
+        //                 $schedule = Schedule::where('class_code', $classroom['class_code'])->first();
+        //                 if ($schedule) {
+        //                     // Update the teacher_code if no conflict
+        //                     $schedule->teacher_code = $teacher['user_code'];
+        //                     $schedule->save();  // Save the updated schedule
+        //                     $assigned = true;
+        //                     break; // Exit the loop once the teacher is assigned
+        //                 }
+        //             }
+
+        //             if (!$assigned) {
+        //                 continue;
+        //             }
+        //         }
+        //         $classRoomIndex++;
+        //     }
+        // }
+        // return response()->json(['message' => 'Teachers assigned to classrooms successfully']);
+        try {
+            DB::beginTransaction();
+        
+            // Lấy danh sách tất cả các lịch học chưa có giảng viên
+            $schedules = DB::table('schedules')
+                ->join('classrooms', 'schedules.class_code', '=', 'classrooms.class_code')
+                ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
+                ->select('schedules.id as schedule_id', 'schedules.date', 'schedules.session_code', 
+                         'schedules.class_code', 'subjects.major_code')
+                ->whereNull('schedules.teacher_code')
+                ->orderBy('schedules.date')
+                ->orderBy('schedules.session_code')
+                ->get();
+        
+            // Lấy danh sách tất cả giảng viên đang hoạt động
+            $teachers = DB::table('users')
+                ->where('role', "2") // Giả sử role = 2 là giảng viên
+                ->where('is_active', 1)
+                ->select('user_code', 'major_code')
+                ->get();
+        
+            if ($teachers->isEmpty() || $schedules->isEmpty()) {
+                return response()->json([
+                    'message' => 'Không có giảng viên hoặc lịch học cần xếp.',
+                ], 400);
             }
-    
-            // Nếu không có xung đột và giáo viên còn lịch trống, gán giáo viên vào lớp
-            DB::table('classrooms')->where('class_code', $class_code)->update([
-                'user_code' => $teacher['user_code']
-            ]);
-    
-            // Trả về giáo viên đã được gán
+        
+            // Xếp giảng viên cho từng lịch
+            foreach ($schedules as $schedule) {
+                foreach ($teachers as $teacher) {
+                    // Kiểm tra giảng viên có chuyên ngành phù hợp với môn học
+                    if ($schedule->major_code !== $teacher->major_code) {
+                        continue; // Nếu không khớp chuyên ngành, bỏ qua giảng viên này
+                    }
+        
+                    // Kiểm tra ràng buộc không trùng ca học cùng ngày
+                    $conflict = DB::table('schedules')
+                        ->where('teacher_code', $teacher->user_code)
+                        ->where('date', $schedule->date)
+                        ->where('session_code', $schedule->session_code)
+                        ->exists();
+        
+                    if (!$conflict) {
+                        // Gán giảng viên vào lịch học
+                        DB::table('schedules')
+                            ->where('id', $schedule->schedule_id)
+                            ->update(['teacher_code' => $teacher->user_code]);
+        
+                        // Đồng thời cập nhật user_code trong bảng classrooms
+                        DB::table('classrooms')
+                            ->where('class_code', $schedule->class_code)
+                            ->update(['user_code' => $teacher->user_code]);
+        
+                        // Chuyển sang lịch tiếp theo sau khi xếp thành công
+                        break;
+                    }
+                }
+            }
+        
+            DB::commit();
+        
             return response()->json([
-                'message' => 'Đã gán giáo viên thành công',
-                'teacher' => $teacher
-            ]);
+                'message' => 'Xếp giảng viên vào lịch học thành công.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Lỗi khi xếp lịch: ' . $e->getMessage(),
+            ], 500);
         }
-    
-        // Nếu không tìm được giáo viên phù hợp
-        return response()->json([
-            'message' => 'Không có giáo viên phù hợp cho lớp học này'
-        ], 400);
+        $this->updateClassroomCodes();
+        
     }
-    
 
-    public function mapDayToGroup($dateColumn)
-    {
-        // Lấy ngày từ cột dd/mm/yyyy
-        return DB::raw("CASE 
-            WHEN DAYOFWEEK(STR_TO_DATE($dateColumn, '%d/%m/%Y')) IN (2, 4, 6) THEN 1 
-            ELSE 2 
-        END");
-    }
+
 
 
     public function updateClassroomCodes()
@@ -1385,21 +1472,21 @@ class CategoryController extends Controller
                 foreach ($startDates as $startDate) {
                     try {
                         $date = Carbon::parse($startDate);
-                        $dayOfWeek = $date->dayOfWeek;
+                        $timestamp = $date->timestamp;
                     } catch (\Exception $e) {
                         return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
                     }
 
                     $classroom = Classroom::firstOrCreate([
-                        'class_code' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'class_name' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                        'class_name' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
                         'is_active' => true
                     ]);
 
                     $createdClassrooms[] = $classroom;
 
                     Schedule::firstOrCreate([
-                        'class_code' => $dayOfWeek . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
                         'room_code' => $room->cate_code,
                         'session_code' => $session->cate_code,
                         'date' => $date->format('Y-m-d')

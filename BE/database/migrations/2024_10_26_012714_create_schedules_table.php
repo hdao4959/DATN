@@ -29,7 +29,13 @@ return new class extends Migration
                     ->restrictOnDelete()->restrictOnUpdate();
 
             $table->date('date');
+            
+            $table->string('teacher_code',40)->nullable()->comment('Mã giảng viên');
+            $table->foreign('teacher_code')->references('user_code')->on('users')
+                    ->restrictOnDelete()->restrictOnUpdate();
+
             $table->unique(['class_code', 'room_code', 'session_code', 'date']);
+            $table->unique(['teacher_code', 'session_code', 'date']);
             $table->index('date');
             $table->timestamps();
         });
