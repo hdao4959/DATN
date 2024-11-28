@@ -14,7 +14,9 @@ class Schedule extends Model
         'room_code',
         'class_code',
         'session_code',
-        'teacher_code'
+
+        'teacher_code',
+        'type',
     ];
 
     public function classroom(){
@@ -32,6 +34,7 @@ class Schedule extends Model
     public function teacher(){
         return $this->belongsTo(User::class, 'teacher_code', 'user_code');
     }
+
 
     public function toArray()
     {
@@ -52,4 +55,6 @@ class Schedule extends Model
             ]
         ];
     }
+
+
 }

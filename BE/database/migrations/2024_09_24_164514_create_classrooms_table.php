@@ -25,11 +25,6 @@ return new class extends Migration
             $table->foreign('subject_code')
                     ->references('subject_code')
                     ->on('subjects')->restrictOnDelete()->cascadeOnUpdate();
-
-            $table->string('user_code',20)->nullable()->comment('Giảng viên');       
-            $table->foreign('user_code')->references('user_code')
-                    ->on('users')->cascadeOnDelete()->restrictOnUpdate();
-                   
             $table->softDeletes();
             $table->timestamps();
         });
