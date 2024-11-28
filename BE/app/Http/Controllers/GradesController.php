@@ -216,7 +216,7 @@ class GradesController extends Controller
                 DB::table('classrooms')
                     ->where('class_code', $classCode)
                     ->update([
-                        'score' => json_encode($scores), 
+                        'score' => json_encode($studentsData), 
                         'updated_at' => now(),
                     ]);
     

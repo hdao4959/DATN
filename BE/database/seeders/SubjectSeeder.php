@@ -380,38 +380,38 @@ class SubjectSeeder extends Seeder
         //     ]);
         // }
 
-        // for ($i = 0; $i <= 1000; $i++) {
-        //     DB::table('users')->insert([
-        //         [
-        //             'user_code' => 'FE0' . sprintf('%02d', $i), // FE01, FE02, ...
-        //             'full_name' => 'Student CNTT03 ' . $i,
-        //             'email' => 'FE' . $i . '@gmail.com',
-        //             'email_verified_at' => now(),
-        //             'password' => bcrypt('password123'),
-        //             'phone_number' => '01234567' . sprintf('%02d', $i),
-        //             'address' => '123 Student Street',
-        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Ngẫu nhiên: Nữ nếu $i chẵn, Nam nếu $i lẻ
-        //             'birthday' => '2000-01-0' . (($i % 9) + 1), // Sinh ngày từ 01-01 đến 01-09
-        //             'citizen_card_number' => '12345678' . $i,
-        //             'issue_date' => '2020-01-01',
-        //             'place_of_grant' => 'Hà Nội',
-        //             'nation' => 'Kinh',
-        //             'avatar' => null,
-        //             'role' => "3", // Quyền 3 (Sinh viên)
-        //             'is_active' => 1,
-        //             'major_code' => $majorCodes[array_rand($majorCodes)], // Lấy ngẫu nhiên từ danh sách mã ngành
-        //             'narrow_major_code' => null, // Bạn có thể thêm narrow_major_code nếu cần
-        //             'semester_code' => $semesterCodes[array_rand($semesterCodes)], // Lấy ngẫu nhiên từ danh sách kỳ học
-        //             'course_code' => 'K01',
-        //             'remember_token' => Str::random(10),
-        //             'deleted_at' => null,
-        //             'created_at' => Carbon::now(),
-        //             'updated_at' => Carbon::now(),
-        //         ],
-        //     ]);
-        // }
+        for ($i = 1001; $i <= 5000; $i++) {
+            DB::table('users')->insert([
+                [
+                    'user_code' => 'FE0' . sprintf('%02d', $i), // FE01, FE02, ...
+                    'full_name' => 'Student ' . $i,
+                    'email' => 'FE' . $i . '@gmail.com',
+                    'email_verified_at' => now(),
+                    'password' => bcrypt('password123'),
+                    'phone_number' => '01234567' . sprintf('%02d', $i),
+                    'address' => '123 Student Street',
+                    'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Ngẫu nhiên: Nữ nếu $i chẵn, Nam nếu $i lẻ
+                    'birthday' => '2000-01-0' . (($i % 9) + 1), // Sinh ngày từ 01-01 đến 01-09
+                    'citizen_card_number' => '12345678' . $i,
+                    'issue_date' => '2020-01-01',
+                    'place_of_grant' => 'Hà Nội',
+                    'nation' => 'Kinh',
+                    'avatar' => null,
+                    'role' => "3", // Quyền 3 (Sinh viên)
+                    'is_active' => 1,
+                    'major_code' => $majorCodes[array_rand($majorCodes)], // Lấy ngẫu nhiên từ danh sách mã ngành
+                    'narrow_major_code' => null, // Bạn có thể thêm narrow_major_code nếu cần
+                    'semester_code' => $semesterCodes[array_rand($semesterCodes)], // Lấy ngẫu nhiên từ danh sách kỳ học
+                    'course_code' => 'K01',
+                    'remember_token' => Str::random(10),
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ]);
+        }
 
-        // for ($i = 0; $i <= 30; $i++) {
+        // for ($i = 31; $i <= 70; $i++) {
         //     DB::table('users')->insert([
         //         [
         //             'user_code' => 'TC0' . sprintf('%02d', $i), // FE01, FE02, ...
@@ -442,22 +442,22 @@ class SubjectSeeder extends Seeder
         //     ]);
         // }
 
-        for ($i = 0; $i <= 30; $i++) {
-            DB::table('categories')->insert([
-                [
-                    'cate_code' => 'P' . sprintf('%02d', $i), // FE01, FE02, ...
-                    'cate_name' => 'P' . sprintf('%02d', $i),
-                    'value' => 40,
-                    'image' => null,
-                    'description' => "",
-                    'parent_code' => null,
-                    'type' => 'school_room',
-                    'is_active' => 1,
-                    'deleted_at' => null,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ],
-            ]);
-        }
+        // for ($i = 0; $i <= 30; $i++) {
+        //     DB::table('categories')->insert([
+        //         [
+        //             'cate_code' => 'P' . sprintf('%02d', $i), // FE01, FE02, ...
+        //             'cate_name' => 'P' . sprintf('%02d', $i),
+        //             'value' => 40,
+        //             'image' => null,
+        //             'description' => "",
+        //             'parent_code' => null,
+        //             'type' => 'school_room',
+        //             'is_active' => 1,
+        //             'deleted_at' => null,
+        //             'created_at' => Carbon::now(),
+        //             'updated_at' => Carbon::now(),
+        //         ],
+        //     ]);
+        // }
     }
 }

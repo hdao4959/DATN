@@ -62,7 +62,7 @@ const ListAccount = () => {
 
                         // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
-                            params: { page, per_page: data.length },
+                            // params: { page, per_page: data.length },
                             params: {
                                 page: page, // Trang hiện tại
                                 per_page: data.length, // Số bản ghi mỗi trang

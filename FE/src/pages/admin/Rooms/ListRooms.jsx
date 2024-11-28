@@ -160,6 +160,7 @@ const ClassRoomsList = () => {
                     { title: "Mã lớp", data: "class_code" },
                     { title: "Tên lớp", data: "class_name" },
                     { title: "Mã môn", data: "subject_code" },
+                    { title: "Giảng viên", data: "user_code" },
 
                     {
                         title: "Hành động",
@@ -260,13 +261,19 @@ const ClassRoomsList = () => {
                     "Content-Type": "application/json",
                 },
             });
-            const res3 = await api.get("/generateSchedule", {
+            const res3 = await api.get("/addTeacher", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
             });
-            return { res1, res2, res3 };
+            const res4 = await api.get("/generateSchedule", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            return { res1, res2, res3, res4};
 
         },
         onSuccess: (response) => {
