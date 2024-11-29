@@ -15,9 +15,13 @@ return new class extends Migration
     {
         Schema::create('subject_assessment', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Subject::class)->constrained()->onDelete('cascade');
-            $table->foreignIdFor(AssessmentItem::class)->constrained()->onDelete('cascade');
-            $table->unique(['subject_id','assessment_item_id']);
+            $table->string('subject_code', 40);
+            $table->foreign('subject_code')->references('subject_code')->on('subjects')
+            ->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('assessment_item_code', 40);
+            $table->foreign('assessment_item_code')->references('code')->on('assessment_items')
+            ->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unique(['subject_code','assessment_item_code']);
             $table->timestamps();
         });
     }

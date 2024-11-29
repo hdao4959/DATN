@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Lên lịch chạy lệnh mỗi 3,5 tháng (105 ngày)
+        $schedule->command('update:semester')->cron('0 2 */105 * *'); //chạy lúc 2 giờ sáng, mỗi 105 ngày
+
     }
 
     /**
@@ -20,7 +22,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

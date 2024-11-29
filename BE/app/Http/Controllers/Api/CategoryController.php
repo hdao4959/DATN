@@ -14,7 +14,9 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Classroom;
 use App\Models\ClassroomUser;
 use App\Models\Schedule;
+use App\Models\Score;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Date;
 use PHPUnit\Framework\Constraint\Count;
 
@@ -901,6 +903,20 @@ class CategoryController extends Controller
 
     public function getListByMajor()
     {
+        $studentRelearns = DB::table('scores')
+        ->join('users', 'scores.student_code', '=', 'users.user_code')
+        ->where('scores.is_pass', 0)
+        ->where('scores.status', 1)
+        ->select(
+            'scores.subject_code',
+            'users.user_code',
+            'users.full_name as user_name', 
+            'users.semester_code'
+        )
+        ->get();
+    
+        $studentRelearnsGrouped = $studentRelearns->groupBy('subject_code');
+
         $data = DB::table('categories')
             ->where('categories.is_active', true)
             ->where('categories.type', 'major')
@@ -910,9 +926,9 @@ class CategoryController extends Controller
                 $join->on('categories.cate_code', '=', 'major_users.major_code')
                     ->orOn('categories.cate_code', '=', 'major_users.narrow_major_code');
             })
-            ->leftJoin('fees', 'major_users.user_code', '=', 'fees.user_code') // Join với bảng fees
+            ->leftJoin('fees', 'major_users.user_code', '=', 'fees.user_code')
             ->where('major_users.is_active', true)
-            ->whereIn('major_users.role', ["2", "3"]) // Lọc giáo viên (role=2) và sinh viên (role=3)
+            ->whereIn('major_users.role', ["2", "3"])
             ->select(
                 'categories.cate_code',
                 'categories.cate_name',
@@ -922,21 +938,20 @@ class CategoryController extends Controller
                 'major_users.user_code as major_user_code',
                 'major_users.full_name as major_user_name',
                 'major_users.semester_code as major_semester_code',
-                'major_users.role as user_role', // Phân biệt giáo viên và sinh viên
-                'fees.status as fee_status' // Lấy thông tin trạng thái từ bảng fees
+                'major_users.role as user_role',
+                'fees.status as fee_status'
             )
             ->get()
-            ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
-            ->map(function ($subjects, $cate_code) {
+            ->groupBy('cate_code')
+            ->map(function ($subjects, $cate_code) use ($studentRelearnsGrouped) {
                 return [
                     'cate_code' => $cate_code,
                     'cate_name' => $subjects->first()->cate_name,
-                    'subjects' => $subjects->groupBy('subject_code')->map(function ($users, $subject_code) {
+                    'subjects' => $subjects->groupBy('subject_code')->map(function ($users, $subject_code) use ($studentRelearnsGrouped) {
                         $students = collect();
                         $teachers = collect();
 
                         foreach ($users as $user) {
-                            // Xử lý sinh viên có role=3 và status="paid"
                             if ($user->user_role == "3" && $user->fee_status === "paid" && $user->major_semester_code === $user->subject_semester_code) {
                                 $students->push([
                                     'user_code' => $user->major_user_code,
@@ -945,11 +960,22 @@ class CategoryController extends Controller
                                 ]);
                             }
 
-                            // Xử lý giáo viên có role=2
                             if ($user->user_role == "2") {
                                 $teachers->push([
                                     'user_code' => $user->major_user_code,
                                     'user_name' => $user->major_user_name,
+                                ]);
+                            }
+                        }
+
+                        // Bổ sung sinh viên học lại
+                        // return $studentRelearnsGrouped[$subject_code];
+                        if (isset($studentRelearnsGrouped[$subject_code])) {
+                            foreach ($studentRelearnsGrouped[$subject_code] as $student) {
+                                $students->push([
+                                    'user_code' => $student->user_code,
+                                    'user_name' => $student->user_name,
+                                    'semester' => $student->semester_code,
                                 ]);
                             }
                         }
@@ -966,6 +992,7 @@ class CategoryController extends Controller
 
         return $data;
     }
+
 
     public function getClassrooms()
     {
@@ -1206,9 +1233,7 @@ class CategoryController extends Controller
     public function addStudent()
     {
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
-        $majors = $this->getListByMajor();   // Lấy danh sách sinh viên theo chuyên ngành
-
-        // Tạo một bộ nhớ tạm cho số lượng sinh viên đã gán vào mỗi lớp
+        return $majors = $this->getListByMajor();
         $classroomStudentCounts = DB::table('classroom_user')
             ->select('class_code', DB::raw('COUNT(*) as current_count'))
             ->groupBy('class_code')
@@ -1614,7 +1639,7 @@ class CategoryController extends Controller
             if (!$startDates || !is_array($startDates)) {
                 return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
             }
-            
+
             $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
             $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
             $index = 1;
