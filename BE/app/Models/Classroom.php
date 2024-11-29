@@ -18,7 +18,7 @@ class Classroom extends Model
         'description',
         'is_active',
         'subject_code',
-
+        'user_code'
     ];
 
     protected $casts = [
@@ -50,6 +50,7 @@ class Classroom extends Model
 
     public function schedules()
     {
+
         return $this->hasMany(Schedule::class, 'class_code', 'class_code');
     }
     // Định nghĩa mối quan hệ với bảng 'attendance'

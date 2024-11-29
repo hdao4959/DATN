@@ -37,7 +37,12 @@ class ScheduleController extends Controller
     {
         try {
 
-            $classroom = Classroom::with('schedules')->where('class_code', $class_code)->first();
+            $classroom = Classroom::with([
+                'subject' => function($query){
+                    $query->select('subject_code', 'subject_name');
+                }
+            ])->where('class_code', $class_code)->select('class_code', 'class_name', 'subject_code')->first();
+            // return response()->json($classroom);
             if (!$classroom) {
                 return response()->json(
                     [
