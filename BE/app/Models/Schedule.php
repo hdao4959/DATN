@@ -35,25 +35,28 @@ class Schedule extends Model
     }
 
 
-    public function toArray()
-    {
-        return [
-            'class_code' => $this->class_code,
-            'date' => $this->date,
-            'classroom' => [
-                'class_name' => $this->classroom->class_name ?? null,
-            ],
-            'room' => [
-                'cate_name' => $this->room->cate_name ?? null,
-                'value' => $this->room->value ?? null,
-            ],
-            'session' => [
-                'cate_code' => $this->session->cate_code ?? null,
-                'cate_name' => $this->session->cate_name ?? null,
-                'value' => $this->session->value ?? null,
-            ]
-        ];
-    }
+    // public function toArray()
+    // {
+    //     return [
+    //         'class_code' => $this->class_code,
+    //         'date' => $this->date,
+    //         'classroom' => [
+    //             'class_name' => $this->classroom->class_name ?? null,
+    //         ],
+    //         'room' => [
+    //             'cate_name' => $this->room->cate_name ?? null,
+    //             'value' => $this->room->value ?? null,
+    //         ],
+    //         'session' => [
+    //             'cate_code' => $this->session->cate_code ?? null,
+    //             'cate_name' => $this->session->cate_name ?? null,
+    //             'value' => $this->session->value ?? null,
+    //         ],
+    //         'teacher'=> [
+    //             'user_code'=> $this->teacher->user_code ?? null
+    //         ]
+    //     ];
+    // }
 
 
 }
