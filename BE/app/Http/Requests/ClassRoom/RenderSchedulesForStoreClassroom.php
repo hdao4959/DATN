@@ -25,8 +25,7 @@ class RenderSchedulesForStoreClassroom extends FormRequest
             'session_code' => 'required|exists:categories,cate_code',
             'subject_code' => 'required|exists:subjects,subject_code',
             'date_from' => 'required|date|after_or_equal:tomorrow',
-            'study_days' => 'required|array',
-            'study_days.*' => 'in:1,2,3,4,5,6,7',
+            'day_type' => 'required|in:1,2',
         ];
     }
 
@@ -34,12 +33,13 @@ class RenderSchedulesForStoreClassroom extends FormRequest
         return [
             'session_code.required' => 'Bạn chưa chọn ca học!',
             'session_code.exists' => "Ca học này không tồn tại!",
+            'subject_code.required' => 'Bạn chưa chọn môn học!',
+            'subject_code.exists' => 'Môn học này không tồn tại!',
             'date_from.required' => 'Bạn chưa chọn ngày bắt đầu của lớp học!',
             'date_from.date' => 'Định dạng ngày bắt đầu không hợp lệ!',
             'date_from.after_or_equal' => 'Ngày bắt đầu phải là ngày mai trở đi!',
-            'study_days.required' => 'Bạn chưa chọn ngày học trong tuần!',
-            'study_days.array' => 'Các ngày học không hợp lệ!',
-            'study_days.*.in' => 'Các ngày học không hợp lệ!',
+            'day_type.required' => 'Bạn chưa chọn ngày học trong tuần!',
+            'day_type.in' => 'Các ngày học không hợp lệ!',
         ];
     }
 

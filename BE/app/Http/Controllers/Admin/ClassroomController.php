@@ -119,6 +119,7 @@ class ClassroomController extends Controller
         // } catch (\Throwable $th) {
         //     return $this->handleErrorNotDefine($th);
         // }
+
     }
 
 
@@ -185,10 +186,10 @@ class ClassroomController extends Controller
 
         try {
             $data = $request->validated();
-            // Lấy ra danh sách codes các lớp học đã được tạo bởi môn học này + khoá học này
+            // Lấy ra danh sách các lớp học đã được tạo bởi môn học này + khoá học này
             $classroom_codes = Classroom::where('class_code', 'LIKE', $data['course_code'] . '_' . $data['subject_code'] . '%')
                 ->select('class_code')->pluck('class_code');
-            // Lấy ra danh sách codes của học sinh đã được xếp lớp cho môn học này + khoá học này 
+            // Lấy ra danh sách các học sinh đã được xếp lớp cho môn học này + khoá học này 
             $student_codes_has_been_arrange = ClassroomUser::whereIn('class_code', $classroom_codes)->pluck('user_code');
             // Lấy ra tổng số học sinh có thể được tạo lớp mới với môn học này + khoá học này
             $count_students_can_be_arrange = User::whereNotIn('user_code', $student_codes_has_been_arrange)
@@ -196,10 +197,10 @@ class ClassroomController extends Controller
                     'course_code' => $data['course_code'],
                     'major_code' => $data['major_code'],
                     'semester_code' => $data['semester_code'],
-                    'is_active' => true
+                    'is_active' => true,
+                    'role' => '3'
                 ])
                 ->count();
-
             return response()->json($count_students_can_be_arrange);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -214,20 +215,29 @@ class ClassroomController extends Controller
             $subject = Subject::firstWhere('subject_code', $data['subject_code']);
 
             $dateFrom = $data['date_from'];
-            $studyDays = $data['study_days'];
+            $day_type = $data['day_type'];
+
+            // Học ngày thứ 2,4,6
+            if ($day_type == 1) {
+                $studyDays = [1, 3, 5];
+            }
+            // Học ngày thứ 3,5,7
+            if ($day_type == 2) {
+                $studyDays = [2, 4, 6];
+            }
 
             // Danh sách các ngày ngày học sẽ được thêm vào
             $study_dates = [];
+            // $exam_dates = [];
 
             $curentDate = new DateTime($dateFrom);
-
             do {
                 if (in_array($curentDate->format('N'), $studyDays)) {
                     $study_dates[] = $curentDate->format('Y-m-d');
                 }
+                // Tăng ngày hiện tại lên 1 ngày
                 $curentDate->add(new DateInterval('P1D'));
             } while (count($study_dates) < $subject['total_sessions']);
-
 
             return response()->json($study_dates, 200);
         } catch (\Throwable $th) {
@@ -240,23 +250,39 @@ class ClassroomController extends Controller
         try {
             $data = $request->validated();
 
-            $schedules = Schedule::with('room')->whereIn('date', $data['list_study_dates'])
+            // Lấy ra các lịch học với ngày học và ca học muốn tìm
+            $schedules = Schedule::with([
+                'room' => function ($query) {
+                    $query->select('cate_code','cate_name', 'value');
+                },
+                'teacher' => function ($query) {
+                    $query->select('user_code');
+                }
+            ])->whereIn('date', $data['list_study_dates'])
                 ->where('session_code', $data['session_code'])->get();
 
+            // Lấy ra các lớp học của lịch học vừa tìm thấy
             $classroom_codes_studied = $schedules->pluck('class_code')->unique();
+            // Lấy ra các phòng học của lịch học vừa tìm thấy
             $room_codes_studied = $schedules->pluck('room.cate_name')->unique();
+
+            // Loại bỏ các phòng vừa tìm thấy để lấy các phòng chưa trống
             $rooms_can_be_study = Category::whereNotIn('cate_code', $room_codes_studied)->where([
                 'is_active' => true,
                 'type' => 'school_room'
             ])->select('cate_code', 'cate_name', 'value')->limit(10)->get();
-
-            $teacher_codes_cannot_be_teach = Classroom::whereIn('class_code', $classroom_codes_studied)->pluck('user_code');
+            
+            // Lấy ra các giảng viên đang dạy tại các lịch vừa tìm thấy
+            $teacher_codes_cannot_be_teach = $schedules->pluck('teacher.user_code')->unique();
+            
+            // Loại bỏ các giảng viên vừa tìm được để tìm ra các giảng viên có thể dạy 
             $teachers_can_be_teach = User::whereNotIn('user_code', $teacher_codes_cannot_be_teach)
                 ->where([
                     'is_active' => true,
                     'major_code' => $data['major_code'],
                     'role' => '2'
                 ])->select('user_code', 'full_name')->limit(10)->get();
+        
 
             return response()->json([
                 'status' => true,
@@ -363,7 +389,6 @@ class ClassroomController extends Controller
                 "class_code"  => $data['course_code'] . "_" . $data['subject_code'] . "." . $number,
                 "class_name"  => $data['course_code'] . "_" . $data['subject_code'] . "." . $number,
                 "subject_code"  => $data['subject_code'],
-                "user_code"  => $teacher_codes_valid ?? null, //Mã giảng viên
             ];
 
             $student_codes_valid = User::whereIn('user_code', $data['student_codes'])->pluck('user_code');
@@ -384,6 +409,7 @@ class ClassroomController extends Controller
                     'class_code' => $classroom->class_code,
                     'session_code' => $data['session_code'],
                     'room_code' => $data['room_code'],
+                    'teacher_code' => $data['teacher_code'] ?? null,
                     'date' => $date,
                 ];
             }
