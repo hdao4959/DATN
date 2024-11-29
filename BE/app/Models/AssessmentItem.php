@@ -10,6 +10,7 @@ class AssessmentItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'assessment_code',
         'name',
         'weight'
     ];

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Student;
 
 use Throwable;
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
 use App\Models\ClassroomUser;
+use App\Models\ScoreComponent;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -17,72 +19,97 @@ class ScoreController extends Controller
     {
         try {
             $userCode = $request->user()->user_code;
-            $semesterCode = $request->input('search');
+            $semesterCodeUser = User::where('user_code', $userCode)
+                                    ->select('semester_code')
+                                    ->first();
+
+            $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
+        
             $listSemester = Category::where('type', 'semester')
-                                    ->where('is_active', '1')
-                                    ->select('cate_code', 'cate_name')
-                                    ->get();
-
-            $classRooms = ClassroomUser::whereHas('classroom.subject', function ($query) use ($semesterCode) {
-                $query->where('semester_code', $semesterCode);
-            })
-            ->where('user_code', 'student04')
-            ->with(['classroom' => function ($query) {
-                $query->select('class_code', 'class_name', 'score');
-            }])
-            ->get()
-            ->map(function ($classroomUser) {
-                return $classroomUser->classroom; // Lấy ra chỉ dữ liệu của classroom
-            });
-            
-            $data = json_decode($classRooms, true);
-
-            $result = [];
-
-            // Duyệt qua từng lớp học
-            foreach ($data as $classGroup) {
-                foreach ($classGroup as $class) {
-                    $classInfo = [
-                        'class_code' => $class['class_code'],
-                        'class_name' => $class['class_name'],
-                        'students' => []
-                    ];
-                    
-                    if ($class['score']) {
-                        // Giải mã chuỗi JSON trong trường 'score'
-                        $scoreData = json_decode($class['score'], true);
-
-                        if ($scoreData) {
-                            // Duyệt qua từng sinh viên trong $scoreData
-                            foreach ($scoreData as $student) {
-                                // Kiểm tra nếu student_code trùng với $userCode
-                                if ($student['student_code'] === $userCode) {
-                                    // Tính điểm trung bình
-                                    $diem = 0;
-                                    $heSo = 0;
-                                    foreach ($student['scores'] as $scoreEntry) {
-                                        $diem += $scoreEntry['score'] * $scoreEntry['value'];
-                                        $heSo += $scoreEntry['value'];
-                                    }
-                                    $averageScore = $heSo > 0 ? ($diem / $heSo) : 0;
-                                    $formattedScore = number_format($averageScore, 1, ',', '');
-
-                                    $studentInfo = [
-                                        'name' => $student['student_name'],
-                                        'student_code' => $student['student_code'],
-                                        'scores' => $student['scores'],
-                                        'average_score' => $formattedScore
-                                    ];
-                                    // Thêm thông tin sinh viên vào mảng students
-                                    $classInfo['students'][] = $studentInfo;
+                ->where('is_active', '1')
+                ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
+                ->orderBy('cate_code', 'asc')
+                ->select('cate_code', 'cate_name')
+                ->get();
+                $classrooms = Classroom::whereHas('subject', function ($query) use ($semesterCode) {
+                                $query->where('semester_code', $semesterCode);
+                            })
+                            ->whereHas('users', function ($query) use ($userCode) {
+                                $query->where('classroom_user.user_code', $userCode);
+                            })
+                            ->with([
+                                'subject' => function ($query) {
+                                    $query->select('subject_code', 'subject_name', 'semester_code', 'assessments');
+                                },
+                                'teacher' => function ($query) {
+                                    $query->select('user_code', 'full_name');
+                                },
+                                'scorecomponents' => function ($query) use ($userCode) {
+                                    $query->where('student_code', $userCode)
+                                        ->with('assessmentItem', function ($query) {
+                                                $query->select('assessment_code', 'name', 'weight');
+                                        })
+                                        ->select('student_code', 'class_code', 'score', 'assessment_code');
                                 }
-                            }
-                        }
-                    }                    
-                    $result[] = $classInfo;
-                }
-            }
-            return response()->json($result, 200);
+
+                            ])
+                            ->get(['class_code', 'class_name', 'subject_code', 'user_code']);
+                        // dd($classrooms);
+                        $result = $classrooms->map(function ($classroom) {
+                            $subjects = $classroom->subject;
+                            $scorecomponents = $classroom->scorecomponents;
+                            $subject = json_decode($subjects['assessments'], true);
+                            dd($subject);
+                        });
+                        
+            //             $data = json_decode($classRooms, true);
+
+            //             $result = [];
+
+            //             // Duyệt qua từng lớp học
+            //             foreach ($data as $classGroup) {
+            //                 foreach ($classGroup as $class) {
+            //                     $classInfo = [
+            //                         'class_code' => $class['class_code'],
+            //                         'class_name' => $class['class_name'],
+            //                         'students' => []
+            //                     ];
+                                
+            //                     if ($class['score']) {
+            //                         // Giải mã chuỗi JSON trong trường 'score'
+            //                         $scoreData = json_decode($class['score'], true);
+
+            //                         if ($scoreData) {
+            //                             // Duyệt qua từng sinh viên trong $scoreData
+            //                             foreach ($scoreData as $student) {
+            //                                 // Kiểm tra nếu student_code trùng với $userCode
+            //                                 if ($student['student_code'] === $userCode) {
+            //                                     // Tính điểm trung bình
+            //                                     $diem = 0;
+            //                                     $heSo = 0;
+            //                                     foreach ($student['scores'] as $scoreEntry) {
+            //                                         $diem += $scoreEntry['score'] * $scoreEntry['value'];
+            //                                         $heSo += $scoreEntry['value'];
+            //                                     }
+            //                                     $averageScore = $heSo > 0 ? ($diem / $heSo) : 0;
+            //                                     $formattedScore = number_format($averageScore, 1, ',', '');
+
+            //                                     $studentInfo = [
+            //                                         'name' => $student['student_name'],
+            //                                         'student_code' => $student['student_code'],
+            //                                         'scores' => $student['scores'],
+            //                                         'average_score' => $formattedScore
+            //                                     ];
+            //                                     // Thêm thông tin sinh viên vào mảng students
+            //                                     $classInfo['students'][] = $studentInfo;
+            //                                 }
+            //                             }
+            //                         }
+            //                     }                    
+            //                     $result[] = $classInfo;
+            //                 }
+            //             }
+            // return response()->json($result, 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
