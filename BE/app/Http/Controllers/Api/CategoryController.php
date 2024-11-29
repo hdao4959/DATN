@@ -14,7 +14,9 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Classroom;
 use App\Models\ClassroomUser;
 use App\Models\Schedule;
+use App\Models\Score;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Date;
 use PHPUnit\Framework\Constraint\Count;
 
@@ -901,6 +903,20 @@ class CategoryController extends Controller
 
     public function getListByMajor()
     {
+        $studentRelearns = DB::table('scores')
+        ->join('users', 'scores.student_code', '=', 'users.user_code')
+        ->where('scores.is_pass', 0)
+        ->where('scores.status', 1)
+        ->select(
+            'scores.subject_code',
+            'users.user_code',
+            'users.full_name as user_name', 
+            'users.semester_code'
+        )
+        ->get();
+    
+        $studentRelearnsGrouped = $studentRelearns->groupBy('subject_code');
+
         $data = DB::table('categories')
             ->where('categories.is_active', true)
             ->where('categories.type', 'major')
@@ -910,9 +926,9 @@ class CategoryController extends Controller
                 $join->on('categories.cate_code', '=', 'major_users.major_code')
                     ->orOn('categories.cate_code', '=', 'major_users.narrow_major_code');
             })
-            ->leftJoin('fees', 'major_users.user_code', '=', 'fees.user_code') // Join với bảng fees
+            ->leftJoin('fees', 'major_users.user_code', '=', 'fees.user_code')
             ->where('major_users.is_active', true)
-            ->whereIn('major_users.role', ["2", "3"]) // Lọc giáo viên (role=2) và sinh viên (role=3)
+            ->whereIn('major_users.role', ["2", "3"])
             ->select(
                 'categories.cate_code',
                 'categories.cate_name',
@@ -922,21 +938,20 @@ class CategoryController extends Controller
                 'major_users.user_code as major_user_code',
                 'major_users.full_name as major_user_name',
                 'major_users.semester_code as major_semester_code',
-                'major_users.role as user_role', // Phân biệt giáo viên và sinh viên
-                'fees.status as fee_status' // Lấy thông tin trạng thái từ bảng fees
+                'major_users.role as user_role',
+                'fees.status as fee_status'
             )
             ->get()
-            ->groupBy('cate_code') // Nhóm theo mã chuyên ngành
-            ->map(function ($subjects, $cate_code) {
+            ->groupBy('cate_code')
+            ->map(function ($subjects, $cate_code) use ($studentRelearnsGrouped) {
                 return [
                     'cate_code' => $cate_code,
                     'cate_name' => $subjects->first()->cate_name,
-                    'subjects' => $subjects->groupBy('subject_code')->map(function ($users, $subject_code) {
+                    'subjects' => $subjects->groupBy('subject_code')->map(function ($users, $subject_code) use ($studentRelearnsGrouped) {
                         $students = collect();
                         $teachers = collect();
 
                         foreach ($users as $user) {
-                            // Xử lý sinh viên có role=3 và status="paid"
                             if ($user->user_role == "3" && $user->fee_status === "paid" && $user->major_semester_code === $user->subject_semester_code) {
                                 $students->push([
                                     'user_code' => $user->major_user_code,
@@ -945,11 +960,22 @@ class CategoryController extends Controller
                                 ]);
                             }
 
-                            // Xử lý giáo viên có role=2
                             if ($user->user_role == "2") {
                                 $teachers->push([
                                     'user_code' => $user->major_user_code,
                                     'user_name' => $user->major_user_name,
+                                ]);
+                            }
+                        }
+
+                        // Bổ sung sinh viên học lại
+                        // return $studentRelearnsGrouped[$subject_code];
+                        if (isset($studentRelearnsGrouped[$subject_code])) {
+                            foreach ($studentRelearnsGrouped[$subject_code] as $student) {
+                                $students->push([
+                                    'user_code' => $student->user_code,
+                                    'user_name' => $student->user_name,
+                                    'semester' => $student->semester_code,
                                 ]);
                             }
                         }
@@ -966,6 +992,7 @@ class CategoryController extends Controller
 
         return $data;
     }
+
 
     public function getClassrooms()
     {
@@ -984,6 +1011,7 @@ class CategoryController extends Controller
                 'classrooms.class_code',
                 'classrooms.class_name',
                 'classrooms.subject_code',
+                'schedules.session_code',
                 'classrooms.user_code'
             )
             ->get()
@@ -1052,8 +1080,8 @@ class CategoryController extends Controller
                             'room_code' => $item->room_code ?? null,
                             'class_code' => $item->class_code,
                             'session_code' => $item->session_code,
-                            'teacher_code' => $item->teacher_code
-
+                            'teacher_code' => $item->teacher_code,
+                            'type' => 'study'
                         ];
 
                         $currentSession++;
@@ -1063,6 +1091,41 @@ class CategoryController extends Controller
                 // Tiến đến ngày tiếp theo
                 $startDate->addDay();
             }
+            // Sau khi hoàn tất các buổi học, tạo 3 buổi thi cách 1 tuần
+            $examDays = [];
+            $startDate->addWeek(); // Cách 1 tuần sau buổi học cuối cùng
+            $examCount = 0; // Biến đếm số buổi thi
+
+            while ($examCount < 3) {
+                if (in_array($startDate->dayOfWeek, $weekDays)) {
+                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
+                    $exists = DB::table('schedules')
+                        ->where('date', $startDate->format('Y-m-d'))
+                        ->where('class_code', $item->class_code)
+                        ->where('room_code', $item->room_code ?? null)
+                        ->where('session_code', $item->session_code)
+                        ->exists();
+
+                    if (!$exists) {
+                        $examDays[] = $startDate->format('Y-m-d');
+                        $insertData[] = [
+                            'date' => $startDate->format('Y-m-d'),
+                            'room_code' => $item->room_code ?? null,
+                            'class_code' => $item->class_code,
+                            'session_code' => $item->session_code,
+                            'teacher_code' => $item->teacher_code,
+                            'type' => 'exam' // Loại buổi thi
+                        ];
+
+                        $examCount++;
+                    }
+                }
+
+                // Tiến đến ngày tiếp theo
+                $startDate->addDay();
+            }
+
+            $createdDates = array_merge($createdDates, $examDays); // Gộp các ngày đã tạo
         }
 
         // Chèn dữ liệu vào bảng schedules
@@ -1167,56 +1230,10 @@ class CategoryController extends Controller
     //     return $data;
     // }
 
-    // public function addStudent()
-    // {
-    //     // return $this->addTeacher();
-
-    //     $classRooms = $this->getClassrooms();
-    //     $majors = $this->getListByMajor();
-    //     $classRoomIndex = 0;
-    //     foreach ($majors as $major) {
-    //         foreach ($major['subjects'] as $subject) {
-    //             foreach ($subject['students'] as $student) {
-    //                 $assigned = false;
-    //                 while ($classRoomIndex < count($classRooms)) {
-    //                     $classRoom = $classRooms[$classRoomIndex];
-    //                     $currentStudentCount = DB::table('classroom_user')
-    //                         ->where('class_code', $classRoom->class_code)
-    //                         ->count();
-    //                     if ($currentStudentCount < intval($classRoom->value)) {
-
-    //                         if ($this->canAssignStudentToClass($student, $classRoom)) {
-
-    //                             DB::table('classroom_user')->insert([
-    //                                 'class_code' => $classRoom->class_code,
-    //                                 'user_code' => $student['user_code']
-    //                             ]);
-
-    //                             $assigned = true;
-    //                             break;
-    //                         }
-    //                     } else {
-    //                         // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
-    //                         $classRoomIndex++;
-    //                     }
-    //                 }
-    //                 if (!$assigned) {
-    //                     continue;
-    //                 }
-    //             }
-    //             $classRoomIndex++;
-    //         }
-    //     }
-    //     // return response()->json(['message' => 'Students assigned to classrooms successfully']);
-    //     // $this->addTeacher();
-    // }
-
     public function addStudent()
     {
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
-        $majors = $this->getListByMajor();   // Lấy danh sách sinh viên theo chuyên ngành
-
-        // Tạo một bộ nhớ tạm cho số lượng sinh viên đã gán vào mỗi lớp
+        return $majors = $this->getListByMajor();
         $classroomStudentCounts = DB::table('classroom_user')
             ->select('class_code', DB::raw('COUNT(*) as current_count'))
             ->groupBy('class_code')
@@ -1238,24 +1255,35 @@ class CategoryController extends Controller
                 foreach ($subject['students'] as $student) {
                     $assigned = false;
 
+                    // Kiểm tra tất cả các lớp học cho môn này
                     while ($classRoomIndex < count($classRooms)) {
                         $classRoom = $classRooms[$classRoomIndex];
                         $currentStudentCount = $classroomStudentCounts[$classRoom->class_code];
                         $classCapacity = intval($classRoom->value);
 
+                        // Nếu lớp chưa đầy, kiểm tra sinh viên có thể học lớp này không
                         if ($currentStudentCount < $classCapacity) {
-                            if ($this->canAssignStudentToClass($student, $classRoom)) {
-                                // Thêm dữ liệu vào batch insert
-                                $batchInsertData[] = [
-                                    'class_code' => $classRoom->class_code,
-                                    'user_code' => $student['user_code'],
-                                ];
+                            // Kiểm tra không trùng ca học trong ngày
+                            $existingSchedule = DB::table('schedules')
+                                ->where('class_code', $classRoom->class_code)
+                                ->where('date', '=', $student['semester'])
+                                ->where('session_code', '=', $classRoom->session_code)
+                                ->exists();
 
-                                // Cập nhật số lượng sinh viên hiện tại
-                                $classroomStudentCounts[$classRoom->class_code]++;
-                                $this->updateClassroomForSubject($classRoom, $subject);
-                                $assigned = true;
-                                break;
+                            if (!$existingSchedule) {
+                                if ($this->canAssignStudentToClass($student, $classRoom)) {
+                                    // Thêm dữ liệu vào batch insert
+                                    $batchInsertData[] = [
+                                        'class_code' => $classRoom->class_code,
+                                        'user_code' => $student['user_code'],
+                                    ];
+
+                                    // Cập nhật số lượng sinh viên hiện tại
+                                    $classroomStudentCounts[$classRoom->class_code]++;
+                                    $this->updateClassroomForSubject($classRoom, $subject);
+                                    $assigned = true;
+                                    break;
+                                }
                             }
                         } else {
                             // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
@@ -1264,6 +1292,7 @@ class CategoryController extends Controller
                     }
 
                     if (!$assigned) {
+                        // Nếu không gán được sinh viên vào lớp hiện tại, tiếp tục vòng lặp
                         continue;
                     }
                 }
@@ -1278,6 +1307,75 @@ class CategoryController extends Controller
 
         return response()->json(['message' => 'Students assigned to classrooms successfully']);
     }
+
+
+    // public function addStudent()
+    // {
+    //     $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
+    //     $majors = $this->getListByMajor();   // Lấy danh sách sinh viên theo chuyên ngành
+
+    //     // Tạo một bộ nhớ tạm cho số lượng sinh viên đã gán vào mỗi lớp
+    //     $classroomStudentCounts = DB::table('classroom_user')
+    //         ->select('class_code', DB::raw('COUNT(*) as current_count'))
+    //         ->groupBy('class_code')
+    //         ->pluck('current_count', 'class_code')
+    //         ->toArray();
+
+    //     // Gán số lượng hiện tại là 0 nếu lớp chưa có dữ liệu
+    //     foreach ($classRooms as $classRoom) {
+    //         if (!isset($classroomStudentCounts[$classRoom->class_code])) {
+    //             $classroomStudentCounts[$classRoom->class_code] = 0;
+    //         }
+    //     }
+
+    //     $classRoomIndex = 0;
+    //     $batchInsertData = []; // Lưu dữ liệu batch insert
+
+    //     foreach ($majors as $major) {
+    //         foreach ($major['subjects'] as $subject) {
+    //             foreach ($subject['students'] as $student) {
+    //                 $assigned = false;
+
+    //                 while ($classRoomIndex < count($classRooms)) {
+    //                     $classRoom = $classRooms[$classRoomIndex];
+    //                     $currentStudentCount = $classroomStudentCounts[$classRoom->class_code];
+    //                     $classCapacity = intval($classRoom->value);
+
+    //                     if ($currentStudentCount < $classCapacity) {
+    //                         if ($this->canAssignStudentToClass($student, $classRoom)) {
+    //                             // Thêm dữ liệu vào batch insert
+    //                             $batchInsertData[] = [
+    //                                 'class_code' => $classRoom->class_code,
+    //                                 'user_code' => $student['user_code'],
+    //                             ];
+
+    //                             // Cập nhật số lượng sinh viên hiện tại
+    //                             $classroomStudentCounts[$classRoom->class_code]++;
+    //                             $this->updateClassroomForSubject($classRoom, $subject);
+    //                             $assigned = true;
+    //                             break;
+    //                         }
+    //                     } else {
+    //                         // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
+    //                         $classRoomIndex++;
+    //                     }
+    //                 }
+
+    //                 if (!$assigned) {
+    //                     continue;
+    //                 }
+    //             }
+    //             $classRoomIndex++;
+    //         }
+    //     }
+
+    //     // Thực hiện batch insert để chèn tất cả sinh viên cùng lúc
+    //     if (!empty($batchInsertData)) {
+    //         DB::table('classroom_user')->insert($batchInsertData);
+    //     }
+
+    //     return response()->json(['message' => 'Students assigned to classrooms successfully']);
+    // }
 
 
     public function addTeacher()
@@ -1464,14 +1562,14 @@ class CategoryController extends Controller
             $subjectCounters[$subjectCode][$courseCode][$majorCode]++;
         }
         DB::table('classrooms')
-        ->whereNotExists(function ($query) {
-            $query->select(DB::raw(1))
-                ->from('classroom_user')
-                ->whereColumn('classroom_user.class_code', 'classrooms.class_code');
-        })
-        ->orWhereNull('classrooms.subject_code')
-        ->delete();
-    
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('classroom_user')
+                    ->whereColumn('classroom_user.class_code', 'classrooms.class_code');
+            })
+            ->orWhereNull('classrooms.subject_code')
+            ->delete();
+
         return response()->json(['message' => 'Classrooms updated successfully']);
     }
 
@@ -1520,51 +1618,72 @@ class CategoryController extends Controller
 
     public function getListClassByRoomAndSession(Request $request)
     {
-        $startDates = $request->input('startDates');
-        if (!$startDates || !is_array($startDates)) {
-            return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
-        }
-        $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
-        $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
-        $index = 1;
-        $createdClassrooms = [];
-        // return response()->json([$sessions]);
+        try {
+            $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
+            $startDates = []; // Mảng chứa các ngày cần lấy
 
-        foreach ($schoolRoom as $room) {
-            foreach ($sessions as $session) {
-                foreach ($startDates as $startDate) {
-                    try {
-                        $date = Carbon::parse($startDate);
-                        $timestamp = $date->timestamp;
-                    } catch (\Exception $e) {
-                        return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
-                    }
+            // Thêm ngày hiện tại vào mảng
+            $startDates[] = $startDate->format('Y-m-d');
 
-                    $classroom = Classroom::firstOrCreate([
-                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'class_name' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'is_active' => true
-                    ]);
+            // Lấy ngày tiếp theo, bỏ Chủ nhật
+            $startDate->addDay(); // Thêm 1 ngày
 
-                    $createdClassrooms[] = $classroom;
-
-                    Schedule::firstOrCreate([
-                        'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
-                        'room_code' => $room->cate_code,
-                        'session_code' => $session->cate_code,
-                        'date' => $date->format('Y-m-d')
-                    ]);
-
-                    // return dd($dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index);
-                }
+            // Kiểm tra xem ngày tiếp theo có phải là Chủ nhật không
+            if ($startDate->dayOfWeek != Carbon::SUNDAY) {
+                $startDates[] = $startDate->format('Y-m-d');
+            } else {
+                // Nếu là Chủ nhật thì thêm 1 ngày nữa (là thứ 2 tuần sau)
+                $startDate->addDay();
+                $startDates[] = $startDate->format('Y-m-d');
             }
-            $index++;
-        }
+            if (!$startDates || !is_array($startDates)) {
+                return response()->json(['error' => true, 'message' => 'Ngày không đúng định dạng mảng'], 400);
+            }
 
-        return response()->json([
-            'count' => count($createdClassrooms),
-            'startDates' => $startDates
-        ]);
+            $schoolRoom = DB::table('categories')->where('type', '=', "school_room")->where('is_active', '=', true)->get();
+            $sessions = DB::table('categories')->where('type', '=', "session")->where('is_active', '=', true)->get();
+            $index = 1;
+            $createdClassrooms = [];
+            // return response()->json([$sessions]);
+
+            foreach ($schoolRoom as $room) {
+                foreach ($sessions as $session) {
+                    foreach ($startDates as $startDate) {
+                        try {
+                            $date = Carbon::parse($startDate);
+                            $timestamp = $date->timestamp;
+                        } catch (\Exception $e) {
+                            return response()->json(['error' => true, 'message' => "Ngày không hợp lệ: $startDate"]);
+                        }
+
+                        $classroom = Classroom::firstOrCreate([
+                            'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'class_name' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'is_active' => true
+                        ]);
+
+                        $createdClassrooms[] = $classroom;
+
+                        Schedule::firstOrCreate([
+                            'class_code' => $timestamp . "_" . $session->cate_code . "_" . $room->cate_code . "_" . $index,
+                            'room_code' => $room->cate_code,
+                            'session_code' => $session->cate_code,
+                            'date' => $date->format('Y-m-d')
+                        ]);
+
+                        // return dd($dayOfWeek . "_" . $room->cate_code . "_" . $session->cate_code . "_" . $index);
+                    }
+                }
+                $index++;
+            }
+
+            return response()->json([
+                'count' => count($createdClassrooms),
+                'startDates' => $startDates
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => true, 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động'], 400);
+        }
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)

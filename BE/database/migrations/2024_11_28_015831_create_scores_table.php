@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('subject_code', 40);
             $table->foreign('subject_code')->references('subject_code')->on('subjects')
             ->cascadeOnDelete()->cascadeOnUpdate();
-            $table->decimal('score', 5, 2)->comment('Điểm tổng hợp');
-            $table->boolean('is_pass');
+            $table->decimal('score', 5, 2);
+            $table->boolean('is_pass')->default(true);
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

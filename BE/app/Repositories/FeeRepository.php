@@ -51,7 +51,6 @@ class FeeRepository implements FeeRepositoryInterface {
                 continue;
             }
 
-
             $semesterCode = 'S'.$nextSemester;
             $subjects = Subject::whereHas('semester', function ($query) use ($nextSemester) {
                 $query->where('value', $nextSemester);
