@@ -37,8 +37,9 @@ class Classroom extends Model
         return $this->belongsTo(Subject::class, 'subject_code', 'subject_code');
     }
 
-
-
+    public function teacher(){
+        return $this->belongsTo(User::class, 'user_code', 'user_code');
+    }
 
     public function users(){
         return $this->belongsToMany(User::class, 'classroom_user', 'class_code', 'user_code','class_code', 'user_code');    }
@@ -50,5 +51,10 @@ class Classroom extends Model
     public function attendance()
     {
         return $this->hasMany(Attendance::class, 'class_code', 'class_code');
+    }
+    // Định nghĩa mối quan hệ với bảng 'scoreComponent'
+    public function scorecomponents()
+    {
+        return $this->hasMany(ScoreComponent::class, 'class_code', 'class_code');
     }
 }

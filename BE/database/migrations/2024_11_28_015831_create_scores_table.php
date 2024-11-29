@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
             $table->string('student_code',20);
+            $table->foreign('student_code')->references('user_code')->on('users')
+            ->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('subject_code', 40);
             $table->foreign('subject_code')->references('subject_code')->on('subjects')
             ->cascadeOnDelete()->cascadeOnUpdate();

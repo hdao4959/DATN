@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('assessment_items', function (Blueprint $table) {
             $table->id();
+            $table->string('assessment_code')->unique();
             $table->string('name');
             $table->integer('weight');
             $table->timestamps();
