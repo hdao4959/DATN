@@ -904,17 +904,17 @@ class CategoryController extends Controller
     public function getListByMajor()
     {
         $studentRelearns = DB::table('scores')
-        ->join('users', 'scores.student_code', '=', 'users.user_code')
-        ->where('scores.is_pass', 0)
-        ->where('scores.status', 1)
-        ->select(
-            'scores.subject_code',
-            'users.user_code',
-            'users.full_name as user_name', 
-            'users.semester_code'
-        )
-        ->get();
-    
+            ->join('users', 'scores.student_code', '=', 'users.user_code')
+            ->where('scores.is_pass', 0)
+            ->where('scores.status', 1)
+            ->select(
+                'scores.subject_code',
+                'users.user_code',
+                'users.full_name as user_name',
+                'users.semester_code'
+            )
+            ->get();
+
         $studentRelearnsGrouped = $studentRelearns->groupBy('subject_code');
 
         $data = DB::table('categories')
@@ -939,7 +939,8 @@ class CategoryController extends Controller
                 'major_users.full_name as major_user_name',
                 'major_users.semester_code as major_semester_code',
                 'major_users.role as user_role',
-                'fees.status as fee_status'
+                'fees.status as fee_status',
+                'fees.semester_code as semester_code',
             )
             ->get()
             ->groupBy('cate_code')
@@ -952,7 +953,7 @@ class CategoryController extends Controller
                         $teachers = collect();
 
                         foreach ($users as $user) {
-                            if ($user->user_role == "3" && $user->fee_status === "paid" && $user->major_semester_code === $user->subject_semester_code) {
+                            if ($user->user_role == "3" && $user->fee_status === "paid" && $user->semester_code === $user->subject_semester_code && $user->major_semester_code === $user->subject_semester_code) {
                                 $students->push([
                                     'user_code' => $user->major_user_code,
                                     'user_name' => $user->major_user_name,
@@ -996,10 +997,10 @@ class CategoryController extends Controller
 
     public function getClassrooms()
     {
-        $data = DB::table('classrooms')->where('classrooms.is_active', true)
+        $data = DB::table('classrooms')->where('classrooms.is_active', true)->whereDate('classrooms.created_at', '=', date('Y-m-d'))
             ->leftJoin('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
             ->leftJoin('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
-            ->whereNull('classroom_user.class_code')
+            // ->whereNull('classroom_user.class_code')
             ->leftJoin('categories', 'schedules.room_code', '=', 'categories.cate_code')
             ->where('categories.is_active', true)
             ->where('categories.type', 'school_room')
@@ -1024,6 +1025,7 @@ class CategoryController extends Controller
     {
         $data = DB::table('schedules')
             ->leftJoin('classrooms', 'classrooms.class_code', '=', 'schedules.class_code')
+            ->whereDate('classrooms.created_at', '=', date('Y-m-d'))
             ->leftJoin('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
             ->select(
                 'schedules.*',
@@ -1233,7 +1235,7 @@ class CategoryController extends Controller
     public function addStudent()
     {
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
-        return $majors = $this->getListByMajor();
+        $majors = $this->getListByMajor();
         $classroomStudentCounts = DB::table('classroom_user')
             ->select('class_code', DB::raw('COUNT(*) as current_count'))
             ->groupBy('class_code')
@@ -1621,7 +1623,13 @@ class CategoryController extends Controller
         try {
             $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
             $startDates = []; // Mảng chứa các ngày cần lấy
-
+            DB::table('classrooms')
+            ->where(function ($query) {
+                $query->where('classrooms.is_active', true)
+                    ->where('classrooms.is_automatic', false);
+            })
+            ->orWhereDate('classrooms.created_at', '=', date('Y-m-d'))
+            ->delete();
             // Thêm ngày hiện tại vào mảng
             $startDates[] = $startDate->format('Y-m-d');
 
@@ -1676,6 +1684,9 @@ class CategoryController extends Controller
                 }
                 $index++;
             }
+
+           
+
 
             return response()->json([
                 'count' => count($createdClassrooms),
