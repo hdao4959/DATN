@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
@@ -31,17 +32,27 @@ class ScheduleController extends Controller
     public function index(Request $request)
     {
         try {
-            $userCode = $request->user()->user_code;
+            $today = Carbon::today();
+            $sevenDaysLater = Carbon::today()->addDays(7);
 
-            $list_classroom_codes = Classroom::where([
-                'user_code' =>  $userCode,
-                'is_active' => true
-            ])
-            ->pluck('class_code');
-            $list_schedules = Schedule::with(['classroom','room','session'])
-            ->whereIn('class_code', $list_classroom_codes)
-            ->select('class_code', 'room_code' , 'session_code', 'date')
-            ->get();
+            $userCode = $request->user_code;
+
+            // $list_classroom_codes = Classroom::where([
+            //     'user_code' =>  $userCode,
+            //     'is_active' => true
+            // ])
+            // ->pluck('class_code');
+
+            // $list_schedules = Schedule::with(['classroom','room','session'])
+            // ->whereIn('class_code', $list_classroom_codes)
+            // ->select('class_code', 'room_code' , 'session_code', 'date')
+            // ->get();
+
+            $list_schedules = Schedule::whereBetween('date',[$today, $sevenDaysLater])
+                                ->where('type','study')
+                                ->where('teacher_code',$userCode)
+                                ->get();
+                                
             return response()->json($list_schedules,200);
 
         } catch (\Throwable $th) {
@@ -83,7 +94,7 @@ class ScheduleController extends Controller
     //         }
     //         return response()->json($schedules,200);
     //     } catch (\Throwable $th) {
-    //         return $this->handleErrorNotDefine($th);  
+    //         return $this->handleErrorNotDefine($th);
     //     }
     // }
 
@@ -91,11 +102,11 @@ class ScheduleController extends Controller
         try{
             $teacher_code = request()->user()->user_code;
             $class_code = Classroom::where([
-                'class_code' => $classcode, 
+                'class_code' => $classcode,
                 'user_code' => $teacher_code
             ])->pluck('class_code')->first();
-    
-            $list_schedules = Schedule::with( 
+
+            $list_schedules = Schedule::with(
                ['room',
                'session'])
             ->where('class_code', $class_code)
@@ -105,8 +116,6 @@ class ScheduleController extends Controller
        catch(\Throwable $th){
             return $this->handleErrorNotDefine($th);
        }
-
-
     }
     /**
      * Show the form for editing the specified resource.

@@ -201,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
-        Route::get('schedules', [TeacherScheduleController::class, 'index']);
+
         // Lịch dạy của giảng viên trong 1 lớp học
         Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);
 
@@ -308,7 +308,7 @@ Route::post('services/provide-student-card/{user_code}',    [ServiceController::
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
-
+Route::get('schedules', [TeacherScheduleController::class, 'index']);
 
 Route::apiResource('fees', FeeController::class);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
