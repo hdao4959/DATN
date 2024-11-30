@@ -1,32 +1,48 @@
-import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 import { formatErrors } from "../../../utils/formatErrors";
 
-const AddDegreeProgram = () => {
+const EditSession = () => {
+    const { id } = useParams();
+
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
-        getValues,
     } = useForm();
     const nav = useNavigate();
 
     const { mutate } = useMutation({
-        mutationFn: (data) => api.post("/admin/course", data),
+        mutationFn: (data) => api.put(`/admin/sessions/${id}`, data),
         onSuccess: () => {
-            toast.success("Thêm khoá học thành công");
-            reset();
-            nav("/admin/degree-program");
+            toast.success("Cập nhật ca học thành công");
+            nav("/admin/sessions");
         },
         onError: (error) => {
             const msg = formatErrors(error);
             toast.error(msg || "Có lỗi xảy ra");
         },
     });
+
+    const { data: sessionDetail } = useQuery({
+        queryKey: ["SESSION_DETAIL", id],
+        queryFn: async () => {
+            const res = await api.get(`/admin/sessions/${id}`);
+
+            return res.data?.[0];
+        },
+    });
+
+    useEffect(() => {
+        if (sessionDetail) {
+            console.log("352 ~ useEffect ~ sessionDetail:", sessionDetail);
+        }
+    }, [sessionDetail, reset]);
 
     const onSubmit = (data) => {
         mutate(data);
@@ -35,8 +51,8 @@ const AddDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/degree-program">
-                    <button className="btn btn-primary">DS khoá học</button>
+                <Link to="/admin/sessions">
+                    <button className="btn btn-primary">DS ca học</button>
                 </Link>
             </div>
 
@@ -45,13 +61,15 @@ const AddDegreeProgram = () => {
                     <div className="col-md-12">
                         <div className="card">
                             <div className="card-header">
-                                <div className="card-title">Thêm Khoá Học</div>
+                                <div className="card-title">
+                                    Cập Nhật Ca Học
+                                </div>
                             </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="form-group">
-                                        <label htmlFor="first_year">
-                                            Năm bắt đầu
+                                        <label htmlFor="session">
+                                            Tên ca
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
@@ -59,59 +77,64 @@ const AddDegreeProgram = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("first_year", {
+                                            {...register("session", {
                                                 required:
-                                                    "Năm bắt đầu là bắt buộc",
+                                                    "Tên ca đầu là bắt buộc",
                                                 pattern: {
                                                     value: /^[0-9]+$/,
                                                     message:
-                                                        "Năm bắt đầu phải là số",
+                                                        "Tên ca đầu phải là số",
                                                 },
                                             })}
-                                            placeholder="Nhập năm bắt đầu"
+                                            placeholder="Nhập tên ca, VD: 1"
                                         />
-                                        {errors.first_year && (
+                                        {errors.session && (
                                             <span className="text-danger">
-                                                {errors.first_year.message}
+                                                {errors.session.message}
                                             </span>
                                         )}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="final_year">
-                                            Năm kết thúc
+                                            Thời gian bắt đầu
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
                                             </span>
                                         </label>
                                         <input
-                                            type="text"
+                                            type="time"
                                             className="form-control"
-                                            {...register("final_year", {
+                                            {...register("time_start", {
                                                 required:
-                                                    "Năm kết thúc là bắt buộc",
-                                                pattern: {
-                                                    value: /^[0-9]+$/,
-                                                    message:
-                                                        "Năm kết thúc phải là số",
-                                                },
-                                                validate: (value) => {
-                                                    const isValid =
-                                                        value >
-                                                        getValues("first_year");
-
-                                                    if (!isValid) {
-                                                        return "Năm kết thúc phải lớn hơn năm bắt đầu";
-                                                    }
-
-                                                    return true;
-                                                },
+                                                    "Thời gian bắt đầu là bắt buộc",
                                             })}
-                                            placeholder="Nhập năm kết thúc"
                                         />
-                                        {errors.final_year && (
+                                        {errors.time_start && (
                                             <span className="text-danger">
-                                                {errors.final_year.message}
+                                                {errors.time_start.message}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="final_year">
+                                            Thời gian kết thúc
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            {...register("time_end", {
+                                                required:
+                                                    "Thời gian kết thúc là bắt buộc",
+                                            })}
+                                        />
+                                        {errors.time_end && (
+                                            <span className="text-danger">
+                                                {errors.time_end.message}
                                             </span>
                                         )}
                                     </div>
@@ -127,7 +150,7 @@ const AddDegreeProgram = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/degree-program")}
+                                    onClick={() => nav("/admin/sessions")}
                                 >
                                     Hủy
                                 </button>
@@ -140,4 +163,4 @@ const AddDegreeProgram = () => {
     );
 };
 
-export default AddDegreeProgram;
+export default EditSession;
