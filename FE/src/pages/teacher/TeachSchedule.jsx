@@ -1,169 +1,157 @@
-import React, { useState, useEffect } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-import "/src/css/modalCalender.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { getToken } from "../../utils/getToken";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import api from "../../config/axios";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
+import dayjs from "dayjs";
 
-moment.locale("vi");
+import isBetween from "dayjs/plugin/isBetween";
 
-const localizer = momentLocalizer(moment);
+dayjs.extend(isBetween);
 
-const eventStyleGetter = (event) => {
-    const backgroundColor = event.color || "#3174ad";
-    return {
-        style: {
-            backgroundColor,
-            color: "white",
-            borderRadius: "5px",
-            padding: "5px",
+const MySchedule = () => {
+    const { data, isLoading } = useQuery({
+        queryKey: ["MY_SCHEDULE"],
+        queryFn: async () => {
+            const res = await api.get("/teacher/schedules");
+            return res?.data;
         },
-    };
-};
+    });
 
-const MyCalendar = () => {
-    const [events, setEvents] = useState([]);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [loading, setLoading] = useState(true);
+    const { currentSchedule, next7DaysSchedule } = useMemo(() => {
+        const currentSchedule = data?.filter((it) =>
+            dayjs(it.date).isSame(dayjs(), "date")
+        );
+
+        const next7DaysSchedule = data?.filter((it) => {
+            const status = dayjs(it.date).isBetween(
+                dayjs(),
+                dayjs().add(7, "day"),
+                "day",
+                "[)"
+            );
+
+            return status;
+        });
+
+        return { currentSchedule, next7DaysSchedule };
+    }, [data]);
 
     useEffect(() => {
-        const fetchSchedules = async () => {
-            try {
-                const accessToken = getToken();
+        const columns = [
+            {
+                title: "Lớp",
+                data: "class_code",
+            },
+            {
+                title: "Phòng học",
+                data: "room_code",
+            },
+            {
+                title: "Môn học",
+                data: "classroom",
+                render: (classroom) => {
+                    return `${classroom.subject_code}`;
+                },
+            },
+            {
+                title: "Ngày",
+                data: "date",
+                render: (date) => dayjs(date).format("DD/MM/YYYY"),
+            },
+            {
+                title: "Ca",
+                data: "session",
+                render: (session) => {
+                    const sessionValParse = JSON.parse(session.value);
 
-                if (!accessToken) {
-                    setErrorMessage("Vui lòng đăng nhập để xem lịch trình.");
-                    setLoading(false);
-                    return;
-                }
+                    return `${session.cate_name} (${sessionValParse.start} - ${sessionValParse.end})`;
+                },
+            },
+        ];
 
-                const response = await fetch(
-                    "http://127.0.0.1:8000/api/teacher/schedules",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.length === 0) {
-                        setErrorMessage("Không có dữ liệu lịch trình nào.");
-                        setLoading(false);
-                        return;
-                    }
-
-                    const formattedEvents = data.map((item) => {
-                        const session = JSON.parse(item.session.value);
-                        const startDateTime = new Date(
-                            `${item.date}T${session.start}:00`
-                        );
-                        const endDateTime = new Date(
-                            `${item.date}T${session.end}:00`
-                        );
-
-                        return {
-                            title: `${item.classroom.class_name} - ${item.room.cate_name} (${item.session.cate_name})`,
-                            start: startDateTime,
-                            end: endDateTime,
-                            color: "#88bde6",
-                        };
-                    });
-
-                    setEvents(formattedEvents);
-                } else {
-                    setErrorMessage(
-                        `Không thể lấy dữ liệu: ${response.statusText}`
-                    );
-                }
-            } catch (error) {
-                setErrorMessage("Lỗi khi gọi API: " + error.message);
-            } finally {
-                setLoading(false);
+        if (currentSchedule) {
+            if ($.fn.dataTable.isDataTable("#major-table")) {
+                $("#major-table").DataTable().clear().destroy();
             }
-        };
-
-        fetchSchedules();
-    }, []);
-
-    const handleSelectEvent = (event) => {
-        setSelectedEvent(event);
-    };
-
-    const handleCloseModal = () => {
-        setSelectedEvent(null);
-    };
-
-    return (
-        <div style={{ height: "80vh" }}>
-            {loading ? (
-                <div
-                    className="d-flex justify-content-center align-items-center"
-                    style={{ height: "100%" }}
-                >
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                </div>
-            ) : errorMessage ? (
-                <p style={{ color: "red", textAlign: "center" }}>
-                    {errorMessage}
-                </p>
-            ) : (
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: "100%", margin: "20px" }}
-                    eventPropGetter={eventStyleGetter}
-                    views={["month", "week", "day"]}
-                    defaultView="week"
-                    onSelectEvent={handleSelectEvent}
-                    messages={{
-                        allDay: "Cả ngày",
+            $("#major-table").DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 50],
+                data: currentSchedule,
+                columns,
+                order: [[5, "asc"]],
+                language: {
+                    paginate: {
                         previous: "Trước",
                         next: "Tiếp theo",
-                        today: "Hôm nay",
-                        month: "Tháng",
-                        week: "Tuần",
-                        day: "Ngày",
-                        date: "Ngày",
-                    }}
-                />
-            )}
+                    },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
+                },
+                scrollX: true,
+            });
+        }
 
-            {selectedEvent && (
-                <div className="modal-overlay">
-                    <div className="m-c">
-                        <h2>Chi tiết lịch dạy</h2>
-                        <p>
-                            <strong>Thông tin lớp:</strong>{" "}
-                            {selectedEvent.title}
-                        </p>
-                        <p>
-                            <strong>Bắt đầu:</strong>{" "}
-                            {selectedEvent.start.toLocaleString()}
-                        </p>
-                        <p>
-                            <strong>Kết thúc:</strong>{" "}
-                            {selectedEvent.end.toLocaleString()}
-                        </p>
-                        <button
-                            className="btn btn-danger"
-                            onClick={handleCloseModal}
-                        >
-                            Đóng
-                        </button>
-                    </div>
+        if (next7DaysSchedule) {
+            if ($.fn.dataTable.isDataTable("#next-7-days")) {
+                $("#next-7-days").DataTable().clear().destroy();
+            }
+            $("#next-7-days").DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 50],
+                data: next7DaysSchedule,
+                columns,
+                order: [[5, "asc"]],
+                language: {
+                    paginate: {
+                        previous: "Trước",
+                        next: "Tiếp theo",
+                    },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
+                },
+                scrollX: true,
+            });
+        }
+
+        return () => {
+            if ($.fn.dataTable.isDataTable("#major-table")) {
+                $("#major-table").DataTable().clear().destroy();
+            }
+            if ($.fn.dataTable.isDataTable("#next-7-days")) {
+                $("#next-7-days").DataTable().clear().destroy();
+            }
+        };
+    }, [currentSchedule, next7DaysSchedule]);
+
+    return (
+        <>
+            <div className="card mt-4">
+                <div className="card-header">
+                    <h4 className="card-title">Lịch dạy hôm nay</h4>
                 </div>
-            )}
-        </div>
+                <div className="card-body">
+                    <table id="major-table" className="table">
+                        {isLoading && <p>Đang tải dữ liệu...</p>}
+                    </table>
+                </div>
+            </div>
+
+            <div className="card mt-4">
+                <div className="card-header">
+                    <h4 className="card-title">Lịch dạy 7 ngày tới</h4>
+                </div>
+                <div className="card-body">
+                    <table id="next-7-days" className="table">
+                        {isLoading && <p>Đang tải dữ liệu...</p>}
+                    </table>
+                </div>
+            </div>
+        </>
     );
 };
 
-export default MyCalendar;
+export default MySchedule;
