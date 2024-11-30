@@ -328,6 +328,62 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
+
+            <li className="nav-item ">
+                <a data-bs-toggle="collapse" href="#degree-program">
+                    <i className="fas fa-layer-group" />
+                    <p>Quản lý khoá học</p>
+                    <span className="caret" />
+                </a>
+                <div className="collapse" id="degree-program">
+                    <ul className="nav nav-collapse">
+                        <li>
+                            <NavLink
+                                to="/admin/degree-program"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Danh sách khoá học</p>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/admin/degree-program/add"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Thêm mới khoá học</p>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li className="nav-item ">
+                <a data-bs-toggle="collapse" href="#sessions">
+                    <i className="fas fa-layer-group" />
+                    <p>Quản lý ca học</p>
+                    <span className="caret" />
+                </a>
+                <div className="collapse" id="sessions">
+                    <ul className="nav nav-collapse">
+                        <li>
+                            <NavLink
+                                to="/admin/sessions"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Danh sách ca học</p>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/admin/sessions/add"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Thêm mới ca học</p>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             {/* <li className="nav-item ">
                 <a data-bs-toggle="collapse" href="#attendance">
                     <i className="fas fa-layer-group" />
