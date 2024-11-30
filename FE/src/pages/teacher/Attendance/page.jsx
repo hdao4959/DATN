@@ -1,180 +1,67 @@
 import React, { useEffect, useState } from "react";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
 import { toast } from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
 
-const AttendanceTeacher = () => {
-    const [selectedClassCode, setSelectedClassCode] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [attendanceStudentDetailsStatus, setAttendanceStudentDetailsStatus] =
-        useState([]);
-    const [attendanceStudentDetails, setAttendanceStudentDetails] = useState(
-        []
-    );
-    const [viewMode, setViewMode] = useState("");
-    const [expandedRows, setExpandedRows] = useState({});
-    const [schedules, setSchedules] = useState([]);
+const ShowAttendance = () => {
+    const [changedRecords, setChangedRecords] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const { class_code } = useParams();
+    const navigate = useNavigate();
 
-    const {
-        data: classes,
-        isLoading: isLoadingClasses,
-        refetch,
-    } = useQuery({
-        queryKey: ["LIST_ATTENDANCE_CLASS"],
+    const { data: attendanceData, error, isLoading, refetch } = useQuery({
+        queryKey: ["attendances"],
         queryFn: async () => {
-            const response = await api.get(`/teacher/attendances`);
+            const response = await api.get(`/teacher/attendances/${class_code}`);
             return response?.data;
+            // const attendanceDataI = [
+            //     {
+            //         student_code: "SV001",
+            //         full_name: "Nguyễn Văn A",
+            //         date: "2024-11-01T00:00:00Z",
+            //         status: "present",
+            //         noted: "On time",
+            //     },
+            //     {
+            //         student_code: "SV002",
+            //         full_name: "Trần Thị B",
+            //         date: "2024-11-01T00:00:00Z",
+            //         status: "absent",
+            //         noted: "Sick",
+            //     },
+            //     {
+            //         student_code: "SV003",
+            //         full_name: "Lê Minh C",
+            //         date: "2024-11-01T00:00:00Z",
+            //         status: "present",
+            //         noted: "On time",
+            //     },
+            //     {
+            //         student_code: "SV001",
+            //         full_name: "Nguyễn Văn A",
+            //         date: "2024-11-02T00:00:00Z",
+            //         status: "absent",
+            //         noted: "Traveling",
+            //     },
+            //     {
+            //         student_code: "SV002",
+            //         full_name: "Trần Thị B",
+            //         date: "2024-11-02T00:00:00Z",
+            //         status: "present",
+            //         noted: "On time",
+            //     },
+            // ];
+            // return attendanceDataI;
+        },
+        onError: () => {
+            toast.error("Không thể tải dữ liệu");
         },
     });
-    const classe = classes || [];
-    const {
-        data: attendanceData,
-        refetch: fetchAttendanceData,
-        isLoading: isLoadingAtt,
-    } = useQuery({
-        queryKey: ["ATTENDANCE", selectedClassCode],
-        queryFn: async () => {
-            setSelectedClassCode(selectedClassCode);
-            const response = await api.get(
-                `/teacher/attendances/${selectedClassCode}/${selectedDate}`
-            );
-            const res = response?.data;
-            setAttendanceStudentDetails(res);
-            return res;
-        },
-        enabled: false,
-    });
-    const {
-        data: AllAttendance,
-        refetch: fetchAllAttendanceData,
-        isLoading: isLoadingAllAtt,
-    } = useQuery({
-        queryKey: ["ALL_ATTENDANCE", selectedClassCode],
-        queryFn: async () => {
-            const response = await api.get(
-                `/teacher/attendances/showAllAttendance/${selectedClassCode}`
-            );
-            const res = response?.data;
-            return res;
-        },
-        enabled: false,
-    });
-    function getAttendanceSchedule(classCode, classes) {
-        const classData = classes?.find((cls) => cls.class_code === classCode);
 
-        if (!classData || !classData.schedules) return [];
-
-        return classData.schedules
-            .map((schedule) => schedule.date)
-            .sort((a, b) => new Date(a) - new Date(b));
-    }
-    useEffect(() => {
-        const schedules = getAttendanceSchedule(selectedClassCode, classes);
-        setSchedules(schedules);
-    }, [selectedClassCode]);
-
-    useEffect(() => {
-        if (viewMode === "overview") {
-            fetchAllAttendanceData();
-        } else {
-            fetchAttendanceData();
-        }
-    }, [
-        viewMode,
-        fetchAllAttendanceData,
-        fetchAttendanceData,
-        selectedClassCode,
-    ]);
-
-    const handleShowDetails = (classItem, mode, date) => {
-        setSelectedClassCode(classItem.class_code);
-        setViewMode(mode);
-        setSelectedDate(date);
-        const modal = new window.bootstrap.Modal(
-            document.getElementById("attendanceModal")
-        );
-        modal.show();
-    };
-
-    const handleToggleStatus = (student) => {
-        const attendance = student.attendance[0];
-        const newStatus =
-            attendance.status === "present" ? "absent" : "present";
-        const updatedAttendance = {
-            student_code: student.student_code,
-            class_code: selectedClassCode,
-            date: attendance.date,
-            status: newStatus,
-            noted: attendance.noted || "",
-        };
-
-        setAttendanceStudentDetailsStatus((prevState) => {
-            const existingIndex = prevState.findIndex(
-                (item) =>
-                    item.student_code === updatedAttendance.student_code &&
-                    item.date === updatedAttendance.date
-            );
-            if (existingIndex !== -1) {
-                const newState = [...prevState];
-                newState[existingIndex] = updatedAttendance;
-                return newState;
-            } else {
-                return [...prevState, updatedAttendance];
-            }
-        });
-
-        setAttendanceStudentDetails((prevDetails) =>
-            prevDetails.map((studentItem) => {
-                if (studentItem.student_code === student.student_code) {
-                    const updatedAttendance = {
-                        ...studentItem.attendance[0],
-                        status:
-                            studentItem.attendance[0].status === "present"
-                                ? "absent"
-                                : studentItem.attendance[0].status === "absent"
-                                ? "present"
-                                : "absent", // Nếu status ban đầu là null, gán "absent"
-                        noted: studentItem.attendance[0].noted || "",
-                    };
-                    return {
-                        ...studentItem,
-                        attendance: [updatedAttendance],
-                    };
-                }
-                return studentItem;
-            })
-        );
-    };
-
-    const handleSaveAttendance = async () => {
-        const today = new Date().toISOString().split("T")[0];
-        if (selectedDate !== today) {
-            toast.error(
-                "Chỉ có thể cập nhật điểm danh trong thời gian cho phép!"
-            );
-            return;
-        }
-        try {
-            const response = await api.put(
-                `/teacher/attendances/${selectedClassCode}`,
-                attendanceStudentDetailsStatus
-            );
-            if (response.data.success) {
-                toast.success("Lưu điểm danh thành công!");
-            } else {
-                fetchAttendanceData();
-                toast.error(response.data.message);
-            }
-        } catch (error) {
-            toast.error("Lưu điểm danh thất bại!");
-        }
-    };
-
-    const toggleRow = (classCode) => {
-        setSelectedClassCode(classCode);
-        fetchAllAttendanceData(classCode);
-        setExpandedRows((prev) => (prev === classCode ? null : classCode));
-    };
     const formatDate = (dateString) => {
         const options = { day: "2-digit", month: "2-digit", year: "numeric" };
         const formattedDate = new Date(dateString).toLocaleDateString(
@@ -184,385 +71,178 @@ const AttendanceTeacher = () => {
         const dayOfWeek = new Date(dateString).toLocaleDateString("vi-VN", {
             weekday: "long",
         });
-        return `${formattedDate} - (${dayOfWeek})`;
+        return `<div>${formattedDate}</div> 
+                <div>(${dayOfWeek})</div>`;
+    };
+
+    useEffect(() => {
+        if (attendanceData) {
+            const students = {};
+
+            attendanceData.forEach((record) => {
+                const { student_code, full_name, date, status, noted } = record;
+                const formattedDate = new Date(date)
+                    .toISOString()
+                    .split("T")[0];
+
+                if (!students[student_code]) {
+                    students[student_code] = {
+                        student_code,
+                        full_name,
+                        attendance: {},
+                    };
+                }
+
+                students[student_code].attendance[formattedDate] = {
+                    status,
+                };
+            });
+
+            const firstStudent = Object.values(students)[0];
+            const sortedDates = firstStudent
+                ? Object.keys(firstStudent.attendance).sort(
+                    (a, b) => new Date(a) - new Date(b)
+                )
+                : [];
+            const tableData = Object.values(students);
+
+            const table = $("#attendanceTable").DataTable({
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: { previous: "Trước", next: "Tiếp theo" },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
+                },
+                destroy: true,
+                data: tableData,
+                columns: [
+                    {
+                        title: "STT",
+                        data: null,
+                        render: (data, type, row, meta) =>
+                            meta.row + meta.settings._iDisplayStart + 1,
+                    },
+                    { title: "Mã SV", data: "student_code" },
+                    { title: "Tên SV", data: "full_name" },
+                    ...sortedDates.map((date) => ({
+                        title: formatDate(date),
+                        className: 'text-center',
+                        data: null,
+                        render: (data, type, row) => {
+                            const attendance = row.attendance[date] || {};
+
+                            if (!isEditing) {
+                                // Chế độ xem: Hiển thị trạng thái (P, A, C)
+                                const status = attendance.status || "C";
+                                const displayStatus = status === 'present' ? 'P' : (status === 'absent' ? 'A' : 'C');
+                                let statusClass = '';
+                                let statusText = '';
+                                if (displayStatus === 'P') {
+                                    statusClass = 'text-success';
+                                    statusText = 'Có mặt';
+                                } else if (displayStatus === 'A') {
+                                    statusClass = 'text-danger';
+                                    statusText = 'Vắng';
+                                } else {
+                                    statusClass = 'text-secondary';
+                                    statusText = 'Chưa điểm danh';
+                                }
+                                return `<div class="${statusClass} text-center" title="${statusText}">${displayStatus}</div>`;
+                            }
+
+                            const checked = attendance.status === "present" ? "checked" : "";
+                            return `
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input attendance-checkbox" style='transform: scale(1.5);' type="checkbox" ${checked} data-student="${row.student_code}" data-date="${date}" />
+                                </div>
+                            `;
+                        }
+
+                    })),
+                ],
+                scrollY: true,
+            });
+
+            // Lắng nghe sự kiện thay đổi trên input-status
+            $("#attendanceTable").on("change", ".attendance-checkbox", function () {
+                const studentCode = $(this).data("student");
+                const date = $(this).data("date");
+                const isChecked = $(this).is(":checked");
+                const newStatus = isChecked ? "present" : "absent";
+
+                // Cập nhật changedRecords
+                setChangedRecords((prevRecords) => {
+                    const updatedRecords = prevRecords.filter(
+                        (record) => !(record.student_code === studentCode && record.date === date)
+                    );
+                    updatedRecords.push({
+                        student_code: studentCode,
+                        date,
+                        status: newStatus,
+                        classCode: class_code,
+                    });
+                    return updatedRecords;
+                });
+            });
+        }
+    }, [attendanceData, isEditing]);
+
+
+    const saveChanges = async () => {
+        if (changedRecords.length === 0) {
+            toast.info("Chưa có thay đổi nào để lưu.");
+            return;
+        }
+
+        try {
+            await api.put(`/api/teacher/attendances`, changedRecords);
+            toast.success("Lưu thành công!");
+            setChangedRecords([]);
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi lưu.");
+            console.error(error);
+        }
     };
 
     return (
-        <div>
-            <div className="card" style={{ minHeight: "800px" }}>
-                <div className="card-header">
-                    <h4 className="card-title">Quản lý điểm danh</h4>
-                </div>
-                <div className="card-body">
-                    {isLoadingClasses ? (
-                        <div className="loading-spinner">
-                            <div className="spinner-border" role="status"></div>
-                            <p>Đang tải dữ liệu...</p>
+        <div className="row">
+            <div className="col-md-12">
+                <div className="card">
+                    <div className="card-header">
+                        <div className="card-title text-center">Điểm danh Lớp {class_code}</div>
+                    </div>
+                    <div className='card-body'>
+                        <div className="table-responsive">
+                            <table
+                                id="attendanceTable"
+                                className="table-striped display"
+                            ></table>
                         </div>
-                    ) : (
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Mã lớp</th>
-                                    <th>Tên lớp</th>
-                                    <th className="text-center">Điểm danh</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {classe?.map((classItem) => (
-                                    <React.Fragment key={classItem.id}>
-                                        <tr key={classItem.id}>
-                                            <td>{classItem.class_code}</td>
-                                            <td>{classItem.class_name}</td>
-                                            <td className="text-center text-nowrap">
-                                                <button
-                                                    className="btn btn-primary"
-                                                    onClick={() =>
-                                                        toggleRow(
-                                                            classItem.class_code
-                                                        )
-                                                    }
-                                                >
-                                                    Xem lịch điểm danh
-                                                </button>
-                                                <button
-                                                    className="btn btn-secondary ml-2"
-                                                    onClick={() =>
-                                                        handleShowDetails(
-                                                            classItem,
-                                                            "overview",
-                                                            ""
-                                                        )
-                                                    }
-                                                >
-                                                    Xem tổng quan
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {expandedRows ===
-                                            classItem.class_code && (
-                                            <tr className="nested-row">
-                                                <td colSpan={3}>
-                                                    <div
-                                                        style={{
-                                                            paddingLeft: "20px",
-                                                        }}
-                                                    >
-                                                        {schedules?.length >
-                                                        0 ? (
-                                                            schedules.map(
-                                                                (
-                                                                    date,
-                                                                    index
-                                                                ) => {
-                                                                    const isToday =
-                                                                        new Date(
-                                                                            date
-                                                                        ).toDateString() ===
-                                                                        new Date().toDateString();
-                                                                    return (
-                                                                        <div
-                                                                            key={
-                                                                                index
-                                                                            }
-                                                                            className=""
-                                                                            style={{
-                                                                                position:
-                                                                                    "relative",
-                                                                                display:
-                                                                                    "inline-block",
-                                                                                marginRight:
-                                                                                    "10px",
-                                                                                marginBottom:
-                                                                                    "5px",
-                                                                            }}
-                                                                        >
-                                                                            <button
-                                                                                className={`btn btn-success ${
-                                                                                    isToday &&
-                                                                                    "border-5 border-success rounded"
-                                                                                }`}
-                                                                                onClick={() =>
-                                                                                    handleShowDetails(
-                                                                                        classItem,
-                                                                                        "detail",
-                                                                                        date
-                                                                                    )
-                                                                                }
-                                                                                style={{
-                                                                                    position:
-                                                                                        "relative",
-                                                                                    zIndex: 1,
-                                                                                }}
-                                                                            >
-                                                                                <strong>
-                                                                                    {formatDate(
-                                                                                        date
-                                                                                    )}
-                                                                                </strong>
-                                                                            </button>
-                                                                            {isToday && (
-                                                                                <span
-                                                                                    style={{
-                                                                                        position:
-                                                                                            "absolute",
-                                                                                        top: "-15px",
-                                                                                        right: "-5px",
-                                                                                        backgroundColor:
-                                                                                            "red",
-                                                                                        color: "white",
-                                                                                        padding:
-                                                                                            "2px 5px",
-                                                                                        fontSize:
-                                                                                            "10px",
-                                                                                        borderRadius:
-                                                                                            "5px",
-                                                                                        zIndex: 2,
-                                                                                    }}
-                                                                                >
-                                                                                    Hôm
-                                                                                    nay
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                    );
-                                                                }
-                                                            )
-                                                        ) : (
-                                                            <p className="text-danger">
-                                                                Không có lịch
-                                                                điểm danh nào!
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-
-                    <div
-                        className="modal fade"
-                        id="attendanceModal"
-                        tabIndex="-1"
-                        aria-labelledby="attendanceModalLabel"
-                        aria-hidden="true"
-                    >
-                        <div className="modal-dialog modal-xl">
-                            <div
-                                className="modal-content"
-                                style={{ width: "100%", minHeight: "100vh" }}
+                        <div style={{ marginTop: "20px", float: "right" }}>
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => navigate(-1)}
                             >
-                                <div className="modal-header">
-                                    <h5 className="modal-title strong text-lg">
-                                        Bảng điểm danh{" "}
-                                        {viewMode === "detail"
-                                            ? `- Ngày ${formatDate(
-                                                  selectedDate
-                                              )} - Lớp ${selectedClassCode}`
-                                            : `- Lớp ${selectedClassCode}`}
-                                    </h5>
-                                    <button
-                                        type="button"
-                                        className="close"
-                                        onClick={() => setModalIsOpen(false)}
-                                        aria-label="Close"
-                                    >
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div className="modal-body table-responsive">
-                                    {isLoadingAtt || isLoadingAllAtt ? (
-                                        <div className="loading-spinner">
-                                            <div
-                                                className="spinner-border"
-                                                role="status"
-                                            ></div>
-                                            <p>Đang tải dữ liệu...</p>
-                                        </div>
-                                    ) : (
-                                        <table
-                                            id="modalAttendanceTable"
-                                            className="table"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th>Mã sinh viên</th>
-                                                    <th>Họ và tên</th>
-                                                    {viewMode === "overview" &&
-                                                        schedules.map(
-                                                            (date, index) => (
-                                                                <th
-                                                                    key={index}
-                                                                    className="text-center"
-                                                                >
-                                                                    {formatDate(
-                                                                        date
-                                                                    )}
-                                                                </th>
-                                                            )
-                                                        )}
-                                                    {viewMode === "detail" && (
-                                                        <th className="text-center">
-                                                            Trạng thái
-                                                        </th>
-                                                    )}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {viewMode === "overview" &&
-                                                    AllAttendance?.map(
-                                                        (student, index) => {
-                                                            const attendanceByDate =
-                                                                student.attendance.reduce(
-                                                                    (
-                                                                        acc,
-                                                                        att
-                                                                    ) => {
-                                                                        acc[
-                                                                            att.date
-                                                                        ] = att;
-                                                                        return acc;
-                                                                    },
-                                                                    {}
-                                                                );
+                                <i className="fas fa-backward"> Quay lại</i>
+                            </button>
+                            {/* Thêm nút sửa */}
+                            <button
+                                type="button"
+                                className="btn btn-secondary ms-2"
+                                onClick={() => setIsEditing(!isEditing)} // Chuyển chế độ sửa
+                            >
+                                {isEditing ? <i className='fas fa-redo'> Hủy</i> : <i className='fas fa-recycle'> Sửa</i>}
+                            </button>
 
-                                                            return (
-                                                                <tr
-                                                                    key={
-                                                                        student.student_code
-                                                                    }
-                                                                >
-                                                                    <td>
-                                                                        {
-                                                                            student.student_code
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        {
-                                                                            student.full_name
-                                                                        }
-                                                                    </td>
-                                                                    {schedules?.map(
-                                                                        (
-                                                                            date
-                                                                        ) => (
-                                                                            <td
-                                                                                key={
-                                                                                    date
-                                                                                }
-                                                                                className="text-center"
-                                                                            >
-                                                                                <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                                    <input
-                                                                                        className="form-check-input attendance-checkbox btn-sm"
-                                                                                        type="checkbox"
-                                                                                        disabled
-                                                                                        style={{
-                                                                                            transform:
-                                                                                                "scale(2.5)",
-                                                                                        }}
-                                                                                        checked={
-                                                                                            attendanceByDate[
-                                                                                                date
-                                                                                            ]
-                                                                                                ?.status ===
-                                                                                            "present"
-                                                                                        }
-                                                                                    />
-                                                                                </div>
-                                                                            </td>
-                                                                        )
-                                                                    )}
-                                                                </tr>
-                                                            );
-                                                        }
-                                                    )}
-
-                                                {viewMode === "detail" &&
-                                                    attendanceStudentDetails?.map(
-                                                        (student, index) => {
-                                                            const isToday =
-                                                                new Date(
-                                                                    student.attendance[0].date
-                                                                ).toDateString() ===
-                                                                new Date().toDateString();
-                                                            // const isToday = true;
-                                                            return (
-                                                                <tr
-                                                                    key={
-                                                                        student.student_code
-                                                                    }
-                                                                >
-                                                                    <td>
-                                                                        {
-                                                                            student.student_code
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        {
-                                                                            student.full_name
-                                                                        }
-                                                                    </td>
-                                                                    <td className="text-center">
-                                                                        <div className="form-check form-switch d-flex align-items-center justify-content-center">
-                                                                            <input
-                                                                                className="form-check-input attendance-checkbox btn-sm"
-                                                                                type="checkbox"
-                                                                                checked={
-                                                                                    student
-                                                                                        ?.attendance[0]
-                                                                                        ?.status ===
-                                                                                    "present"
-                                                                                }
-                                                                                style={{
-                                                                                    transform:
-                                                                                        "scale(2.5)",
-                                                                                }}
-                                                                                onChange={() =>
-                                                                                    handleToggleStatus(
-                                                                                        student
-                                                                                    )
-                                                                                }
-                                                                                disabled={
-                                                                                    isToday ===
-                                                                                    false
-                                                                                }
-                                                                            />
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        }
-                                                    )}
-                                            </tbody>
-                                        </table>
-                                    )}
-                                </div>
-                                <div className="modal-footer">
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Đóng
-                                    </button>
-                                    {viewMode == "detail" ? (
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            onClick={handleSaveAttendance}
-                                        >
-                                            Lưu
-                                        </button>
-                                    ) : (
-                                        ""
-                                    )}
-                                </div>
-                            </div>
+                            <button
+                                type="button"
+                                className="btn btn-primary ms-2"
+                                onClick={saveChanges}
+                            >
+                                <i className='fas fa-save'> Lưu</i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -571,4 +251,4 @@ const AttendanceTeacher = () => {
     );
 };
 
-export default AttendanceTeacher;
+export default ShowAttendance;

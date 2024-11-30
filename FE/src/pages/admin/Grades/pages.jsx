@@ -1,15 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
+import { toast } from "react-toastify";
 import "datatables.net-dt/css/dataTables.dataTables.css";
 import $ from "jquery";
 import "datatables.net";
-import { toast } from "react-toastify";
-import api from "../../../config/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
 
-const ShowGrades = ({ classCode, onClose }) => {
+const ShowGrades = () => {
     const [selectedGrade, setSelectedGrade] = useState(null);
-    const [isTableLoading, setIsTableLoading] = useState(true);
+    const { class_code: classCode } = useParams();
+    const navigate = useNavigate();
 
+    const { data, error, isLoading, refetch } = useQuery({
+        queryKey: ["grades", classCode],
+        queryFn: async () => {
+            const response = await api.get(`/admin/grades/${classCode}`);
+            if (response?.data?.score && typeof response.data.score === "string") {
+                response.data.score = JSON.parse(response.data.score); // Chuyển đổi chuỗi thành mảng
+            }
+            if (!selectedGrade) {
+                setSelectedGrade(response?.data[0]);
+            }
+            return response?.data;
+        },
+        onSuccess: () => {
+            setSelectedGrade(data);
+        },
+        onError: () => {
+            toast.error("Không thể tải dữ liệu bảng điểm");
+        },
+    });
+    useEffect(() => {
+        refetch();
+    }, [])
     const { mutate } = useMutation({
         mutationFn: async (data) => {
             await api.put(`/admin/grades/${classCode}`, data);
@@ -21,126 +45,124 @@ const ShowGrades = ({ classCode, onClose }) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
         },
     });
-
+    const calculateAverageScore = (scores) => {
+        const totalWeight = scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+        if (totalWeight === 0) return 0;
+        return scores.reduce((sum, score) => {
+            const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
+            return sum + (scoreValue * (score.weight / totalWeight));
+        }, 0).toFixed(2);
+    };
     useEffect(() => {
-        const fetchGrades = async () => {
-            try {
-                const response = await api.get(`/admin/grades/${classCode}`);
-                setSelectedGrade(response?.data);
-            } catch (error) {
-                toast.error("Không thể tải dữ liệu bảng điểm");
-            }
-        };
-
-        if (classCode) {
-            fetchGrades();
-        }
-    }, [classCode]);
-
+        refetch();
+    }, [])
     useEffect(() => {
-        if (selectedGrade && selectedGrade.score?.length > 0) {
-            if ($.fn.dataTable.isDataTable("#modalGradesTable")) {
-                $("#modalGradesTable").DataTable().clear().destroy();
+        if (selectedGrade) {
+            // Xóa bảng cũ và khởi tạo lại DataTable nếu đã tồn tại
+            if ($.fn.dataTable.isDataTable("#gradesTable")) {
+                $("#gradesTable").DataTable().clear().destroy();
             }
-
-            const totalValue = selectedGrade?.score[0]?.scores?.reduce(
-                (total, score) => total + score.value,
-                0
-            );
-
-            $("#modalGradesTable").DataTable({
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
+            const totalWeight = selectedGrade?.students[0]?.scores.reduce((total, score) => total + score.weight, 0);
+            // Khởi tạo DataTable
+            $("#gradesTable").DataTable({
+                paging: false,
+                info: false,
                 language: {
-                    paginate: {
-                        previous: "Trước",
-                        next: "Tiếp theo",
-                    },
-                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
-                    info: "Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục",
-                    search: "Tìm kiếm:",
+                    search: "<i class='fas fa-search'>Tìm kiếm</i>",
                 },
-                data: selectedGrade?.score?.map((student, index) => ({
+                data: selectedGrade?.students?.map((student, index) => ({
                     stt: index + 1,
                     student_code: student.student_code,
                     student_name: student.student_name,
-                    scores: student.scores,
-                    average_score: student.average_score,
-                    note: student.scores.map((score) => score.note).join(", "),
+                    scores: student.scores || [],
+                    average_score: student.average_score || 0,
                 })),
                 columns: [
-                    { title: "STT", data: "stt", className: "text-center" },
-                    {
-                        title: "Mã SV",
-                        data: "student_code",
-                        className: "text-center",
-                    },
-                    {
-                        title: "Tên SV",
-                        data: "student_name",
-                        className: "text-center",
-                    },
-                    ...selectedGrade?.score[0]?.scores
-                        .map((exam, index) => [
-                            {
-                                title: `${exam.name} (${
-                                    exam.value
-                                        ? (
-                                              (exam.value / totalValue) *
-                                              100
-                                          ).toFixed(2)
-                                        : 0
-                                }%)`,
-                                data: null,
-                                render: function (data, type, row) {
-                                    const scoreData =
-                                        row.scores[index]?.score || 0;
-                                    return `<input type="number" 
+                    { title: "#", data: "stt", className: "text-center" },
+                    { title: "Mã SV", data: "student_code", className: "text-center" },
+                    { title: "Tên SV", data: "student_name", className: "text-center" },
+                    ...selectedGrade?.students[0]?.scores.map((score, index) => ({
+                        title: `${score.assessment_name} (${score.weight / totalWeight * 100}%)`,
+                        data: null,
+                        render: (data, type, row) => {
+                            let scoreData = row.scores[index]?.score || 0;
+                            scoreData = parseFloat(
+                                (typeof scoreData === 'string' ? scoreData.replace(',', '.') : scoreData) || 0
+                            );
+                            return `
+                                <input type="number" 
                                     value="${scoreData}" 
                                     min="0" 
                                     max="10" 
                                     class="form-control form-control-sm text-center score-input"
-                                    data-index="${row.stt - 1}"
+                                    data-index="${row.stt - 1}" 
                                     data-exam-index="${index}" 
                                     oninput="this.value = Math.min(Math.max(this.value, 0), 10)"
                                 />`;
-                                },
-                                className: "text-center",
-                            },
-                            {
-                                title: "Ghi chú",
-                                data: null,
-                                render: function (data, type, row) {
-                                    const noteData =
-                                        row.scores[index]?.note || "";
-                                    return `<input type="text"
-                                    value="${noteData}"
-                                    class="form-control form-control-sm text-center note-input w-10"
-                                    data-index="${row.stt - 1}"
-                                    data-exam-index="${index}"
-                                    style="width: 80px"
-                                />`;
-                                },
-                                className: "text-center",
-                            },
-                        ])
-                        .flat(),
+                        },
+                        className: "text-center",
+                    })),
                     {
                         title: "Điểm Tổng",
                         data: "average_score",
                         className: "text-center",
-                        render: (data) => `<strong>${data || 0}</strong>`,
+                        render: (data) => {
+                            const isBelowThreshold = parseFloat(data?.replace(',', '.') || 0) < 5;
+                            data = parseFloat(
+                                (typeof data === 'string' ? data.replace(',', '.') : data) || 0
+                            ).toFixed(2);
+                            const className = isBelowThreshold ? "text-danger" : "text-success";
+                            return `<strong class="${className}">${data || 0}</strong>`;
+                        },
                     },
                 ],
+
                 scrollX: true,
                 scrollY: true,
             });
-        }
+            const scrollBody = document.querySelector(".dataTables_scrollBody");
+            if (scrollBody) {
+                scrollBody.style.overflow = "hidden";
+                scrollBody.style.scrollbarWidth = "none"; // Firefox
+                scrollBody.style.msOverflowStyle = "none"; // IE 10+
+            }
 
-        return () => {
-            $("#modalGradesTable").DataTable().clear().destroy();
-        };
-    }, [selectedGrade]);
+            $('#gradesTable').on('change', '.score-input', function () {
+                const rowIndex = $(this).data('index');
+                const examIndex = $(this).data('exam-index');
+                const newScore = parseFloat($(this).val()) || 0;
+                selectedGrade.score[rowIndex].scores[examIndex].score = newScore;
+                const totalValue = selectedGrade.score[rowIndex].scores.reduce((sum, scoreItem) => sum + (scoreItem?.value || 0), 0);
+                const averageScore = calculateAverageScore(selectedGrade.score[rowIndex].scores, totalValue);
+                selectedGrade.score[rowIndex].average_score = parseFloat(averageScore);
+                const $averageScoreCell = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1}) td:last-child strong`);
+                $averageScoreCell.text(averageScore);
+                if (averageScore < 5) {
+                    $averageScoreCell.removeClass('text-success');
+                    $averageScoreCell.addClass('text-danger');
+                } else {
+                    $averageScoreCell.addClass('text-success');
+                    $averageScoreCell.removeClass('text-danger');
+                }
+            });
+
+            $('#gradesTable').on('change', '.note-input', function (event) {
+                const rowIndex = $(this).data('index');
+                const examIndex = $(this).data('exam-index');
+                const newNote = $(this).val() || '';
+                selectedGrade.score[rowIndex].scores[examIndex].score = newNote;
+            });
+
+            $("#gradesTable tbody").on("click", '[id^="view_user_"]', function () {
+                const user_code = $(this).data("id");
+                navigate(`/admin/students/${user_code}`);
+            });
+
+            return () => {
+                $("#gradesTable").DataTable().clear().destroy();
+            };
+        }
+    }, [selectedGrade, data]);
 
     const handleSaveClick = () => {
         mutate(selectedGrade);
@@ -148,51 +170,50 @@ const ShowGrades = ({ classCode, onClose }) => {
 
     return (
         <div>
-            <div
-                className="modal fade show d-block"
-                tabIndex="-1"
-                aria-labelledby="gradesModalLabel"
-                role="dialog"
-            >
-                <div className="modal-dialog modal-xl" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="gradesModalLabel">
-                                Bảng điểm
-                            </h5>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                onClick={onClose}
-                            ></button>
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title text-center">Bảng điểm Lớp {selectedGrade && selectedGrade?.class_code} - Môn {selectedGrade && selectedGrade?.subject_code} </div>
                         </div>
-                        <div className="modal-body">
-                            {selectedGrade ? (
-                                <div className="table-responsive">
-                                    <table
-                                        id="modalGradesTable"
-                                        className="display table-striped"
-                                    ></table>
+                        <div className='card-body'>
+                            {isLoading ? (
+                                <div>
+                                    <div className="spinner-border" role="status"></div>
+                                    <p>Đang tải dữ liệu...</p>
                                 </div>
                             ) : (
-                                <p>Đang tải dữ liệu...</p>
+                                <>
+                                    {(data?.score == null) || !selectedGrade && (
+                                        <div>
+                                            <div className="spinner-border" role="status"></div>
+                                            <p>Chưa có dữ liệu...</p>
+                                        </div>
+                                    )}
+                                    <div className="table-responsive">
+                                        <table id="gradesTable" className="display table-striped"></table>
+                                    </div>
+                                    <button
+                                        className="btn btn-danger"
+                                        style={{ float: "right" }}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        <i className="fas fa-backward"> Quay lại</i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success ms-2"
+                                        style={{ float: "right" }}
+                                        onClick={handleSaveClick}
+                                    >
+                                        <i className="fas fa-save"> Lưu điểm</i>
+                                    </button>
+                                </>
                             )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-success"
-                                onClick={handleSaveClick}
-                            >
-                                Lưu điểm
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                            >
-                                Đóng
-                            </button>
+                            {error && (
+                                <div>Không thể tải dữ liệu bảng điểm</div>
+                            )}
+
                         </div>
                     </div>
                 </div>
