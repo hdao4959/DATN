@@ -74,6 +74,12 @@ import StudentAccountDetails from "./pages/admin/Account/StudentAccountDetails.j
 import EditStudentAccount from "./pages/admin/Account/EditStudentAccount.jsx";
 import EditTeacherAccount from "./pages/admin/Teacher/EditTeacherAccount.jsx";
 import ViewTimeFrame from "./pages/admin/ScheduleTimeFrame/ViewTimeFrame.jsx";
+import DegreeProgramList from "./pages/admin/DegreeProgram/DegreeProgramList.jsx";
+import AddDegreeProgram from "./pages/admin/DegreeProgram/AddDegreeProgram.jsx";
+import EditDegreeProgram from "./pages/admin/DegreeProgram/EditDegreeProgram.jsx";
+import SessionList from "./pages/admin/Sessions/SessionList.jsx";
+import AddSession from "./pages/admin/Sessions/AddSession.jsx";
+import EditSession from "./pages/admin/Sessions/EditMajor.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -273,6 +279,30 @@ function App() {
                 {
                     path: "viewtimeframes",
                     element: <ViewTimeFrame />,
+                },
+                {
+                    path: "degree-program",
+                    element: <DegreeProgramList />,
+                },
+                {
+                    path: "degree-program/add",
+                    element: <AddDegreeProgram />,
+                },
+                {
+                    path: "degree-program/:id/edit",
+                    element: <EditDegreeProgram />,
+                },
+                {
+                    path: "sessions",
+                    element: <SessionList />,
+                },
+                {
+                    path: "sessions/add",
+                    element: <AddSession />,
+                },
+                {
+                    path: "sessions/:id/edit",
+                    element: <EditSession />,
                 },
             ],
         },
