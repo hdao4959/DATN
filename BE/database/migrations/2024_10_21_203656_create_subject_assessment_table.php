@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('subject_code', 40);
             $table->foreign('subject_code')->references('subject_code')->on('subjects')
             ->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('assessment_item_code', 40);
-            $table->foreign('assessment_item_code')->references('code')->on('assessment_items')
+            $table->string('assessment_code', 40);
+            $table->foreign('assessment_code')->references('assessment_code')->on('assessment_items')
             ->cascadeOnDelete()->cascadeOnUpdate();
-            $table->unique(['subject_code','assessment_item_code']);
+            $table->unique(['subject_code','assessment_code']);
             $table->timestamps();
         });
     }

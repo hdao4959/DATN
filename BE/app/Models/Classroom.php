@@ -58,4 +58,9 @@ class Classroom extends Model
     {
         return $this->hasMany(Attendance::class, 'class_code', 'class_code');
     }
+    // Định nghĩa mối quan hệ với bảng 'scoreComponent'
+    public function scorecomponents()
+    {
+        return $this->hasMany(ScoreComponent::class, 'class_code', 'class_code');
+    }
 }
