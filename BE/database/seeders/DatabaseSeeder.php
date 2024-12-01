@@ -34,23 +34,23 @@ class DatabaseSeeder extends Seeder
         //     'role' => '0',
         // ]);
 
-        // User::create([
-        //     'user_code' => 'TC' . fake()->unique()->numberBetween(100, 999),
-        //     'full_name' => 'Giảng viên 1',
-        //     'email' => 'teacher1@gmail.com',
-        //     'password' => bcrypt('password'), // Mật khẩu mẫu
-        //     'phone_number' => '0123456789',
-        //     'address' => 'Hà Nội',
-        //     'sex' => 'male',
-        //     'birthday' => fake()->date(),
-        //     'citizen_card_number' => fake()->unique()->numerify('###########'),
-        //     'issue_date' => fake()->date(),
-        //     'place_of_grant' => fake()->city,
-        //     'nation' => 'Kinh',
-        //     'avatar' => fake()->imageUrl(200, 200, 'people'), // URL avatar ngẫu nhiên
-        //     'role' => '2',
-        //     'major_code' => 'CN01',
-        // ]);
+        User::create([
+            'user_code' => 'TC' . fake()->unique()->numberBetween(100, 999),
+            'full_name' => 'Giảng viên 1',
+            'email' => 'teacher2@gmail.com',
+            'password' => bcrypt('password'), // Mật khẩu mẫu
+            'phone_number' => '0123456789',
+            'address' => 'Hà Nội',
+            'sex' => 'male',
+            'birthday' => fake()->date(),
+            'citizen_card_number' => fake()->unique()->numerify('###########'),
+            'issue_date' => fake()->date(),
+            'place_of_grant' => fake()->city,
+            'nation' => 'Kinh',
+            'avatar' => fake()->imageUrl(200, 200, 'people'), // URL avatar ngẫu nhiên
+            'role' => '2',
+            'major_code' => 'CN01',
+        ]);
 
 
     }

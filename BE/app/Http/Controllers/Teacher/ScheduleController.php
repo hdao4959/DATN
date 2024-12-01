@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Schedule;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
@@ -83,7 +85,7 @@ class ScheduleController extends Controller
     //         }
     //         return response()->json($schedules,200);
     //     } catch (\Throwable $th) {
-    //         return $this->handleErrorNotDefine($th);  
+    //         return $this->handleErrorNotDefine($th);
     //     }
     // }
 
@@ -91,11 +93,11 @@ class ScheduleController extends Controller
         try{
             $teacher_code = request()->user()->user_code;
             $class_code = Classroom::where([
-                'class_code' => $classcode, 
+                'class_code' => $classcode,
                 'user_code' => $teacher_code
             ])->pluck('class_code')->first();
-    
-            $list_schedules = Schedule::with( 
+
+            $list_schedules = Schedule::with(
                ['room',
                'session'])
             ->where('class_code', $class_code)
@@ -105,9 +107,48 @@ class ScheduleController extends Controller
        catch(\Throwable $th){
             return $this->handleErrorNotDefine($th);
        }
-
-
     }
+
+    public function listSchedulesForTeacher(Request $request){
+        try{
+            $teacher_code = $request->user_code;
+            $now = Carbon::now();
+            $sevenDaysLater = Carbon::now()->addDays(7);
+
+            $list_schedules = Schedule::query()
+                            ->where('user_code',$teacher_code)
+                            ->whereBetween('date',[$now, $sevenDaysLater])
+                            ->orderBy('date','asc')
+                            ->get();
+            return response()->json($list_schedules,200);
+        }
+       catch(\Throwable $th){
+            return $this->handleErrorNotDefine($th);
+       }
+    }
+
+    public function listSchedulesForStudent(Request $request){
+        try{
+            $student_code = $request->user_code;
+            $student = User::where('user_code', $student_code)->first();
+
+            if (!$student) {
+                return response()->json(['error' => 'Student not found'], 404);
+            }
+
+            $list_schedules = $student->classrooms()
+                            ->with('schedules')
+                            ->get()
+                            ->pluck('schedules')
+                            ->flatten();
+            return response()->json($list_schedules,200);
+        }
+       catch(\Throwable $th){
+            return $this->handleErrorNotDefine($th);
+       }
+    }
+
+
     /**
      * Show the form for editing the specified resource.
      */

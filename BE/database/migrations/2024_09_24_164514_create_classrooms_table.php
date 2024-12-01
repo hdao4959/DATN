@@ -21,12 +21,22 @@ return new class extends Migration
             $table->text('description')->comment('Mô tả')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('teacher_code',20)->comment('Mã giảng viên');
-            $table->foreign('user_code')->references('user_code')->on('users')
-            ->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('subject_code',40)->comment('Mã môn học');
+
+            $table->foreign('teacher_code')
+                    ->references('user_code')
+                    ->on('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+
+            $table->string('subject_code',40)
+                  ->comment('Mã môn học');
+
             $table->foreign('subject_code')
                     ->references('subject_code')
-                    ->on('subjects')->restrictOnDelete()->cascadeOnUpdate();
+                    ->on('subjects')
+                    ->restrictOnDelete()
+                    ->cascadeOnUpdate();
+
             $table->softDeletes();
             $table->timestamps();
         });
