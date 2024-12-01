@@ -94,11 +94,6 @@ class User extends Authenticatable
     }
 
 
-    // public function classroomUser()
-    // {
-    //     return $this->hasMany(ClassroomUser::class, 'user_code', 'student_code');
-    // }
-
     // public function attendance()
     // {
     //     return $this->hasManyThrough(Attendance::class, ClassroomUser::class,  'class_code', 'class_code', 'user_code', 'student_code');
