@@ -298,7 +298,6 @@ class ClassroomController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-
             $current_classcode = Classroom::where('class_code', 'LIKE', $data['course_code'] . '_' . $data['subject_code'] . "%")
                 ->orderBy('class_code', 'desc')->pluck('class_code')->first();
 
@@ -339,15 +338,26 @@ class ClassroomController extends Controller
             $classroom->users()->attach($student_codes_valid, ['class_code' => $classroom->class_code]);
 
             $data_to_insert_schedules_table = [];
+            
             foreach ($data['list_study_dates'] as $date) {
                 $data_to_insert_schedules_table[] = [
                     'class_code' => $classroom->class_code,
                     'session_code' => $data['session_code'],
                     'room_code' => $data['room_code'],
                     'teacher_code' => $data['teacher_code'] ?? null,
-                    'date' => $date,
+                    'date' => $date, 
+                    'type' => 'study'
                 ];
             }
+
+            $total_dates = count($data_to_insert_schedules_table);
+            // Lấy 3 ngày cuối là các ngày thi
+            for($i = $total_dates - 3; $i < $total_dates ; $i++){
+                if($i > 0){
+                    $data_to_insert_schedules_table[$i]['type'] = 'exam';
+                }
+            }
+
 
             Schedule::insert($data_to_insert_schedules_table);
 
