@@ -59,55 +59,6 @@ class AttendanceController extends Controller
                                     ])
                                     ->get(['class_code', 'class_name', 'subject_code', 'user_code']);
                             
-            // $result = $classrooms->groupBy('class_code')->map(function ($classGroup) {
-            //     $firstAttendance = $classGroup->first();
-                
-            //     // Lấy tất cả các lịch học từ lớp học
-            //     $schedules = $firstAttendance->schedules;
-
-            //     // Gộp dữ liệu điểm danh và lịch học
-            //     $attendanceData = $classGroup->map(function ($attendance) use ($schedules) {
-            //         dd($attendance->attendance->date);
-            //         // Lấy cate_code từ lịch học tương ứng (nếu có)
-            //         $schedule = $schedules->firstWhere('date', Carbon::parse($attendance->attendance->date)->toDateString());
-            //         return [
-            //             'date' => Carbon::parse($attendance->date)->toDateString(),
-            //             'cate_name' => $schedule->session->cate_name ?? null,
-            //             'full_name' => $attendance->classroom->teacher->full_name,
-            //             'status' => $attendance->status,
-            //             'noted' => $attendance->noted,
-            //         ];
-            //     });
-            
-            //     $attendanceDates = $attendanceData->pluck('date')->toArray();
-            
-            //     // Duyệt qua các lịch học và lọc ra các lịch không có trong dữ liệu điểm danh
-            //     $scheduleData = $schedules->filter(function ($schedule) use ($attendanceDates) {
-            //         return !in_array(Carbon::parse($schedule->date)->toDateString(), $attendanceDates);
-            //     })->map(function ($schedule) {
-            //         return [
-            //             'date' => Carbon::parse($schedule->date)->toDateString(),
-            //             'full_name' => null,
-            //             'status' => null,
-            //             'noted' => 'Chưa điểm danh',
-            //         ];
-            //     });
-            
-            //     // Kết hợp danh sách điểm danh và lịch học
-            //     $finalData = $attendanceData->merge($scheduleData)->sortBy('date')->values();
-            //     $totalSchedule = $finalData->count();
-            //     // Đếm số lần status là 'absent'
-            //     $absentCount = $attendanceData->where('status', 'absent')->count();
-            //     // dd($absentCount);
-            //     return [
-            //         'class_code' => $firstAttendance->class_code,
-            //         'class_name' => $firstAttendance->classroom->class_name,
-            //         'subject_name' => $firstAttendance->classroom->subject->subject_name,
-            //         'total_absent' => $absentCount,
-            //         'total_schedule' => $totalSchedule,
-            //         'attendance' => $finalData,
-            //     ];
-            // })->values()->all();
             $result = $classrooms->map(function ($classroom) {
                 $schedules = $classroom->schedules; // Lấy danh sách lịch học
                 $attendances = $classroom->attendance; // Lấy danh sách điểm danh

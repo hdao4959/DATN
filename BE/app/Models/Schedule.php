@@ -51,6 +51,10 @@ class Schedule extends Model
     //             'cate_code' => $this->session->cate_code ?? null,
     //             'cate_name' => $this->session->cate_name ?? null,
     //             'value' => $this->session->value ?? null,
+
+    //         ],
+    //         'teacher'=> [
+    //             'user_code'=> $this->teacher->user_code ?? null
     //         ]
     //     ];
     // }

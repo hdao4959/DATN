@@ -1,12 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
+import api from "../../../config/axios";
+import { useQuery } from "@tanstack/react-query";
 
 const ClassroomStudents = () => {
     const { class_code } = useParams();
+
     const [students, setStudents] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(true);
+
+    const { data: classDetails, isLoading, error, refetch } = useQuery({
+        queryKey: ["class"],
+        queryFn: async () => {
+            const response = await api.get(`/teacher/classrooms/${class_code}`);
+            const data = response?.data;
+            return data;
+        }
+    });
+
     useEffect(() => {
+        refetch();
         const fetchStudents = async () => {
             try {
                 const token = JSON.parse(localStorage.getItem("token"));
@@ -48,64 +65,97 @@ const ClassroomStudents = () => {
         fetchStudents();
     }, [class_code]);
 
-    return (
-        <div className="container mt-4">
-            <h1 className="text-center mb-4 fs-5">
-                Danh sách sinh viên của lớp {class_code}
-            </h1>
+    useEffect(() => {
+        if (students) {
+            if ($.fn.dataTable.isDataTable("#studentsTable")) {
+                $("#studentsTable").DataTable().destroy(true);
+            }
+            $("#studentsTable").DataTable({
+                paging: false,
+                info: false,
+                language: {
+                    search: "<i class='fas fa-search'> Tìm kiếm: </i>",
+                },
+                data: students,
+                columns: [
+                    {
+                        title: '#',
+                        data: null,
+                        render: (data, type, row, meta) => meta.row + 1,
+                    },
+                    {
+                        title: 'Mã sinh viên',
+                        data: 'user_code',
+                        className: 'text-left',
+                    },
+                    {
+                        title: 'Họ và tên',
+                        data: 'full_name',
+                        className: 'text-left',
+                    },
+                    {
+                        title: 'Email',
+                        data: 'email',
+                        className: 'text-left',
+                    },
+                    {
+                        title: 'Số điện thoại',
+                        data: 'phone_number',
+                        className: 'text-left',
+                    },
+                ]
+            });
+        }
+    }, [loading, errorMessage]);
 
-            {loading ? (
-                <div className="d-flex justify-content-center">
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
+    return (
+        <div className="row">
+            <div className="col-md-12">
+                <div className="card">
+                    <div className="card-header">
+                        <div className="card-title text-center">Thông tin lớp {class_code}</div>
+                    </div>
+                    <div className='card-body'>
+                        {classDetails ? (
+                            <div className="mb-4">
+                                <p>Mã lớp học: {classDetails?.class_code}</p>
+                                <p>Tên lớp học: {classDetails?.class_name}</p>
+                                <p>Mô tả: {classDetails?.description}</p>
+                                <p>Mã môn học: {classDetails?.subject.subject_code}</p>
+                                <p>Môn học: {classDetails?.subject.subject_name}</p>
+                                <p>Chuyên ngành: {classDetails?.subject.major.cate_code} - {classDetails?.subject.major.cate_name}</p>
+                                <p>Giảng viên: {classDetails?.teacher.full_name}</p>
+                                <p>Mã giảng viên: {classDetails?.teacher.user_code}</p>
+                                <p>Email giảng viên: {classDetails?.teacher.email}</p>
+                            </div>
+                        ) : (
+                            <div className="d-flex justify-content-center">
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className='card-body'>
+                        {loading ? (
+                            <div className="d-flex justify-content-center">
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        ) : errorMessage ? (
+                            <div className="alert alert-danger" role="alert">
+                                {errorMessage}
+                            </div>
+                        ) : (
+                            <table
+                                id="studentsTable"
+                                className="table table-hover table-bordered text-center"
+                            />
+                        )}
                     </div>
                 </div>
-            ) : errorMessage ? (
-                <div className="alert alert-danger" role="alert">
-                    {errorMessage}
-                </div>
-            ) : (
-                <table className="table table-hover table-bordered text-center">
-                    <thead className="thead-dark">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Mã sinh viên</th>
-                            <th scope="col">Họ và tên</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Số điện thoại</th>
-                            <th scope="col">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.map((student, index) => (
-                            <tr key={student.id}>
-                                <td>{index + 1}</td>
-                                <td>{student.user_code}</td>
-                                <td>{student.full_name}</td>
-                                <td>{student.email}</td>
-                                <td>{student.phone_number}</td>
-                                <td>
-                                    {student.is_active ? (
-                                        <i
-                                            className="fas fa-check-circle"
-                                            style={{
-                                                color: "green",
-                                            }}
-                                        ></i>
-                                    ) : (
-                                        <i
-                                            className="fas fa-times-circle"
-                                            style={{
-                                                color: "red",
-                                            }}
-                                        ></i>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+            </div>
         </div>
     );
 };

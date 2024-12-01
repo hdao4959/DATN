@@ -8,21 +8,15 @@ import $ from "jquery";
 import "datatables.net";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import ShowGrades from "../Grades/pages";
-import ShowAttendance from "../Attendance/page";
 import Modal from "../../../components/Modal/Modal";
 const ClassRoomsList = () => {
     const accessToken = getToken();
-    const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
-    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] =
-        useState(null);
-    const [
-        selectedClassCodeForAttendances,
-        setSelectedClassCodeForAttendances,
-    ] = useState(null);
+    const navigate = useNavigate();
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [currentClassCode, setCurrentClassCode] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
+    const [classrooms, setClassRooms] = useState([]);
+    const [startDate, setStartDate] = useState("");
 
     const {
         data,
@@ -37,46 +31,18 @@ const ClassRoomsList = () => {
                     "Content-Type": "application/json",
                 },
             });
-            return res?.data?.classrooms || [];
+            setClassRooms(res?.data || []);
+            return res?.data || [];
         },
     });
-    const classrooms = data?.data;
+    useEffect(() => {
+        setClassRooms(data || []);
+    }, [data])
 
-    const { mutate, isLoading } = useMutation({
-        mutationFn: (class_code) =>
-            api.delete(`/admin/classrooms/${class_code}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            }),
-        onSuccess: () => {
-            toast.success("Xóa phòng học thành công");
-            refetch();
-        },
-        onError: () => {
-            alert("Có lỗi xảy ra khi xóa phòng học");
-        },
-    });
+    // useEffect(() => {
+    //     refetch();
+    // }, [])
 
-    const handleDelete = (class_code) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa phòng học này không?")) {
-            mutate(class_code);
-        }
-    };
-
-    const handleViewGrades = (classCode) => {
-        setSelectedClassCodeForGrades(classCode);
-    };
-
-    const handleViewAttendances = (classCode) => {
-        setSelectedClassCodeForAttendances(classCode);
-    };
-
-    const handleCloseModal = () => {
-        setSelectedClassCodeForGrades(null);
-        setSelectedClassCodeForAttendances(null);
-    };
     const deleteClassMutation = useMutation({
         mutationFn: (classCode) =>
             api.delete(`/admin/classrooms/${classCode}`, {
@@ -116,14 +82,25 @@ const ClassRoomsList = () => {
     useEffect(() => {
         if (classrooms) {
             $("#classroomsTable").DataTable({
-                data: classrooms,
+                data: classrooms?.map((classes, index) => ({
+                    // class_code: classes.class_code,
+                    class_name: classes.class_name,
+                    // subject_code: classes.subject_code,
+                    subject_name: classes.subject_name,
+                    teacher_code: classes.teacher_code,
+                    teacher_name: classes.teacher_name,
+                    total_student: classes.total_student,
+                    room_name: classes.schedule?.room_name,
+                    session_name: classes.schedule.session_name,
+                    start: classes.schedule?.value?.['start'],
+                    end: classes.schedule?.value?.['end'],
+                })),
                 processing: true,
                 serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         // Tính toán số trang
                         const page = Math.ceil(data.start / data.length) + 1;
-
                         // Gửi request đến API
                         const response = await api.get(`/admin/classrooms`, {
                             params: {
@@ -134,19 +111,28 @@ const ClassRoomsList = () => {
                                 // order_dir: data.order[0].dir || 'asc', // Hướng sắp xếp
                             },
                         });
-
-                        const classrooms = response.data.classrooms;
-
-                        // Gọi callback của DataTables
+                        const classrooms = response?.data;
+                        const data3 = classrooms?.map((classes, index) => ({
+                            // class_code: classes.class_code,
+                            class_name: classes.class_name,
+                            // subject_code: classes.subject_code,
+                            subject_name: classes.subject_name,
+                            teacher_code: classes.teacher_code,
+                            teacher_name: classes.teacher_name,
+                            total_student: classes.total_student,
+                            room_name: classes.schedule?.room_name,
+                            session_name: classes.schedule.session_name,
+                            start: classes.schedule?.value?.['start'],
+                            end: classes.schedule?.value?.['end'],
+                        }));
                         callback({
                             draw: data.draw,
                             recordsTotal: classrooms.total || 0,
-                            recordsFiltered: classrooms.total || 0, // Sử dụng `filtered` nếu API có
-                            data: classrooms.data || [], // Dữ liệu lớp học
+                            recordsFiltered: classrooms.total || 0, 
+                            data: data3 || [], 
                         });
                     } catch (error) {
                         console.error("Error fetching data:", error);
-                        // Trả về dữ liệu rỗng nếu có lỗi
                         callback({
                             draw: data.draw,
                             recordsTotal: 0,
@@ -157,45 +143,75 @@ const ClassRoomsList = () => {
                 },
 
                 columns: [
-                    { title: "Mã lớp", data: "class_code" },
-                    { title: "Tên lớp", data: "class_name" },
-                    { title: "Mã môn", data: "subject_code" },
-                    { title: "Giảng viên", data: "user_code" },
-
                     {
-                        title: "Hành động",
+                        title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
+                        data: null,
+                        render: (row) => `${row.class_name ? row.class_name : ''} ${row.class_code ? row.class_code : ''}`
+                    },
+                    {
+                        title: "<i class='fas fa-book'> Môn</i>",
+                        data: null,
+                        render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
+                    },
+                    {
+                        title: "<i class='fas fa-user-tie'> Giảng viên</i>",
+                        data: null,
+                        render: (row) =>    `<div class='hover:text-blue-400' data-id="${row.class_code}" id="view_user_${row.class_code}" >
+                                                ${row.teacher_code ? row.teacher_code : ''} - ${row.teacher_name ? row.teacher_name : ''}
+                                            </div>`
+                    },
+                    {
+                        title: "<i class='fas fa-users'> Số sinh viên</i>",
+                        data: null,
+                        render: (row) => `${row.total_student ? row.total_student : '0'}`,
+                        className: "text-center"
+                    },
+                    {
+                        title: "<i class='fas fa-building'> Phòng học</i>",
+                        data: null,
+                        render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
+                    },
+                    {
+                        title: "<i class='fas fa-clock'> Ca học</i>",
+                        data: null,
+                        render: (row) => `${row.session_name ? row.session_name : 'Chưa xếp ca'} (${row.start ? row.start : ''} - ${row.end ? row.end : ''})`
+                    },
+                    {
+                        title: "",
                         className: "text-center",
                         data: null,
                         render: (data, type, row) => {
                             return `
                                 <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                <button 
+                                    <button 
                                         class="btn btn-info btn-sm" 
-                                        style="font-size: 14px;" 
                                         data-id="${row.class_code}" 
                                         id="view_grades_${row.class_code}" 
                                         title="Xem điểm">
+                                        <i class='fas fa-list'></i>
                                         Xem điểm
                                     </button>
                                     <button 
                                         class="btn btn-secondary btn-sm" 
-                                        style="font-size: 14px;" 
                                         data-id="${row.class_code}" 
                                         id="view_attendance_${row.class_code}" 
                                         title="Xem điểm danh">
                                         Xem điểm danh
                                     </button>
-                                     <button class="btn btn-warning btn-sm"  >
-                                        <a href="/admin/classrooms/view/${row.class_code}">
-               Xem thông tin lớp
-            </a>
-                                    </button>
-                                   
-                                    <i class="fas fa-trash delete-btn" 
-                                        style="cursor: pointer; color: red; font-size: 20px;" 
+                                    <button class="btn btn-warning btn-sm"
                                         data-id="${row.class_code}" 
-                                        id="delete_${row.class_code}" 
-                                        title="Xóa"></i>
+                                        id="view_detail_${row.class_code}" 
+                                    >
+                                        Xem chi tiết lớp học
+                                    </button>
+                                    <button class="btn btn-sm"  >
+                                        <i class="fas fa-trash delete-btn my-link hover:text-red-500" 
+                                            style="cursor: pointer; font-size: 20px;" 
+                                            data-id="${row.class_code}" 
+                                            id="delete_${row.class_code}" 
+                                            title="Xóa">
+                                        </i>
+                                    </button>
                                 </div>
                             `;
                         },
@@ -208,73 +224,88 @@ const ClassRoomsList = () => {
                     lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
                     info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
                     search: "Tìm kiếm:",
+                    processing: 'Đang tải dữ liệu',
+                    emptyTable: "Không có dữ liệu nào để hiển thị",
+                    loadingRecords: "Đang tải dữ liệu, vui lòng chờ...",
                 },
                 destroy: true,
                 createdRow: (row, data, dataIndex) => {
+                    // Xử lý nút xóa
                     $(row)
                         .find(".delete-btn")
                         .on("click", () => handleDeleteClass(data.class_code));
                 },
             });
-            // Lắng nghe sự kiện click cho nút "Xem điểm"
-            $("#classroomsTable").on(
-                "click",
-                '[id^="view_grades_"]',
-                function () {
-                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
-                    setSelectedClassCodeForGrades(classCode);
-                    handleViewGrades(classCode);
-                }
-            );
+            $("#classroomsTable tbody").on("click", '[id^="view_grades_"]', function () {
+                const classCode = $(this).data("id");
+                navigate(`/admin/classrooms/view/${classCode}/grades`);
+            });
 
-            // Lắng nghe sự kiện click cho nút "Xem điểm danh"
-            $("#classroomsTable").on(
-                "click",
-                '[id^="view_attendance_"]',
-                function () {
-                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
-                    setSelectedClassCodeForAttendances(classCode);
-                    handleViewAttendances(classCode);
-                }
-            );
+            $("#classroomsTable tbody").on("click", '[id^="view_attendance_"]', function () {
+                const classCode = $(this).data("id");
+                navigate(`/admin/classrooms/view/${classCode}/attendances`);
+            });
+
+            $("#classroomsTable tbody").on("click", '[id^="view_detail_"]', function () {
+                const classCode = $(this).data("id");
+                navigate(`/admin/classrooms/view/${classCode}/detail`);
+            });
+
+            $("#classroomsTable tbody").on("click", '[id^="view_user_"]', function () {
+                const user_code = $(this).data("id");
+                navigate(`/admin/teachers/${user_code}`);
+            });
         }
-        $('#AutoSchedule').off('click').on('click', handleAutoSchedule);
-
     }, [classrooms]);
-
     const { mutate: autoSchedule, isLoading: isAutoScheduling } = useMutation({
         mutationKey: ["AUTO_SCHEDULE_CLASSES"],
         mutationFn: async () => {
-            const payload = {
-                startDates: ["2024-12-2", "2024-12-3"],
-            };
-            // Bước 1: Gọi API getListClassByRoomAndSession
-            const res1 = await api.post("/getListClassByRoomAndSession", payload, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res2 = await api.get("/addStudent", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res3 = await api.get("/addTeacher", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            const res4 = await api.get("/generateSchedule", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            return { res1, res2, res3, res4};
+            if (!startDate) {
+                toast.error("Vui lòng chọn ngày bắt đầu.");
+            }
+            try {
+                // Bước 1: Gọi API getListClassByRoomAndSession
+                const res1 = await api.post("/getListClassByRoomAndSession", startDate, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res1.data.error) {
+                    return toast.error(res1.data.message || "Có lỗi xảy ra khi lấy thông tin lớp học.");
+                }
+                const res2 = await api.get("/addStudent", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res2.data.error) {
+                    return toast.error(res2.data.message || "Có lỗi xảy ra khi thêm sinh viên vào lớp học.");
+                }
+                const res3 = await api.get("/addTeacher", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res3.data.error) {
+                    return toast.error(res3.data.message || "Có lỗi xảy ra khi thêm giảng viên vào lớp học.");
+                }
+                const res4 = await api.get("/generateSchedule", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res4.data.error) {
+                    return toast.error(res4.data.message || "Có lỗi xảy ra khi tạo lịch học và lịch thi.");
+                }
+                return { res1, res2, res3, res4 };
 
+            } catch (error) {
+                return toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
+            }
         },
         onSuccess: (response) => {
             toast.success("Tạo lịch tự động thành công!");
@@ -303,26 +334,20 @@ const ClassRoomsList = () => {
             <div className="card">
                 <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Quản lý lớp học</h4>
-                    <div>
-                        <button className='btn btn-primary ml-3' id="AutoSchedule"><i class="fa fa-calendar"></i> Tạo tự động</button>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            placeholder="Chọn ngày bắt đầu"
+                            min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
+                        />
+                        <button className='btn btn-primary w-100' id="AutoSchedule"
+                                // onClick={handleAutoSchedule}
+                        ><i class="fa fa-calendar"></i> Tạo tự động</button>
                     </div>
                 </div>
-                {selectedClassCodeForGrades && (
-                    <ShowGrades
-                        classCode={selectedClassCodeForGrades}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {selectedClassCodeForAttendances && (
-                    <ShowAttendance
-                        classCode={selectedClassCodeForAttendances}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {(selectedClassCodeForGrades ||
-                    selectedClassCodeForAttendances) && (
-                        <div className="modal-backdrop fade show"></div>
-                    )}
                 <div className="card-body">
                     {isLoadingClasses && (
                         <>
@@ -331,7 +356,7 @@ const ClassRoomsList = () => {
                         </>
                     )}
                     <div className="table-responsive">
-                        <table id="classroomsTable" className="display"></table>
+                        <table id="classroomsTable" className="display text-nowrap"></table>
                     </div>
                 </div>
             </div>

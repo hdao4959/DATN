@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
             $table->string('student_code',20);
+            $table->foreign('student_code')->references('user_code')->on('users')
+            ->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('subject_code', 40);
             $table->foreign('subject_code')->references('subject_code')->on('subjects')
             ->cascadeOnDelete()->cascadeOnUpdate();
-            $table->decimal('score', 5, 2)->comment('Điểm tổng hợp');
-            $table->boolean('is_pass');
+            $table->decimal('score', 5, 2);
+            $table->boolean('is_pass')->default(true);
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

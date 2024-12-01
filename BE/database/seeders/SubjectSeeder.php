@@ -286,6 +286,72 @@ class SubjectSeeder extends Seeder
         // ]);
 
 
+        $baseTuition = 1000000;
+$baseRestudyFee = 500000;
+$baseCreditNumber = 3;
+
+$additionalSubjects = [
+    'S1' => [
+        'Quản lý thương hiệu',
+        'Marketing quốc tế',
+        'Hành vi người tiêu dùng',
+    ],
+    'S2' => [
+        'Quản lý chiến dịch quảng cáo',
+        'Marketing sản phẩm công nghệ',
+        'Nghiên cứu thị trường',
+    ],
+    'S3' => [
+        'Marketing dịch vụ',
+        'Chiến lược định giá',
+        'Marketing tích hợp',
+    ],
+    'S4' => [
+        'Quản trị bán hàng',
+        'Kỹ năng viết quảng cáo',
+        'Quản lý marketing trong thời đại số',
+    ],
+    'S5' => [
+        'Quảng cáo đa kênh',
+        'Chiến lược marketing bền vững',
+        'Marketing cho doanh nghiệp nhỏ',
+    ],
+    'S6' => [
+        'Truyền thông tích hợp',
+        'Phân tích dữ liệu nâng cao',
+        'Marketing theo địa phương',
+    ],
+    'S7' => [
+        'Tối ưu hóa ngân sách marketing',
+        'Chiến lược nội dung trong thời đại số',
+        'Lập kế hoạch và đo lường ROI',
+    ],
+];
+
+$majorCode = 'MKT';
+$counter = 9; // Bắt đầu từ MKT09
+
+foreach ($additionalSubjects as $semesterCode => $subjectNames) {
+    foreach ($subjectNames as $subjectName) {
+        DB::table('subjects')->insert([
+            'subject_code' => $majorCode . sprintf('%02d', $counter++),
+            'subject_name' => $subjectName,
+            'tuition' => $baseTuition,
+            're_study_fee' => $baseRestudyFee,
+            'credit_number' => $baseCreditNumber,
+            'total_sessions' => 20 + ($counter % 5), // Tăng số buổi ngẫu nhiên
+            'description' => "Môn học $subjectName trong chuyên ngành $majorCode.",
+            'image' => null,
+            'semester_code' => $semesterCode,
+            'major_code' => $majorCode,
+            'is_active' => 1,
+            'deleted_at' => null,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+    }
+}
+
 
 
 
