@@ -76,7 +76,7 @@ const ShowAttendance = () => {
     };
 
     useEffect(() => {
-        if (attendanceData) {
+        if (attendanceData && attendanceData != []) {
             const students = {};
 
             attendanceData.forEach((record) => {
@@ -197,7 +197,7 @@ const ShowAttendance = () => {
         }
 
         try {
-            await api.put(`/api/admin/attendances`, changedRecords);
+            await api.put(`/admin/attendances`, changedRecords);
             toast.success("Lưu thành công!");
             setChangedRecords([]);
         } catch (error) {
