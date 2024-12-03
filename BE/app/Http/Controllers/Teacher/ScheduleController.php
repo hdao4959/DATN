@@ -87,7 +87,7 @@ class ScheduleController extends Controller
 
     public function listSchedulesForTeacher(Request $request, string $user_code){
         try{
-            $teacher_code = $user_code;
+            $teacher_code = request()->user()->user_code;
             $now = Carbon::now();
             $sevenDaysLater = Carbon::now()->addDays(7);
 
@@ -105,7 +105,7 @@ class ScheduleController extends Controller
 
     public function listSchedulesForStudent(Request $request, string $user_code){
         try{
-            $student_code = $user_code;
+            $student_code = request()->user()->user_code;
             $student = User::where('user_code', $student_code)->first();
 
             if (!$student) {
