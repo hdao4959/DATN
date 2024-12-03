@@ -310,6 +310,6 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 Route::get('schedules', [TeacherScheduleController::class, 'index']);
 
-Route::apiResource('fees', FeeController::class);
+Route::get('schedules/teacher',[TeacherScheduleController::class,'']);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
