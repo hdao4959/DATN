@@ -185,10 +185,10 @@ function App() {
                     path: "classrooms/view/:class_code/grades",
                     element: <ShowGrades />,
                 },
-                {
-                    path: "classrooms/view/:class_code/attendances",
-                    // element: <ShowAttendance />,
-                },
+                // {
+                //     path: "classrooms/view/:class_code/attendances",
+                //     element: <ShowAttendance />,
+                // },
                 {
                     path: "semesters",
                     element: <ListSemester />,

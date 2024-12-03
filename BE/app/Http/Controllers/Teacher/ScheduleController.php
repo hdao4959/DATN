@@ -64,67 +64,31 @@ class ScheduleController extends Controller
         }
     }
 
-    // public function show(Request $request, string $classCode)
-    // {
-    //     try {
-    //         $userCode = $request->user()->user_code;
 
-    //         $schedules = Classroom::where('user_code', $userCode)->where('class_code', $classCode)
-    //             ->with(['schedules'])
-    //             ->get()->flatMap(function ($classroom) {
-    //                     return $classroom->schedules->map(function ($schedule) {
-    //                         // Giải mã trường JSON `value` của `session`
-    //                         $sessionValue = json_decode($schedule->session->value ?? '{}', true);
-    //                     return [
-    //                         'class_code' => $schedule->class_code,
-    //                         'date' => $schedule->date,
-    //                         'classroom' => [
-    //                             'class_name' => $schedule->classroom->class_name ?? null,
-    //                         ],
-    //                         'room' => [
-    //                             'cate_name' => $schedule->room->cate_name ?? null,
-    //                         ],
-    //                         'session' => [
-    //                             'cate_code' => $schedule->session->cate_code ?? null,
-    //                             'cate_name' => $schedule->session->cate_name ?? null,
-    //                             'start_time' => $sessionValue['start'] ?? null,
-    //                             'end_time' => $sessionValue['end'] ?? null,
-    //                         ],
-    //                     ];
-    //                 });
-    //             });
-    //         if (!$schedules) {
-    //             return $this->handleInvalidId();
-    //         }
-    //         return response()->json($schedules,200);
-    //     } catch (\Throwable $th) {
-    //         return $this->handleErrorNotDefine($th);
+
+    // public function listSchedulesForClassroom(string $classcode){
+    //     try{
+    //         $teacher_code = request()->user()->user_code;
+    //         $class_code = Classroom::where([
+    //             'class_code' => $classcode,
+    //             'user_code' => $teacher_code
+    //         ])->pluck('class_code')->first();
+
+    //         $list_schedules = Schedule::with(
+    //            ['room',
+    //            'session'])
+    //         ->where('class_code', $class_code)
+    //         ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
+    //             return response()->json($list_schedules,200);
     //     }
+    //    catch(\Throwable $th){
+    //         return $this->handleErrorNotDefine($th);
+    //    }
     // }
 
-    public function listSchedulesForClassroom(string $classcode){
+    public function listSchedulesForTeacher(Request $request, string $user_code){
         try{
             $teacher_code = request()->user()->user_code;
-            $class_code = Classroom::where([
-                'class_code' => $classcode,
-                'user_code' => $teacher_code
-            ])->pluck('class_code')->first();
-
-            $list_schedules = Schedule::with(
-               ['room',
-               'session'])
-            ->where('class_code', $class_code)
-            ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
-                return response()->json($list_schedules,200);
-        }
-       catch(\Throwable $th){
-            return $this->handleErrorNotDefine($th);
-       }
-    }
-
-    public function listSchedulesForTeacher(Request $request){
-        try{
-            $teacher_code = $request->user_code;
             $now = Carbon::now();
             $sevenDaysLater = Carbon::now()->addDays(7);
 
@@ -140,9 +104,9 @@ class ScheduleController extends Controller
        }
     }
 
-    public function listSchedulesForStudent(Request $request){
+    public function listSchedulesForStudent(Request $request, string $user_code){
         try{
-            $student_code = $request->user_code;
+            $student_code = request()->user()->user_code;
             $student = User::where('user_code', $student_code)->first();
 
             if (!$student) {
