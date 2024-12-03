@@ -57,7 +57,7 @@ class ScheduleController extends Controller
                                 ->where('teacher_code',$userCode)
                                 ->get();
 
-            return response()->json($list_schedules,404);
+            return response()->json($list_schedules,200);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
