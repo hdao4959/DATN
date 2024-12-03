@@ -73,27 +73,67 @@ const ClassRoomsList = () => {
     const { mutate: autoSchedule } = useMutation({
         mutationFn: async () => {
             if (!startDate) {
-                return toast.error("Vui lòng chọn ngày bắt đầu.");
+                toast.error("Vui lòng chọn ngày bắt đầu.");
             }
             try {
-                await api.post(
-                    "/admin/classrooms/auto-schedule",
-                    { startDate },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-                toast.success("Tạo lịch tự động thành công!");
-                refetch();
+                // Bước 1: Gọi API getListClassByRoomAndSession
+                const res1 = await api.post("/getListClassByRoomAndSession", startDate, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res1.data.error) {
+                    return toast.error(res1.data.message || "Có lỗi xảy ra khi lấy thông tin lớp học.");
+                }
+                const res2 = await api.get("/addStudent", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res2.data.error) {
+                    return toast.error(res2.data.message || "Có lỗi xảy ra khi thêm sinh viên vào lớp học.");
+                }
+                const res3 = await api.get("/addTeacher", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res3.data.error) {
+                    return toast.error(res3.data.message || "Có lỗi xảy ra khi thêm giảng viên vào lớp học.");
+                }
+                const res4 = await api.get("/generateSchedule", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (res4.data.error) {
+                    return toast.error(res4.data.message || "Có lỗi xảy ra khi tạo lịch học và lịch thi.");
+                }
+                const res5 = await api.get("/generateAttendances", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                return { res1, res2, res3, res4, res5 };
+
             } catch (error) {
-                toast.error(
-                    error.response?.data?.message ||
-                        "Có lỗi xảy ra khi tạo lịch tự động!"
-                );
+                return toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
             }
+        },
+        onSuccess: (response) => {
+            toast.success("Tạo lịch tự động thành công!");
+            console.log("Response:", response);
+            refetch(); // Refetch danh sách lớp học
+        },
+        onError: (error) => {
+            console.error("Error:", error);
+            toast.error("Có lỗi xảy ra khi tạo lịch tự động.");
         },
     });
 
@@ -193,9 +233,10 @@ const ClassRoomsList = () => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             placeholder="Chọn ngày bắt đầu"
+                            min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
                         />
                         <button
-                            className="btn btn-primary"
+                            className="btn btn-primary text-nowrap"
                             onClick={handleAutoSchedule}
                             disabled={!startDate}
                         >

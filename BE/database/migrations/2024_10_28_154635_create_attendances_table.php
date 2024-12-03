@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('class_code')->index();
             $table->foreign('class_code')->references('class_code')->on('classrooms')->cascadeOnDelete()->restrictOnUpdate();
             $table->dateTime('date');
-            $table->enum('status', ['absent', 'present']);
+            $table->enum('status', ['absent', 'present','pending']);
             $table->string('noted')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -49,7 +49,7 @@ const ClassroomList = () => {
             $("#classroomTable").DataTable({
                 data: classrooms?.map((classes, index) => ({
                     stt: index + 1,
-                    // class_code: classes.class_code,
+                    class_code: classes.class_code,
                     class_name: classes.class_name,
                     // subject_code: classes.subject_code,
                     subject_name: classes.subject_name,
