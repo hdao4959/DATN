@@ -204,7 +204,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::controller(TeacherScheduleController::class)->group(function () {
         //     Route::get('schedules', 'index');
         // });
-        Route::apiResource('schedules', TeacherScheduleController::class);
+
 
         // Lịch dạy của giảng viên trong 1 lớp học
         Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);
@@ -317,6 +317,7 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 
 Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
+
 Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
 Route::apiResource('fees', FeeController::class);

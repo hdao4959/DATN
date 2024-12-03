@@ -109,7 +109,7 @@ class ScheduleController extends Controller
                         ];
             });
 
-            return response()->json($list_schedules,200);
+            return response()->json($schedules,200);
         }
        catch(\Throwable $th){
             return $this->handleErrorNotDefine($th);
