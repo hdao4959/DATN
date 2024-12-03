@@ -221,7 +221,7 @@ class ScheduleController extends Controller
                         $query->select('subject_code', 'subject_name');
                     },
                     'schedules' => function ($query) {
-                        $query->orderBy('date', 'asc')->limit(1);
+                        $query->orderBy('date', 'asc');
                     },
                     'schedules.session' => function ($query) {
                         $query->select('cate_code', 'cate_name', 'value');
@@ -239,7 +239,7 @@ class ScheduleController extends Controller
                 ->where('class_code', '!=', $classroom->class_code)
                 ->get()->map(function ($classroom) {
                     $subject_info = optional($classroom->subject);
-                    $first_schedule = optional($classroom->schedules)->first();
+                    $first_schedule = optional($classroom->schedules->first());
                     $session_info = optional($first_schedule->session);
                     $room_info = optional($first_schedule->room);
                     $study_days = (int) (new Datetime($first_schedule->date))->format('N') % 2 == 0 ?

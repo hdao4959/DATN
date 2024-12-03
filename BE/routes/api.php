@@ -45,6 +45,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
 use App\Http\Controllers\Student\ServiceController;
+use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 
 /*
@@ -211,6 +212,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/students', [TeacherStudentController::class, 'listStudentForClassroom']);
+        Route::get('classrooms/{classcode}/examdays', [ExamController::class,'listExamDays']);
+        Route::post('classrooms/{classcode}/examdays', [ExamController::class,'store']);
+
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);
