@@ -2,7 +2,8 @@ import clsx from "clsx";
 import PropTypes from "prop-types";
 
 const Modal = (props) => {
-    const { title, description, closeTxt, okTxt, visible, onVisible, onOk } = props;
+    const { title, description, closeTxt, okTxt, visible, onVisible, onOk } =
+        props;
 
     return (
         <div
@@ -13,7 +14,10 @@ const Modal = (props) => {
             onClick={onVisible}
         >
             <div className="modal-dialog">
-                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <div
+                    className="modal-content"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <div className="modal-header">
                         <h5 className="modal-title">{title}</h5>
                         <button
@@ -36,7 +40,11 @@ const Modal = (props) => {
                         >
                             {closeTxt}
                         </button>
-                        <button onClick={onOk} type="button" className="btn btn-primary">
+                        <button
+                            onClick={onOk}
+                            type="button"
+                            className="btn btn-primary"
+                        >
                             {okTxt}
                         </button>
                     </div>
@@ -54,6 +62,6 @@ Modal.propTypes = {
     visible: PropTypes.bool,
     onVisible: PropTypes.func,
     onOk: PropTypes.func,
-}
+};
 
 export default Modal;

@@ -3,12 +3,15 @@ import React, { useState } from "react";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Modal from "../../../components/Modal/Modal";
 
 const TransferSchedule = () => {
     const [newClasses, setNewClasses] = useState([]);
     const [selectedClassCode, setSelectedClassCode] = useState(null);
-    const navigate = useNavigate();
+    const [selectedNewClass, setSelectedNewClass] = useState(null);
     const [isLoadingNewClasses, setIsLoadingNewClasses] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false); // State to control modal visibility
+    const navigate = useNavigate();
 
     const daysMap = {
         Monday: "Thứ hai",
@@ -28,7 +31,7 @@ const TransferSchedule = () => {
         queryKey: ["MY_CLASSES"],
         queryFn: async () => {
             const response = await api.get("/student/transferSchedules");
-            return response?.data;
+            return response?.data || [];
         },
         onError: () => {
             toast.error("Không thể tải danh sách lớp học!");
@@ -39,7 +42,7 @@ const TransferSchedule = () => {
         queryKey: ["LIST_SESSIONS"],
         queryFn: async () => {
             const response = await api.get("/listSessionsForForm");
-            return response?.data;
+            return response?.data || [];
         },
         onError: () => {
             toast.error("Không thể tải danh sách ca học!");
@@ -54,7 +57,7 @@ const TransferSchedule = () => {
         queryKey: ["USER_DATA"],
         queryFn: async () => {
             const response = await api.get("/user");
-            return response?.data;
+            return response?.data || {};
         },
         onError: () => {
             toast.error("Không thể tải thông tin người dùng!");
@@ -89,6 +92,7 @@ const TransferSchedule = () => {
             setIsLoadingNewClasses(false);
         }
     };
+
     const handleScheduleChange = async (
         class_code_current,
         class_code_target
@@ -118,6 +122,21 @@ const TransferSchedule = () => {
                 error?.response?.data?.message || "Không thể đổi lịch học!";
             toast.error(message);
         }
+    };
+
+    const handleConfirmTransfer = () => {
+        if (selectedClassCode && selectedNewClass) {
+            handleScheduleChange(
+                selectedClassCode,
+                selectedNewClass.class_code
+            );
+            setShowConfirmModal(false); // Close modal after confirming
+        }
+    };
+
+    const handleShowModal = (newClass) => {
+        setSelectedNewClass(newClass); // Store the class to transfer to
+        setShowConfirmModal(true); // Show the confirmation modal
     };
 
     if (isErrorClasses || isErrorSessions || isErrorUser) {
@@ -160,60 +179,65 @@ const TransferSchedule = () => {
                             Không có lớp học nào để đổi lịch!
                         </p>
                     ) : (
-                        myClasses.map((item, index) => (
-                            <div className="card mb-3" key={index}>
-                                <div className="card-body">
-                                    <h6>{item.subject_name}</h6>
-                                    <p>
-                                        <strong>Mã Môn:</strong>{" "}
-                                        {item.subject_code}
-                                    </p>
-                                    <p>
-                                        <strong>Lớp học hiện tại:</strong>{" "}
-                                        {item.class_name}
-                                    </p>
-                                    <p>
-                                        <strong>Số lượng thành viên:</strong>{" "}
-                                        {item.users_count} / {item.room_slot}
-                                    </p>
-                                    <p>
-                                        <strong>Ca học hiện tại:</strong>{" "}
-                                        {item.session_name}
-                                    </p>
-                                    <p>
-                                        <strong>Thời gian học:</strong>{" "}
-                                        {item.study_days
-                                            .map((day) => daysMap[day.trim()])
-                                            .join(", ")}{" "}
-                                    </p>
-                                    <p>
-                                        <strong>Ngày bắt đầu:</strong>{" "}
-                                        {item.date_from}
-                                    </p>
-                                    <div>
-                                        <strong>
-                                            Ca học có thể chuyển tới:
-                                        </strong>
-                                        <div className="mt-2">
-                                            {listSessions?.map((ss, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    className="btn btn-primary btn-sm mx-1"
-                                                    onClick={() =>
-                                                        handleShiftChange(
-                                                            item.class_code,
-                                                            ss.cate_code
-                                                        )
-                                                    }
-                                                >
-                                                    {ss.cate_name}
-                                                </button>
-                                            ))}
+                        myClasses.map((item, index) => {
+                            return (
+                                <div className="card mb-3" key={index}>
+                                    <div className="card-body">
+                                        <h6>{item.subject_name}</h6>
+                                        <p>
+                                            <strong>Mã Môn:</strong>{" "}
+                                            {item.subject_code}
+                                        </p>
+                                        <p>
+                                            <strong>Lớp học hiện tại:</strong>{" "}
+                                            {item.class_name}
+                                        </p>
+                                        <p>
+                                            <strong>
+                                                Số lượng thành viên:
+                                            </strong>{" "}
+                                            {item.users_count} /{" "}
+                                            {item.room_slot}
+                                        </p>
+                                        <p>
+                                            <strong>Ca học hiện tại:</strong>{" "}
+                                            {item.session_name}
+                                        </p>
+                                        <p>
+                                            <strong>Thời gian học:</strong>{" "}
+                                            {item.study_days}
+                                        </p>
+                                        <p>
+                                            <strong>Ngày bắt đầu:</strong>{" "}
+                                            {item.date_from}
+                                        </p>
+                                        <div>
+                                            <strong>
+                                                Ca học có thể chuyển tới:
+                                            </strong>
+                                            <div className="mt-2">
+                                                {listSessions?.map(
+                                                    (ss, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            className="btn btn-primary btn-sm mx-1"
+                                                            onClick={() =>
+                                                                handleShiftChange(
+                                                                    item.class_code,
+                                                                    ss.cate_code
+                                                                )
+                                                            }
+                                                        >
+                                                            {ss.cate_name}
+                                                        </button>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
                 <div className="col-md-6">
@@ -236,55 +260,73 @@ const TransferSchedule = () => {
                         </p>
                     ) : (
                         Array.isArray(newClasses) &&
-                        newClasses.map((newClass, index) => (
-                            <div className="card mb-3" key={index}>
-                                <div className="card-body">
-                                    <h6>{newClass.subject_name}</h6>
-                                    <p>
-                                        <strong>Mã lớp:</strong>{" "}
-                                        {newClass.class_code}
-                                    </p>
-                                    <p>
-                                        <strong>Tên lớp:</strong>{" "}
-                                        {newClass.class_name}
-                                    </p>
-                                    <p>
-                                        <strong>Ca học:</strong>{" "}
-                                        {newClass.session_name}
-                                    </p>
-                                    <p>
-                                        <strong>Phòng:</strong>{" "}
-                                        {newClass.room_name}
-                                    </p>
-                                    <p>
-                                        <strong>Số lượng:</strong>{" "}
-                                        {newClass.users_count} /{" "}
-                                        {newClass.room_slot}
-                                    </p>
-                                    <p>
-                                        <strong>Ngày học trong tuần:</strong>{" "}
-                                        {newClass.study_days
-                                            .map((day) => daysMap[day.trim()])
-                                            .join(", ")}{" "}
-                                    </p>
+                        newClasses.map((newClass, index) => {
+                            return (
+                                <div className="card mb-3" key={index}>
+                                    <div className="card-body">
+                                        <h6>{newClass.subject_name}</h6>
+                                        <p>
+                                            <strong>Mã lớp:</strong>{" "}
+                                            {newClass.class_code}
+                                        </p>
+                                        <p>
+                                            <strong>Tên lớp:</strong>{" "}
+                                            {newClass.class_name}
+                                        </p>
+                                        <p>
+                                            <strong>Ca học:</strong>{" "}
+                                            {newClass.session_name}
+                                        </p>
 
-                                    <button
-                                        className="btn btn-success btn-sm"
-                                        onClick={() =>
-                                            handleScheduleChange(
-                                                selectedClassCode,
-                                                newClass.class_code
-                                            )
-                                        }
-                                    >
-                                        Đổi lịch
-                                    </button>
+                                        <p>
+                                            <strong>Số lượng:</strong>{" "}
+                                            {newClass.users_count} /{" "}
+                                            {newClass.room_slot}
+                                        </p>
+                                        <p>
+                                            <strong>
+                                                Ngày học trong tuần:
+                                            </strong>{" "}
+                                            {newClass.study_days}
+                                        </p>
+
+                                        <button
+                                            className="btn btn-success btn-sm"
+                                            onClick={() =>
+                                                handleShowModal(newClass)
+                                            }
+                                        >
+                                            Đổi lịch
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>
+
+            <Modal
+                title="Xác nhận đổi lịch"
+                description={
+                    <>
+                        <p>
+                            Bạn có chắc chắn muốn đổi lịch sang lớp{" "}
+                            <strong>{selectedNewClass?.class_name}</strong> cho
+                            môn{" "}
+                            <strong>{selectedNewClass?.subject_name}</strong>?
+                        </p>
+                        <p style={{ color: "red", fontWeight: "bold" }}>
+                            * Mỗi môn học chỉ được đổi lịch một lần.
+                        </p>
+                    </>
+                }
+                closeTxt="Hủy"
+                okTxt="Xác nhận"
+                visible={showConfirmModal}
+                onVisible={() => setShowConfirmModal(false)}
+                onOk={handleConfirmTransfer}
+            />
         </div>
     );
 };
