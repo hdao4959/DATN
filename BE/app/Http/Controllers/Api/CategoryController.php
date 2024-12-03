@@ -1145,6 +1145,36 @@ class CategoryController extends Controller
     }
 
 
+    public function generateAttendances()
+    {
+        $schedules = DB::table('schedules')->get();
+
+        foreach ($schedules as $schedule) {
+            // Lấy danh sách sinh viên trong lớp của lịch học
+            $students = DB::table('classroom_user')
+                ->where('class_code', $schedule->class_code)
+                ->get();
+
+            foreach ($students as $student) {
+                // Tạo bản ghi điểm danh
+                DB::table('attendances')->insert([
+                    'student_code' => $student->user_code,
+                    'class_code' => $schedule->class_code,
+                    'date' => $schedule->date,
+                    'status' => 'pending', // Trạng thái mặc định
+                    'noted' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Tạo điểm danh thành công!'
+        ]);
+    }
+
+
     // public function getListStudentByMajor()
     // {
     //     $data = DB::table('categories')

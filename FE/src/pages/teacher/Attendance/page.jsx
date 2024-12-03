@@ -14,7 +14,7 @@ const ShowAttendance = () => {
     const { data: attendanceData, error, isLoading, refetch } = useQuery({
         queryKey: ["attendances"],
         queryFn: async () => {
-            const response = await api.get(`/teacher/attendances/${class_code}`);
+            const response = await api.get(`/teacher/attendances/${class_code}/`);
             return response?.data;
             // const attendanceDataI = [
             //     {
@@ -80,8 +80,8 @@ const ShowAttendance = () => {
             attendanceData.forEach((record) => {
                 const { student_code, full_name, date, status, noted } = record;
                 const formattedDate = new Date(date)
-                    .toISOString()
-                    .split("T")[0];
+                    // .toISOString()
+                    // .split("T")[0];
 
                 if (!students[student_code]) {
                     students[student_code] = {

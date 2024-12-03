@@ -11,31 +11,31 @@ const AttendanceTeacherDate = () => {
     const { refetch, isLoading } = useQuery({
         queryKey: ["ATTENDANCE", class_code, date],
         queryFn: async () => {
-            const res = [
-                {
-                    student_code: "SV001",
-                    full_name: "Nguyễn Văn A",
-                    date: "2024-11-01",
-                    status: 'absent',
-                    noted: 'abc',
-                },
-                {
-                    student_code: "SV002",
-                    full_name: "Trần Thị B",
-                    date: "2024-11-01",
-                    noted: '',
-                    status: 'absent',
-                },
-                {
-                    student_code: "SV003",
-                    full_name: "Lê Minh C",
-                    date: "2024-11-01",
-                    noted: '',
-                    status: 'absent',
-                },
-            ];
-            // const response = await api.get(/teacher/attendances/${class_code}/${date});
-            // const res = response?.data;
+            // const res = [
+            //     {
+            //         student_code: "SV001",
+            //         full_name: "Nguyễn Văn A",
+            //         date: "2024-11-01",
+            //         status: 'absent',
+            //         noted: 'abc',
+            //     },
+            //     {
+            //         student_code: "SV002",
+            //         full_name: "Trần Thị B",
+            //         date: "2024-11-01",
+            //         noted: '',
+            //         status: 'absent',
+            //     },
+            //     {
+            //         student_code: "SV003",
+            //         full_name: "Lê Minh C",
+            //         date: "2024-11-01",
+            //         noted: '',
+            //         status: 'absent',
+            //     },
+            // ];
+            const response = await api.get(/teacher/attendances/${class_code}/${date});
+            const res = response?.data;
 
             const updatedAttendanceData = res.map((item) => ({
                 ...item,
@@ -92,8 +92,8 @@ const AttendanceTeacherDate = () => {
         }
     };
     
-    // const isToday = new Date(date).toDateString() === new Date().toDateString();
-    const isToday = true;
+    const isToday = new Date(date).toDateString() === new Date().toDateString();
+    // const isToday = true;
     const totalStudents = attendanceDetails.length;
     const presentCount = attendanceDetails.filter(student => student.status === 'present').length;
     const absentCount = attendanceDetails.filter(student => student.status === 'absent').length;

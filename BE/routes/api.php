@@ -68,6 +68,7 @@ Route::get('addTeacher', [CategoryController::class, 'addTeacher']);
 Route::get('generateSchedule', [CategoryController::class, 'generateSchedule']);
 Route::get('/students/{student_code}', [StudentController::class, 'show']);
 Route::apiResource('teachers', TeacherController::class);
+Route::get('generateAttendances', [CategoryController::class, 'generateAttendances']);
 
 // Route::apiResource('majors', MajorController::class);
 // Route::get('getListMajor/{type}', [MajorController::class, 'getListMajor']);
