@@ -202,9 +202,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
-        // Route::controller(TeacherScheduleController::class)->group(function () {
-        //     Route::get('schedules', 'index');
-        // });
+        Route::controller(TeacherScheduleController::class)->group(function () {
+            Route::get('schedules', 'listSchedulesForTeacher');
+        });
 
 
         // Lịch dạy của giảng viên trong 1 lớp học
@@ -319,7 +319,7 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
-Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
+// Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
 Route::apiResource('fees', FeeController::class);
 

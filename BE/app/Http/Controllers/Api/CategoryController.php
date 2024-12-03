@@ -1161,7 +1161,7 @@ class CategoryController extends Controller
                     'student_code' => $student->user_code,
                     'class_code' => $schedule->class_code,
                     'date' => $schedule->date,
-                    'status' => 'pending', // Trạng thái mặc định
+                    'status' => 'present', // Trạng thái mặc định
                     'noted' => null,
                     'created_at' => now(),
                     'updated_at' => now(),

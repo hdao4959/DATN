@@ -37,6 +37,7 @@ const AttendanceTeacherDate = () => {
             const response = await api.get(
                 `/teacher/attendances/${class_code}/${date}`
             );
+
             const res = response?.data;
 
             const updatedAttendanceData = res.map((item) => ({

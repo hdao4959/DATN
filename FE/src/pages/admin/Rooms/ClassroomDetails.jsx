@@ -66,17 +66,21 @@ const ClassRoomDetails = () => {
                     <h4>Chi Tiết Lớp Học</h4>
                 </div>
                 <div className="card-body">
-                    <div className="row mb-3">
+                    {/* <div className="row mb-3">
                         <div className="col-md-4">
                             <strong>Tên lớp học:</strong>{" "}
                             {classroom.class_name || "Chưa cập nhật"}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="row mb-3">
-                        <div className="col-md-4">
+                        {/* <div className="col-md-4">
                             <strong>Mô tả:</strong>{" "}
                             {classroom.description || "Không có"}
+                        </div> */}
+                        <div className="col-md-4">
+                            <strong>Tên lớp học:</strong>{" "}
+                            {classroom.class_name || "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Mã môn học:</strong>{" "}
@@ -115,6 +119,10 @@ const ClassRoomDetails = () => {
                         <div className="col-md-4">
                             <strong>Số điện thoại giảng viên:</strong>{" "}
                             {classroom.teacher_phone_number ?? "Chưa cập nhật"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Mô tả:</strong>{" "}
+                            {classroom.description || "Không có"}
                         </div>
                     </div>
                 </div>
