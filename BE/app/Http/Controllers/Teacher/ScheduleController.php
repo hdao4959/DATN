@@ -34,11 +34,12 @@ class ScheduleController extends Controller
 
     public function index(Request $request)
     {
+
         try {
             $today = Carbon::today();
             $sevenDaysLater = Carbon::today()->addDays(7);
 
-            $userCode = $request->user_code;
+            $userCode = $request->user()->user_code;
 
             // $list_classroom_codes = Classroom::where([
             //     'user_code' =>  $userCode,
@@ -56,7 +57,7 @@ class ScheduleController extends Controller
                                 ->where('teacher_code',$userCode)
                                 ->get();
 
-            return response()->json($list_schedules,200);
+            return response()->json($list_schedules,404);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
