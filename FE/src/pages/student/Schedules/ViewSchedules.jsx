@@ -65,16 +65,16 @@ const ViewSchedules = () => {
                                         <td>{index + 1}</td>
                                         <td>{schedule.class_code}</td>
                                         <td>{schedule.date}</td>
-                                        <td>{schedule.room.cate_name}</td>
-                                        <td>{schedule.session.cate_name}</td>
-                                        <td>
+                                        <td>{schedule?.room_code}</td>
+                                        <td>{schedule?.session_code}</td>
+                                        {/* <td>
                                             {JSON.parse(schedule.session.value)
                                                 .start +
                                                 " - " +
                                                 JSON.parse(
                                                     schedule.session.value
                                                 ).end}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>

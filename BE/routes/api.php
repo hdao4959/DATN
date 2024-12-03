@@ -66,7 +66,6 @@ Route::get('addStudent', [CategoryController::class, 'addStudent']);
 Route::get('addTeacher', [CategoryController::class, 'addTeacher']);
 Route::get('generateSchedule', [CategoryController::class, 'generateSchedule']);
 Route::get('/students/{student_code}', [StudentController::class, 'show']);
-
 Route::apiResource('teachers', TeacherController::class);
 
 // Route::apiResource('majors', MajorController::class);
@@ -201,6 +200,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
+        // Route::controller(TeacherScheduleController::class)->group(function () {
+        //     Route::get('schedules', 'index');
+        // });
+        Route::apiResource('schedules', TeacherScheduleController::class);
 
         // Lịch dạy của giảng viên trong 1 lớp học
         Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);

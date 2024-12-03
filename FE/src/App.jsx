@@ -187,7 +187,7 @@ function App() {
                 },
                 {
                     path: "classrooms/view/:class_code/attendances",
-                    element: <ShowAttendance />,
+                    // element: <ShowAttendance />,
                 },
                 {
                     path: "semesters",

@@ -26,7 +26,7 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request)
     {
-        try {
+        // try {
 
             $data = $request->validated();   
             $user = User::firstWhere('email',$data['email']);
@@ -51,9 +51,9 @@ class AuthController extends Controller
                 ], 200);
 
 
-        } catch (\Throwable $th) {
-            return $this->handleErrorNotDefine($th);
-            }
+        // } catch (\Throwable $th) {
+        //     return $this->handleErrorNotDefine($th);
+        //     }
     }
 
     public function logout(Request $request)

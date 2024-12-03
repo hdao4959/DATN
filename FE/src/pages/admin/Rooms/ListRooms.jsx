@@ -91,7 +91,7 @@ const ClassRoomsList = () => {
                     teacher_name: classes.teacher_name,
                     total_student: classes.total_student,
                     room_name: classes.schedule?.room_name,
-                    session_name: classes.schedule.session_name,
+                    session_name: classes.schedule?.session_name,
                     start: classes.schedule?.value?.['start'],
                     end: classes.schedule?.value?.['end'],
                 })),
@@ -344,7 +344,7 @@ const ClassRoomsList = () => {
                             min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
                         />
                         <button className='btn btn-primary w-100' id="AutoSchedule"
-                                // onClick={handleAutoSchedule}
+                                onClick={handleAutoSchedule}
                         ><i class="fa fa-calendar"></i> Tạo tự động</button>
                     </div>
                 </div>
