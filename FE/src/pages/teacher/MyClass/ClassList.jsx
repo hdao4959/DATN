@@ -3,12 +3,17 @@ import "datatables.net-dt/css/dataTables.dataTables.css";
 import $ from "jquery";
 import "datatables.net";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query"; // Import useQuery
+import { useQuery } from "@tanstack/react-query"; 
 
 const ClassroomList = () => {
     const navigate = useNavigate();
 
-    const { data: classrooms, isLoading, error, refetch } = useQuery({
+    const {
+        data: classrooms,
+        isLoading,
+        error,
+        refetch,
+    } = useQuery({
         queryKey: ["classrooms"],
         queryFn: async () => {
             const token = JSON.parse(localStorage.getItem("token"));
@@ -18,27 +23,32 @@ const ClassroomList = () => {
                 throw new Error("Vui lòng đăng nhập để xem danh sách lớp học.");
             }
 
-            const response = await fetch("http://127.0.0.1:8000/api/teacher/classrooms", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/teacher/classrooms",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             if (!response.ok) {
-                throw new Error("Lỗi khi tải danh sách lớp học. Vui lòng thử lại sau.");
+                throw new Error(
+                    "Lỗi khi tải danh sách lớp học. Vui lòng thử lại sau."
+                );
             }
 
-            const data = await response.json() || [];
+            const data = (await response.json()) || [];
             if (data.length === 0) {
                 throw new Error("Không có dữ liệu lớp học nào.");
             }
             return data;
-        }
+        },
     });
     useEffect(() => {
         refetch();
-    }, [])
+    }, []);
 
     // Khởi tạo DataTable sau khi dữ liệu được load
     useEffect(() => {
@@ -49,7 +59,7 @@ const ClassroomList = () => {
             $("#classroomTable").DataTable({
                 data: classrooms?.map((classes, index) => ({
                     stt: index + 1,
-                    // class_code: classes.class_code,
+                    class_code: classes.class_code,
                     class_name: classes.class_name,
                     // subject_code: classes.subject_code,
                     subject_name: classes.subject_name,
@@ -58,42 +68,60 @@ const ClassroomList = () => {
                     total_student: classes.total_student,
                     room_name: classes?.room_name,
                     session_name: classes.session_name,
-                    start: classes?.value?.['start'],
-                    end: classes?.value?.['end'],
+                    start: classes?.value?.["start"],
+                    end: classes?.value?.["end"],
                 })),
                 columns: [
                     {
                         title: "#",
-                        data: 'stt',
+                        data: "stt",
                     },
                     {
                         title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
                         data: null,
-                        render: (row) => `${row.class_code ? row.class_code : ''} - ${row.class_name ? row.class_name : ''}`
+                        render: (row) =>
+                            `${row.class_code ? row.class_code : ""} - ${
+                                row.class_name ? row.class_name : ""
+                            }`,
                     },
                     {
                         title: "<i class='fas fa-book'> Môn</i>",
                         data: null,
-                        render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
+                        render: (row) =>
+                            `${row.subject_code ? row.subject_code : ""} - ${
+                                row.subject_name ? row.subject_name : ""
+                            }`,
                     },
                     {
                         title: "<i class='fas fa-users'> Số sinh viên</i>",
                         data: null,
-                        render: (row) => `${row.total_student ? row.total_student : '0'} <i class='far fa-user-graduate'></i>`,
-                        className: "text-center"
+                        render: (row) =>
+                            `${
+                                row.total_student ? row.total_student : "0"
+                            } <i class='far fa-user-graduate'></i>`,
+                        className: "text-center",
                     },
                     {
                         title: "<i class='fas fa-building'> Phòng học</i>",
                         data: null,
-                        render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
+                        render: (row) =>
+                            `${
+                                row.room_name ? row.room_name : "Chưa có phòng"
+                            }`,
                     },
                     {
                         title: "<i class='fas fa-clock'> Ca học</i>",
                         data: null,
                         render: (row) => {
-                            return `<div>${row.session_name ? row.session_name : 'Chưa xếp ca'}</div>
-                                    <div>(${row.start ? row.start : ''} - ${row.end ? row.end : ''})</div>`
-                        }
+                            return `<div>${
+                                row.session_name
+                                    ? row.session_name
+                                    : "Chưa xếp ca"
+                            }</div>
+                                    <div>(${row.start ? row.start : ""} - ${
+                                row.end ? row.end : ""
+                            })</div>`;
+                        },
                     },
                     {
                         title: "Xem Lớp",
@@ -103,7 +131,7 @@ const ClassroomList = () => {
                                     <i class="fas fa-eye"></i>
                                 </span>`;
                         },
-                        className: 'text-center'
+                        className: "text-center",
                     },
                     {
                         title: "<i class='fas fa-calendar-alt'> Lịch học</i>",
@@ -113,7 +141,7 @@ const ClassroomList = () => {
                                     <i class="fas fa-eye"></i>
                                 </span>`;
                         },
-                        className: 'text-center'
+                        className: "text-center",
                     },
                     {
                         title: "<i class='fas fa-calendar-check'> Lịch thi</i>",
@@ -123,7 +151,7 @@ const ClassroomList = () => {
                                     <i class="fas fa-eye"></i>
                                 </span>`;
                         },
-                        className: 'text-center'
+                        className: "text-center",
                     },
                     {
                         title: "<i class='fas fa-user-check'> Điểm danh</i>",
@@ -133,7 +161,7 @@ const ClassroomList = () => {
                                     <i class="fas fa-eye"></i>
                                 </span>`;
                         },
-                        className: 'text-center'
+                        className: "text-center",
                     },
                     {
                         title: "<i class='fas fa-trophy'> Điểm số</i>",
@@ -143,7 +171,7 @@ const ClassroomList = () => {
                                     <i class="fas fa-eye"></i>
                                 </span>`;
                         },
-                        className: 'text-center'
+                        className: "text-center",
                     },
                 ],
                 language: {
@@ -178,18 +206,26 @@ const ClassroomList = () => {
                     }
                 },
             });
-            $("#classroomTable tbody").on("click", ".schedule-link", function () {
-                const classCode = $(this).data("id");
-                navigate(`/teacher/class/${classCode}/schedules`);
-            });
+            $("#classroomTable tbody").on(
+                "click",
+                ".schedule-link",
+                function () {
+                    const classCode = $(this).data("id");
+                    navigate(`/teacher/class/${classCode}/schedules`);
+                }
+            );
             $("#classroomTable tbody").on("click", ".class-link", function () {
                 const classCode = $(this).data("id");
                 navigate(`/teacher/class/${classCode}/students`);
             });
-            $("#classroomTable tbody").on("click", ".attendances-link", function () {
-                const classCode = $(this).data("id");
-                navigate(`/teacher/class/${classCode}/attendances`);
-            });
+            $("#classroomTable tbody").on(
+                "click",
+                ".attendances-link",
+                function () {
+                    const classCode = $(this).data("id");
+                    navigate(`/teacher/class/${classCode}/attendances`);
+                }
+            );
             $("#classroomTable tbody").on("click", ".grades-link", function () {
                 const classCode = $(this).data("id");
                 navigate(`/teacher/class/${classCode}/grades`);
@@ -202,30 +238,41 @@ const ClassroomList = () => {
             <div className="col-md-12">
                 <div className="card">
                     <div className="card-header">
-                        <div className="card-title text-center">Danh sách lớp học</div>
+                        <div className="card-title text-center">
+                            Danh sách lớp học
+                        </div>
                     </div>
-                    <div className='card-body'>
+                    <div className="card-body">
                         {isLoading ? (
                             <div>
-                                <div className="spinner-border" role="status"></div>
+                                <div
+                                    className="spinner-border"
+                                    role="status"
+                                ></div>
                                 <p>Đang tải dữ liệu</p>
                             </div>
                         ) : (
-                                <table id="classroomTable" className="table table-hover table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã lớp</th>
-                                            <th>Tên lớp</th>
-                                            <th>Tên môn học</th>
-                                            <th>Lịch học</th>
-                                            <th>Trạng thái</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                            <table
+                                id="classroomTable"
+                                className="table table-hover table-bordered"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Mã lớp</th>
+                                        <th>Tên lớp</th>
+                                        <th>Tên môn học</th>
+                                        <th>Lịch học</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         )}
                         {error && (
                             <div>
-                                <div className="alert alert-danger">{error.message}</div>;
+                                <div className="alert alert-danger">
+                                    {error.message}
+                                </div>
+                                ;
                             </div>
                         )}
                     </div>
