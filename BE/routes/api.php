@@ -316,9 +316,7 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 
 
-// Route::get('schedules', [TeacherScheduleController::class, 'index']);
-
-
+Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
 Route::apiResource('fees', FeeController::class);
