@@ -82,7 +82,7 @@ class ClassroomController extends Controller
                     ['message' => "Không có lớp học nào!"], 204
                 );
             }
-            return response()->json($result,200);
+            return response()->json($classrooms,200);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
