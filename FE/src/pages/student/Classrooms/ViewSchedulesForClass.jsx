@@ -101,7 +101,7 @@ const ViewSchedulesForClass = () => {
                                     const date =
                                         schedule?.date || "Không có ngày học";
                                     const roomName =
-                                        schedule?.room?.cate_name ||
+                                        schedule?.room_code ||
                                         "Không có phòng học";
                                     const sessionName =
                                         schedule?.session?.cate_name ||

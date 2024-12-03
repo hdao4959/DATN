@@ -25,7 +25,7 @@ class StoreStudentToExamDayRequest extends FormRequest
             'class_code' => 'required|exists:classrooms,class_code',
             'students' => 'required|array',
             'students.*.user_code' => 'required|exists:users,user_code',
-            'students.*.exam_day' => 'nullable|exists:schedule_student,schedule_id'
+            'students.*.exam_day' => 'nullable|exists:schedules,id',
         ];
     }
 
