@@ -250,7 +250,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Các route cho lịch học
         Route::controller(StudentScheduleController::class)->group(function () {
-            Route::get('schedules', 'index');
+            // Route::get('schedules', 'index');
             Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
             Route::get('/transferSchedules', 'transferSchedules');
             Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
@@ -312,7 +312,7 @@ Route::post('services/provide-student-card/{user_code}',    [ServiceController::
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
-Route::get('schedules', [TeacherScheduleController::class, 'index']);
+
 
 Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);

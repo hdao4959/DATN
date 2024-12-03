@@ -291,37 +291,37 @@ $baseRestudyFee = 500000;
 $baseCreditNumber = 3;
 
 $additionalSubjects = [
-    'S1' => [
+    'S01' => [
         'Quản lý thương hiệu',
         'Marketing quốc tế',
         'Hành vi người tiêu dùng',
     ],
-    'S2' => [
+    'S02' => [
         'Quản lý chiến dịch quảng cáo',
         'Marketing sản phẩm công nghệ',
         'Nghiên cứu thị trường',
     ],
-    'S3' => [
+    'S03' => [
         'Marketing dịch vụ',
         'Chiến lược định giá',
         'Marketing tích hợp',
     ],
-    'S4' => [
+    'S04' => [
         'Quản trị bán hàng',
         'Kỹ năng viết quảng cáo',
         'Quản lý marketing trong thời đại số',
     ],
-    'S5' => [
+    'S05' => [
         'Quảng cáo đa kênh',
         'Chiến lược marketing bền vững',
         'Marketing cho doanh nghiệp nhỏ',
     ],
-    'S6' => [
+    'S06' => [
         'Truyền thông tích hợp',
         'Phân tích dữ liệu nâng cao',
         'Marketing theo địa phương',
     ],
-    'S7' => [
+    'S07' => [
         'Tối ưu hóa ngân sách marketing',
         'Chiến lược nội dung trong thời đại số',
         'Lập kế hoạch và đo lường ROI',
@@ -337,9 +337,10 @@ foreach ($additionalSubjects as $semesterCode => $subjectNames) {
             'subject_code' => $majorCode . sprintf('%02d', $counter++),
             'subject_name' => $subjectName,
             'tuition' => $baseTuition,
+            'total_session' => 20,
             're_study_fee' => $baseRestudyFee,
             'credit_number' => $baseCreditNumber,
-            'total_sessions' => 20 + ($counter % 5), // Tăng số buổi ngẫu nhiên
+            'assessments' => "",
             'description' => "Môn học $subjectName trong chuyên ngành $majorCode.",
             'image' => null,
             'semester_code' => $semesterCode,
