@@ -178,9 +178,17 @@ function App() {
                     element: <EditClassroom />,
                 },
                 {
-                    path: "classrooms/view/:class_code",
+                    path: "classrooms/view/:class_code/detail",
                     element: <ClassroomDetails />,
                 },
+                {
+                    path: "classrooms/view/:class_code/grades",
+                    element: <ShowGrades />,
+                },
+                // {
+                //     path: "classrooms/view/:class_code/attendances",
+                //     element: <ShowAttendance />,
+                // },
                 {
                     path: "semesters",
                     element: <ListSemester />,
@@ -337,6 +345,14 @@ function App() {
                 {
                     path: "class/:class_code/schedules",
                     element: <ClassSchedules />,
+                },
+                {
+                    path: "class/:class_code/attendances",
+                    element: <AttendanceTeacher />,
+                },
+                {
+                    path: "class/:class_code/grades",
+                    element: <ShowGradesTeacher />,
                 },
                 {
                     path: "attendances",

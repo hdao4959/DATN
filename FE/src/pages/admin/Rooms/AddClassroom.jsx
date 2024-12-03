@@ -16,7 +16,7 @@ const AddClassroom = () => {
         subject_code: "",
         session_code: "",
         date_from: "",
-        study_days: [],
+        day_type: "",
         list_study_dates: [],
         room_code: "",
         teacher_code: "",
@@ -123,7 +123,7 @@ const AddClassroom = () => {
                 major_code: formData.major_code,
                 session_code: formData.session_code,
                 date_from: formData.date_from,
-                study_days: formData.study_days,
+                day_type: formData.day_type,
             });
             setFormData((prev) => ({
                 ...prev,
@@ -185,18 +185,6 @@ const AddClassroom = () => {
             fetchSubjects(value);
         }
     };
-    const handleCheckboxChange = (e) => {
-        const value = e.target.value;
-        setFormData((prev) => {
-            const selectedDays = new Set(prev.study_days);
-            if (e.target.checked) {
-                selectedDays.add(value);
-            } else {
-                selectedDays.delete(value);
-            }
-            return { ...prev, study_days: Array.from(selectedDays) };
-        });
-    };
 
     const handleForm2Change = async (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -209,7 +197,7 @@ const AddClassroom = () => {
             updatedFormData.major_code &&
             updatedFormData.session_code &&
             updatedFormData.date_from &&
-            updatedFormData.study_days.length
+            updatedFormData.day_type
         ) {
             try {
                 const scheduleResponse = await api.post(
@@ -220,7 +208,7 @@ const AddClassroom = () => {
                         major_code: updatedFormData.major_code,
                         session_code: updatedFormData.session_code,
                         date_from: updatedFormData.date_from,
-                        study_days: updatedFormData.study_days,
+                        day_type: updatedFormData.day_type,
                     }
                 );
                 const listStudyDates = scheduleResponse.data;
@@ -270,7 +258,7 @@ const AddClassroom = () => {
                         major_code: formData.major_code,
                         session_code: formData.session_code,
                         date_from: formData.date_from,
-                        study_days: formData.study_days,
+                        day_type: formData.day_type,
                         list_study_dates: formData.list_study_dates,
                         room_code: formData.room_code,
                         teacher_code: formData.teacher_code,
@@ -453,42 +441,35 @@ const AddClassroom = () => {
                         />
                     </div>
                     <div className="mb-3 form-group">
-                        <label>Chọn các ngày trong tuần:</label>
+                        <label className="mr-3">Ngày học trong tuần</label>
                         <div className="selectgroup selectgroup-pills">
                             {[
-                                { value: "1", label: "Thứ Hai" },
-                                { value: "2", label: "Thứ Ba" },
-                                { value: "3", label: "Thứ Tư" },
-                                { value: "4", label: "Thứ Năm" },
-                                { value: "5", label: "Thứ Sáu" },
-                                { value: "6", label: "Thứ Bảy" },
-                                { value: "7", label: "Chủ Nhật" },
+                                {
+                                    value: "1",
+                                    label: "Thứ 2, Thứ 4, Thứ 6",
+                                },
+                                {
+                                    value: "2",
+                                    label: "Thứ 3, Thứ 5, Thứ 7",
+                                },
                             ].map((day) => (
                                 <label
                                     className="selectgroup-item"
                                     key={day.value}
                                 >
                                     <input
-                                        type="checkbox"
+                                        type="radio"
+                                        name="day_type"
                                         value={day.value}
-                                        checked={formData.study_days.includes(
-                                            day.value
-                                        )}
-                                        onChange={(e) => {
-                                            const updatedDays = e.target.checked
-                                                ? [
-                                                      ...formData.study_days,
-                                                      day.value,
-                                                  ]
-                                                : formData.study_days.filter(
-                                                      (d) => d !== day.value
-                                                  );
-
+                                        checked={
+                                            formData.day_type === day.value
+                                        }
+                                        onChange={(e) =>
                                             handleForm2Change(
-                                                "study_days",
-                                                updatedDays
-                                            );
-                                        }}
+                                                "day_type",
+                                                e.target.value
+                                            )
+                                        }
                                         className="selectgroup-input"
                                     />
                                     <span className="selectgroup-button">

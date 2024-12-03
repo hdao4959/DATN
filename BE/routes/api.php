@@ -45,6 +45,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
 use App\Http\Controllers\Student\ServiceController;
+use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 
 /*
@@ -66,7 +67,6 @@ Route::get('addStudent', [CategoryController::class, 'addStudent']);
 Route::get('addTeacher', [CategoryController::class, 'addTeacher']);
 Route::get('generateSchedule', [CategoryController::class, 'generateSchedule']);
 Route::get('/students/{student_code}', [StudentController::class, 'show']);
-
 Route::apiResource('teachers', TeacherController::class);
 
 // Route::apiResource('majors', MajorController::class);
@@ -201,13 +201,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
-        Route::get('schedules', [TeacherScheduleController::class, 'index']);
+        // Route::controller(TeacherScheduleController::class)->group(function () {
+        //     Route::get('schedules', 'index');
+        // });
+
+
         // Lịch dạy của giảng viên trong 1 lớp học
         Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);
 
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/students', [TeacherStudentController::class, 'listStudentForClassroom']);
+        Route::get('classrooms/{classcode}/examdays', [ExamController::class,'listExamDays']);
+        Route::post('classrooms/{classcode}/examdays', [ExamController::class,'store']);
+
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
         Route::get('/attendances/{classCode}', [TeacherAttendanceController::class, 'show']);
@@ -246,7 +253,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Các route cho lịch học
         Route::controller(StudentScheduleController::class)->group(function () {
-            Route::get('schedules', 'index');
+            // Route::get('schedules', 'index');
             Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
             Route::get('/transferSchedules', 'transferSchedules');
             Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
@@ -309,7 +316,13 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 
 
+Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
+
+Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
 Route::apiResource('fees', FeeController::class);
+
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
+
+
 

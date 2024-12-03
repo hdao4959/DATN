@@ -291,37 +291,37 @@ $baseRestudyFee = 500000;
 $baseCreditNumber = 3;
 
 $additionalSubjects = [
-    'S1' => [
+    'S01' => [
         'Quản lý thương hiệu',
         'Marketing quốc tế',
         'Hành vi người tiêu dùng',
     ],
-    'S2' => [
+    'S02' => [
         'Quản lý chiến dịch quảng cáo',
         'Marketing sản phẩm công nghệ',
         'Nghiên cứu thị trường',
     ],
-    'S3' => [
+    'S03' => [
         'Marketing dịch vụ',
         'Chiến lược định giá',
         'Marketing tích hợp',
     ],
-    'S4' => [
+    'S04' => [
         'Quản trị bán hàng',
         'Kỹ năng viết quảng cáo',
         'Quản lý marketing trong thời đại số',
     ],
-    'S5' => [
+    'S05' => [
         'Quảng cáo đa kênh',
         'Chiến lược marketing bền vững',
         'Marketing cho doanh nghiệp nhỏ',
     ],
-    'S6' => [
+    'S06' => [
         'Truyền thông tích hợp',
         'Phân tích dữ liệu nâng cao',
         'Marketing theo địa phương',
     ],
-    'S7' => [
+    'S07' => [
         'Tối ưu hóa ngân sách marketing',
         'Chiến lược nội dung trong thời đại số',
         'Lập kế hoạch và đo lường ROI',
@@ -337,9 +337,10 @@ foreach ($additionalSubjects as $semesterCode => $subjectNames) {
             'subject_code' => $majorCode . sprintf('%02d', $counter++),
             'subject_name' => $subjectName,
             'tuition' => $baseTuition,
+            'total_session' => 20,
             're_study_fee' => $baseRestudyFee,
             'credit_number' => $baseCreditNumber,
-            'total_sessions' => 20 + ($counter % 5), // Tăng số buổi ngẫu nhiên
+            'assessments' => "",
             'description' => "Môn học $subjectName trong chuyên ngành $majorCode.",
             'image' => null,
             'semester_code' => $semesterCode,
@@ -388,39 +389,39 @@ foreach ($additionalSubjects as $semesterCode => $subjectNames) {
 
 
         $majorCodes = ['WEB', 'MKT', 'MOB'];
-        // $narrowMajorCodes = ['CN04', 'CNTT01'];
+        $narrowMajorCodes = ['CN04', 'CNTT01'];
         $semesterCodes = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'];
         // Thêm 10 giáo viên
-        // for ($i = 1; $i <= 15; $i++) {
-        //     DB::table('users')->insert([
-        //         [
-        //             'user_code' => 'teacher' . sprintf('%02d', $i), // teacher01, teacher02, ...
-        //             'full_name' => 'Teacher ' . $i,
-        //             'email' => 'teacher' . $i . '@example.com',
-        //             'email_verified_at' => now(),
-        //             'password' => bcrypt('password123'),
-        //             'phone_number' => '01234567' . sprintf('%02d', $i),
-        //             'address' => '123 Teacher Street',
-        //             'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
-        //             'birthday' => '1985-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
-        //             'citizen_card_number' => '12345678' . $i,
-        //             'issue_date' => '2020-01-01',
-        //             'place_of_grant' => 'Hà Nội',
-        //             'nation' => 'Kinh',
-        //             'avatar' => null,
-        //             'role' => '2',
-        //             'is_active' => 1,
-        //             'major_code' => $majorCodes[array_rand($majorCodes)], // Chọn ngẫu nhiên mã ngành
-        //             'narrow_major_code' => $narrowMajorCodes[array_rand($narrowMajorCodes)], // Chọn ngẫu nhiên narrow_major_code
-        //             'semester_code' => $semesterCodes[array_rand($semesterCodes)],
-        //             'course_code' => 'k18',
-        //             'remember_token' => Str::random(10),
-        //             'deleted_at' => null,
-        //             'created_at' => Carbon::now(),
-        //             'updated_at' => Carbon::now(),
-        //         ],
-        //     ]);
-        // }
+        for ($i = 1; $i <= 15; $i++) {
+            DB::table('users')->insert([
+                [
+                    'user_code' => 'teacher' . sprintf('%02d', $i), // teacher01, teacher02, ...
+                    'full_name' => 'Teacher ' . $i,
+                    'email' => 'teacher' . $i . '@example.com',
+                    'email_verified_at' => now(),
+                    'password' => bcrypt('password123'),
+                    'phone_number' => '01234567' . sprintf('%02d', $i),
+                    'address' => '123 Teacher Street',
+                    'sex' => $i % 2 == 0 ? 'Nữ' : 'Nam', // Đặt giới tính ngẫu nhiên
+                    'birthday' => '1985-01-0' . ($i % 10 + 1), // Ngày sinh ngẫu nhiên
+                    'citizen_card_number' => '12345678' . $i,
+                    'issue_date' => '2020-01-01',
+                    'place_of_grant' => 'Hà Nội',
+                    'nation' => 'Kinh',
+                    'avatar' => null,
+                    'role' => '2',
+                    'is_active' => 1,
+                    'major_code' => $majorCodes[array_rand($majorCodes)], // Chọn ngẫu nhiên mã ngành
+                    'narrow_major_code' => $narrowMajorCodes[array_rand($narrowMajorCodes)], // Chọn ngẫu nhiên narrow_major_code
+                    'semester_code' => $semesterCodes[array_rand($semesterCodes)],
+                    'course_code' => 'k18',
+                    'remember_token' => Str::random(10),
+                    'deleted_at' => null,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ],
+            ]);
+        }
 
         // Thêm 20 sinh viên
 

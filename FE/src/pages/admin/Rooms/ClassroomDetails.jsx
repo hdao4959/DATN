@@ -6,23 +6,19 @@ import { getToken } from "../../../utils/getToken";
 
 const ClassRoomDetails = () => {
     const { class_code } = useParams();
-    const accessToken = getToken();
-
-    // Lấy thông tin lớp học
     const { data, isLoading, isError } = useQuery({
         queryKey: ["CLASSROOM_DETAIL", class_code],
         queryFn: async () => {
-            const res = await api.get(`/admin/classrooms/${class_code}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            const res = await api.get(`/admin/classrooms/${class_code}`);
             return res.data;
         },
     });
 
-    // Lấy thông tin lịch học của lớp học
+    const getWeekDay = (dateString) => {
+        const date = new Date(dateString);
+        const options = { weekday: "long" };
+        return date.toLocaleDateString("vi-VN", options);
+    };
     const {
         data: scheduleData,
         isLoading: isLoadingSchedule,
@@ -31,25 +27,37 @@ const ClassRoomDetails = () => {
         queryKey: ["CLASSROOM_SCHEDULE", class_code],
         queryFn: async () => {
             const res = await api.get(
-                `/admin/classrooms/${class_code}/schedules`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                }
+                `/admin/classrooms/${class_code}/schedules`
             );
             return res.data;
         },
     });
 
-    if (isLoading || isLoadingSchedule)
+    if (isLoading || isLoadingSchedule) {
         return <div className="spinner-border" role="status"></div>;
-    if (isError) return toast.error("Lỗi khi tải thông tin lớp học");
-    if (isScheduleError) return toast.error("Lỗi khi tải lịch học");
+    }
 
-    const classroom = data.classroom;
+    if (isError) {
+        toast.error("Lỗi khi tải thông tin lớp học");
+        return <div className="text-danger">Lỗi khi tải thông tin lớp học</div>;
+    }
+
+    if (isScheduleError) {
+        toast.error("Lỗi khi tải lịch học");
+        return <div className="text-danger">Lỗi khi tải lịch học</div>;
+    }
+
+    const classroom = data?.classroom || {};
     const schedules = scheduleData || [];
+    const students = classroom?.students || [];
+
+    if (!classroom || Object.keys(classroom).length === 0) {
+        return <div className="text-danger">Không có thông tin lớp học</div>;
+    }
+
+    if (students.length === 0) {
+        return <div className="text-danger">Không có sinh viên trong lớp</div>;
+    }
 
     return (
         <>
@@ -58,46 +66,98 @@ const ClassRoomDetails = () => {
                     <h4>Chi Tiết Lớp Học</h4>
                 </div>
                 <div className="card-body">
-                    {/* Thông tin lớp học */}
-                    <div className="mb-3">
-                        <strong>ID:</strong> {classroom.class_code}
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <strong>Tên lớp học:</strong>{" "}
+                            {classroom.class_name || "Chưa cập nhật"}
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <strong>Mã lớp học:</strong> {classroom.class_code}
+
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <strong>Mô tả:</strong>{" "}
+                            {classroom.description || "Không có"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Mã môn học:</strong>{" "}
+                            {classroom.subject_code || "Chưa cập nhật"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Môn học:</strong>{" "}
+                            {classroom.subject_name || "Chưa cập nhật"}
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <strong>Tên lớp học:</strong> {classroom.class_name}
+
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <strong>Ngày bắt đầu:</strong>{" "}
+                            {classroom.date_start
+                                ? new Date(
+                                      classroom.date_start
+                                  ).toLocaleDateString()
+                                : "Chưa cập nhật"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Giảng viên:</strong>{" "}
+                            {classroom.teacher_name ?? "Chưa cập nhật"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Mã giảng viên:</strong>{" "}
+                            {classroom.teacher_code ?? "Chưa cập nhật"}
+                        </div>
                     </div>
-                    <div className="mb-3">
-                        <strong>Mô tả:</strong>{" "}
-                        {classroom.description ?? "Không có"}
-                    </div>
-                    <div className="mb-3">
-                        <strong>Mã môn học:</strong>{" "}
-                        {classroom.subject.subject_code}
-                    </div>
-                    <div className="mb-3">
-                        <strong>Môn học:</strong>{" "}
-                        {classroom.subject.subject_name}
-                    </div>
-                    <div className="mb-3">
-                        <strong>Ngày tạo:</strong>{" "}
-                        {new Date(classroom.created_at).toLocaleDateString()}
-                    </div>
-                    <div className="mb-3">
-                        <strong>Giảng viên:</strong>{" "}
-                        {classroom.teacher
-                            ? classroom.teacher.full_name
-                            : "Chưa cập nhật"}
-                    </div>
-                    <div className="mb-3">
-                        <strong>Mã giảng viên:</strong>{" "}
-                        {classroom.teacher
-                            ? classroom.teacher.user_code
-                            : "Chưa cập nhật"}
+
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <strong>Email giảng viên:</strong>{" "}
+                            {classroom.teacher_email ?? "Chưa cập nhật"}
+                        </div>
+                        <div className="col-md-4">
+                            <strong>Số điện thoại giảng viên:</strong>{" "}
+                            {classroom.teacher_phone_number ?? "Chưa cập nhật"}
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div className="card">
+                <div className="card-header">
+                    <h4>Danh Sách Sinh Viên</h4>
+                </div>
+                {students.length > 0 ? (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Mã sinh viên</th>
+                                <th>Tên sinh viên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {students.map((student, index) => (
+                                <tr key={index}>
+                                    <td>{student.user_code}</td>
+                                    <td>{student.full_name}</td>
+                                    <td>{student.email}</td>
+                                    <td>{student.phone_number}</td>
+                                    <td>
+                                        {student.is_active
+                                            ? "Hoạt động"
+                                            : "Không hoạt động"}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p className="card-footer text-danger">
+                        Không có sinh viên trong lớp
+                    </p>
+                )}
+            </div>
+
             <div className="card">
                 <div className="card-header">
                     <h4>Lịch học</h4>
@@ -107,30 +167,35 @@ const ClassRoomDetails = () => {
                         <thead>
                             <tr>
                                 <th>Ngày</th>
-                                <th>Tên lớp</th>
                                 <th>Ca học</th>
                                 <th>Phòng học</th>
                                 <th>Thời gian</th>
+                                <th>Hoạt động</th>
                             </tr>
                         </thead>
                         <tbody>
                             {schedules.map((schedule, index) => {
                                 const session = JSON.parse(
-                                    schedule.session.value
+                                    schedule.session_value
                                 );
+                                const weekDay = getWeekDay(schedule.date);
+
                                 return (
                                     <tr key={index}>
                                         <td>
-                                            {new Date(
-                                                schedule.date
-                                            ).toLocaleDateString()}
+                                            <div>{weekDay}</div>{" "}
+                                            <div>
+                                                {new Date(
+                                                    schedule.date
+                                                ).toLocaleDateString()}
+                                            </div>{" "}
                                         </td>
-                                        <td>{schedule.classroom.class_name}</td>
-                                        <td>{schedule.session.cate_name}</td>
-                                        <td>{schedule.room.cate_name}</td>
+                                        <td>{schedule.session_name}</td>
+                                        <td>{schedule.room_name}</td>
                                         <td>
                                             {session.start} - {session.end}
                                         </td>
+                                        <td>{schedule.type}</td>
                                     </tr>
                                 );
                             })}

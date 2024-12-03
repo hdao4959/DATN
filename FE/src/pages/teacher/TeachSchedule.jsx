@@ -48,27 +48,27 @@ const MySchedule = () => {
                 title: "Phòng học",
                 data: "room_code",
             },
-            {
-                title: "Môn học",
-                data: "classroom",
-                render: (classroom) => {
-                    return `${classroom.subject_code}`;
-                },
-            },
+                // {
+                //     title: "Môn học",
+                //     data: "classroom",
+                //     render: (classroom) => {
+                //         return `${classroom.subject_code}`;
+                //     },
+                // },
             {
                 title: "Ngày",
                 data: "date",
                 render: (date) => dayjs(date).format("DD/MM/YYYY"),
             },
-            {
-                title: "Ca",
-                data: "session",
-                render: (session) => {
-                    const sessionValParse = JSON.parse(session.value);
+            // {
+            //     title: "Ca",
+            //     data: "session",
+            //     render: (session) => {
+            //         const sessionValParse = JSON.parse(session.value);
 
-                    return `${session.cate_name} (${sessionValParse.start} - ${sessionValParse.end})`;
-                },
-            },
+            //         return `${session.cate_name} (${sessionValParse.start} - ${sessionValParse.end})`;
+            //     },
+            // },
         ];
 
         if (currentSchedule) {

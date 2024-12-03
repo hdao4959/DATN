@@ -10,7 +10,7 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 
+        'date',
         'room_code',
         'class_code',
         'session_code',
@@ -29,7 +29,7 @@ class Schedule extends Model
     public function session(){
         return $this->belongsTo(Category::class, 'session_code', 'cate_code');
     }
-    
+
     public function teacher(){
         return $this->belongsTo(User::class, 'teacher_code', 'user_code');
     }
@@ -51,6 +51,7 @@ class Schedule extends Model
     //             'cate_code' => $this->session->cate_code ?? null,
     //             'cate_name' => $this->session->cate_name ?? null,
     //             'value' => $this->session->value ?? null,
+
     //         ],
     //         'teacher'=> [
     //             'user_code'=> $this->teacher->user_code ?? null
@@ -58,5 +59,8 @@ class Schedule extends Model
     //     ];
     // }
 
-
+    // Các sinh viên trong buổi thi
+    public function students(){
+        return $this->belongsToMany(User::class,  'schedule_student','schedule_id', 'student_code', 'id', 'user_code');
+    }
 }
