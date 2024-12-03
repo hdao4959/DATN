@@ -83,7 +83,7 @@ const ClassRoomsList = () => {
         if (classrooms) {
             $("#classroomsTable").DataTable({
                 data: classrooms?.map((classes, index) => ({
-                    // class_code: classes.class_code,
+                    class_code: classes.class_code,
                     class_name: classes.class_name,
                     // subject_code: classes.subject_code,
                     subject_name: classes.subject_name,
@@ -113,7 +113,7 @@ const ClassRoomsList = () => {
                         });
                         const classrooms = response?.data;
                         const data3 = classrooms?.map((classes, index) => ({
-                            // class_code: classes.class_code,
+                            class_code: classes.class_code,
                             class_name: classes.class_name,
                             // subject_code: classes.subject_code,
                             subject_name: classes.subject_name,
@@ -144,35 +144,35 @@ const ClassRoomsList = () => {
 
                 columns: [
                     {
-                        title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
+                        title: "Lớp",
                         data: null,
                         render: (row) => `${row.class_name ? row.class_name : ''} ${row.class_code ? row.class_code : ''}`
                     },
                     {
-                        title: "<i class='fas fa-book'> Môn</i>",
+                        title: "Môn",
                         data: null,
                         render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
                     },
                     {
-                        title: "<i class='fas fa-user-tie'> Giảng viên</i>",
+                        title: "Giảng viên",
                         data: null,
                         render: (row) =>    `<div class='hover:text-blue-400' data-id="${row.class_code}" id="view_user_${row.class_code}" >
                                                 ${row.teacher_code ? row.teacher_code : ''} - ${row.teacher_name ? row.teacher_name : ''}
                                             </div>`
                     },
                     {
-                        title: "<i class='fas fa-users'> Số sinh viên</i>",
+                        title: "Số sinh viên",
                         data: null,
                         render: (row) => `${row.total_student ? row.total_student : '0'}`,
                         className: "text-center"
                     },
                     {
-                        title: "<i class='fas fa-building'> Phòng học</i>",
+                        title: "Phòng học",
                         data: null,
                         render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
                     },
                     {
-                        title: "<i class='fas fa-clock'> Ca học</i>",
+                        title: "Ca học",
                         data: null,
                         render: (row) => `${row.session_name ? row.session_name : 'Chưa xếp ca'} (${row.start ? row.start : ''} - ${row.end ? row.end : ''})`
                     },
