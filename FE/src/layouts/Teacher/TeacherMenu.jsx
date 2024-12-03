@@ -8,7 +8,7 @@ const TeacherMenu = () => {
                 <div className="logo-header" data-background-color="dark">
                     <Link to={"/teacher"} className="logo">
                         <img
-                            src="https://ap.poly.edu.vn/images/whiteLogo.png"
+                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
                             width={150}
                             alt="navbar brand"
                             className="navbar-brand"

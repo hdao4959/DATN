@@ -74,7 +74,7 @@ const Signin = () => {
         <section
             className="min-h-screen"
             style={{
-                backgroundImage: `url('https://iap-poly.s3.ap-southeast-1.amazonaws.com/wallpaper/hero1.JPG')`,
+                backgroundImage: `url('https://image.slidesdocs.com/responsive-images/background/dark-blue-shiny-technology-network-connection-pattern-geometric-powerpoint-background_e4634d1ae3__960_540.jpg')`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}
@@ -94,7 +94,7 @@ const Signin = () => {
                                 >
                                     <div className="text-white px-3 py-4 p-md-5 mx-md-4">
                                         <img
-                                            src="https://ap.poly.edu.vn/images/whiteLogo.png"
+                                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
                                             alt="White Logo"
                                             className="mb-4"
                                         />
@@ -105,7 +105,7 @@ const Signin = () => {
                                             }}
                                             className="mb-0"
                                         >
-                                            Trụ sở chính Tòa nhà FPT Polytechnic,
+                                            Trụ sở chính Tòa nhà F - Education,
                                             Phố Trịnh Văn Bô, Nam Từ Liêm, Hà Nội.
                                         </p>
                                         <div
@@ -125,8 +125,8 @@ const Signin = () => {
                                         </div>
                                         <div className="hiden-xs">
                                             <p>Điện thoại: (024) 7300 1955</p>
-                                            <p>Fanpage: facebook.com/fpt.poly</p>
-                                            <p>Email: caodang@fpt.edu.vn</p>
+                                            <p>Fanpage: facebook.com/fedu</p>
+                                            <p>Email: feduacademyvn@gmail.com</p>
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@ const Signin = () => {
                                         <div className="d-flex justify-content-center mb-3">
                                             <div>
                                                 <img
-                                                    src="https://upload.wikimedia.org/wikipedia/commons/2/20/FPT_Polytechnic.png"
+                                                    src="http://localhost:8000/storage/logo/logo3.png"
                                                     alt="FPT Logo"
                                                     style={{ width: "185px" }}
                                                 />
