@@ -59,5 +59,8 @@ class Schedule extends Model
     //     ];
     // }
 
-
+    // Các sinh viên trong buổi thi
+    public function students(){
+        return $this->belongsToMany(User::class,  'schedule_student','schedule_id', 'student_code', 'id', 'user_code');
+    }
 }
