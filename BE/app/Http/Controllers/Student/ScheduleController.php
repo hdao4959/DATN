@@ -58,8 +58,8 @@ class ScheduleController extends Controller
             $schedules = Schedule::whereIn('class_code', $classroom_codes)
                 ->where('date', '>=', now()->toDateString())->orderBy('date')
                 ->get();
+                return response()->json($schedules, 200);
 
-            return response()->json($schedules, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
