@@ -175,7 +175,7 @@ const ClassRoomsList = () => {
                         className: "text-center",
                     },
                     {
-                        title: "<i class='fas fa-clock'> Ca học</i>",
+                        title: "Ca học",
                         data: null,
                         render: (data) =>
                             `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`,
@@ -187,6 +187,7 @@ const ClassRoomsList = () => {
                         render: (data) => `
                             <div style="display: flex; gap: 10px; justify-content: center">
                                 <button class="btn btn-info btn-sm" data-class_code="${data.class_code}">Xem điểm</button>
+                                <button class="btn btn-primary btn-sm" data-class_code="${data.class_code}">Xem điểm danh</button>
                                 <button class="btn btn-warning btn-sm" data-class_code="${data.class_code}">Chi tiết</button>
                                 <button class="btn btn-danger btn-sm delete-btn" data-class_code="${data.class_code}">Xóa</button>
                             </div>`,
@@ -209,6 +210,8 @@ const ClassRoomsList = () => {
                         navigate(`/admin/classrooms/view/${classCode}/grades`);
                     } else if ($(this).text() === "Chi tiết") {
                         navigate(`/admin/classrooms/view/${classCode}/detail`);
+                    } else if ($(this).text() === "Xem điểm danh") {
+                        navigate(`/admin/classrooms/view/${classCode}/attendances`);
                     }
                 }
             );

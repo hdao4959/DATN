@@ -205,7 +205,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::controller(TeacherScheduleController::class)->group(function () {
         //     Route::get('schedules', 'index');
         // });
-        Route::apiResource('schedules', TeacherScheduleController::class);
+
 
         // Lịch dạy của giảng viên trong 1 lớp học
         Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);
@@ -254,7 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Các route cho lịch học
         Route::controller(StudentScheduleController::class)->group(function () {
-            Route::get('schedules', 'index');
+            // Route::get('schedules', 'index');
             Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
             Route::get('/transferSchedules', 'transferSchedules');
             Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
@@ -316,7 +316,8 @@ Route::post('services/provide-student-card/{user_code}',    [ServiceController::
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
-// Route::get('schedules', [TeacherScheduleController::class, 'index']);
+
+Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
 Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 

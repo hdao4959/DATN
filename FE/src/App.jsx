@@ -80,6 +80,7 @@ import EditDegreeProgram from "./pages/admin/DegreeProgram/EditDegreeProgram.jsx
 import SessionList from "./pages/admin/Sessions/SessionList.jsx";
 import AddSession from "./pages/admin/Sessions/AddSession.jsx";
 import EditSession from "./pages/admin/Sessions/EditMajor.jsx";
+import AttendanceTeacherDate from "./pages/teacher/Attendance/attendanceByDate.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -354,6 +355,10 @@ function App() {
                 {
                     path: "attendances",
                     element: <AttendanceTeacher />,
+                },
+                {
+                    path: "class/:class_code/attendances/:date",
+                    element: <AttendanceTeacherDate />,
                 },
                 {
                     path: "grades",
