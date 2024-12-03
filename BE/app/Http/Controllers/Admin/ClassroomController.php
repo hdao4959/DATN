@@ -76,8 +76,7 @@ class ClassroomController extends Controller
                     'schedules.session' => function ($query) {
                         $query->select('cate_code', 'cate_name', 'value');
                     }
-                ])
-                ->paginate($perPage);
+                ])->paginate($perPage);
 
             // return response()->json($classrooms);
 
@@ -114,6 +113,8 @@ class ClassroomController extends Controller
                 'status' => true,
                 'classrooms' => $classrooms
             ], 200);
+
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
