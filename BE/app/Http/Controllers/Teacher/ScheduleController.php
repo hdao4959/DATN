@@ -34,11 +34,12 @@ class ScheduleController extends Controller
 
     public function index(Request $request)
     {
+
         try {
             $today = Carbon::today();
             $sevenDaysLater = Carbon::today()->addDays(7);
 
-            $userCode = $request->user_code;
+            $userCode = $request->user()->user_code;
 
             // $list_classroom_codes = Classroom::where([
             //     'user_code' =>  $userCode,

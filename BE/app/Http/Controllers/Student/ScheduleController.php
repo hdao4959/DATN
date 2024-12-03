@@ -46,7 +46,7 @@ class ScheduleController extends Controller
 
             $student_code = request()->user()->user_code;
 
-            $classroom_codes = ClassroomUser::where('user_code', $student_code)->pluck('class_code');
+             $classroom_codes = ClassroomUser::where('user_code', $student_code)->pluck('class_code');
 
             if (!$classroom_codes) {
                 return response()->json([
@@ -56,10 +56,10 @@ class ScheduleController extends Controller
             }
 
             $schedules = Schedule::whereIn('class_code', $classroom_codes)
-                ->where('date', '>=', now()->toDateString())
+                ->where('date', '>=', now()->toDateString())->orderBy('date')
                 ->get();
+                return response()->json($schedules, 200);
 
-            return response()->json($schedules, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }

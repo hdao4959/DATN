@@ -43,7 +43,7 @@ class TeacherController extends Controller
 
     public function index(Request $request)
     {
-        try {
+        // try {
             $perPage = $request->input('per_page', 10);
             $teachers = User::where([
                 'role' => '2'
@@ -56,9 +56,9 @@ class TeacherController extends Controller
             )->paginate($perPage);
 
             return response()->json($teachers, 200);
-        } catch (\Throwable $th) {
-            return $this->handleErrorNotDefine($th);
-        }
+        // } catch (\Throwable $th) {
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
     /**

@@ -997,14 +997,17 @@ class CategoryController extends Controller
 
     public function getClassrooms()
     {
-        $data = DB::table('classrooms')->where('classrooms.is_active', true)->whereDate('classrooms.created_at', '=', date('Y-m-d'))
+        $data = DB::table('classrooms')
+            ->where('classrooms.is_active', true)
+            ->whereDate('classrooms.created_at', '=', date('Y-m-d'))
             ->leftJoin('classroom_user', 'classrooms.class_code', '=', 'classroom_user.class_code')
             ->leftJoin('schedules', 'classrooms.class_code', '=', 'schedules.class_code')
-            // ->whereNull('classroom_user.class_code')
             ->leftJoin('categories', 'schedules.room_code', '=', 'categories.cate_code')
             ->where('categories.is_active', true)
             ->where('categories.type', 'school_room')
-            ->orderBy('categories.value', 'desc')
+            ->orderBy('categories.cate_name', 'asc')  // Sắp xếp theo phòng học
+            ->orderBy('schedules.session_code', 'asc') // Sắp xếp theo ca học
+            // ->orderBy('schedules.date', 'asc') // Sắp xếp theo ngày học
             ->select(
                 'categories.cate_code',
                 'categories.cate_name',
@@ -1013,6 +1016,7 @@ class CategoryController extends Controller
                 'classrooms.class_name',
                 'classrooms.subject_code',
                 'schedules.session_code',
+                'schedules.date',
                 'classrooms.user_code'
             )
             ->get()
@@ -1020,6 +1024,7 @@ class CategoryController extends Controller
 
         return $data;
     }
+
 
     public function generateSchedule()
     {
@@ -1265,27 +1270,18 @@ class CategoryController extends Controller
 
                         // Nếu lớp chưa đầy, kiểm tra sinh viên có thể học lớp này không
                         if ($currentStudentCount < $classCapacity) {
-                            // Kiểm tra không trùng ca học trong ngày
-                            $existingSchedule = DB::table('schedules')
-                                ->where('class_code', $classRoom->class_code)
-                                ->where('date', '=', $student['semester'])
-                                ->where('session_code', '=', $classRoom->session_code)
-                                ->exists();
+                            if ($this->canAssignStudentToClass($student, $classRoom)) {
+                                // Thêm dữ liệu vào batch insert
+                                $batchInsertData[] = [
+                                    'class_code' => $classRoom->class_code,
+                                    'user_code' => $student['user_code'],
+                                ];
 
-                            if (!$existingSchedule) {
-                                if ($this->canAssignStudentToClass($student, $classRoom)) {
-                                    // Thêm dữ liệu vào batch insert
-                                    $batchInsertData[] = [
-                                        'class_code' => $classRoom->class_code,
-                                        'user_code' => $student['user_code'],
-                                    ];
-
-                                    // Cập nhật số lượng sinh viên hiện tại
-                                    $classroomStudentCounts[$classRoom->class_code]++;
-                                    $this->updateClassroomForSubject($classRoom, $subject);
-                                    $assigned = true;
-                                    break;
-                                }
+                                // Cập nhật số lượng sinh viên hiện tại
+                                $classroomStudentCounts[$classRoom->class_code]++;
+                                $this->updateClassroomForSubject($classRoom, $subject);
+                                $assigned = true;
+                                break;
                             }
                         } else {
                             // Nếu lớp đã đầy, chuyển sang lớp tiếp theo
@@ -1624,12 +1620,12 @@ class CategoryController extends Controller
             $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
             $startDates = []; // Mảng chứa các ngày cần lấy
             DB::table('classrooms')
-            ->where(function ($query) {
-                $query->where('classrooms.is_active', true)
-                    ->where('classrooms.is_automatic', false);
-            })
-            ->orWhereDate('classrooms.created_at', '=', date('Y-m-d'))
-            ->delete();
+                ->where(function ($query) {
+                    $query->where('classrooms.is_active', true)
+                        ->where('classrooms.is_automatic', false);
+                })
+                ->orWhereDate('classrooms.created_at', '=', date('Y-m-d'))
+                ->delete();
             // Thêm ngày hiện tại vào mảng
             $startDates[] = $startDate->format('Y-m-d');
 
@@ -1685,7 +1681,7 @@ class CategoryController extends Controller
                 $index++;
             }
 
-           
+
 
 
             return response()->json([
