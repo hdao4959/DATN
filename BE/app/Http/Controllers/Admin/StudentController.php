@@ -91,11 +91,12 @@ class StudentController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $newest_student_code = User::withTrashed()->where('user_code', 'LIKE', 'FE%')
-                ->orderBy('user_code', 'desc')->pluck('user_code')->first();
-            $current_code = $newest_student_code  ? (int) substr($newest_student_code, 2) : 0;
-
-            $new_student_code = 'FE' . str_pad($current_code + 1, 5, 0,  STR_PAD_LEFT);
+            $newest_student_code = User::withTrashed()
+                ->where('user_code', 'LIKE', 'FE%')
+                ->selectRaw("MAX(CAST(SUBSTRING(user_code, 3) AS UNSIGNED)) as max_code")
+                ->value('max_code');
+            $current_code = $newest_student_code ?: 0;
+            $new_student_code = 'FE' . str_pad($current_code + 1, 5, '0', STR_PAD_LEFT);
             $data['user_code'] = $new_student_code;
             $data['role'] = '3';
             User::create($data);
@@ -110,6 +111,7 @@ class StudentController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
+
 
     public function show(string $student_code)
     {
@@ -206,7 +208,7 @@ class StudentController extends Controller
     {
         DB::beginTransaction();
         try {
-          
+
 
             $student = User::where('user_code', $user_code)->lockForUpdate()->first();
 
@@ -251,18 +253,20 @@ class StudentController extends Controller
         return Excel::download(new StudentExport, 'students.xlsx');
     }
 
-    public function changeMajorStudent(int $id , Request $request){
-        try{
+    public function changeMajorStudent(int $id, Request $request)
+    {
+        try {
             $user = User::find($id);
             $user->update([
                 'semester_code' => $request->semester_code,
                 'major_code'    => $request->major_code
             ]);
 
-            return response()->json(['message' => 'Chuyển chuyên ngành thành công',
-                                            'student'=>$user]);
-
-        }catch(\Throwable $th){
+            return response()->json([
+                'message' => 'Chuyển chuyên ngành thành công',
+                'student' => $user
+            ]);
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()]);
         }
     }
