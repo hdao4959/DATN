@@ -188,7 +188,6 @@ function App() {
                     path: "classrooms/view/:class_code/grades",
                     element: <ShowGrades />,
                 },
-
                 {
                     path: "semesters",
                     element: <ListSemester />,
