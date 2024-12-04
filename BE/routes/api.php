@@ -94,15 +94,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-        
+
         Route::apiResource('sessions', SessionController::class);
-        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
-        Route::post('sessions/{code}',[SessionController::class,'update']);
+        Route::delete('sessions/{code}', [SessionController::class, 'destroy']);
+        Route::post('sessions/{code}', [SessionController::class, 'update']);
 
         // khóa học
         Route::apiResource('course', CourseController::class);
-        Route::put('course/{code}',[CourseController::class,'update']);
-        Route::delete('course/{code}',[CourseController::class,'destroy']);
+        Route::put('course/{code}', [CourseController::class, 'update']);
+        Route::delete('course/{code}', [CourseController::class, 'destroy']);
 
 
         Route::apiResource('teachers', TeacherController::class);
@@ -125,82 +125,82 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('classrooms/handleStep2', 'handleStep2');
 
 
-        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
-            Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
-            Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
-            Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
+            Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
+                Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
+                Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
+                Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+                Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+                Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
+            });
+
+            Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
+                Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
+                Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
+                Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
+            });
+            Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
+            Route::apiResource('majors', MajorController::class);
+            Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+            Route::apiResource('newsletters', NewsletterController::class);
+            Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+            Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
+            Route::apiResource('assessment', AssessmentItemController::class);
+            Route::get('score/{id}', [ScoreController::class, 'create']);
+            Route::apiResource('categories', CategoryController::class);
+            Route::controller(CategoryController::class)->group(function () {
+                Route::get('/listParentCategories', 'listParentCategories');
+                Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
+            });
+            Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+            Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+            Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
+
+            Route::apiResource('semesters', SemesterController::class);
+
+
+            Route::get('classrooms/{class_code}/grades', [GradesController::class, 'show']);
+            Route::patch('classrooms/{class_code}/grades', [GradesController::class, 'update']);
+            Route::apiResource('schoolrooms', SchoolRoomController::class);
+            Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
+            Route::apiResource('pointheads', PointHeadController::class);
+            // Route::apiResource('newsletters', NewsletterController::class);
+            Route::apiResource('attendances', AttendanceController::class);
+            Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+
+
+            Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
+            Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
+            Route::apiResource('majors', MajorController::class);
+            Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
+            Route::apiResource('newsletters', NewsletterController::class);
+            Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
+            Route::put('/newsletters/bulk-update-type', [NewsletterController::class, 'bulkUpdateType']);
+            Route::apiResource('assessment', AssessmentItemController::class);
+            Route::get('score/{id}', [ScoreController::class, 'create']);
+            Route::apiResource('categories', CategoryController::class);
+            Route::controller(CategoryController::class)->group(function () {
+                Route::get('/listParentCategories', 'listParentCategories');
+                Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
+            });
+            Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
+            Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
+            Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
+
+            Route::apiResource('semesters', SemesterController::class);
+            Route::apiResource('grades', GradesController::class);
+            Route::get('grades', [GradesController::class, 'getByParam']);
+            Route::patch('grades/{id}', [GradesController::class, 'update']);
+            Route::apiResource('schoolrooms', SchoolRoomController::class);
+            Route::put('/schoolrooms/bulk-update-type', [SchoolRoomController::class, 'bulkUpdateType']);
+            Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
+            Route::apiResource('pointheads', PointHeadController::class);
+            Route::put('/pointheads/bulk-update-type', [PointHeadController::class, 'bulkUpdateType']);
+            // Route::apiResource('newsletters', NewsletterController::class);
+            Route::apiResource('attendances', AttendanceController::class);
+            Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
+            Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
+            Route::apiResource('fees', FeeController::class);
         });
-
-        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
-            Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
-        });
-        Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
-        Route::apiResource('majors', MajorController::class);
-        Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-        Route::apiResource('newsletters', NewsletterController::class);
-        Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
-        Route::post('/newsletters/updateActive/{code}', [NewsletterController::class, 'updateActive']);
-        Route::apiResource('assessment', AssessmentItemController::class);
-        Route::get('score/{id}', [ScoreController::class, 'create']);
-        Route::apiResource('categories', CategoryController::class);
-        Route::controller(CategoryController::class)->group(function () {
-            Route::get('/listParentCategories', 'listParentCategories');
-            Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
-        });
-        Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
-        Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
-        Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
-
-        Route::apiResource('semesters', SemesterController::class);
-
-
-        Route::get('classrooms/{class_code}/grades', [GradesController::class, 'show']);
-        Route::patch('classrooms/{class_code}/grades', [GradesController::class, 'update']);
-        Route::apiResource('schoolrooms', SchoolRoomController::class);
-        Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
-        Route::apiResource('pointheads', PointHeadController::class);
-        // Route::apiResource('newsletters', NewsletterController::class);
-        Route::apiResource('attendances', AttendanceController::class);
-        Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
-
-
-        Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
-        Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
-        Route::apiResource('majors', MajorController::class);
-        Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
-        Route::apiResource('newsletters', NewsletterController::class);
-        Route::post('copyNewsletter/{code}', [NewsletterController::class, 'copyNewsletter']);
-        Route::put('/newsletters/bulk-update-type', [NewsletterController::class, 'bulkUpdateType']);
-        Route::apiResource('assessment', AssessmentItemController::class);
-        Route::get('score/{id}', [ScoreController::class, 'create']);
-        Route::apiResource('categories', CategoryController::class);
-        Route::controller(CategoryController::class)->group(function () {
-            Route::get('/listParentCategories', 'listParentCategories');
-            Route::get('/listChildrenCategories/{parent_code}', 'listChildrenCategories');
-        });
-        Route::get('getAllCategory/{type}', [CategoryController::class, 'getAllCategory']);
-        Route::get('getListCategory/{type}', [CategoryController::class, 'getListCategory']);
-        Route::post('uploadImage', [CategoryController::class, 'uploadImage']);
-
-        Route::apiResource('semesters', SemesterController::class);
-        Route::apiResource('grades', GradesController::class);
-        Route::get('grades', [GradesController::class, 'getByParam']);
-        Route::patch('grades/{id}', [GradesController::class, 'update']);
-        Route::apiResource('schoolrooms', SchoolRoomController::class);
-        Route::put('/schoolrooms/bulk-update-type', [SchoolRoomController::class, 'bulkUpdateType']);
-        Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
-        Route::apiResource('pointheads', PointHeadController::class);
-        Route::put('/pointheads/bulk-update-type', [PointHeadController::class, 'bulkUpdateType']);
-        // Route::apiResource('newsletters', NewsletterController::class);
-        Route::apiResource('attendances', AttendanceController::class);
-        Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
-        Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
-        Route::apiResource('fees', FeeController::class);
-    });
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -216,8 +216,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('classrooms', [TeacherClassroomController::class, 'index']);
         Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
         Route::get('classrooms/{classcode}/students', [TeacherStudentController::class, 'listStudentForClassroom']);
-        Route::get('classrooms/{classcode}/examdays', [ExamController::class,'listExamDays']);
-        Route::post('classrooms/{classcode}/examdays', [ExamController::class,'store']);
+        Route::get('classrooms/{classcode}/examdays', [ExamController::class, 'listExamDays']);
+        Route::post('classrooms/{classcode}/examdays', [ExamController::class, 'store']);
 
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
@@ -242,9 +242,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/import-attendances', 'importAttendance');
             Route::get('/export-attendances', 'exportAttendance');
         });
-
-
-
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -277,6 +274,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
         Route::apiResource('transaction', TransactionController::class);
         Route::get('getListDebt', [FeeController::class, 'getListDebt']);
+
+        Route::get('service',      [ServiceController::class, 'getAllServies']);
     });
 
     // Các route phục vụ cho form
@@ -328,12 +327,8 @@ Route::apiResource('fees', FeeController::class);
 
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
-Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
-                                            ->name('forget.password.post');
+Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost'])
+    ->name('forget.password.post');
 
-Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
-                                            ->name('reset.password.post');
-
-
-
-
+Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost'])
+    ->name('reset.password.post');

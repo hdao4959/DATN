@@ -9,7 +9,7 @@ const StudentServices = () => {
     const { data: services, isLoading, refetch } = useQuery({
         queryKey: ["LIST_SERVICES"],
         queryFn: async () => {
-            const res = await api.get(`/service`);
+            const res = await api.get(`student/service`);
             console.log(res?.data?.data);
             
             return res?.data?.data;

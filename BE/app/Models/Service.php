@@ -15,7 +15,7 @@ class Service extends Model
         'content',
         'status',
         'reason',
-        'fees',
+        'amount',
         'file_path'
     ];
 }
