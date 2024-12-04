@@ -139,8 +139,6 @@ class ScheduleController extends Controller
                     'session'       => $schedule->session->value,
                     'session_code'  => $schedule->session->cate_code,
                     'session_name'  => $schedule->session->cate_name,
-                    'subject_code'  => $schedule->classroom->subject_code,
-                    'subject_name'  => $schedule->classroom?->subject?->subject_name,
                     'count_users'   => $schedule->classroom?->users->count() ?? 0,
                 ];
             });
