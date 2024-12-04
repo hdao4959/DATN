@@ -219,7 +219,7 @@ const ClassExams = () => {
                             </tbody>
                         </table>
                     ) : (
-                        <p>Không có sinh viên nào trong lớp.</p>
+                        <p>Không có sinh viên nào đủ điều kiện thi.</p>
                     )}
                 </div>
             </div>
