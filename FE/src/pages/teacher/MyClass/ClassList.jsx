@@ -38,15 +38,14 @@ const ClassroomList = () => {
             $("#classroomTable").DataTable({
                 data: classrooms?.map((classes, index) => ({
                     stt: index + 1,
-                    class_code: classes.class_code,
-                    class_name: classes.class_name,
-                    subject_code: classes.subject_code,
-                    subject_name: classes.subject_name,
-                    teacher_code: classes.teacher_code,
-                    teacher_name: classes.teacher_name,
-                    total_student: classes.total_student,
+                    class_code: classes?.class_code,
+                    class_name: classes?.class_name,
+                    subject_name: classes?.subject_name,
+                    teacher_code: classes?.teacher_code,
+                    teacher_name: classes?.teacher_name,
+                    total_student: classes?.total_student,
                     room_name: classes?.room_name,
-                    session_name: classes.session_name,
+                    session_name: classes?.session_name,
                     start: classes?.value?.["start"],
                     end: classes?.value?.["end"],
                 })),
@@ -60,14 +59,14 @@ const ClassroomList = () => {
                         data: null,
                         render: function (row) {
                             return `<div class="class-link hover:text-blue-500" data-id="${row.class_code}">
-                                    ${row.class_code ? row.class_code : ''} - ${row.class_name ? row.class_name : ''}
+                                    ${row.class_name ? row.class_name : ''}
                                 </div>`;
                         },
                     },
                     {
                         title: "Môn",
                         data: null,
-                        render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
+                        render: (row) => `${row.subject_name ? row.subject_name : ''}`
                     },
                     {
                         title: "Số sinh viên",
@@ -87,6 +86,16 @@ const ClassroomList = () => {
                             return `<div>${row.session_name ? row.session_name : 'Chưa xếp ca'}</div>
                                     <div>(${row.start ? row.start : ''} - ${row.end ? row.end : ''})</div>`;
                         }
+                    },
+                    {
+                        title: "Lịch thi",
+                        data: null,
+                        render: function (row) {
+                            return `<span class="schedule-exam-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
+                                    <i class="fas fa-eye"></i>
+                                </span>`;
+                        },
+                        className: "text-center",
                     },
                     {
                         title: "",
@@ -125,6 +134,14 @@ const ClassroomList = () => {
                 },
                 scrollX: true,
             });
+            $("#classroomTable tbody").on(
+                "click",
+                ".schedule-exam-link",
+                function () {
+                    const classCode = $(this).data("id");
+                    navigate(`/teacher/class/${classCode}/examdays`);
+                }
+            );
 
             $("#classroomTable tbody").on(
                 "click",
