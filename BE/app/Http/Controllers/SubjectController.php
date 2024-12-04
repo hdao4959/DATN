@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Subject;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use App\Models\Classroom;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\SubjectRepository;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -109,21 +111,70 @@ class SubjectController extends Controller
     public function update(UpdateSubjectRequest $request, string $subject_code)
     {
         try {
-            // $subject = Subject::where
-            // $this->subjectRepository->update($request, $id);
-            return response()->json(['message' => 'cập nhật thành công']);
+            DB::beginTransaction();
+            $data = $request->validated();
+
+            $subject = Subject::where('subject_code', $subject_code)->lockForUpdate()->first();
+
+            if(!$subject){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Môn học này không tồn tại!'
+                ],404);
+            }
+
+            $is_studying = Classroom::where('subject_code', $subject_code)->exists();
+
+            if($is_studying){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Bạn không thể sửa môn học này vì có lớp đang học!'
+                ],409);
+            }
+
+
+            $subject->update($data);
+
+            DB::commit();
+            
+            return response()->json([
+                'status' => true,
+                'message' => 'Cập nhật thông tin môn học thành công!'
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
-    public function destroy(string $id)
+    public function destroy(string $subject_code)
     {
         try {
-            $subject = Subject::findOrFail($id);
+            DB::beginTransaction();
+            $subject = Subject::firstWhere('subject_code', $subject_code)->lockForUpdate();
+
+            if(!$subject){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Môn học này không tồn tại!'
+                ]);
+            }
+
+            $is_studying = Classroom::where('subject_code', $subject_code)->exists();
+
+            if($is_studying){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Bạn không thể xoá môn học này vì có lớp đang học!'
+                ],409);
+            }
+
+
             $subject->delete();
+
+            DB::commit();
             return response()->json(['message' => 'xóa thành công'], 200);
         } catch (\Throwable $th) {
+            DB::rollback();
             return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 400);
         }
     }
