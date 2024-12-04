@@ -94,8 +94,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-        // ca học
+        
+        Route::apiResource('sessions', SessionController::class);
+        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
+        Route::post('sessions/{code}',[SessionController::class,'update']);
 
+        // khóa học
+        Route::apiResource('course', CourseController::class);
+        Route::put('course/{code}',[CourseController::class,'update']);
+        Route::delete('course/{code}',[CourseController::class,'destroy']);
 
 
         Route::apiResource('teachers', TeacherController::class);
@@ -329,11 +336,4 @@ Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPo
 
 
 
-                                            Route::apiResource('sessions', SessionController::class);
-                                            Route::delete('sessions/{code}',[SessionController::class,'destroy']);
-                                            Route::post('sessions/{code}',[SessionController::class,'update']);
 
-                                            // khóa học
-                                            Route::apiResource('course', CourseController::class);
-                                            Route::put('course/{code}',[CourseController::class,'update']);
-                                            Route::delete('course/{code}',[CourseController::class,'destroy']);
