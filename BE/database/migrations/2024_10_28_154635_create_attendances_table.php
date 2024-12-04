@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('date');
             $table->enum('status', ['absent', 'present','pending']);
             $table->string('noted')->nullable();
+
+            $table->unique(['student_code', 'class_code', 'date'], 'idx_st_clas_date');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -15,7 +15,7 @@ const ShowAttendance = () => {
         queryKey: ["attendances", class_code],
         queryFn: async () => {
             const response = await api.get(`/teacher/attendances/${class_code}`);
-            return response?.data;
+            return response?.data[0];
             // const attendanceDataI = [
             //     {
             //         student_code: "SV001",
@@ -81,7 +81,7 @@ const ShowAttendance = () => {
     };
 
     useEffect(() => {
-        if (attendanceData) {
+        if (attendanceData?.length > 0 && attendanceData[0]?.student_code) {
             const students = {};
 
             // Xử lý dữ liệu attendance

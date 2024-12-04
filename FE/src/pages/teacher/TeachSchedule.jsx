@@ -86,12 +86,17 @@ const MySchedule = () => {
                 title: "Điểm danh",
                 data: null,
                 render: (row) => {
-                    return `<button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}" style="margin-right: 5px;">
+                    const isToday = dayjs(row.date).isSame(dayjs(), "date");
+                    if (isToday) {
+                        return `<button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}" style="margin-right: 5px;">
                                     Điểm danh
                                 </button>`;
+                    }
+                    return ""; // Không hiển thị gì nếu không phải hôm nay
                 },
-                className: 'text-nowrap'
+                className: 'text-nowrap',
             },
+            
         ];
 
         if (currentSchedule) {
