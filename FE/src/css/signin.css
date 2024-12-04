@@ -4,7 +4,8 @@
 
 .gradient-custom-2 {
     background: #1c67bc;
-    background: linear-gradient(to right, #0072ff, #014fcd, #014ecb, #0037a4);
+    /* background: linear-gradient(to right, #0072ff, #014fcd, #014ecb, #0037a4); */
+    background: linear-gradient(to right, #185e95, #0c3f67)
 }
 
 .text-white img {

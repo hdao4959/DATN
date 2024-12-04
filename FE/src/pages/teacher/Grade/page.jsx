@@ -1,30 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import 'datatables.net-dt/css/dataTables.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
-import { toast } from 'react-toastify';
-import api from '../../../config/axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../../../config/axios";
+import { toast } from "react-toastify";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
+import { useNavigate, useParams } from "react-router-dom";
 
-const ShowGradesTeacher = () => {
-    const [selectedGrade, setSelectedGrade] = useState([]);
-    const [idSelected, setIdSelected] = useState();
-    const [isTableLoading, setIsTableLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false)
+const ShowGrades = () => {
+    const [selectedGrade, setSelectedGrade] = useState(null);
+    const { class_code: classCode } = useParams();
+    const navigate = useNavigate();
 
-    const { data: classes, isLoading: isLoadingClasses } = useQuery({
-        queryKey: ["LIST_CLASSES"],
+    const { data, error, isLoading, refetch } = useQuery({
+        queryKey: ["grades", classCode],
         queryFn: async () => {
-            const res = await api.get(`/teacher/grades`);
-            console.log(res?.data);
-
-            return res?.data;
-        }
+            const response = await api.get(`/teacher/grades/${classCode}`);
+            // if (response?.data?.score && typeof response.data.score === "string") {
+            //     response.data.score = JSON.parse(response.data.score); // Chuyển đổi chuỗi thành mảng
+            // }
+            if (!selectedGrade) {
+                setSelectedGrade(response?.data[0]);
+            }
+            return response?.data;
+        },
+        onSuccess: () => {
+            setSelectedGrade(data);
+        },
+        onError: () => {
+            toast.error("Không thể tải dữ liệu bảng điểm");
+        },
     });
-
+    useEffect(() => {
+        refetch();
+    }, [])
     const { mutate } = useMutation({
         mutationFn: async (data) => {
-            await api.put(`/teacher/grades/${idSelected}`, data.score);
+            await api.put(`/teacher/grades/${classCode}`, data);
         },
         onSuccess: () => {
             toast.success("Chỉnh sửa thành công!");
@@ -33,279 +45,207 @@ const ShowGradesTeacher = () => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
         },
     });
-
-    const handleViewDetails = async (class_code) => {
-        console.log(selectedGrade);
-        
-
-        const modal = new window.bootstrap.Modal(document.getElementById('gradesModal'));
-        modal.show();
-        setIdSelected(class_code);
-        setIsModalOpen(true);
-        const response = await api.get(`/teacher/grades/${class_code}`);
-        setSelectedGrade(response?.data);
-        console.log('abc',selectedGrade);
-        
-
-    };
-
-    const handleSaveClick = () => {
-        mutate(selectedGrade);
-    };
-
-    const handleModalClose = () => {
-        const newGrade = [];
-        setSelectedGrade(newGrade); 
-        console.log(newGrade); 
-        
-        if ($('#modalGradesTable').DataTable()) {
-            $('#modalGradesTable').DataTable().destroy(); 
-            $('#modalGradesTable').empty();
-        }
-        setIsModalOpen(false);
-    };
+    const calculateAverageScore = (scores) => {
+        const totalWeight = scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+        if (totalWeight === 0) return 0;
+        return scores.reduce((sum, score) => {
+          const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
+          return sum + (scoreValue * (score.weight / totalWeight));
+        }, 0).toFixed(2);
+      };
     useEffect(() => {
-        console.log('selectedGrade đã thay đổi:', selectedGrade);
-    }, [selectedGrade]);
-    
-
-
+        refetch();
+    }, [])
     useEffect(() => {
-        if (classes) {
-            $('#classesTable').DataTable({
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
+        if (selectedGrade) {
+            // Xóa bảng cũ và khởi tạo lại DataTable nếu đã tồn tại
+            if ($.fn.dataTable.isDataTable("#gradesTable")) {
+                $("#gradesTable").DataTable().clear().destroy();
+            }
+            const totalWeight = selectedGrade?.students[0]?.scores.reduce((total, score) => total + score.weight, 0);
+            // Khởi tạo DataTable
+            $("#gradesTable").DataTable({
+                paging: false,
+                info: false,
                 language: {
-                    paginate: {
-                        previous: 'Trước',
-                        next: 'Tiếp theo'
-                    },
-                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                    info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
-                    search: 'Tìm kiếm:'
+                    search: "<i class='fas fa-search'>Tìm kiếm</i>",
                 },
-                destroy: true,
-                data: classes,
+                data: selectedGrade?.students?.map((student, index) => ({
+                    stt: index + 1,
+                    student_code: student.student_code,
+                    student_name: student.student_name,
+                    scores: student.scores || [],
+                    average_score: student.average_score || 0,
+                })),
                 columns: [
-                    { title: "Mã lớp", data: "class_code" },
-                    { title: "Mã môn", data: "subject_code" },
-                    { title: "Tên lớp", data: "class_name" },
-                    // { title: "Phòng học", data: "room_code" },
-                    // { title: "Ca học", data: "section" },
-                    // { title: "Giảng viên", data: "user_code" },
-
-                    {
-                        title: "Điểm",
+                    { title: "#", data: "stt", className: "text-center" },
+                    { title: "Mã SV", data: "student_code", className: "text-center" },
+                    { title: "Tên SV", data: "student_name", className: "text-center" },
+                    ...selectedGrade?.students[0]?.scores.map((score, index) => ({
+                        title: `${score.assessment_name} (${score.weight / totalWeight * 100}%)`,
                         data: null,
                         render: (data, type, row) => {
-                            return `<button class="view-details-button btn btn-success" data-id="${row.class_code}">
-                                        <i class="fas fa-table"></i> Bảng điểm
-                                    </button>`;
-                        }
-                    }
-                ]
+                            let scoreData = row.scores[index]?.score || 0;
+                            scoreData = parseFloat(
+                                (typeof scoreData === 'string' ? scoreData.replace(',', '.') : scoreData) || 0
+                            );
+                            return `
+                                <input type="number" 
+                                    value="${scoreData}" 
+                                    min="0" 
+                                    max="10" 
+                                    class="form-control form-control-sm text-center score-input"
+                                    data-index="${row.stt - 1}" 
+                                    data-exam-index="${index}" 
+                                    oninput="this.value = Math.min(Math.max(this.value, 0), 10)"
+                                />`;
+                        },
+                        className: "text-center",
+                    })),
+                    {
+                        title: "Điểm Tổng",
+                        data: "average_score",
+                        className: "text-center",
+                        render: (data) => {
+                            const isBelowThreshold = parseFloat(data?.replace(',', '.') || 0) < 5;
+                            data = parseFloat(
+                                (typeof data === 'string' ? data.replace(',', '.') : data) || 0
+                            ).toFixed(2);
+                            const className = isBelowThreshold ? "text-danger" : "text-success";
+                            return `<strong class="${className}">${data || 0}</strong>`;
+                        },
+                    },
+                ],
+
+                scrollX: true,
+                scrollY: true,
             });
-
-            $('#classesTable tbody').off('click', '.view-details-button');
-            $('#classesTable tbody').on('click', '.view-details-button', function () {
-                const class_code = $(this).data('id');
-                handleViewDetails(class_code);
-            });
-        }
-    }, [classes, isLoadingClasses]);
-
-
-    const calculateAverageScore = (studentScores, totalValue) => {
-        return studentScores.reduce((total, scoreItem) => {
-            const score = scoreItem?.score || 0;
-            const percentage = (scoreItem?.value || 0) / totalValue;
-            return total + score * percentage;
-        }, 0).toFixed(2);
-    };
-
-    useEffect(() => {
-        if (isModalOpen && selectedGrade && selectedGrade.score?.length > 0) {
-            if ($.fn.dataTable.isDataTable('#modalGradesTable')) {
-                $('#modalGradesTable').DataTable().clear().destroy();
+            const scrollBody = document.querySelector(".dataTables_scrollBody");
+            if (scrollBody) {
+                scrollBody.style.overflow = "hidden";
+                scrollBody.style.scrollbarWidth = "none"; // Firefox
+                scrollBody.style.msOverflowStyle = "none"; // IE 10+
             }
-            setIsTableLoading(true);
 
-            if (!(selectedGrade == [])
-                && selectedGrade?.score?.length > 0
-            ) {
-                const totalValue = selectedGrade?.score[0]?.scores?.reduce((total, score) => total + score.value, 0);
-                if (!$.fn.dataTable.isDataTable(`#modalGradesTable`)) {
-                    // setIsTableLoading(true);
-
-                    console.log(isTableLoading);
-
-                    $(`#modalGradesTable`).DataTable({
-                        pageLength: 10,
-                        lengthMenu: [10, 20, 50, 100],
-                        language: {
-                            paginate: {
-                                previous: 'Trước',
-                                next: 'Tiếp theo'
-                            },
-                            lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                            info: 'Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục',
-                            search: 'Tìm kiếm:'
-                        },
-                        destroy: true,
-                        data: selectedGrade?.score?.map((student, index) => {
-                            // let totalScore = student.scores.reduce((sum, scoreItem) => {
-                            //     const studentPoint = scoreItem?.score || 0;
-                            //     const percentage = (scoreItem.value / totalValue) * 100;
-                            //     return sum + (studentPoint * percentage / 100);
-                            // }, 0);
-                            // console.log(selectedGrade);
-
-                            return {
-                                stt: index + 1,
-                                student_code: student.student_code,
-                                student_name: student.student_name,
-                                scores: student.scores,
-                                // total_score: (totalScore ? totalScore.toFixed(2) : 0),
-                                average_score: student.average_score,
-                                note: student.scores.map(score => score.note).join(', ')
-                            };
-                        }),
-                        columns: [
-                            { title: "STT", data: "stt", defaultContent: '', className: "text-center" },
-                            { title: "Mã SV", data: "student_code", defaultContent: '', className: "text-center" },
-                            { title: "Tên SV", data: "student_name", defaultContent: '', className: "text-center" },
-                            ...selectedGrade?.score[0]?.scores.map((exam, index) => [
-                                {
-                                    title: `${exam.name} (${(exam.value) ? ((exam.value / totalValue) * 100).toFixed(2) : 0}%)`,
-                                    data: null,
-                                    render: function (data, type, row) {
-                                        const scoreData = row.scores[index]?.score || 0;
-                                        return `<input type="number" 
-                                                    value="${(scoreData ? scoreData : 0)}" 
-                                                    min="0" 
-                                                    max="10" 
-                                                    class="form-control form-control-sm text-center score-input" 
-                                                    data-index="${row.stt - 1}" 
-                                                    data-exam-index="${index}" 
-                                                    oninput="this.value = Math.min(Math.max(this.value, 0), 10)"
-                                                />
-                                        `;
-                                    }, className: "text-center"
-                                },
-                                {
-                                    title: `Ghi chú`,
-                                    data: null,
-                                    render: function (data, type, row) {
-                                        const noteData = row.scores[index]?.note || '';
-                                        return `
-                                    <input 
-                                        type="text"
-                                        value="${noteData}" 
-                                        class="form-control form-control-sm text-center note-input w-10" 
-                                        data-index="${row.stt - 1}" 
-                                        data-exam-index="${index}" 
-                                        style="width: 80px"
-                                    />
-                                `;
-                                    }, className: "text-center"
-                                }
-                            ]).flat(),
-                            {
-                                title: "Điểm Tổng", data: "average_score", className: "text-center",
-                                render: (data) => `<strong>${data || 0}</strong>`
-                            },
-                        ],
-                        scrollX: true,
-                        scrollY: true,
-                        rowCallback: function (row, data) {
-                            if (data.total_score < 4) {
-                                $(row).find('td').eq(1).css('color', 'red');
-                                const totalColumns = data.exam_scores.length + 3;
-                                $(row).find('td').eq(totalColumns).css('color', 'red');
-                            }
-                        },
-                        initComplete: () => setIsTableLoading(false)
-
-                    });
-                    setIsTableLoading(false);
-                    $('#modalGradesTable').on('change', '.score-input', function () {
-                        const rowIndex = $(this).data('index');
-                        const examIndex = $(this).data('exam-index');
-                        const newScore = parseFloat($(this).val()) || 0;
-                        selectedGrade.score[rowIndex].scores[examIndex].score = newScore;
-
-                        const totalValue = selectedGrade.score[rowIndex].scores.reduce((sum, scoreItem) => sum + (scoreItem?.value || 0), 0);
-                        const averageScore = calculateAverageScore(selectedGrade.score[rowIndex].scores, totalValue);
-                        console.log(averageScore);
-                        selectedGrade.score[rowIndex].average_score = parseFloat(averageScore).toFixed(2);
-
-                        // const dataTable = $('#modalGradesTable').DataTable();
-                        // dataTable.row(rowIndex).data(selectedGrade.score[rowIndex]).draw(false);
-                    });
+            $('#gradesTable').on('change', '.score-input', function () {
+                const rowIndex = $(this).data('index');
+                const examIndex = $(this).data('exam-index');
+                const newScore = parseFloat($(this).val()) || 0;
+                
+                // Cập nhật điểm vào selectedGrade
+                selectedGrade.students[rowIndex].scores[examIndex].score = newScore;
+            
+                // Tính lại điểm trung bình của sinh viên
+                const totalWeight = selectedGrade.students[rowIndex].scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+                const averageScore = selectedGrade.students[rowIndex].scores.reduce((sum, score) => {
+                    const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
+                    return sum + (scoreValue * (score.weight / totalWeight));
+                }, 0).toFixed(2);
+            
+                selectedGrade.students[rowIndex].average_score = averageScore;
+            
+                // Cập nhật điểm trung bình trong bảng
+                const $averageScoreCell = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1}) td:last-child strong`);
+                $averageScoreCell.text(averageScore);
+                if (averageScore < 5) {
+                    $averageScoreCell.removeClass('text-success');
+                    $averageScoreCell.addClass('text-danger');
+                } else {
+                    $averageScoreCell.addClass('text-success');
+                    $averageScoreCell.removeClass('text-danger');
                 }
-            } else {
-                toast.error("Chưa có dữ liệu");
-                setIsTableLoading(true);
+            });
+            
 
-            }
+            $('#gradesTable').on('change', '.note-input', function (event) {
+                const rowIndex = $(this).data('index');
+                const examIndex = $(this).data('exam-index');
+                const newNote = $(this).val() || '';
+                selectedGrade.score[rowIndex].scores[examIndex].score = newNote;
+            });
+
+            $("#gradesTable tbody").on("click", '[id^="view_user_"]', function () {
+                const user_code = $(this).data("id");
+                navigate(`/admin/students/${user_code}`);
+            });
+
+            return () => {
+                $("#gradesTable").DataTable().clear().destroy();
+            };
         }
+    }, [selectedGrade, data]);
 
-        return () => {
-            $('#modalGradesTable').DataTable().clear().destroy();
-        };
-    }, [selectedGrade, isTableLoading]);
-
+    const handleSaveClick = () => {
+        const updatedData = selectedGrade.students.map(student => ({
+            student_code: student.student_code,
+            scores: student.scores.map(score => ({
+                assessment_name: score.assessment_name,
+                assessment_code: score.assessment_code,
+                weight: score.weight,
+                score: score.score,  // Điểm đã được cập nhật
+            })),
+        }));
+        
+        mutate({
+            class_code: selectedGrade.class_code,
+            class_name: selectedGrade.class_name,
+            students: updatedData,  // Gửi dữ liệu đã cập nhật
+        });
+    };
+    
 
     return (
         <div>
-            <div className="card" style={{ minHeight: '800px' }}>
-                <div className="card-header">
-                    <h4 className="card-title">Quản lý điểm số</h4>
-                </div>
-                <div className="card-body">
-                    {isLoadingClasses ? (
-                        <div className="loading-spinner">
-                            <div className='spinner-border' role='status'></div>
-                            <p>Đang tải dữ liệu...</p>
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title text-center">Bảng điểm Lớp {selectedGrade && selectedGrade?.class_code} {selectedGrade?.subject_code && ` - Môn ${selectedGrade?.subject_code}`} </div>
                         </div>
-                    ) : (
-                        <div className="table-responsive">
-                            <table id="classesTable" className="display"></table>
-                            <div className="modal fade" id="gradesModal" tabIndex="-1" aria-labelledby="gradesModalLabel" aria-hidden="true">
-                                <div className="modal-dialog modal-xl">
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h5 className="modal-title" id="gradesModalLabel">Bảng điểm</h5>
-                                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={handleModalClose} ></button>
-                                        </div>
-                                        {!(selectedGrade) ? (
-
-                                            <div className="modal-body">
-                                                <div className='spinner-border' role='status'></div>
-                                                <p>Đang tải dữ liệu...</p>
-                                            </div>
-                                        ) : (
-                                            <div className="modal-body">
-                                                <div style={{ maxWidth: '100%' }}>
-                                                    <table id={`modalGradesTable`} className="display table-tripped"></table>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-success" onClick={handleSaveClick}>
-                                                Lưu điểm
-                                            </button>
-                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={handleModalClose} >Đóng</button>
-                                        </div>
-                                    </div>
+                        <div className='card-body'>
+                            {isLoading ? (
+                                <div>
+                                    <div className="spinner-border" role="status"></div>
+                                    <p>Đang tải dữ liệu...</p>
                                 </div>
-                            </div>
+                            ) : (
+                                <>
+                                    {(data?.score == null) || !selectedGrade && (
+                                        <div>
+                                            <div className="spinner-border" role="status"></div>
+                                            <p>Chưa có dữ liệu...</p>
+                                        </div>
+                                    )}
+                                    <div className="table-responsive">
+                                        <table id="gradesTable" className="display table-striped"></table>
+                                    </div>
+                                    <button
+                                        className="btn btn-danger"
+                                        style={{ float: "right" }}
+                                        onClick={() => navigate(-1)}
+                                    >
+                                        <i className="fas fa-backward"> Quay lại</i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success ms-2"
+                                        style={{ float: "right" }}
+                                        onClick={handleSaveClick}
+                                    >
+                                        <i className="fas fa-save"> Lưu điểm</i>
+                                    </button>
+                                </>
+                            )}
+                            {error && (
+                                <div>Không thể tải dữ liệu bảng điểm</div>
+                            )}
+
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-export default ShowGradesTeacher;
+export default ShowGrades;

@@ -16,8 +16,8 @@ class Subject extends Model
         'subject_code',
         'subject_name',
         'tuition',
-        're_study_fee',
         'credit_number',
+        're_study_fee',
         'total_sessions',
         'assessments',
         'exam_day',
@@ -32,6 +32,11 @@ class Subject extends Model
         'assessments' => 'array',
     ];
 
+    public function classrooms()
+    {
+        return $this->hasMany(Classroom::class, 'subject_code', 'subject_code');
+    }
+
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
@@ -40,9 +45,9 @@ class Subject extends Model
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
-    public function assessmentItems()
+    public function subjectAssessment()
     {
-        return $this->belongsToMany(AssessmentItem::class, 'subject_assessment');
+        return $this->belongsToMany(AssessmentItem::class, 'subject_assessment', 'subject_code', 'assessment_code', 'subject_code', 'assessment_code');
     }
 
 }

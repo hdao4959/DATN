@@ -58,9 +58,9 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         try {
-            // $teacherCode = $request->user()->user_code;
+            $teacherCode = $request->user()->user_code;
             // Giả sử user_code của giảng viên là 'TC969'
-            $teacher_code = 'TC969';
+            // $teacher_code = 'TC969';
 
             // Lấy danh sách tất cả các lớp của giảng viên kèm theo lịch học
             $classrooms = Classroom::query()
@@ -106,12 +106,11 @@ class AttendanceController extends Controller
         }
     }
 
-    public function showAttendanceByDate(string $classCode, $date)
+    public function showAttendanceByDate(Request $request, string $classCode, $date)
 {
     try {
-        // $userCode = $request->user()->user_code;
-        $userCode = 'TC969';
-    
+        $userCode = $request->user()->user_code;
+        // $date = Carbon::now()->toDateString(); // Lấy ngày hiện tại (YYYY-MM-DD)
         $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
                                         $query->where('user_code', $userCode)->where('class_code', $classCode);
                                     })
@@ -182,51 +181,51 @@ class AttendanceController extends Controller
     }
 }
 
-    // public function show(string $classCode)
-    // {
-    //     try {
+    public function show(string $classCode)
+    {
+        try {
 
-    //         $attendances = Classroom::where('class_code', $classCode)
-    //                                 ->with('users', 'schedules')
-    //                                 ->get()
-    //                                 ->map(function ($attendance) {
-    //                                     $currentDate = Carbon::now()->toDateString();
+            $attendances = Classroom::where('class_code', $classCode)
+                                    ->with('users', 'schedules')
+                                    ->get()
+                                    ->map(function ($attendance) {
+                                        $currentDate = Carbon::now()->toDateString();
 
-    //                                     // Lọc schedules theo ngày hiện tại
-    //                                     $filteredSchedules = $attendance->schedules
-    //                                         ->filter(function ($schedule) use ($currentDate) {
-    //                                             return $schedule->date == $currentDate;
-    //                                         })
-    //                                         ->pluck('date')
-    //                                         ->toArray();
+                                        // Lọc schedules theo ngày hiện tại
+                                        $filteredSchedules = $attendance->schedules
+                                            ->filter(function ($schedule) use ($currentDate) {
+                                                return $schedule->date == $currentDate;
+                                            })
+                                            ->pluck('date')
+                                            ->toArray();
                                 
-    //                                     // Gắn schedules vào từng user
-    //                                     $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
-    //                                         return [
-    //                                             'student_code' => $user->user_code,
-    //                                             'full_name' => $user->full_name,
-    //                                             'schedules' => $filteredSchedules,
-    //                                         ];
-    //                                     });
+                                        // Gắn schedules vào từng user
+                                        $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
+                                            return [
+                                                'student_code' => $user->user_code,
+                                                'full_name' => $user->full_name,
+                                                'schedules' => $filteredSchedules,
+                                            ];
+                                        });
                                 
-    //                                     // Trả về dữ liệu
-    //                                     return [
-    //                                         'class_code' => $attendance->class_code,
-    //                                         'users' => $usersWithSchedules,
-    //                                     ];
-    //                                 });
-    //         if (!$attendances) {
+                                        // Trả về dữ liệu
+                                        return [
+                                            'class_code' => $attendance->class_code,
+                                            'users' => $usersWithSchedules,
+                                        ];
+                                    });
+            if (!$attendances) {
 
-    //             return $this->handleInvalidId();
-    //         } else {
+                return $this->handleInvalidId();
+            } else {
 
-    //             return response()->json($attendances, 200);                
-    //         }
-    //     } catch (\Throwable $th) {
+                return response()->json($attendances, 200);                
+            }
+        } catch (\Throwable $th) {
 
-    //         return $this->handleErrorNotDefine($th);
-    //     }
-    // }
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 
     public function store(StoreAttendanceRequest $request, string $classCode)
     {
@@ -337,8 +336,8 @@ class AttendanceController extends Controller
     public function showAllAttendance(Request $request, string $classCode)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'TC969';
+            $userCode = $request->user()->user_code;
+            // $userCode = 'TC969';
 
             $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
                                         $query->where('user_code', $userCode)->where('class_code', $classCode);

@@ -21,7 +21,7 @@ class NewsletterController extends Controller
 
         return response()->json([
             'message' => 'Không có newsletter nào!',
-        ], 404);
+        ], 200);
     }
 
     //  Hàm trả về json khi lỗi không xác định (500)

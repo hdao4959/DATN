@@ -612,7 +612,7 @@ body {
   .sidebar .nav, .sidebar[data-background-color="white"] .nav {
     display: block;
     float: none;
-    margin-top: 20px; }
+    margin-top: 45px !important; }
     .sidebar .nav .nav-section, .sidebar[data-background-color="white"] .nav .nav-section {
       margin: 15px 0 0 0; }
       .sidebar .nav .nav-section .sidebar-mini-icon, .sidebar[data-background-color="white"] .nav .nav-section .sidebar-mini-icon {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -49,10 +50,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        
+
         'password',
         'remember_token',
-       
+
     ];
 
     /**
@@ -69,7 +70,7 @@ class User extends Authenticatable
     public function setPasswordAttribute($value) {
         $this->attributes['password'] = Hash::make($value);
     }
-    
+
     // Định nghĩa mối quan hệ với bảng 'newsletters'
     public function newsletter()
     {
@@ -80,7 +81,7 @@ class User extends Authenticatable
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
-     
+
     public function narrow_major(){
         return $this->belongsTo(Category::class, 'narrow_major_code', 'cate_code');
     }
@@ -93,11 +94,6 @@ class User extends Authenticatable
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
-
-    // public function classroomUser()
-    // {
-    //     return $this->hasMany(ClassroomUser::class, 'user_code', 'student_code');
-    // }
 
     // public function attendance()
     // {
@@ -124,6 +120,13 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_code', 'class_code', 'user_code' ,'class_code')
         ->withPivot('user_code');
+    }
+
+    public function schedules()
+    {
+        return $this->belongsToMany(Schedule::class, 'schedule_student', 'student_code', 'schedule_id','user_code','id')
+        ->withPivot('student_code');
+
     }
 
     public function fees(){

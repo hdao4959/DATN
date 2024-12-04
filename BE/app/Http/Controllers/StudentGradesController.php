@@ -18,115 +18,94 @@ use App\Models\Category;
 
 class StudentGradesController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
+        try {
+            $userCode = $request->user()->user_code;
+            $semesterCodeUser = User::where('user_code', $userCode)
+                                    ->select('semester_code')
+                                    ->first();
 
-            try {
-                $user = Auth::user();
-                $studentCode = $user->user_code;
-                // $studentCode = 'student05';
-                $semesterCodeUser = User::where('user_code', $studentCode)
-                                        ->select('semester_code')
-                                        ->first();
-                $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
-            
-                $listSemester = Category::where('type', 'semester')
-                    ->where('is_active', '1')
-                    ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
-                    ->orderBy('cate_code', 'asc')
-                    ->select('cate_code', 'cate_name')
-                    ->get();
-                
-                $userInfo = User::where('user_code', $studentCode)->select('full_name', 'user_code')->first();
-               
-                $classes = DB::table('classroom_user')
-                ->join('classrooms', 'classroom_user.class_code', '=', 'classrooms.class_code')
-                ->join('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
-                ->where('classroom_user.user_code', $studentCode)
-                ->where('subjects.semester_code', $semesterCode) // thêm điều kiện semester_code
-                ->select('classrooms.class_code', 'classrooms.class_name', 'classrooms.score', 'subjects.subject_name', 'subjects.subject_code')
+            $semesterCode = $request->input('search') ?: $semesterCodeUser->semester_code;
+        
+            $listSemester = Category::where('type', 'semester')
+                ->where('is_active', '1')
+                ->where('cate_code', '<=', $semesterCodeUser->semester_code) 
+                ->orderBy('cate_code', 'asc')
+                ->select('cate_code', 'cate_name')
                 ->get();
+                $classrooms = Classroom::whereHas('subject', function ($query) use ($semesterCode) {
+                                $query->where('semester_code', $semesterCode);
+                            })
+                            ->whereHas('users', function ($query) use ($userCode) {
+                                $query->where('classroom_user.user_code', $userCode);
+                            })
+                            ->with([
+                                'subject' => function ($query) {
+                                    $query->with('subjectAssessment', function ($query) {
+                                        $query->select('assessment_items.assessment_code', 'assessment_items.name', 'assessment_items.weight');
+                                    })->select('subject_code', 'subject_name', 'semester_code');
+                                },
+                                'teacher' => function ($query) {
+                                    $query->select('user_code', 'full_name');
+                                },
+                                'scorecomponents' => function ($query) use ($userCode) {
+                                    $query->where('student_code', $userCode)
+                                        ->with('assessmentItem', function ($query) {
+                                                $query->select('assessment_code', 'name', 'weight');
+                                        })
+                                        ->select('student_code', 'class_code', 'score', 'assessment_code');
+                                }
 
-                if ($classes->isEmpty()) {
-                    return response()->json([
-                        'message' => 'Sinh viên này chưa tham gia lớp học nào',
-                        'error' => true,
-                        'semesters' => $listSemester
-                    ]);
-                }
-
-                $classScores = [];
-                foreach ($classes as $class) {
-                    $scoreJson = $class->score;
-                    $scoreArray = json_decode($scoreJson, true);
-                    $studentScore = null;
-                    if (is_array($scoreArray) && !empty($scoreArray)) {
-                        foreach ($scoreArray as $score) {
-                            if (isset($score['student_code']) && $score['student_code'] === $studentCode) {
-                                $studentScore = [
-                                    'scores' => $score['scores'] ?? [],
-                                    'student_code' => $score['student_code'],
-                                    'student_name' => $score['student_name'] ?? '',
-                                    'average_score' => $score['average_score'] ?? 0
-                                ];
-                                break;
-                            }
-                        }
-                    }
-                     // Lấy subject_code từ lớp học
-                     $subjectCode = $class->subject_code;
-                     // Tiến hành nối với bảng subjects để lấy assessments
-                     $subject = DB::table('subjects')
-                         ->where('subjects.subject_code', $subjectCode)
-                         ->select('subjects.subject_code', 'subjects.assessments')
-                         ->first();
-                     // Giải mã chuỗi assessments
-                     $assessments = json_decode($subject->assessments, true);
-                    //  dd($assessments);
-                     $scores = [];
-                     if(is_array($assessments) && !empty($assessments)) {
-                        foreach ($assessments as $assessmentName => $assessmentValue) {
-                            $scores[] = [
-                                'name' => $assessmentName, // Lấy tên điểm (ví dụ: final, midterm)
-                                'note' => '', // Ghi chú (mặc định rỗng)
-                                'score' => 0, // Điểm (mặc định là 0)
-                                'value' => $assessmentValue // Lấy giá trị trọng số từ assessments
-                            ];
-                        }
-                    }
-                     if (empty($scoreArray) || $scoreArray == []) {
-                        $studentScore = [
-                            'scores' => $scores,
-                            'student_code' => $userInfo->user_code,
-                            'student_name' => $userInfo->full_name,
-                            'average_score' => 0,
+                            ])
+                            ->get(['class_code', 'class_name', 'subject_code', 'user_code']);
+                $result = $classrooms->map(function ($classroom) {
+                    $subjectAssessments = $classroom->subject->subjectAssessment ?? collect([]);
+                    $scoreComponents = $classroom->scorecomponents ?? collect([]);
+                    
+                    // Duyệt qua các subjectAssessment để xử lý dữ liệu
+                    $scores = $subjectAssessments->map(function ($assessment) use ($scoreComponents) {
+                        $matchedScore = $scoreComponents->firstWhere('assessment_code', $assessment->assessment_code);
+                
+                        return [
+                            'assessment_name' => $matchedScore->assessmentItem->name ?? $assessment->name,
+                            'weight' => $matchedScore->assessmentItem->weight ?? $assessment->weight,
+                            'score' => $matchedScore->score ?? 0 // Nếu không có điểm, trả về 0
                         ];
-                     }
-
-                    $classScores[] = [
-                        'class_code' => $class->class_code,
-                        'class_name' => $class->class_name,
-                        'subject_code' => $class->subject_code,
-                        'subject_name' => $class->subject_name,
-                        'score' => $studentScore ?? [],
+                    });
+                    $diem = 0;
+                    $heSo = 0;
+                    foreach ($scores as $scoreEntry) {
+                        $diem += $scoreEntry['score'] * $scoreEntry['weight'];
+                        $heSo += $scoreEntry['weight'];
+                    }
+                    $averageScore = $heSo > 0 ? ($diem / $heSo) : 0;
+                    $formattedScore = number_format($averageScore, 1, ',', '');
+                
+                    return [
+                        'class_code' => $classroom->class_code,
+                        'class_name' => $classroom->class_name,
+                        'average_score' => $formattedScore,
+                        'scores' => $scores
                     ];
-                }
-
-                return response()->json([
-                    'message' => 'Lấy thông tin lớp và điểm thành công',
-                    'error' => false,
-                    'data' => $classScores,
-                    'semesters' => $listSemester,
-                    'semesterCode' => $semesterCode,
-                    'semesterCode' => $assessments
-
-                ]);
-            } catch (\Throwable $th) {
-                return response()->json([
-                    'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
-                    'error' => true,
-                ]);
+                });
+            if($classrooms->isEmpty()){
+                return response()->json(
+                    ['message' => "Không có lớp học nào!"], 204
+                );
             }
-            }
+            return response()->json([
+                'scores' => $result,
+                'semesters' => $listSemester,
+                'semesterCode' => $semesterCode,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
+                'error' => true,
+            ]);
+        }
+    }
 
 
 

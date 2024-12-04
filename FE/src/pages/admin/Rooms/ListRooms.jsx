@@ -8,27 +8,18 @@ import $ from "jquery";
 import "datatables.net";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import ShowGrades from "../Grades/pages";
-import ShowAttendance from "../Attendance/page";
 import Modal from "../../../components/Modal/Modal";
+
 const ClassRoomsList = () => {
     const accessToken = getToken();
-    const navigate = useNavigate(); // Hook dùng để điều hướng trong React Router v6
-    const [selectedClassCodeForGrades, setSelectedClassCodeForGrades] =
-        useState(null);
-    const [
-        selectedClassCodeForAttendances,
-        setSelectedClassCodeForAttendances,
-    ] = useState(null);
-    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-    const [currentClassCode, setCurrentClassCode] = useState(null);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Modal xác nhận xóa
+    const navigate = useNavigate();
 
-    const {
-        data,
-        refetch,
-        isLoading: isLoadingClasses,
-    } = useQuery({
+    const [classrooms, setClassRooms] = useState([]);
+    const [startDate, setStartDate] = useState("");
+    const [currentClassCode, setCurrentClassCode] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+    const { data, refetch, isLoading, isError, error } = useQuery({
         queryKey: ["LIST_ROOMS"],
         queryFn: async () => {
             const res = await api.get("/admin/classrooms", {
@@ -37,46 +28,19 @@ const ClassRoomsList = () => {
                     "Content-Type": "application/json",
                 },
             });
-            return res?.data?.classrooms || [];
-        },
-    });
-    const classrooms = data?.data;
 
-    const { mutate, isLoading } = useMutation({
-        mutationFn: (class_code) =>
-            api.delete(`/admin/classrooms/${class_code}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            }),
-        onSuccess: () => {
-            toast.success("Xóa phòng học thành công");
-            refetch();
-        },
-        onError: () => {
-            alert("Có lỗi xảy ra khi xóa phòng học");
+            if (!res?.data?.classrooms?.data) {
+                throw new Error("Dữ liệu trả về không hợp lệ");
+            }
+
+            return res.data.classrooms.data;
         },
     });
 
-    const handleDelete = (class_code) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa phòng học này không?")) {
-            mutate(class_code);
-        }
-    };
+    useEffect(() => {
+        setClassRooms(data || []);
+    }, [data]);
 
-    const handleViewGrades = (classCode) => {
-        setSelectedClassCodeForGrades(classCode);
-    };
-
-    const handleViewAttendances = (classCode) => {
-        setSelectedClassCodeForAttendances(classCode);
-    };
-
-    const handleCloseModal = () => {
-        setSelectedClassCodeForGrades(null);
-        setSelectedClassCodeForAttendances(null);
-    };
     const deleteClassMutation = useMutation({
         mutationFn: (classCode) =>
             api.delete(`/admin/classrooms/${classCode}`, {
@@ -86,160 +50,177 @@ const ClassRoomsList = () => {
                 },
             }),
         onSuccess: () => {
-            toast.success("Xóa lớp học thành công");
+            toast.success("Xóa lớp học thành công!");
             refetch();
-            setDeleteModalOpen(false); // Đóng modal khi xóa thành công
+            setDeleteModalOpen(false);
         },
         onError: (error) => {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
         },
     });
 
-    // Mở/đóng modal xác nhận xóa lớp học
     const toggleDeleteModal = (classCode) => {
         setCurrentClassCode(classCode);
         setDeleteModalOpen((prev) => !prev);
     };
 
-    // Xác nhận xóa lớp học
     const confirmDeleteClass = () => {
         if (currentClassCode) {
             deleteClassMutation.mutate(currentClassCode);
         }
     };
 
-    // Khi nhấn vào biểu tượng xóa lớp học
-    const handleDeleteClass = (classCode) => {
-        toggleDeleteModal(classCode);
+    const { mutate: autoSchedule } = useMutation({
+        mutationFn: async () => {
+            if (!startDate) {
+                toast.error("Vui lòng chọn ngày bắt đầu.");
+            }
+            const payload = {
+                startDate: startDate
+            }
+            try {
+                // Bước 1: Gọi API getListClassByRoomAndSession
+                const res1 = await api.post("/getListClassByRoomAndSession", payload, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res1.data.error) {
+                    return toast.error(res1.data.message || "Có lỗi xảy ra khi lấy thông tin lớp học.");
+                }
+                const res2 = await api.get("/addStudent", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res2.data.error) {
+                    return toast.error(res2.data.message || "Có lỗi xảy ra khi thêm sinh viên vào lớp học.");
+                }
+                const res3 = await api.get("/addTeacher", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (res3.data.error) {
+                    return toast.error(res3.data.message || "Có lỗi xảy ra khi thêm giảng viên vào lớp học.");
+                }
+                const res4 = await api.get("/generateSchedule", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (res4.data.error) {
+                    return toast.error(res4.data.message || "Có lỗi xảy ra khi tạo lịch học và lịch thi.");
+                }
+                const res5 = await api.get("/generateAttendances", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                return { res1, res2, res3, res4, res5 };
+
+            } catch (error) {
+                return toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
+            }
+        },
+        onSuccess: (response) => {
+            toast.success("Tạo lịch tự động thành công!");
+            console.log("Response:", response);
+            refetch(); // Refetch danh sách lớp học
+        },
+        onError: (error) => {
+            console.error("Error:", error);
+            toast.error("Có lỗi xảy ra khi tạo lịch tự động.");
+        },
+    });
+
+    const handleAutoSchedule = () => {
+        autoSchedule();
     };
 
     useEffect(() => {
-        if (classrooms) {
+        if (classrooms.length > 0) {
             $("#classroomsTable").DataTable({
-                data: classrooms,
-                processing: true,
-                serverSide: true,
-                ajax: async (data, callback) => {
-                    try {
-                        // Tính toán số trang
-                        const page = Math.ceil(data.start / data.length) + 1;
-
-                        // Gửi request đến API
-                        const response = await api.get(`/admin/classrooms`, {
-                            params: {
-                                page: page,
-                                per_page: data.length,
-                                // search: data.search.value || '',
-                                // order_column: data.columns[data.order[0].column].data || 'id', // Tên cột
-                                // order_dir: data.order[0].dir || 'asc', // Hướng sắp xếp
-                            },
-                        });
-
-                        const classrooms = response.data.classrooms;
-
-                        // Gọi callback của DataTables
-                        callback({
-                            draw: data.draw,
-                            recordsTotal: classrooms.total || 0,
-                            recordsFiltered: classrooms.total || 0, // Sử dụng `filtered` nếu API có
-                            data: classrooms.data || [], // Dữ liệu lớp học
-                        });
-                    } catch (error) {
-                        console.error("Error fetching data:", error);
-                        // Trả về dữ liệu rỗng nếu có lỗi
-                        callback({
-                            draw: data.draw,
-                            recordsTotal: 0,
-                            recordsFiltered: 0,
-                            data: [],
-                        });
-                    }
-                },
-
+                data: classrooms.map((cls) => ({
+                    class_name: cls.class_name || "N/A",
+                    class_code: cls.class_code || "N/A",
+                    subject_name: cls.subject_name || "N/A",
+                    teacher_code: cls.teacher_code || "N/A",
+                    teacher_name: cls.teacher_name || "N/A",
+                    students_count: cls.students_count || 0,
+                    session_name: cls.session_name || "Chưa xếp ca",
+                    room_time: cls.session_value
+                        ? JSON.parse(cls.session_value.value)
+                        : { start: "", end: "" },
+                })),
                 columns: [
-                    { title: "Mã lớp", data: "class_code" },
-                    { title: "Tên lớp", data: "class_name" },
-                    { title: "Mã môn", data: "subject_code" },
-
                     {
-                        title: "Hành động",
+                        title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
+                        data: "class_name",
+                    },
+                    {
+                        title: "<i class='fas fa-book'> Môn</i>",
+                        data: "subject_name",
+                    },
+                    {
+                        title: "<i class='fas fa-user-tie'> Giảng viên</i>",
+                        data: "teacher_name",
+                    },
+                    {
+                        title: "<i class='fas fa-users'> Số sinh viên</i>",
+                        data: "students_count",
+                        className: "text-center",
+                    },
+                    {
+                        title: "Ca học",
+                        data: null,
+                        render: (data) =>
+                            `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`,
+                    },
+                    {
+                        title: "",
                         className: "text-center",
                         data: null,
-                        render: (data, type, row) => {
-                            return `
-                                <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                <button 
-                                        class="btn btn-info btn-sm" 
-                                        style="font-size: 14px;" 
-                                        data-id="${row.class_code}" 
-                                        id="view_grades_${row.class_code}" 
-                                        title="Xem điểm">
-                                        Xem điểm
-                                    </button>
-                                    <button 
-                                        class="btn btn-secondary btn-sm" 
-                                        style="font-size: 14px;" 
-                                        data-id="${row.class_code}" 
-                                        id="view_attendance_${row.class_code}" 
-                                        title="Xem điểm danh">
-                                        Xem điểm danh
-                                    </button>
-                                     <button class="btn btn-warning btn-sm"  >
-                                        <a href="/admin/classrooms/view/${row.class_code}">
-               Xem thông tin lớp
-            </a>
-                                    </button>
-                                   
-                                    <i class="fas fa-trash delete-btn" 
-                                        style="cursor: pointer; color: red; font-size: 20px;" 
-                                        data-id="${row.class_code}" 
-                                        id="delete_${row.class_code}" 
-                                        title="Xóa"></i>
-                                </div>
-                            `;
-                        },
+                        render: (data) => `
+                            <div style="display: flex; gap: 10px; justify-content: center">
+                                <button class="btn btn-info btn-sm" data-class_code="${data.class_code}">Xem điểm</button>
+                                <button class="btn btn-primary btn-sm" data-class_code="${data.class_code}">Xem điểm danh</button>
+                                <button class="btn btn-warning btn-sm" data-class_code="${data.class_code}">Chi tiết</button>
+                                <button class="btn btn-danger btn-sm delete-btn" data-class_code="${data.class_code}">Xóa</button>
+                            </div>`,
                     },
                 ],
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
-                language: {
-                    paginate: { previous: "Trước", next: "Tiếp theo" },
-                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
-                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
-                    search: "Tìm kiếm:",
-                },
                 destroy: true,
-                createdRow: (row, data, dataIndex) => {
-                    $(row)
-                        .find(".delete-btn")
-                        .on("click", () => handleDeleteClass(data.class_code));
-                },
             });
-            // Lắng nghe sự kiện click cho nút "Xem điểm"
-            $("#classroomsTable").on(
-                "click",
-                '[id^="view_grades_"]',
-                function () {
-                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
-                    setSelectedClassCodeForGrades(classCode);
-                    handleViewGrades(classCode);
-                }
-            );
 
-            // Lắng nghe sự kiện click cho nút "Xem điểm danh"
-            $("#classroomsTable").on(
+            $("#classroomsTable tbody").on("click", ".delete-btn", function () {
+                const classCode = $(this).data("class_code");
+                toggleDeleteModal(classCode);
+            });
+
+            $("#classroomsTable tbody").on(
                 "click",
-                '[id^="view_attendance_"]',
+                "[data-class_code]",
                 function () {
-                    const classCode = $(this).data("id"); // Lấy mã lớp học từ data-id của button
-                    setSelectedClassCodeForAttendances(classCode);
-                    handleViewAttendances(classCode);
+                    const classCode = $(this).data("class_code");
+                    if ($(this).text() === "Xem điểm") {
+                        navigate(`/admin/classrooms/view/${classCode}/grades`);
+                    } else if ($(this).text() === "Chi tiết") {
+                        navigate(`/admin/classrooms/view/${classCode}/detail`);
+                    } else if ($(this).text() === "Xem điểm danh") {
+                        navigate(`/admin/classrooms/view/${classCode}/attendances`);
+                    }
                 }
             );
         }
     }, [classrooms]);
 
-    // if (!isLoadingClasses) return <div><div className='spinner-border' role='status'></div><p>Đang tải dữ liệu</p></div>;
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
@@ -249,46 +230,57 @@ const ClassRoomsList = () => {
             </div>
 
             <div className="card">
-                <div className="card-header">
+                <div className="card-header d-flex justify-content-between">
                     <h4 className="card-title">Quản lý lớp học</h4>
+                    <div className="d-flex justify-content-center gap-2">
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            placeholder="Chọn ngày bắt đầu"
+                            min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
+                        />
+                        <button
+                            className="btn btn-primary text-nowrap"
+                            onClick={handleAutoSchedule}
+                            disabled={!startDate}
+                        >
+                            <i className="fa fa-calendar"></i> Tạo tự động
+                        </button>
+                    </div>
                 </div>
-                {selectedClassCodeForGrades && (
-                    <ShowGrades
-                        classCode={selectedClassCodeForGrades}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {selectedClassCodeForAttendances && (
-                    <ShowAttendance
-                        classCode={selectedClassCodeForAttendances}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {(selectedClassCodeForGrades ||
-                    selectedClassCodeForAttendances) && (
-                    <div className="modal-backdrop fade show"></div>
-                )}
                 <div className="card-body">
-                    {isLoadingClasses && (
-                        <>
+                    {isLoading && (
+                        <div>
                             <div className="spinner-border" role="status"></div>
-                            <p>Đang tải dữ liệu</p>
-                        </>
+                            <p>Đang tải dữ liệu...</p>
+                        </div>
+                    )}
+                    {isError && (
+                        <p className="text-danger">
+                            {error?.message || "Có lỗi xảy ra khi tải dữ liệu."}
+                        </p>
+                    )}
+                    {!isLoading && !isError && classrooms.length === 0 && (
+                        <p>Không có lớp học nào để hiển thị.</p>
                     )}
                     <div className="table-responsive">
-                        <table id="classroomsTable" className="display"></table>
+                        <table
+                            id="classroomsTable"
+                            className="display text-nowrap"
+                        ></table>
                     </div>
                 </div>
             </div>
 
-            {/* Modal xác nhận xóa lớp học */}
             <Modal
                 title="Xóa lớp học"
                 description="Bạn có chắc chắn muốn xóa lớp học này?"
                 visible={deleteModalOpen}
                 onVisible={toggleDeleteModal}
                 onOk={confirmDeleteClass}
-                closeTxt="Huỷ"
+                closeTxt="Hủy"
                 okTxt="Xác nhận"
             />
         </>

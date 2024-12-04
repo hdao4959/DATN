@@ -9,12 +9,18 @@ class ClassroomUser extends Model
 {
     use HasFactory;
 
+    protected $table = 'classroom_user';
+
     protected $fillable = [
         'class_code',
-        'user_code'
+        'user_code',
+        'is_modified'
     ];
 
-    protected $table = 'classroom_user';
+    
+    protected $casts = [
+        'is_modified' => 'boolean',
+    ];
 
     public function classroom()
     {

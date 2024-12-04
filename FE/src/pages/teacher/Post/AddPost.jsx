@@ -13,6 +13,8 @@ const AddPost = () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const [content, setContent] = useState();
+    const [classrooms, setClassrooms] = useState(['123', '1123', 'dhfdf']);
+    const [classroomsObject, setClassroomsObject] = useState();
 
     const {
         register,
@@ -27,6 +29,15 @@ const AddPost = () => {
         queryFn: async () => {
             const res = await api.get("/teacher/categories");
             return res.data.data ?? [];
+        },
+    });
+    const { data } = useQuery({
+        queryKey: ["CLASSROOMS"],
+        queryFn: async () => {
+            const res = await api.get("/teacher/classrooms");
+            const classCodes = res?.data?.map((classItem) => classItem.class_code);
+            setClassrooms(classCodes);
+            return res?.data ?? [];
         },
     });
 
@@ -59,9 +70,25 @@ const AddPost = () => {
         formData.append("notification_object", values.notification_object);
         formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-        formData.append("image", values.image[0]);
+        if (values.image && values.image.length > 0) {
+            formData.append("image", values.image[0]);
+        }
 
         mutate(formData);
+    };
+
+    const handleClassroomChange = (event) => {
+        const selectedClass = event.target.value;
+
+        // Kiểm tra xem lớp học đã được chọn hay chưa trước khi thêm vào state
+        if (selectedClass && !classroomsObject?.includes(selectedClass)) {
+            setClassroomsObject((prevState) => [...prevState ?? '', selectedClass]); // Thêm lớp học vào mảng
+        }
+    };
+    const handleRemoveClass = (classToRemove) => {
+        setClassroomsObject((prevState) =>
+            prevState.filter((classItem) => classItem !== classToRemove)
+        );
     };
 
     return (
@@ -154,7 +181,7 @@ const AddPost = () => {
                                         )}
                                     </div> */}
 
-                                    <div className="form-group">
+                                    <div className="form-group hidden">
                                         <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -171,9 +198,9 @@ const AddPost = () => {
                                                     onChange={field.onChange}
                                                 />
                                             )}
-                                            rules={{
-                                                required: "Vui lòng nhập tags",
-                                            }}
+                                        // rules={{
+                                        //     required: "Vui lòng nhập tags",
+                                        // }}
                                         />
 
                                         {errors.tags && (
@@ -186,17 +213,11 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="image">
                                             Ảnh bìa
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <input
                                             type="file"
                                             className="form-control"
-                                            {...register("image", {
-                                                required:
-                                                    "Vui lòng chọn hình ảnh",
-                                            })}
+                                            {...register("image")}
                                         />
                                         {errors.image && (
                                             <span className="text-danger">
@@ -205,7 +226,7 @@ const AddPost = () => {
                                         )}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className="form-group hidden">
                                         <label htmlFor="type">
                                             Loại bài viết
                                         </label>
@@ -229,17 +250,11 @@ const AddPost = () => {
                                     <div className="form-group">
                                         <label htmlFor="description">
                                             Nội dung hiển thị
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
                                         </label>
                                         <textarea
                                             className="form-control"
                                             rows={5}
-                                            {...register("description", {
-                                                required:
-                                                    "Vui lòng nhập nội dung hiển thị",
-                                            })}
+                                            {...register("description")}
                                             placeholder="Nhập nội dung hiển thị"
                                         />
                                         {errors.description && (
@@ -302,7 +317,7 @@ const AddPost = () => {
                                                 *
                                             </span>
                                         </label>
-                                        <input
+                                        {/* <input
                                             type="text"
                                             placeholder="Nhập đối tượng"
                                             className="form-control"
@@ -314,8 +329,49 @@ const AddPost = () => {
                                                         "Vui lòng nhập đối tượng",
                                                 }
                                             )}
-                                        />
-
+                                        /> */}
+                                        <div style={{ marginTop: "10px" }} className="form-control">
+                                            {classroomsObject?.length > 0 ? (
+                                                classroomsObject?.map((classItem, index) => (
+                                                    <span
+                                                        key={index}
+                                                        style={{
+                                                            display: "inline-block",
+                                                            marginRight: "10px",
+                                                            padding: "5px 10px",
+                                                            backgroundColor: "#e0e0e0",
+                                                            borderRadius: "15px",
+                                                            marginBottom: "10px",
+                                                        }}
+                                                    >
+                                                        {classItem}{" "}
+                                                        <span
+                                                            style={{
+                                                                cursor: "pointer",
+                                                                marginLeft: "8px",
+                                                                color: "red",
+                                                                fontWeight: "bold",
+                                                            }}
+                                                            onClick={() => handleRemoveClass(classItem)} // Gọi hàm xóa lớp học khi nhấp vào "X"
+                                                        >
+                                                            X
+                                                        </span>
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <p>Chưa chọn đối tượng nào.</p>
+                                            )}
+                                        </div>
+                                        <div className="mt-1">
+                                            <select name="classroom" id="classroom-select" onChange={handleClassroomChange} disabled={false}>
+                                                <option value="">Chọn đối tượng</option> {/* Option mặc định */}
+                                                {classrooms?.map((classItem, index) => (
+                                                    <option key={index} value={classItem}>
+                                                        {classItem}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                         {errors.notification_object && (
                                             <span className="text-danger">
                                                 {

@@ -34,24 +34,66 @@ class ClassroomController extends Controller
     {
         try {
             $student_code = request()->user()->user_code;
-            $student = User::with([
-                'classrooms' => function ($query) {
-                    $query->select('id');
-                }
-            ])->where([
-                'is_active' => true,
-                'user_code' => $student_code
-            ])->first();
+            $classrooms = Classroom::whereHas('users', function ($query) use ($student_code) {
+                                $query->where('classroom_user.user_code', $student_code)
+                                    ->select('users.user_code', 'users.full_name');
+                            })
+                            ->with(['subject' => function($query){
+                                $query->select('subject_code', 'subject_name');
 
-            if (!$student) {
-                return response()->json("Bạn không có quyền truy cập!");
+                            },
+                            'teacher' => function($query) {
+                                $query->select('user_code', 'full_name');
+                                
+                            },
+                            'schedules.room' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            },
+                            'schedules.session' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            }])->get(['class_code', 'class_name', 'user_code', 'is_active', 'subject_code']);
+            $result = $classrooms->map(function($classroom) {
+                $schedules = $classroom->schedules->first();
+                $student = $classroom->users;
+                $totalStudent = $student->count();
+                $studyTime = json_decode($schedules->session['value'], true);
+                return [
+                    'class_code' => $classroom->class_code ?? null,
+                    'class_name' => $classroom->class_name ?? null,
+                    'subject_name' => $classroom->subject->subject_name ?? null,
+                    'teacher_name' => $classroom->teacher->full_name ?? null,
+                    'total_student' => $totalStudent ?? null,
+                    'room_name' => $schedules->room->cate_name ?? null,
+                    'session_name' => $schedules->session->cate_name ?? null,
+                    'value' => $studyTime ?? null,                    
+                ];
+            });
+            if($classrooms->isEmpty()){
+                return response()->json(
+                    ['message' => "Không có lớp học nào!"], 204
+                );
             }
-            $classroom_codes = $student->classrooms->pluck('pivot.class_code');
-            $classrooms = Classroom::with(['subject' => function ($query) {
-                $query->select('subject_code', 'subject_name');
-            }])
-                ->whereIn('class_code', $classroom_codes)->select('class_code', 'class_name', 'subject_code')->get();
-            return response()->json($classrooms);
+            return response()->json($result,200);
+            // $student = User::with([
+            //     'classrooms' => function ($query) {
+            //         $query->select('id');
+            //     }
+            // ])->where([
+            //     'is_active' => true,
+            //     'user_code' => $student_code
+            // ])->first();
+
+            // if (!$student) {
+            //     return response()->json("Bạn không có quyền truy cập!");
+            // }
+            // $classroom_codes = $student->classrooms->pluck('pivot.class_code');
+            // $classrooms = Classroom::with(['subject' => function ($query) {
+            //     $query->select('subject_code', 'subject_name');
+            // }])
+            //     ->whereIn('class_code', $classroom_codes)->select('class_code', 'class_name', 'subject_code')->get();
+            // return response()->json($classrooms);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }

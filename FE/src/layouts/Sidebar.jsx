@@ -12,7 +12,7 @@ const Sidebar = () => {
                 <div className="logo-header" data-background-color="dark">
                     <NavLink to="/admin" className="logo">
                         <img
-                            src="https://ap.poly.edu.vn/images/whiteLogo.png"
+                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
                             width={150}
                             alt="navbar brand"
                             className="navbar-brand"

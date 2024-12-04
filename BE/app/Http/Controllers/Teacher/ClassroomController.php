@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Models\User;
 use App\Models\Classroom;
 use App\Exports\ScoreExport;
+use App\Imports\ScoreImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -20,37 +21,69 @@ class ClassroomController extends Controller
 
      public function handleInvalidId()
      {
-         return response()->json([
-             'message' => 'Lớp học không tồn tại!',
-         ], 404);
+        return response()->json([
+            'message' => 'Lớp học không tồn tại!',
+        ], 200);
      }
  
      //  Hàm trả về json khi lỗi không xác định (500)
      public function handleErrorNotDefine($th)
      {
-         return response()->json([
-             'message' => "Đã xảy ra lỗi không xác định",
-             'error' => env('APP_DEBUG') ? $th->getMessage() : "Lỗi không xác định"
-         ], 500);
+        return response()->json([
+            'message' => "Đã xảy ra lỗi không xác định",
+            'error' => env('APP_DEBUG') ? $th->getMessage() : "Lỗi không xác định"
+        ], 500);
      }
 
 
-    public function index()
+    public function index(Request $request)
     {
         try {
             $teacher_code = request()->user()->user_code;
-            $classrooms = Classroom::with([
-                'subject' => function($query){
-                    $query->select('subject_code', 'subject_name');
-                
-                }])->select('class_code', 'class_name', 'description', 'is_active', 'subject_code')->where('user_code', $teacher_code)->get();
+            $classrooms = Classroom::where('user_code', $teacher_code)->where('is_active', true)
+                            ->orderBy('id', 'DESC')
+                            ->with(['subject' => function($query){
+                                $query->select('subject_code', 'subject_name');
 
+                            },
+                            'teacher' => function($query) {
+                                $query->select('user_code', 'full_name');
+                                
+                            },
+                            'users' => function($query) {
+                                $query->select('users.user_code', 'users.full_name');
+                                
+                            },
+                            'schedules.room' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            },
+                            'schedules.session' => function($query) {
+                                $query->select('cate_code', 'cate_name', 'value');
+                                
+                            }])->get(['class_code', 'class_name', 'user_code', 'is_active', 'subject_code']);
+            $result = $classrooms->map(function($classroom) {
+                $schedules = $classroom->schedules->first();
+                $student = $classroom->users;
+                $totalStudent = $student->count();
+                $studyTime = json_decode($schedules->session['value'], true);
+                return [
+                    'class_code' => $classroom->class_code ?? null,
+                    'class_name' => $classroom->class_name ?? null,
+                    'subject_name' => $classroom->subject->subject_name ?? null,
+                    'teacher_name' => $classroom->teacher->full_name ?? null,
+                    'total_student' => $totalStudent ?? null,
+                    'room_name' => $schedules->room->cate_name ?? null,
+                    'session_name' => $schedules->session->cate_name ?? null,
+                    'value' => $studyTime ?? null,                    
+                ];
+            });
             if($classrooms->isEmpty()){
                 return response()->json(
                     ['message' => "Không có lớp học nào!"], 204
                 );
             }
-            return response()->json($classrooms,200);
+            return response()->json($result,200);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -58,7 +91,7 @@ class ClassroomController extends Controller
       
     }
 
-    public function show(string $classcode)
+    public function show(Request $request, string $classcode)
     {
         try {
             $teacher_code = request()->user()->user_code;
@@ -93,7 +126,7 @@ class ClassroomController extends Controller
        
     }
 
-    // public function listStudents(string $classcode){
+    // public function listStudents(Request $request, string $classcode){
     //     try {
     //         $teacher_code = request()->user()->user_code;
     //         $classroom = Classroom::where([
@@ -131,9 +164,9 @@ class ClassroomController extends Controller
         //
     }
 
-    public function exportScore()
+    public function exportScore(string $classCode)
     {
-        $listClassroom = Classroom::where('class_code', '_MH001.1')
+        $listClassroom = Classroom::where('class_code', $classCode)
                         ->get(['class_code', 'class_name', 'score'])
                         ->map(function($classroom) {
                             $score = json_decode($classroom['score'], true);
@@ -144,5 +177,53 @@ class ClassroomController extends Controller
                             ];
                         });
         return Excel::download(new ScoreExport($listClassroom), 'bang_diem.xlsx');
+    }
+
+    public function importScore(Request $request)
+    {
+        // Kiểm tra file upload
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        // Lấy mã lớp từ tiêu đề
+        $classCode = $this->extractClassCodeFromFile($request->file('file'));
+
+        if (!$classCode) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xác định mã lớp từ file!',
+            ]);
+        }
+
+        // Thực hiện import dữ liệu
+        Excel::import(new ScoreImport($classCode), $request->file('file'));
+
+        return response()->json([
+            'class_code' => $classCode,
+            'success' => true,
+            'message' => 'Import dữ liệu thành công!',
+        ]);
+    }
+
+    /**
+     * Trích xuất mã lớp từ tiêu đề file Excel
+     */
+    private function extractClassCodeFromFile($file)
+    {
+        $data = Excel::toArray([], $file);
+       
+        $firstRow = $data[0][0][0] ?? null;
+
+        if (is_array($firstRow)) {
+            $firstRow = implode(' ', $firstRow);
+        }
+
+        if ($firstRow) {
+            preg_match('/lớp\s(.+?)$/i', $firstRow, $matches);
+            return $matches[1] ?? null;
+        }
+
+        return null;
     }
 }

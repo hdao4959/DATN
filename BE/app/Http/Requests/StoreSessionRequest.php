@@ -22,9 +22,8 @@ class StoreSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cate_code' => 'required',
-            'cate_name' => 'required',
-            'type' => 'required'
+            'session' => 'required',
+           
         ];
     }
 }

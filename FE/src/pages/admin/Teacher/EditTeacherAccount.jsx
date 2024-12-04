@@ -149,9 +149,9 @@ const EditTeacherAccount = () => {
                             value={formData.sex}
                             onChange={handleChange}
                         >
-                            <option value="Male">Nam</option>
-                            <option value="Female">Nữ</option>
-                            <option value="Other">Khác</option>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                            <option value="other">Khác</option>
                         </select>
                     </div>
                 </div>
