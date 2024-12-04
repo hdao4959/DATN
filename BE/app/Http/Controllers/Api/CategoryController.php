@@ -916,10 +916,10 @@ class CategoryController extends Controller
             ->get();
 
         $studentRelearnsGrouped = $studentRelearns->groupBy('subject_code');
-
-        $data = DB::table('categories')
-            ->where('categories.is_active', true)
-            ->where('categories.type', 'major')
+        $data = DB::table('categories')->where([
+            'categories.is_active'=>  true,
+            'categories.type' => 'major'
+        ])
             ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
             ->where('subjects.is_active', true)
             ->leftJoin('users as major_users', function ($join) {
@@ -1169,6 +1169,8 @@ class CategoryController extends Controller
             }
         }
 
+
+
         return response()->json([
             'message' => 'Tạo điểm danh thành công!'
         ]);
@@ -1408,6 +1410,7 @@ class CategoryController extends Controller
 
     public function addTeacher()
     {
+
         // $majors = $this->getListByMajor();
         // $classRoomIndex = 0;
         // foreach ($majors as $major) {
@@ -1488,6 +1491,7 @@ class CategoryController extends Controller
                 ->select('user_code', 'major_code')
                 ->get();
 
+                // return $schedules;
             if ($teachers->isEmpty() || $schedules->isEmpty()) {
                 return response()->json([
                     'message' => 'Không có giảng viên hoặc lịch học cần xếp.',
@@ -1718,8 +1722,12 @@ class CategoryController extends Controller
                 'count' => count($createdClassrooms),
                 'startDates' => $startDates
             ]);
+
         } catch (\Throwable $th) {
-            return response()->json(['error' => true, 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động'], 400);
+            return response()->json([
+                'error' => false, 
+                'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động',
+            ], 400);
         }
     }
 

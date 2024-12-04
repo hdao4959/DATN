@@ -20,7 +20,7 @@ class SubjectRepository implements SubjectRepositoryInterface {
 
     public function create(Request $data){
         $subject = Subject::create($data->except('assessment_items'));
-        return $subject->assessmentItems()->attach($data->assessment_items);
+        return $subject->subjectAssessment()->attach($data->assessment_items);
     }
 
     public function update($data, $id) {
@@ -30,11 +30,11 @@ class SubjectRepository implements SubjectRepositoryInterface {
         $subject->update($data->except('assessment_items'));
 
         // Xóa tất cả các assessment_items hiện tại
-        $subject->assessmentItems()->detach();
+        $subject->subjectAssessment()->detach();
 
         // Thêm các assessment_items mới từ request nếu có
         if ($data->has('assessment_items')) {
-            $subject->assessmentItems()->attach($data->assessment_items);
+            $subject->subjectAssessment()->attach($data->assessment_items);
         }
 
     }

@@ -16,12 +16,36 @@ const ShowGrades = () => {
         queryKey: ["grades", classCode],
         queryFn: async () => {
             const response = await api.get(`/teacher/grades/${classCode}`);
-            // if (response?.data?.score && typeof response.data.score === "string") {
-            //     response.data.score = JSON.parse(response.data.score); // Chuyển đổi chuỗi thành mảng
-            // }
+            if (response?.data?.score && typeof response.data.score === "string") {
+                response.data.score = JSON.parse(response.data.score); // Chuyển đổi chuỗi thành mảng
+            }
             if (!selectedGrade) {
                 setSelectedGrade(response?.data[0]);
             }
+            // setSelectedGrade({
+            //     classCode: 'abc',
+            //     students: [
+            //         {
+            //             student_code: 'sv01',
+            //             student_name: 'sv01',
+            //             scores: [
+            //                 {
+            //                     assessment_code: 'Lab1',
+            //                     assessment_name: 'Lab1',
+            //                     score: 5.6,
+            //                     weight: 2,
+            //                 },
+            //                 {
+            //                     assessment_code: 'Lab2',
+            //                     assessment_name: 'Lab2',
+            //                     score: 5,
+            //                     weight: 2,
+            //                 },
+            //             ],
+            //             average_score: 6,
+            //         }
+            //     ]
+            // })
             return response?.data;
         },
         onSuccess: () => {
@@ -46,13 +70,13 @@ const ShowGrades = () => {
         },
     });
     const calculateAverageScore = (scores) => {
-        const totalWeight = scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+        const totalWeight = scores?.reduce((sum, score) => sum + (score.weight || 0), 0);
         if (totalWeight === 0) return 0;
         return scores.reduce((sum, score) => {
-          const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
-          return sum + (scoreValue * (score.weight / totalWeight));
+            const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
+            return sum + (scoreValue * (score.weight / totalWeight));
         }, 0).toFixed(2);
-      };
+    };
     useEffect(() => {
         refetch();
     }, [])
@@ -62,6 +86,8 @@ const ShowGrades = () => {
             if ($.fn.dataTable.isDataTable("#gradesTable")) {
                 $("#gradesTable").DataTable().clear().destroy();
             }
+            console.log(selectedGrade);
+
             const totalWeight = selectedGrade?.students[0]?.scores.reduce((total, score) => total + score.weight, 0);
             // Khởi tạo DataTable
             $("#gradesTable").DataTable({
@@ -94,11 +120,18 @@ const ShowGrades = () => {
                                     value="${scoreData}" 
                                     min="0" 
                                     max="10" 
+                                    step="0.25" 
                                     class="form-control form-control-sm text-center score-input"
                                     data-index="${row.stt - 1}" 
                                     data-exam-index="${index}" 
-                                    oninput="this.value = Math.min(Math.max(this.value, 0), 10)"
-                                />`;
+                                    oninput="
+                                        const value = parseFloat(this.value);
+                                        if (value < 0) this.value = '0.00';
+                                        else if (value > 10) this.value = '10.00';
+                                        else this.value = value.toFixed(2);
+                                    "
+                                />
+                            `;
                         },
                         className: "text-center",
                     })),
@@ -107,7 +140,8 @@ const ShowGrades = () => {
                         data: "average_score",
                         className: "text-center",
                         render: (data) => {
-                            const isBelowThreshold = parseFloat(data?.replace(',', '.') || 0) < 5;
+                            console.log(data);
+                            const isBelowThreshold = parseFloat(data || 0) < 5;
                             data = parseFloat(
                                 (typeof data === 'string' ? data.replace(',', '.') : data) || 0
                             ).toFixed(2);
@@ -131,31 +165,37 @@ const ShowGrades = () => {
                 const rowIndex = $(this).data('index');
                 const examIndex = $(this).data('exam-index');
                 const newScore = parseFloat($(this).val()) || 0;
-                
+
                 // Cập nhật điểm vào selectedGrade
                 selectedGrade.students[rowIndex].scores[examIndex].score = newScore;
-            
+
                 // Tính lại điểm trung bình của sinh viên
                 const totalWeight = selectedGrade.students[rowIndex].scores.reduce((sum, score) => sum + (score.weight || 0), 0);
                 const averageScore = selectedGrade.students[rowIndex].scores.reduce((sum, score) => {
-                    const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
+                    const scoreValue = parseFloat(score?.score || 0);
                     return sum + (scoreValue * (score.weight / totalWeight));
                 }, 0).toFixed(2);
-            
+
                 selectedGrade.students[rowIndex].average_score = averageScore;
-            
+
                 // Cập nhật điểm trung bình trong bảng
-                const $averageScoreCell = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1}) td:last-child strong`);
+                const $row = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1})`);
+                const $averageScoreCell = $row.find('td:last-child strong');
+
+                // Cập nhật giá trị ô `averageScore`
                 $averageScoreCell.text(averageScore);
+                $row.css('background-color', '');
+                // Cập nhật màu cho ô và cả hàng
                 if (averageScore < 5) {
-                    $averageScoreCell.removeClass('text-success');
-                    $averageScoreCell.addClass('text-danger');
+                    $averageScoreCell.removeClass('text-success').addClass('text-danger');
+                    $row.css('background-color', 'rgba(255, 0, 0, 0.1)');
                 } else {
-                    $averageScoreCell.addClass('text-success');
-                    $averageScoreCell.removeClass('text-danger');
+                    $averageScoreCell.removeClass('text-danger').addClass('text-success');
+                    $row.removeClass('bg-danger'); // Thay đổi màu cho hàng
                 }
+
             });
-            
+
 
             $('#gradesTable').on('change', '.note-input', function (event) {
                 const rowIndex = $(this).data('index');
@@ -180,18 +220,19 @@ const ShowGrades = () => {
             student_code: student.student_code,
             scores: student.scores.map(score => ({
                 assessment_name: score.assessment_name,
+                assessment_code: score.assessment_code,
                 weight: score.weight,
                 score: score.score,  // Điểm đã được cập nhật
             })),
         }));
-        
+
         mutate({
             class_code: selectedGrade.class_code,
             class_name: selectedGrade.class_name,
             students: updatedData,  // Gửi dữ liệu đã cập nhật
         });
     };
-    
+
 
     return (
         <div>

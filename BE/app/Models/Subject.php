@@ -37,11 +37,13 @@ class Subject extends Model
         return $this->hasMany(Classroom::class, 'subject_code', 'subject_code');
     }
 
-    public function major(){
+    public function major()
+    {
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');
     }
 
-    public function semester(){
+    public function semester()
+    {
         return $this->belongsTo(Category::class, 'semester_code', 'cate_code');
     }
 
@@ -49,5 +51,4 @@ class Subject extends Model
     {
         return $this->belongsToMany(AssessmentItem::class, 'subject_assessment', 'subject_code', 'assessment_code', 'subject_code', 'assessment_code');
     }
-
 }

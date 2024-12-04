@@ -101,7 +101,7 @@ class ClassroomController extends Controller
             });
 
             // Kiểm tra nếu không có dữ liệu
-            if ($classrooms->isEmpty()) {
+            if (empty($classrooms)) {
                 return response()->json(
                     ['message' => "Không có lớp học nào!"],
                     204
@@ -172,7 +172,6 @@ class ClassroomController extends Controller
 
             $curentDate = new DateTime($dateFrom);
             do {
-
                 if (in_array($curentDate->format('N'), $studyDays)) {
                     $study_dates[] = $curentDate->format('Y-m-d');
                 }
