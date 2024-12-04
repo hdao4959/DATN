@@ -297,6 +297,14 @@ class AttendanceController extends Controller
     public function update(UpdateAttendanceRequest $request, string $classCode)
     {
         try {
+            $userCode = $request->user()->user_code;
+            $classroom = Classroom::where('user_code', $userCode)->where('class_code', $classCode)->first();
+            if (!$classroom) {
+
+                return response()->json([
+                    'message' => 'Bạn không có quyền cập nhật điểm danh vào lớp này'
+                ], 200);
+            }
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
             $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
