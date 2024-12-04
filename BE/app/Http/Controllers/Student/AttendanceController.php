@@ -85,12 +85,15 @@ class AttendanceController extends Controller
                 $scheduleData = $schedules->filter(function ($schedule) use ($attendanceDates) {
                     return !in_array(Carbon::parse($schedule->date)->toDateString(), $attendanceDates);
                 })->map(function ($schedule) {
+                    $scheduleDate = Carbon::parse($schedule->date)->toDateString();
+                    $currentDate = Carbon::now()->toDateString();
+
                     return [
-                        'date' => Carbon::parse($schedule->date)->toDateString(),
+                        'date' => $scheduleDate,
                         'cate_name' => optional($schedule->session)->cate_name ?? null,
                         'full_name' => null,
-                        'status' => null,
-                        'noted' => 'Chưa điểm danh',
+                        'status' => $currentDate > $scheduleDate ? 'absent' : null, // Trạng thái là 'absent' nếu ngày hiện tại quá ngày học
+                        'noted' => $currentDate > $scheduleDate ? 'Vắng mặt' : 'Chưa điểm danh',
                     ];
                 });
             

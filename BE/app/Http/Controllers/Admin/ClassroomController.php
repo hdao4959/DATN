@@ -58,7 +58,7 @@ class ClassroomController extends Controller
     public function index(Request $request)
     {
         try {
-            // $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', 10);
             // Lấy ra danh sách các lớp học
             $classrooms = Classroom::select(['class_code', 'class_name', 'user_code', 'subject_code'])->withCount('users')->with([
                 'subject' => function ($query) {
@@ -78,11 +78,11 @@ class ClassroomController extends Controller
                     return [
                         'class_code' => $classroom->class_code,
                         'class_name' => $classroom->class_name,
-                        'students_count' => $classroom->users_count,
-                        'subject_code' => $classroom->subject->subject_code,
-                        'subject_name' => $classroom->subject->subject_name,
-                        'teacher_code' => $classroom->teacher->user_code,
-                        'teacher_name' => $classroom->teacher->full_name,
+                        'students_count' => $classroom->users_count ?? null,
+                        'subject_code' => $classroom->subject->subject_code ?? null,
+                        'subject_name' => $classroom->subject->subject_name ?? null,
+                        'teacher_code' => $classroom->teacher->user_code ?? null,
+                        'teacher_name' => $classroom->teacher->full_name ?? null,
                         'date_start' => $classroom->schedules->first()->date ?? null,
                         'session_name' => $classroom->schedules->first()->session->cate_name ?? null,
                         'session_value' => $classroom->schedules->first()->session->value ?? null,
