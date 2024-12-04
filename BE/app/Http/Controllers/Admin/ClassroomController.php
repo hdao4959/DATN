@@ -555,8 +555,9 @@ class ClassroomController extends Controller
         try {
 
             $classroom = Classroom::with([
-                'schedules' => function($query){
-                    $query->select('class_code', 'date')->orderBy('date', 'desc')->limit(1);
+                'schedules' => function($query) {
+                    $query->selectRaw('class_code, MAX(date) as max_date, MIN(date) as min_date')
+                          ->groupBy('class_code');
                 }
             ])->where('class_code', $classCode)->lockForUpdate()->first();
 
@@ -565,15 +566,17 @@ class ClassroomController extends Controller
             }
 
 
-        $now = now()->format('Y-m-d');
-            $latest_schedule = optional($classroom->schedules->first());
+            $now = now()->format('Y-m-d');
+            $schedule = optional($classroom->schedules->first());
 
-                // if($latest_schedule && $now <= $latest_schedule->date){
-                //     return response()->json([
-                //         'status' => false,
-                //         'message' => 
-                //     ])
-                // }
+                if($schedule && $now <= $schedule->max_date && $now >= $schedule->min_date ){
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Lớp học này đang trong thời gian học. Bạn không thể xoá!'
+                    ],409);
+                }
+
+
             // if ($data['updated_at'] !== $classroom->updated_at->toDateTimeString()) {
             //     return $this->handleConflict();
             // }
