@@ -6,6 +6,7 @@ use App\Models\ClassroomUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Schedule\HandleTransferSchedule;
 use App\Http\Requests\Schedule\ShowListScheduleCanBeTransfer;
+use App\Models\Attendance;
 use App\Models\Classroom;
 use App\Models\Schedule;
 use App\Models\TransferScheduleHistory;
@@ -71,13 +72,11 @@ class ScheduleController extends Controller
                         'class_code'    => $schedule->classroom->class_code,
                         'date'          => $schedule->date,
                         'subject_name'  => $schedule->classroom->subject->subject_name,
-                        'subject_code'  => $schedule->classroom->subject_code,
                         'room_code'     => $schedule->room_code,
                         'session'       => $schedule->session->value,
                         'session_code'  => $schedule->session->cate_code,
                         'session_name'  => $schedule->session->cate_name,
                         'subject_code'  => $schedule->classroom->subject_code,
-                        'subject_name'  => $schedule->classroom?->subject?->subject_name,
                     ];
                 });
             return response()->json($schedules, 200);
@@ -313,8 +312,10 @@ class ScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
+            
             $data = $request->validated();
 
+            
             $timeFrame = TransferScheduleTimeframe::select('start_time', 'end_time')->first();
 
             // Lấy thời gian hiện tại
@@ -329,6 +330,7 @@ class ScheduleController extends Controller
 
             $student = request()->user();
             $student_code = $student->user_code;
+           
 
 
             if ($student->course_code != $data['course_code']) {
@@ -392,7 +394,6 @@ class ScheduleController extends Controller
                 ]
             )->where('class_code', $data['class_code_target'])
                 ->lockForUpdate()->first();
-            // return response()->json($classroom_target);
             if (!$classroom_target) {
                 return response()->json([
                     'status' => false,
@@ -440,6 +441,12 @@ class ScheduleController extends Controller
                     403
                 );
             }
+
+            // Attendance::where([
+            //     'student_code' => $student_code,
+            //     'class_code' => $data['class_code_current']
+            // ])->delete();
+
 
             $classroom_current->users()->detach($student_code);
             $classroom_target->users()->attach($student_code);
