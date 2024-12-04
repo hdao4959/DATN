@@ -154,18 +154,42 @@ class TeacherGradesController extends Controller
      {
          try {
              $studentsData = $request->all(); 
-            DB::table('classrooms')
-                ->where('class_code', $classCode)
-                ->update([
-                    'score' => json_encode($studentsData), 
-                    'updated_at' => now(),
-                ]);
-     
+             $students = $studentsData['students'] ?? [];
+            foreach ($students as $student) {
+                $studentCode = $student['student_code'];
+                $scores = $student['scores'] ?? [];
+    
+                foreach ($scores as $score) {
+                    $assessmentName = $score['assessment_name'] ?? null;
+                    $scoreValue = $score['score'] ?? 0;
+                    $weight = $score['weight'] ?? 0;
+                    $assessment_name = $score['assessment_name'] ?? 0;
+    
+                    if (!$assessmentName) {
+                        throw new \Exception("Thiếu tên bài kiểm tra cho sinh viên {$studentCode}");
+                    }
+    
+                    // Thêm mới hoặc cập nhật vào bảng `score_component`
+                    DB::table('scores_component')->updateOrInsert(
+                        [
+                            'class_code' => $classCode,
+                            'student_code' => $studentCode,
+                            // 'name' => $assessmentName,
+                        ],
+                        [
+                            'score' => $scoreValue,
+                            'assessment_code' => $assessment_name,
+                            'updated_at' => now(),
+                        ]
+                    );
+                }
+            }
+    
              return response()->json([
                  'message' => 'Cập nhật điểm thành công',
                  'error' => false,
-                 'abc' => $studentsData
-             ]);
+                 'abc' => $students
+             ],404);
          } catch (\Throwable $th) {
              return response()->json([
                  'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),

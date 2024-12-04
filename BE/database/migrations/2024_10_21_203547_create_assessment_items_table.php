@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('assessment_code')->unique();
             $table->string('name');
-            $table->integer('weight');
+            $table->float('weight');
             $table->timestamps();
         });
     }
