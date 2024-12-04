@@ -69,11 +69,13 @@ class AttendanceController extends Controller
                 } else {
                     $attendanceData = $attendances->map(function ($attendance) use ($schedules) {
                         $schedule = $schedules->firstWhere('date', Carbon::parse($attendance->date)->toDateString());
+                        $currentDate = Carbon::now()->toDateString();
+                        $status = Carbon::parse($attendance->date)->toDateString() > $currentDate ? 'pending' : $attendance->status;
                         return [
                             'date' => Carbon::parse($attendance->date)->toDateString(),
                             'cate_name' => optional($schedule->session)->cate_name ?? null,
                             'full_name' => optional($attendance->classroom->teacher)->full_name,
-                            'status' => $attendance->status,
+                            'status' => $status,
                             'noted' => $attendance->noted,
                         ];
                     });
