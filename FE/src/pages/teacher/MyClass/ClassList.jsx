@@ -40,6 +40,7 @@ const ClassroomList = () => {
                     stt: index + 1,
                     class_code: classes.class_code,
                     class_name: classes.class_name,
+                    subject_code: classes.subject_code,
                     subject_name: classes.subject_name,
                     teacher_code: classes.teacher_code,
                     teacher_name: classes.teacher_name,
@@ -55,88 +56,59 @@ const ClassroomList = () => {
                         data: "stt",
                     },
                     {
-                        title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
-                        data: "class_name",
+                        title: "Lớp",
+                        data: null,
+                        render: function (row) {
+                            return `<div class="class-link hover:text-blue-500" data-id="${row.class_code}">
+                                    ${row.class_code ? row.class_code : ''} - ${row.class_name ? row.class_name : ''}
+                                </div>`;
+                        },
                     },
                     {
-                        title: "<i class='fas fa-book'> Môn</i>",
-                        data: "subject_name",
+                        title: "Môn",
+                        data: null,
+                        render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
                     },
                     {
-                        title: "<i class='fas fa-users'> Số sinh viên</i>",
-                        data: "total_student",
-                        className: "text-center",
+                        title: "Số sinh viên",
+                        data: null,
+                        render: (row) => `${row.total_student ? row.total_student : '0'}`,
+                        className: "text-center"
                     },
                     {
-                        title: "<i class='fas fa-building'> Phòng học</i>",
-                        data: "room_name",
-                        render: (data) => (data ? data : "Chưa có phòng"),
+                        title: "Phòng học",
+                        data: null,
+                        render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
                     },
                     {
-                        title: "<i class='fas fa-clock'> Ca học</i>",
+                        title: "Ca học",
                         data: null,
                         render: (row) => {
-                            return `<div>${
-                                row.session_name
-                                    ? row.session_name
-                                    : "Chưa xếp ca"
-                            }</div>
-                                    <div>(${row.start ? row.start : ""} - ${
-                                row.end ? row.end : ""
-                            })</div>`;
-                        },
+                            return `<div>${row.session_name ? row.session_name : 'Chưa xếp ca'}</div>
+                                    <div>(${row.start ? row.start : ''} - ${row.end ? row.end : ''})</div>`;
+                        }
                     },
                     {
-                        title: "Xem Lớp",
+                        title: "",
                         data: null,
                         render: function (row) {
-                            return `<span class="class-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
+                            return `
+                                <button class="btn btn-primary btn-sm schedule-link" data-id="${row.class_code}" style="margin-right: 5px;">
+                                    Lịch học
+                                </button>
+                                <button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" style="margin-right: 5px;">
+                                    Điểm danh
+                                </button>
+                                <button class="btn btn-info btn-sm grades-link" data-id="${row.class_code}">
+                                <i class='fas fa-list'></i>
+                                    Điểm số
+                                </button>
+                            `;
                         },
-                        className: "text-center",
-                    },
-                    {
-                        title: "<i class='fas fa-calendar-alt'> Lịch học</i>",
-                        data: null,
-                        render: function (row) {
-                            return `<span class="schedule-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
-                        },
-                        className: "text-center",
-                    },
-                    {
-                        title: "<i class='fas fa-calendar-check'> Lịch thi</i>",
-                        data: null,
-                        render: function (row) {
-                            return `<span class="schedule-exam-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
-                        },
-                        className: "text-center",
-                    },
-                    {
-                        title: "<i class='fas fa-user-check'> Điểm danh</i>",
-                        data: null,
-                        render: function (row) {
-                            return `<span class="attendances-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
-                        },
-                        className: "text-center",
-                    },
-                    {
-                        title: "<i class='fas fa-trophy'> Điểm số</i>",
-                        data: null,
-                        render: function (row) {
-                            return `<span class="grades-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
-                        },
-                        className: "text-center",
+                        className: "text-center text-nowrap",
                     },
                 ],
+                    
                 language: {
                     processing: "Đang tải...",
                     search: "<i class='fas fa-search'> Tìm kiếm: </i>",
@@ -160,14 +132,6 @@ const ClassroomList = () => {
                 function () {
                     const classCode = $(this).data("id");
                     navigate(`/teacher/class/${classCode}/schedules`);
-                }
-            );
-            $("#classroomTable tbody").on(
-                "click",
-                ".schedule-exam-link",
-                function () {
-                    const classCode = $(this).data("id");
-                    navigate(`/teacher/class/${classCode}/examdays`);
                 }
             );
             $("#classroomTable tbody").on("click", ".class-link", function () {
