@@ -22,11 +22,17 @@ const EditSubject = () => {
   const { data: categories, isLoading: isLoadingMajor } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/getAllCategory/major');
+      const response = await api.get('/listMajorsForForm');
       return response?.data;
     }
   });
-
+  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+    queryKey: ['semesters'],
+    queryFn: async () => {
+      const response = await api.get('/listSemestersForForm');
+      return response?.data;
+    }
+  });
   const { data: score_categories, isLoading: isLoadingScore } = useQuery({
     queryKey: ['score'],
     queryFn: async () => {
@@ -52,15 +58,15 @@ const EditSubject = () => {
     const selectedAssessmentItems = data.assessment_items.map(id => ({
       id: Number(id)
     }));
-  
+
     const updatedData = {
       ...data,
-      assessment_items: selectedAssessmentItems, 
+      assessment_items: selectedAssessmentItems,
     };
-  
+
     mutate(updatedData);
   };
-  
+
   useEffect(() => {
     if (subjectData) {
       console.log(subjectData);
@@ -178,7 +184,7 @@ const EditSubject = () => {
                               <input
                                 type="checkbox"
                                 value={headpoint.id}
-                                defaultChecked={isChecked} 
+                                defaultChecked={isChecked}
                                 {...register('assessment_items')}
                                 className="form-check-input w-5 h-5"
                                 id={`headpoint-${headpoint.id}`}
@@ -211,11 +217,19 @@ const EditSubject = () => {
                       {/* Kỳ học */}
                       <div className="form-group">
                         <label>Học kỳ:</label>
-                        <input
-                          type="text"
+
+                        <select
                           className="form-control"
                           {...register('semester_code', { required: 'Học kỳ không được để trống.' })}
-                        />
+                        >
+                          <option value="">Chọn kỳ học</option>
+                          {semesters?.map((semester) => (
+                            <option key={semester.cate_code} value={semester.cate_code}>
+                              {semester.cate_name}
+                            </option>
+                          ))}
+                        </select>
+
                         {errors.semester_code && <span className="text-danger">{errors.semester_code.message}</span>}
                       </div>
 
