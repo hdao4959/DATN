@@ -554,17 +554,33 @@ class ClassroomController extends Controller
         DB::beginTransaction();
         try {
 
-            $classroom = Classroom::where('class_code', $classCode)->lockForUpdate()->first();
+            $classroom = Classroom::with([
+                'schedules' => function($query){
+                    $query->select('class_code', 'date')->orderBy('date', 'desc')->limit(1);
+                }
+            ])->where('class_code', $classCode)->lockForUpdate()->first();
 
             if (!$classroom) {
                 return $this->handleInvalidId();
             }
 
+
+        $now = now()->format('Y-m-d');
+            $latest_schedule = optional($classroom->schedules->first());
+
+                // if($latest_schedule && $now <= $latest_schedule->date){
+                //     return response()->json([
+                //         'status' => false,
+                //         'message' => 
+                //     ])
+                // }
             // if ($data['updated_at'] !== $classroom->updated_at->toDateTimeString()) {
             //     return $this->handleConflict();
             // }
 
             // Xoá lớp học
+            // return response()->json($latest_date);
+            
             $classroom->delete();
 
             DB::commit();
