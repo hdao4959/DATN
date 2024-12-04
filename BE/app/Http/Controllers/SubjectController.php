@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateSubjectRequest;
 use App\Models\Classroom;
 use App\Repositories\Contracts\SubjectRepositoryInterface;
 use App\Repositories\SubjectRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
@@ -29,54 +30,66 @@ class SubjectController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $subjects = $this->subjectRepository->getAll();
-        return response()->json($subjects, 200);
+        try {
+            $perPage = $request->input('per_page', 10);
+            $subjects = Subject::select('subject_code', 'subject_name', 'major_code', 'is_active')->with([
+                'major' => function($query){
+                    $query->select('cate_code', 'cate_name');
+                }
+            ])->paginate($perPage);
+            return response()->json([
+                'status' => true, 
+                'subjects' => $subjects
+            ], 200);
+        } catch (\Throwable $th) {
+            return $this->handleErrorNotDefine($th);
+        }
     }
 
     public function store(StoreSubjectRequest $request)
-{
-    try {
-        $newestSubjectCode = Subject::withTrashed()
-            ->where('major_code', 'LIKE', $request['major_code'])
-            ->selectRaw("MAX(CAST(SUBSTRING(subject_code, 4) AS UNSIGNED)) as max_number")
-            ->value('max_number');
-        $nextNumber = $newestSubjectCode ? $newestSubjectCode + 1 : 1;
+    {
+        try {
+            $newestSubjectCode = Subject::withTrashed()
+                ->where('major_code', 'LIKE', $request['major_code'])
+                ->selectRaw("MAX(CAST(SUBSTRING(subject_code, 4) AS UNSIGNED)) as max_number")
+                ->value('max_number');
+            $nextNumber = $newestSubjectCode ? $newestSubjectCode + 1 : 1;
 
-        // Tạo mã subject_code mới với phần tiền tố (ở đây là mã chuyên ngành từ request)
-        $newSubjectCode = $request['major_code'] . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+            // Tạo mã subject_code mới với phần tiền tố (ở đây là mã chuyên ngành từ request)
+            $newSubjectCode = $request['major_code'] . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
 
-        // Gán giá trị subject_code mới vào request
-        $request['subject_code'] = $newSubjectCode;
+            // Gán giá trị subject_code mới vào request
+            $request['subject_code'] = $newSubjectCode;
 
-        // Tạo bản ghi mới
-        $subject = $this->subjectRepository->create($request);
+            // Tạo bản ghi mới
+            $subject = $this->subjectRepository->create($request);
 
-        return response()->json(['message' => 'Thêm mới thành công'], 201);
-    } catch (\Throwable $th) {
-        return response()->json(['message' => $th->getMessage()], 400);
+            return response()->json(['message' => 'Thêm mới thành công'], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
+        }
     }
-}
 
 
     public function show(string $subject_code)
     {
         try {
             $subject =  Subject::select('subject_code', 'subject_name', 'tuition', 're_study_fee', 'credit_number', 'total_sessions', 'description', 'major_code', 'is_active', 'semester_code')->with([
-                'semester' => function($query){
+                'semester' => function ($query) {
                     $query->select('cate_code', 'cate_name');
-                }
-                , 'major' => function($query){
+                },
+                'major' => function ($query) {
                     $query->select('cate_code', 'cate_name');
                 }
             ])->firstWhere('subject_code', $subject_code);
 
-            if(!$subject){
+            if (!$subject) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Môn học này không tồn tại!'
-                ],404);
+                ], 404);
             }
 
 
@@ -116,27 +129,27 @@ class SubjectController extends Controller
 
             $subject = Subject::where('subject_code', $subject_code)->lockForUpdate()->first();
 
-            if(!$subject){
+            if (!$subject) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Môn học này không tồn tại!'
-                ],404);
+                ], 404);
             }
 
             $is_studying = Classroom::where('subject_code', $subject_code)->exists();
 
-            if($is_studying){
+            if ($is_studying) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Bạn không thể sửa môn học này vì có lớp đang học!'
-                ],409);
+                ], 409);
             }
 
 
             $subject->update($data);
 
             DB::commit();
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Cập nhật thông tin môn học thành công!'
@@ -150,9 +163,9 @@ class SubjectController extends Controller
     {
         try {
             DB::beginTransaction();
-            $subject = Subject::firstWhere('subject_code', $subject_code)->lockForUpdate();
+            $subject = Subject::where('subject_code', $subject_code)->lockForUpdate()->first();
 
-            if(!$subject){
+            if (!$subject) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Môn học này không tồn tại!'
@@ -161,18 +174,20 @@ class SubjectController extends Controller
 
             $is_studying = Classroom::where('subject_code', $subject_code)->exists();
 
-            if($is_studying){
+            if ($is_studying) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Bạn không thể xoá môn học này vì có lớp đang học!'
-                ],409);
+                ], 409);
             }
-
 
             $subject->delete();
 
             DB::commit();
-            return response()->json(['message' => 'xóa thành công'], 200);
+            return response()->json([
+                'status' => true,
+                'message' => 'Xóa môn học thành công'
+            ], 200);
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 400);
