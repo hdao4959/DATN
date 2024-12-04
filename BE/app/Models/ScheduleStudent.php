@@ -10,4 +10,8 @@ class ScheduleStudent extends Model
     use HasFactory;
 
     protected $table = 'schedule_student';
+
+    public function schedule(){
+        return $this->belongsTo(Schedule::class);
+    }
 }

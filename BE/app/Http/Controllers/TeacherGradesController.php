@@ -36,7 +36,6 @@ class TeacherGradesController extends Controller
                                     })
                                     ->select('student_code', 'class_code', 'score', 'assessment_code');
                             }
-
                         ])
                         ->get(['class_code', 'class_name', 'subject_code', 'user_code']);
                         // dd($classrooms);
@@ -53,12 +52,16 @@ class TeacherGradesController extends Controller
                                 return $score->assessment_code === $assessment->assessment_code &&
                                         $score->student_code === $student->user_code;
                             });
+            
                         return [
+                            'assessment_code' => $matchedScore->assessmentItem->assessment_code ?? $assessment->assessment_code,
                             'assessment_name' => $matchedScore->assessmentItem->name ?? $assessment->name,
                             'weight' => $matchedScore->assessmentItem->weight ?? $assessment->weight,
                             'score' => $matchedScore->score ?? 0 // Điểm mặc định là 0 nếu không có
                         ];
                     });
+            
+                    // Tính điểm trung bình
                     $diem = 0;
                     $heSo = 0;
                     foreach ($scores as $scoreEntry) {
@@ -150,29 +153,50 @@ class TeacherGradesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function update(UpdateGradesRequest $request, $classCode)
-     {
-         try {
-             $studentsData = $request->all(); 
-            DB::table('classrooms')
-                ->where('class_code', $classCode)
-                ->update([
-                    'score' => json_encode($studentsData), 
-                    'updated_at' => now(),
-                ]);
-     
-             return response()->json([
-                 'message' => 'Cập nhật điểm thành công',
-                 'error' => false,
-                 'abc' => $studentsData
-             ]);
-         } catch (\Throwable $th) {
-             return response()->json([
-                 'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
-                 'error' => true,
-             ]);
-         }
-     }
+    public function update(UpdateGradesRequest $request, $classCode)
+    {
+        try {
+            $studentsData = $request->all(); 
+            $students = $studentsData['students'] ?? [];
+    
+            foreach ($students as $student) {
+                $studentCode = $student['student_code'];
+                $scores = $student['scores'] ?? [];
+    
+                foreach ($scores as $score) {
+                    $assessmentCode = $score['assessment_code'] ?? null; // Lấy mã bài kiểm tra
+                    $scoreValue = $score['score'] ?? null; // Lấy điểm
+    
+                    if (!$assessmentCode) {
+                        throw new \Exception("Thiếu mã bài kiểm tra cho sinh viên {$studentCode}");
+                    }
+    
+                    // Thêm mới hoặc cập nhật vào bảng `scores_component`
+                    DB::table('scores_component')->updateOrInsert(
+                        [
+                            'class_code' => $classCode,
+                            'student_code' => $studentCode,
+                            'assessment_code' => $assessmentCode,
+                        ],
+                        [
+                            'score' => $scoreValue,
+                            'updated_at' => now(),
+                        ]
+                    );
+                }
+            }
+    
+            return response()->json([
+                'message' => 'Cập nhật điểm thành công',
+                'error' => false,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
+                'error' => true,
+            ], 500);
+        }
+    }
      
      
 

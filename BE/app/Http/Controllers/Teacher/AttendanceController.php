@@ -58,9 +58,9 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         try {
-            // $teacherCode = $request->user()->user_code;
+            $teacherCode = $request->user()->user_code;
             // Giả sử user_code của giảng viên là 'TC969'
-            $teacher_code = 'TC969';
+            // $teacher_code = 'TC969';
 
             // Lấy danh sách tất cả các lớp của giảng viên kèm theo lịch học
             $classrooms = Classroom::query()
@@ -106,12 +106,11 @@ class AttendanceController extends Controller
         }
     }
 
-    public function showAttendanceByDate(string $classCode, $date)
+    public function showAttendanceByDate(Request $request, string $classCode, $date)
 {
     try {
-        $userCode = request()->user()->user_code;
-        // $userCode = 'TC969';
-    
+        $userCode = $request->user()->user_code;
+        // $date = Carbon::now()->toDateString(); // Lấy ngày hiện tại (YYYY-MM-DD)
         $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
                                         $query->where('user_code', $userCode)->where('class_code', $classCode);
                                     })
@@ -337,8 +336,8 @@ class AttendanceController extends Controller
     public function showAllAttendance(Request $request, string $classCode)
     {
         try {
-            // $userCode = $request->user()->user_code;
-            $userCode = 'TC969';
+            $userCode = $request->user()->user_code;
+            // $userCode = 'TC969';
 
             $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
                                         $query->where('user_code', $userCode)->where('class_code', $classCode);

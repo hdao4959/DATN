@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -45,6 +46,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\Student\NewsletterController as StudentNewsletterController;
 use App\Http\Controllers\Student\ScheduleController as StudentScheduleController;
 use App\Http\Controllers\Student\ServiceController;
+use App\Http\Controllers\Student\ExamDayController;
 use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\StudentController as TeacherStudentController;
 
@@ -160,11 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('attendances', AttendanceController::class);
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
 
-        // Route::controller(ClassroomController::class)->group(function () {
-        //     Route::post('classrooms/handle_step1', 'handleStep1');
-        //     Route::post('classrooms/handle_step2', 'handleStep2');
-        //     Route::post('classrooms/handle_step3', 'handleStep3');
-        // });
+
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
         Route::apiResource('majors', MajorController::class);
@@ -254,12 +252,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Các route cho lịch học
         Route::controller(StudentScheduleController::class)->group(function () {
-            // Route::get('schedules', 'index');
+            Route::get('schedules', 'index');
             Route::get('/classrooms/{class_code}/schedules', 'schedulesOfClassroom');
             Route::get('/transferSchedules', 'transferSchedules');
             Route::post('/listSchedulesCanBeTransfer', 'listSchedulesCanBeTransfer');
             Route::post('/handleTransferSchedule', 'handleTransferSchedule');
         });
+        Route::get('/examDays', [ExamDayController::class, 'index']);
 
         Route::get('attendances', [StudentAttendanceController::class, 'index']);
 
@@ -317,7 +316,7 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 
 
-Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
+// Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
 // Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
@@ -325,5 +324,9 @@ Route::apiResource('fees', FeeController::class);
 
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
-
+Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
+                                            ->name('forget.password.post');
+                                            
+Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
+                                            ->name('reset.password.post');
 

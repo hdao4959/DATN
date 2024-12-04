@@ -6,9 +6,12 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FeeController;
 
 use App\Http\Controllers\Admin\UserController;
-
+use App\Http\Controllers\ForgerPasswordController;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Models\ClassRoom;
 use App\Models\User;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,17 +34,19 @@ Route::get('/', function () {
 Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderScheduleForClassroom'])->name('renderScheduleForClassroom');
 
 
-Route::get('send-email',function(){
-
-
-    $data['email'] = 'quanglocnd2004@gmail.com';
-    $data['email'] = 'loctqph42545@fpt.edu.vn';
-
-    dispatch(new App\Jobs\SendEmailJob($data));
-
-    dd('Email Send Successfully');
-});
-
 Route::get('total_momo', [CheckoutController::class, 'momo_payment']);
 Route::post('/payment-callback', [CheckoutController::class, 'handleCallback']);
 Route::get('/payment-success', [CheckoutController::class, 'handleCallback']);
+
+
+Route::get('/forgot-password', [ForgetPasswordController::class,'forgetPassword'])
+                                            ->name('forget.password');
+Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
+                                            ->name('forget.password.post');
+Route::get('/reset-password', [ForgetPasswordController::class,'resetPassword'])
+                                            ->name('reset.password');
+Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
+                                            ->name('reset.password.post');
+
+
+

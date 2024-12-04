@@ -23,7 +23,7 @@ class SendEmailController extends Controller
                     // return response()->json( ['message' => 'Emails dispatched', 'data' => $fee['user']['email']]);
                     dispatch(new SendEmailJob([
                         'id' => $fee->id,
-                        'email' => $fee->user->email, 
+                        'email' => $fee->user->email,
                         'full_name' => $fee->user->full_name,
                         'user_code' => $fee->user->user_code,
                         'semester' => $fee->semester,
@@ -96,4 +96,6 @@ class SendEmailController extends Controller
 
         return response()->json(['message' => 'Đã gửi email thành công', 'data' => '']);
     }
+
+    
 }

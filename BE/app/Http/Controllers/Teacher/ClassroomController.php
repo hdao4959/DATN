@@ -23,7 +23,7 @@ class ClassroomController extends Controller
      {
         return response()->json([
             'message' => 'Lớp học không tồn tại!',
-        ], 404);
+        ], 200);
      }
  
      //  Hàm trả về json khi lỗi không xác định (500)
@@ -36,11 +36,12 @@ class ClassroomController extends Controller
      }
 
 
-    public function index()
+    public function index(Request $request)
     {
         try {
             $teacher_code = request()->user()->user_code;
-            $classrooms = Classroom::where('user_code', $teacher_code)
+            $classrooms = Classroom::where('user_code', $teacher_code)->where('is_active', true)
+                            ->orderBy('id', 'DESC')
                             ->with(['subject' => function($query){
                                 $query->select('subject_code', 'subject_name');
 
@@ -82,7 +83,7 @@ class ClassroomController extends Controller
                     ['message' => "Không có lớp học nào!"], 204
                 );
             }
-            return response()->json($classrooms,200);
+            return response()->json($result,200);
 
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
@@ -90,7 +91,7 @@ class ClassroomController extends Controller
       
     }
 
-    public function show(string $classcode)
+    public function show(Request $request, string $classcode)
     {
         try {
             $teacher_code = request()->user()->user_code;
@@ -125,7 +126,7 @@ class ClassroomController extends Controller
        
     }
 
-    // public function listStudents(string $classcode){
+    // public function listStudents(Request $request, string $classcode){
     //     try {
     //         $teacher_code = request()->user()->user_code;
     //         $classroom = Classroom::where([

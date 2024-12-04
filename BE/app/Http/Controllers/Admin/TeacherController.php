@@ -53,7 +53,7 @@ class TeacherController extends Controller
                 'email',
                 'sex',
                 'is_active'
-            )->paginate($perPage);
+            )->orderBy('user_code','desc')->paginate($perPage);
 
             return response()->json($teachers, 200);
         // } catch (\Throwable $th) {
@@ -75,24 +75,46 @@ class TeacherController extends Controller
     public function store(StoreTeacherRequest $request)
     {
         DB::beginTransaction();
+        // try {
+        //     $data = $request->validated();
+
+        //     $newest_teacher_code = User::where('user_code', "LIKE", "TC%")
+        //     ->orderBy('user_code', 'desc')->pluck('user_code')->first();
+
+        //     $new_code = $newest_teacher_code ? (int) substr($newest_teacher_code, 2) : 0;
+        //     $new_teacher_code = "TC" . str_pad($new_code + 1, 5, 0, STR_PAD_LEFT);
+            
+        //     $data['user_code'] = $new_teacher_code;
+        //     $data['role'] = '2';
+        //     User::create($data);
+        //     DB::commit();
+
+        //     return response()->json([
+        //         'status' => true,
+        //         'message' => 'Thêm mới giảng viên thành công!'
+        //     ],201);
+        // } catch (\Throwable $th) {
+        //     DB::rollback();
+        //     return $this->handleErrorNotDefine($th);
+        // }
+
         try {
             $data = $request->validated();
-
-            $newest_teacher_code = User::where('user_code', "LIKE", "TC%")
-            ->orderBy('user_code', 'desc')->pluck('user_code')->first();
-
-            $new_code = $newest_teacher_code ? (int) substr($newest_teacher_code, 2) : 0;
-            $new_teacher_code = "TC" . str_pad($new_code + 1, 5, 0, STR_PAD_LEFT);
-            
+            $newest_teacher_code = User::withTrashed()
+                ->where('user_code', 'LIKE', 'TC%')
+                ->selectRaw("MAX(CAST(SUBSTRING(user_code, 3) AS UNSIGNED)) as max_code")
+                ->value('max_code');
+            $current_code = $newest_teacher_code ?: 0;
+            $new_teacher_code = 'TC' . str_pad($current_code + 1, 5, '0', STR_PAD_LEFT);
             $data['user_code'] = $new_teacher_code;
             $data['role'] = '2';
             User::create($data);
-            DB::commit();
 
+            DB::commit();
             return response()->json([
                 'status' => true,
                 'message' => 'Thêm mới giảng viên thành công!'
-            ],201);
+            ], 201);
         } catch (\Throwable $th) {
             DB::rollback();
             return $this->handleErrorNotDefine($th);

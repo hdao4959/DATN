@@ -1646,7 +1646,7 @@ class CategoryController extends Controller
 
     public function getListClassByRoomAndSession(Request $request)
     {
-        try {
+        // try {
             $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
             $startDates = []; // Mảng chứa các ngày cần lấy
             DB::table('classrooms')
@@ -1718,9 +1718,9 @@ class CategoryController extends Controller
                 'count' => count($createdClassrooms),
                 'startDates' => $startDates
             ]);
-        } catch (\Throwable $th) {
-            return response()->json(['error' => true, 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động'], 400);
-        }
+        // } catch (\Throwable $th) {
+        //     return response()->json(['error' => true, 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động'], 400);
+        // }
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)

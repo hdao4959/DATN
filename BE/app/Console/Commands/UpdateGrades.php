@@ -36,11 +36,14 @@ class UpdateGrades extends Command
             })
             ->selectRaw('
         scores_component.student_code, 
-        classrooms.subject_code,
-        SUM(scores_component.score * categories.value) / SUM(categories.value) AS avg_score ')
-            ->groupBy('scores_component.student_code', 'classrooms.subject_code')
+        classrooms.subject_code, 
+        classrooms.class_code,
+        SUM(scores_component.score * categories.value) / SUM(categories.value) AS avg_score 
+    ')
+            ->groupBy('scores_component.student_code', 'classrooms.subject_code', 'classrooms.class_code')
             ->cursor()
             ->each(function ($row) {
+                // Cập nhật bảng `scores`
                 DB::table('scores')->updateOrInsert(
                     [
                         'student_code' => $row->student_code,
@@ -54,6 +57,15 @@ class UpdateGrades extends Command
                         'created_at' => now(),
                     ]
                 );
+
+                // Kiểm tra và cập nhật bảng `classroom_user`
+                DB::table('classroom_user')
+                    ->where('class_code', $row->class_code)
+                    ->where('user_code', $row->student_code)
+                    ->update([
+                        'is_qualified' => $row->avg_score >= 5.0,
+                        'updated_at' => now(),
+                    ]);
             });
     }
 }
