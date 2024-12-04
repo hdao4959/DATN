@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ClassRoomController;
 
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CheckoutLearnAgainController;
 use App\Http\Controllers\FeeController;
 
 use App\Http\Controllers\Admin\UserController;
@@ -35,6 +36,7 @@ Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderS
 
 
 Route::get('total_momo', [CheckoutController::class, 'momo_payment']);
+
 Route::post('/payment-callback', [CheckoutController::class, 'handleCallback']);
 Route::get('/payment-success', [CheckoutController::class, 'handleCallback']);
 
@@ -47,6 +49,12 @@ Route::get('/reset-password', [ForgetPasswordController::class,'resetPassword'])
                                             ->name('reset.password');
 Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
                                             ->name('reset.password.post');
+
+
+Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
+
+Route::post('/payment-callback/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
+Route::get('/payment-success/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
 
 
 

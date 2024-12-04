@@ -9,6 +9,7 @@ interface SubjectRepositoryInterface{
 
     public function getById(int $id);
 
+
     public function create(Request $data);
 
     public function update(Request $data , int $id);

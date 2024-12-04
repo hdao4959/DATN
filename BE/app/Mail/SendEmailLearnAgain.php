@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendEmailService extends Mailable
+class SendEmailLearnAgain extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class SendEmailService extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Thông báo đăng kí dịch vụ',
+            subject: 'Thông báo đăng kí dịch vụ học lại',
         );
     }
 
@@ -39,6 +39,7 @@ class SendEmailService extends Mailable
     {
         return new Content(
             view: 'emails.service',
+            with: ['data' => $this->data]
         );
     }
 
