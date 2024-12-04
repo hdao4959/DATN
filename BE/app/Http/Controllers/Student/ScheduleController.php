@@ -64,7 +64,8 @@ class ScheduleController extends Controller
                 'classroom'
             ])->whereIn('class_code', $classroom_codes)
                 ->where('date', '>=', $today)
-                ->get()->map(function ($schedule) {
+                ->orderBy('date', 'asc')
+                ->paginate($perPage)->map(function ($schedule) {
                     // $session_info = optional($schedule->session);
                     return [
                         'class_code'    => $schedule->classroom->class_code,
