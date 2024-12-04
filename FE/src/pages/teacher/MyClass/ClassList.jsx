@@ -100,18 +100,18 @@ const ClassroomList = () => {
                             })</div>`;
                         },
                     },
+                    // {
+                    //     title: "Lịch thi",
+                    //     data: null,
+                    //     render: function (row) {
+                    //         return `<span class="schedule-exam-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
+                    //                 <i class="fas fa-eye"></i>
+                    //             </span>`;
+                    //     },
+                    //     className: "text-center",
+                    // },
                     {
-                        title: "Lịch thi",
-                        data: null,
-                        render: function (row) {
-                            return `<span class="schedule-exam-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
-                                    <i class="fas fa-eye"></i>
-                                </span>`;
-                        },
-                        className: "text-center",
-                    },
-                    {
-                        title: "",
+                        title: "Hành động",
                         data: null,
                         render: function (row) {
                             return `
