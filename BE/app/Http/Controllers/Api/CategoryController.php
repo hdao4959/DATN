@@ -1578,9 +1578,9 @@ class CategoryController extends Controller
             }
 
             // Tạo class_code và class_name mới
-            $newClassCode = "{$majorCode}_{$courseCode}_{$subjectCode}_{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
+            $newClassCode = "{$courseCode}.{$subjectCode}{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
             // $newClassName = "Lớp_{$subjectCode}_Khóa_{$courseCode}_Ngành_{$majorCode}_{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
-            $newClassName = "Lớp {$courseCode}.{$subjectCode}.{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
+            $newClassName = "{$courseCode}.{$subjectCode}{$subjectCounters[$subjectCode][$courseCode][$majorCode]}";
 
             // Cập nhật `class_code` và `class_name` vào bảng classrooms
             DB::table('classrooms')

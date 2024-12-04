@@ -146,11 +146,11 @@ const ClassroomStudents = () => {
                                 <p>Mã môn học: {classDetails?.subject.subject_code}</p>
                                 <p>Môn học: {classDetails?.subject.subject_name}</p>
                                 <p>Chuyên ngành: {classDetails?.subject.major.cate_code} - {classDetails?.subject.major.cate_name}</p>
-                                <p>Giảng viên: {classDetails?.teacher.full_name|| ''}</p>
-                                <p>Mã giảng viên: {classDetails?.teacher.user_code || ''}</p>
-                                <p>Email giảng viên: 
-                                    <a href={`mailto:${classDetails?.teacher.email || ''}`}>
-                                        {classDetails?.teacher.email || ''}
+                                <p>Giảng viên: {classDetails?.teacher?.full_name || ''}</p>
+                                <p>Mã giảng viên: {classDetails?.teacher?.user_code || ''}</p>
+                                <p>Email giảng viên:
+                                    <a href={`mailto:${classDetails?.teacher?.email || ''}`}>
+                                        {classDetails?.teacher?.email || ''}
                                     </a>
                                 </p>
                             </div>
