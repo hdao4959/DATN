@@ -97,13 +97,15 @@ class ExamController extends Controller
             ])
             ->select('class_code', 'user_code', 'is_qualified')
             ->get()->map(function($student) use ($students_has_been_arrange){
+
+                $user_info = optional($student->user);
                 $exam_day = null;
                 if(isset($students_has_been_arrange[$student->user->user_code])){
                     $exam_day = $students_has_been_arrange[$student->user->user_code]->schedule_id;
                 }
                 return [
-                    'user_code' => $student->user->user_code,
-                    'user_name' => $student->user->full_name,
+                    'user_code' => $user_info->user_code,
+                    'user_name' => $user_info->full_name,
                     'exam_day' => $exam_day
                 ];
             });
