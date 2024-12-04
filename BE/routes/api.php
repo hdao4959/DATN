@@ -94,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-        // ca học
+        
         Route::apiResource('sessions', SessionController::class);
         Route::delete('sessions/{code}',[SessionController::class,'destroy']);
         Route::post('sessions/{code}',[SessionController::class,'update']);
@@ -333,6 +333,7 @@ Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPassword
 
 Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
                                             ->name('reset.password.post');
+
 
 
 
