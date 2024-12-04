@@ -11,6 +11,7 @@ use App\Models\Schedule;
 use App\Models\TransferScheduleHistory;
 use App\Models\TransferScheduleTimeframe;
 use DateTime;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ScheduleController extends Controller
@@ -40,9 +41,10 @@ class ScheduleController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', 10);
 
             $student_code = request()->user()->user_code;
 
@@ -57,26 +59,27 @@ class ScheduleController extends Controller
 
 
             $schedules = Schedule::with([
-                'session' => function($query){
-                    $query->select('cate_code', 'cate_name', 'value');
-                }
+                'classroom.subject',
+                'session',
+                'classroom'
             ])->whereIn('class_code', $classroom_codes)
                 ->where('date', '>=', $today)
-                ->get()->map(function($schedule){
-                    $session_info = optional($schedule->session);
+                ->get()->map(function ($schedule) {
+                    // $session_info = optional($schedule->session);
                     return [
-                        'id' => $schedule->id,
-                        'class_code' => $schedule->class_code,
-                        'room_code' => $schedule->room_code,
-                        'teacher_code' => $schedule->teacher_code,
-                        'date' => $schedule->date,
-                        'type' => $schedule->type,
-                        'session_name' => $session_info->cate_name,
-                        'session_value' => $session_info->value
+                        'class_code'    => $schedule->classroom->class_code,
+                        'date'          => $schedule->date,
+                        'subject_name'  => $schedule->classroom->subject->subject_name,
+                        'subject_code'  => $schedule->classroom->subject_code,
+                        'room_code'     => $schedule->room_code,
+                        'session'       => $schedule->session->value,
+                        'session_code'  => $schedule->session->cate_code,
+                        'session_name'  => $schedule->session->cate_name,
+                        'subject_code'  => $schedule->classroom->subject_code,
+                        'subject_name'  => $schedule->classroom?->subject?->subject_name,
                     ];
                 });
-                return response()->json($schedules, 200);
-
+            return response()->json($schedules, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -101,10 +104,10 @@ class ScheduleController extends Controller
         }
 
         $schedules = Schedule::with([
-            'session' => function($query){
-                    $query->select('cate_code', 'cate_name', 'value');
-                }
-        ])->where('class_code', $classroom->class_code)->get()->map(function($schedule){
+            'session' => function ($query) {
+                $query->select('cate_code', 'cate_name', 'value');
+            }
+        ])->where('class_code', $classroom->class_code)->get()->map(function ($schedule) {
             $session_info = optional($schedule->session);
             return [
                 'id' => $schedule->id,

@@ -180,6 +180,7 @@ const ShowGrades = () => {
             student_code: student.student_code,
             scores: student.scores.map(score => ({
                 assessment_name: score.assessment_name,
+                assessment_code: score.assessment_code,
                 weight: score.weight,
                 score: score.score,  // Điểm đã được cập nhật
             })),
