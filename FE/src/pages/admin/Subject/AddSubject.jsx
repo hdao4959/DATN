@@ -7,14 +7,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddSubject = () => {
-    const query_client = useQueryClient();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-        getValues,
-    } = useForm();
+  const query_client = useQueryClient();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    getValues,
+  } = useForm();
 
   const { data: score_categories, isLoading: isLoadingScore } = useQuery({
     queryKey: ['score'],
@@ -28,6 +28,13 @@ const AddSubject = () => {
     queryKey: ['categories'],
     queryFn: async () => {
       const response = await api.get('/admin/getAllCategory/major');
+      return response?.data;
+    }
+  });
+  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+    queryKey: ['semesters'],
+    queryFn: async () => {
+      const response = await api.get('/admin/semesters');
       return response?.data;
     }
   });
@@ -64,7 +71,7 @@ const AddSubject = () => {
       assessment_items: data.assessment_items,
     };
     console.log('rqdt', request_data);
-    
+
     mutate(request_data);
   };
 
@@ -135,14 +142,7 @@ const AddSubject = () => {
                         {errors.credit_number && <span className="text-danger">{errors.credit_number.message}</span>}
                       </div>
 
-                      {/* Mô tả */}
-                      <div className="form-group">
-                        <label>Mô Tả:</label>
-                        <textarea
-                          className="form-control"
-                          {...register('description')}
-                        />
-                      </div>
+
 
                       {/* Học phí */}
                       <div className="form-group">
@@ -205,11 +205,19 @@ const AddSubject = () => {
                       {/* Kỳ học */}
                       <div className="form-group">
                         <label>Học kỳ:</label>
-                        <input
-                          type="text"
+
+                        <select
                           className="form-control"
                           {...register('semester_code', { required: 'Học kỳ không được để trống.' })}
-                        />
+                        >
+                          <option value="">Chọn kỳ học</option>
+                          {semesters?.map((semester) => (
+                            <option key={semester.cate_code} value={semester.cate_code}>
+                              {semester.cate_name}
+                            </option>
+                          ))}
+                        </select>
+
                         {errors.semester_code && <span className="text-danger">{errors.semester_code.message}</span>}
                       </div>
 
@@ -219,7 +227,9 @@ const AddSubject = () => {
                         <input
                           type="number"
                           className="form-control"
+                          defaultValue={40}
                           {...register('total_sessions')}
+                          disabled
                         />
                       </div>
 
@@ -243,6 +253,14 @@ const AddSubject = () => {
                           <option value="1">Kích hoạt</option>
                           <option value="0">Vô hiệu</option>
                         </select>
+                      </div>
+                      {/* Mô tả */}
+                      <div className="form-group">
+                        <label>Mô Tả:</label>
+                        <textarea
+                          className="form-control"
+                          {...register('description')}
+                        />
                       </div>
                     </div>
                     <div className="card-action d-flex justify-content-end gap-x-3">
