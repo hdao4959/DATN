@@ -129,6 +129,7 @@ const PostList = () => {
                             `;
                         }
                     },
+
                 ],
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],

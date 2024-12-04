@@ -27,7 +27,7 @@ class UpdateAttendanceRequest extends FormRequest
             '*.student_code' => 'required',
             '*.class_code' => 'required',
             '*.status' => 'required',
-            '*.noted' => 'regex:/^[^<>{}]*$/'
+            '*.noted' => 'nullable|regex:/^[^<>{}]*$/'
         ];
     }
 

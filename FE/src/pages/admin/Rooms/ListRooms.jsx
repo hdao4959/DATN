@@ -76,18 +76,24 @@ const ClassRoomsList = () => {
                 toast.error("Vui lòng chọn ngày bắt đầu.");
             }
             const payload = {
-                startDate: startDate
-            }
+                startDate: startDate,
+            };
             try {
-                // Bước 1: Gọi API getListClassByRoomAndSession
-                const res1 = await api.post("/getListClassByRoomAndSession", payload, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+                const res1 = await api.post(
+                    "/getListClassByRoomAndSession",
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
                 if (res1.data.error) {
-                    return toast.error(res1.data.message || "Có lỗi xảy ra khi lấy thông tin lớp học.");
+                    return toast.error(
+                        res1.data.message ||
+                            "Có lỗi xảy ra khi lấy thông tin lớp học."
+                    );
                 }
                 const res2 = await api.get("/addStudent", {
                     headers: {
@@ -96,7 +102,10 @@ const ClassRoomsList = () => {
                     },
                 });
                 if (res2.data.error) {
-                    return toast.error(res2.data.message || "Có lỗi xảy ra khi thêm sinh viên vào lớp học.");
+                    return toast.error(
+                        res2.data.message ||
+                            "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
+                    );
                 }
                 const res3 = await api.get("/addTeacher", {
                     headers: {
@@ -105,7 +114,10 @@ const ClassRoomsList = () => {
                     },
                 });
                 if (res3.data.error) {
-                    return toast.error(res3.data.message || "Có lỗi xảy ra khi thêm giảng viên vào lớp học.");
+                    return toast.error(
+                        res3.data.message ||
+                            "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
+                    );
                 }
                 const res4 = await api.get("/generateSchedule", {
                     headers: {
@@ -115,7 +127,10 @@ const ClassRoomsList = () => {
                 });
 
                 if (res4.data.error) {
-                    return toast.error(res4.data.message || "Có lỗi xảy ra khi tạo lịch học và lịch thi.");
+                    return toast.error(
+                        res4.data.message ||
+                            "Có lỗi xảy ra khi tạo lịch học và lịch thi."
+                    );
                 }
                 const res5 = await api.get("/generateAttendances", {
                     headers: {
@@ -124,9 +139,12 @@ const ClassRoomsList = () => {
                     },
                 });
                 return { res1, res2, res3, res4, res5 };
-
             } catch (error) {
-                return toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
+                return toast.error(
+                    error.response?.data?.message ||
+                        error.message ||
+                        "Có lỗi xảy ra khi tạo lịch tự động."
+                );
             }
         },
         onSuccess: (response) => {
@@ -161,27 +179,41 @@ const ClassRoomsList = () => {
                 })),
                 columns: [
                     {
-                        title: "<i class='fas fa-chalkboard-teacher'> Lớp</i>",
-                        data: "class_name",
+                        title: "Lớp học",
+                        data: null,
+                        render: (data) =>
+                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
+                                ${data.class_name}
+                            </a>`,
                     },
                     {
                         title: "<i class='fas fa-book'> Môn</i>",
                         data: "subject_name",
                     },
                     {
-                        title: "<i class='fas fa-user-tie'> Giảng viên</i>",
-                        data: "teacher_name",
+                        title: "Giảng viên",
+                        data: null,
+                        render: (data) =>
+                            `<a href='/admin/teachers/edit/${data.teacher_code}' class='text-dark'>
+                                ${data.teacher_name}
+                            </a>`,
                     },
                     {
                         title: "<i class='fas fa-users'> Số sinh viên</i>",
-                        data: "students_count",
+                        data: null,
                         className: "text-center",
+                        render: (data) =>
+                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
+                ${data.students_count}
+            </a>`,
                     },
                     {
                         title: "Ca học",
                         data: null,
                         render: (data) =>
-                            `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`,
+                            `<a href='/admin/sessions/${data.class_code}/edit' class='text-dark'>
+                ${data.session_name} (${data.room_time.start} - ${data.room_time.end})
+            </a>`,
                     },
                     {
                         title: "",
@@ -191,7 +223,6 @@ const ClassRoomsList = () => {
                             <div style="display: flex; gap: 10px; justify-content: center">
                                 <button class="btn btn-info btn-sm" data-class_code="${data.class_code}">Xem điểm</button>
                                 <button class="btn btn-primary btn-sm" data-class_code="${data.class_code}">Xem điểm danh</button>
-                                <button class="btn btn-warning btn-sm" data-class_code="${data.class_code}">Chi tiết</button>
                                 <button class="btn btn-danger btn-sm delete-btn" data-class_code="${data.class_code}">Xóa</button>
                             </div>`,
                     },
@@ -214,7 +245,9 @@ const ClassRoomsList = () => {
                     } else if ($(this).text() === "Chi tiết") {
                         navigate(`/admin/classrooms/view/${classCode}/detail`);
                     } else if ($(this).text() === "Xem điểm danh") {
-                        navigate(`/admin/classrooms/view/${classCode}/attendances`);
+                        navigate(
+                            `/admin/classrooms/view/${classCode}/attendances`
+                        );
                     }
                 }
             );
@@ -239,7 +272,9 @@ const ClassRoomsList = () => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             placeholder="Chọn ngày bắt đầu"
-                            min={new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('en-CA')}
+                            min={new Date(
+                                new Date().setDate(new Date().getDate() + 1)
+                            ).toLocaleDateString("en-CA")}
                         />
                         <button
                             className="btn btn-primary text-nowrap"
