@@ -330,8 +330,7 @@ class ScheduleController extends Controller
 
             $student = request()->user();
             $student_code = $student->user_code;
-           
-
+        
 
             if ($student->course_code != $data['course_code']) {
                 return response()->json(
@@ -383,7 +382,7 @@ class ScheduleController extends Controller
                         $query->select('subject_code', 'subject_name');
                     },
                     'schedules' => function ($query) {
-                        $query->select('class_code', 'room_code', 'session_code', 'date')->limit(1);
+                        $query->select('class_code', 'room_code', 'session_code', 'date');
                     },
                     'schedules.room' => function ($query) {
                         $query->select('cate_code', 'cate_name', 'value');
@@ -442,14 +441,35 @@ class ScheduleController extends Controller
                 );
             }
 
-            // Attendance::where([
-            //     'student_code' => $student_code,
-            //     'class_code' => $data['class_code_current']
-            // ])->delete();
+            // Lấy ra các ngày học của lớp học mục tiêu
+            $schedules_of_classroom_target = $classroom_target->schedules->pluck('date');
+            
+            // Xoá các lịch điểm danh được tạo sẵn ở lớp học cũ của sinh viên này
+            Attendance::where([
+                'student_code' => $student_code,
+                'class_code' => $data['class_code_current']
+            ])->lockForUpdate()->delete();
 
+            $now = now();
+            $data_insert_to_attendance_table = [];
+            foreach($schedules_of_classroom_target as $date){
+                $data_insert_to_attendance_table[] = [
+                    'student_code' => $student_code,
+                    'class_code' => $classroom_target->class_code,
+                    'date' => $date,
+                    'status' => 'present',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
 
+            // Xoá liên kết giữa sinh viên và lớp học cũ
             $classroom_current->users()->detach($student_code);
+            // Thêm liên kết giữa sinh viên và lớp học mới
             $classroom_target->users()->attach($student_code);
+            // Thêm lịch điểm danh cho sinh viên ở lớp học mới
+            Attendance::insert($data_insert_to_attendance_table);
+            // Tạo lịch sử đổi lớp cho sinh viên 
             TransferScheduleHistory::create([
                 'student_code' => $student_code,
                 'from_class_code' => $classroom_current->class_code,
