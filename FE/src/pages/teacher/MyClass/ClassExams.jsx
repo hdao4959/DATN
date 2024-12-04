@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 
 const ClassExams = () => {
     const { class_code } = useParams();
+    const navigate = useNavigate();
 
     const [studentsData, setStudentsData] = useState([]);
 

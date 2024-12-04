@@ -81,9 +81,10 @@ const ShowAttendance = () => {
 
             attendanceData.forEach((record) => {
                 const { student_code, full_name, date, status, noted } = record;
-                const formattedDate = new Date(date)
-                    .toISOString()
-                    .split("T")[0];
+                // Kiểm tra và xử lý định dạng date
+                const formattedDate = date.includes("T")
+                    ? new Date(date).toISOString().split("T")[0] // Trường hợp dateTtime
+                    : date; // Trường hợp chỉ chứa ngày
 
                 if (!students[student_code]) {
                     students[student_code] = {

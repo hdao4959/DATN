@@ -8,9 +8,13 @@ import dayjs from "dayjs";
 
 import isBetween from "dayjs/plugin/isBetween";
 
+import { useNavigate } from "react-router-dom";
+
 dayjs.extend(isBetween);
 
 const MySchedule = () => {
+    const navigate = useNavigate();
+    
     const { data, isLoading } = useQuery({
         queryKey: ["MY_SCHEDULE"],
         queryFn: async () => {
@@ -78,6 +82,16 @@ const MySchedule = () => {
                 data: "date",
                 render: (date) => dayjs(date).format("DD/MM/YYYY"),
             },
+            {
+                title: "Điểm danh",
+                data: null,
+                render: (row) => {
+                    return `<button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}" style="margin-right: 5px;">
+                                    Điểm danh
+                                </button>`;
+                },
+                className: 'text-nowrap'
+            },
         ];
 
         if (currentSchedule) {
@@ -100,6 +114,11 @@ const MySchedule = () => {
                     search: "Tìm kiếm:",
                 },
                 scrollX: true,
+            });
+            $("#major-table tbody").on("click", ".attendances-link", function () {
+                const classCode = $(this).data("id");
+                const date = $(this).data("date");
+                navigate(`/teacher/class/${classCode}/attendances/${date}`);
             });
         }
 
