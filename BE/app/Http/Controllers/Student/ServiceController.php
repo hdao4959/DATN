@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Service;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    
+
     public function getAllServies(Request $request){
         try{
             $data = Service::query();
@@ -26,6 +27,28 @@ class ServiceController extends Controller
         }
     }
 
+    public function LearnAgain(Request $request, string $user_code){
+        try{
+
+            $subject_code = $request->subject_code;
+
+            $subject = Subject::where('subject_code',$subject_code)->firstOrFail();
+            $content = "Đăng kí học lại môn ".$subject->subject_name;
+            $amount  = $subject->re_study_fee;
+            $data = [
+                'user_code'      =>    $user_code,
+                'service_name'   =>    "Đăng kí học lại môn ".$subject->subject_name,
+                'content'        =>    $content,
+                'amount'         =>    $amount
+            ];
+
+            $service = Service::create($data);
+            return response()->json(['message'=>'gửi dịch vụ thành công','service'=>$service]);
+
+        }catch(\Throwable $th){
+            return response()->json(['message'=>$th->getMessage()]);
+        }
+    }
     public function changeStatus(string $user_code, Request $request){
           try{
               $message = "";

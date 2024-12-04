@@ -1,6 +1,6 @@
 <?php
-
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\CheckoutLearnAgainController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Models\User;
 use App\Models\Category;
@@ -94,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-        
+
         Route::apiResource('sessions', SessionController::class);
         Route::delete('sessions/{code}',[SessionController::class,'destroy']);
         Route::post('sessions/{code}',[SessionController::class,'update']);
@@ -320,12 +320,13 @@ Route::post('services/provide-student-card/{user_code}',    [ServiceController::
 Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
 
+// dịch vụ học lại
+Route::post('services/learn-again/{user_code}',    [ServiceController::class, "LearnAgain"]);
+Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
-// Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
 
 Route::apiResource('fees', FeeController::class);
-
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
 Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])

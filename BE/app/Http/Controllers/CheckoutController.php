@@ -109,14 +109,7 @@ class CheckoutController extends Controller
         if (!$fee) {
             return response()->json(['error' => 'Không tìm thấy hóa đơn học phí!'], 404);
         }
-        // Xác thực chữ ký từ MoMo
-        // $calculatedSignature = hash_hmac('sha256', $data['orderId'] . $data['amount'] . $data['resultCode'], env('MOMO_SECRET_KEY'));
 
-        // if ($calculatedSignature !== $data['signature']) {
-        //     return response()->json(['message' => 'Invalid signature'], 400);
-        // }
-
-        // Kiểm tra kết quả giao dịch
         if ($data['resultCode'] == 0) {
             if ($fee) {
                 $amount = $fee->amount += $data['amount'];
