@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+
+
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
@@ -28,7 +31,7 @@ class AuthController extends Controller
     {
         // try {
 
-            $data = $request->validated();   
+            $data = $request->validated();
             $user = User::firstWhere('email',$data['email']);
 
             if(!$user || !Hash::check($data['password'], $user['password'])){
@@ -40,7 +43,7 @@ class AuthController extends Controller
 
                 // Tạo token khi tài khoản đúng
                 $token = $user->createToken($user->id)->plainTextToken;
-                
+
                 return response()->json([
                     'status' => true,
                     'user' => $user,
@@ -59,7 +62,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            
+
             // Lấy token từ frontend gửi lên
         $token  = $request->bearerToken();
         if (!$token) {
@@ -70,7 +73,7 @@ class AuthController extends Controller
         }
         // Tìm bản ghi token trong db
         $accessToken = PersonalAccessToken::findToken($token);
-        
+
         // Trường hợp tìm thấy bản ghi trong db có token vừa nhận được
         if ($accessToken) {
             $accessToken->delete();
@@ -85,11 +88,11 @@ class AuthController extends Controller
                 'status' => false,
                 'message' => "Token không hợp lệ hoặc đã hết hạn!"
             ], 401);
-        
-    
+
+
     } catch (\Throwable $th) {
         return $this->handleErrorNotDefine($th);
     }
-       
+
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -161,7 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('attendances', AttendanceController::class);
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
 
-        
+
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
         Route::apiResource('majors', MajorController::class);
@@ -323,5 +324,9 @@ Route::apiResource('fees', FeeController::class);
 
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
-
+Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
+                                            ->name('forget.password.post');
+                                            
+Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
+                                            ->name('reset.password.post');
 
