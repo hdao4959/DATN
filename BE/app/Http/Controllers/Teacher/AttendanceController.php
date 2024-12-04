@@ -182,50 +182,76 @@ class AttendanceController extends Controller
 }
 
     public function show(string $classCode)
-    {
-        try {
+{
+    try {
+        // Lấy danh sách lớp học và các lịch học của nó
+        $attendances = Classroom::where('class_code', $classCode)
+            ->with(['users', 'schedules.room', 'schedules.session', 'schedules.teacher'])
+            ->get()
+            ->map(function ($attendance) {
+                $filteredSchedules = $attendance->schedules->map(function ($schedule) {
+                    // Lấy thông tin ca học
+                    $session = json_decode($schedule->session->value, true);
 
-            $attendances = Classroom::where('class_code', $classCode)
-                                    ->with('users', 'schedules')
-                                    ->get()
-                                    ->map(function ($attendance) {
-                                        $currentDate = Carbon::now()->toDateString();
+                    return [
+                        'date' => $schedule->date,
+                        'session_start' => $session['start'] ?? null, // Thời gian bắt đầu
+                        'room_name' => $schedule->room->cate_name ?? null,
+                        'session_name' => $schedule->session->cate_name ?? null,
+                        'teacher' => $schedule->teacher->full_name ?? null,
+                    ];
+                });
 
-                                        // Lọc schedules theo ngày hiện tại
-                                        $filteredSchedules = $attendance->schedules
-                                            ->filter(function ($schedule) use ($currentDate) {
-                                                return $schedule->date == $currentDate;
-                                            })
-                                            ->pluck('date')
-                                            ->toArray();
-                                
-                                        // Gắn schedules vào từng user
-                                        $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
-                                            return [
-                                                'student_code' => $user->user_code,
-                                                'full_name' => $user->full_name,
-                                                'schedules' => $filteredSchedules,
-                                            ];
-                                        });
-                                
-                                        // Trả về dữ liệu
-                                        return [
-                                            'class_code' => $attendance->class_code,
-                                            'users' => $usersWithSchedules,
-                                        ];
-                                    });
-            if (!$attendances) {
+                // Duyệt qua từng sinh viên và trả về dữ liệu điểm danh
+                $attendanceRecords = $attendance->users->map(function ($user) use ($filteredSchedules, $attendance) {
+                    return collect($filteredSchedules)->map(function ($schedule) use ($user, $attendance) {
+                        $currentDateTime = now(); // Thời gian hiện tại
+                        $scheduleDate = \Carbon\Carbon::parse($schedule['date']);
+                        $sessionStartDateTime = \Carbon\Carbon::parse($schedule['date'] . ' ' . $schedule['session_start']);
 
-                return $this->handleInvalidId();
-            } else {
+                        // Tính toán thời gian giới hạn 15 phút sau khi bắt đầu
+                        $timeLimit = $sessionStartDateTime->addMinutes(15);
 
-                return response()->json($attendances, 200);                
-            }
-        } catch (\Throwable $th) {
+                        // Lấy trạng thái mặc định từ attendance
+                        $existingAttendance = Attendance::where('student_code', $user->user_code)
+                            ->where('class_code', $attendance->class_code)
+                            ->whereDate('date', $schedule['date'])
+                            ->first();
 
-            return $this->handleErrorNotDefine($th);
-        }
+                        $status = $existingAttendance ? $existingAttendance->status : 'present';
+
+                        // Nếu ngày hôm nay:
+                        if ($scheduleDate->isToday()) {
+                            if (!$currentDateTime->greaterThan($timeLimit)) {
+                                $status = 'pending'; // Sau thời gian giới hạn => 'pending'
+                            }
+                        }
+                        // Nếu ngày sau ngày hôm nay:
+                        if ($scheduleDate->isFuture()) {
+                            $status = 'pending'; // Buổi học tương lai => null
+                        }
+
+                        return [
+                            'student_code' => $user->user_code,
+                            'full_name' => $user->full_name,
+                            'class_code' => $attendance->class_code,
+                            'date' => $schedule['date'],
+                            'status' => $status,
+                            'room_name' => $schedule['room_name'],
+                            'session_name' => $schedule['session_name'],
+                            'teacher' => $schedule['teacher'],
+                        ];
+                    });
+                })->flatten(1);
+
+                return $attendanceRecords;
+            });
+
+        return response()->json($attendances, 200);
+    } catch (\Throwable $th) {
+        return $this->handleErrorNotDefine($th);
     }
+}
 
     public function store(StoreAttendanceRequest $request, string $classCode)
     {
