@@ -29,7 +29,7 @@ class UpdateGrades extends Command
         DB::table('scores_component')
             ->join('users', 'scores_component.student_code', '=', 'users.user_code')
             ->join('classrooms', 'scores_component.class_code', '=', 'classrooms.class_code')
-            ->join('categories', 'scores_component.point_head_code', '=', 'categories.cate_code')
+            ->join('assessment_items', 'scores_component.assessment_code', '=', 'assessment_items.assessment_code')
             ->leftJoin('scores', function ($join) {
                 $join->on('scores_component.student_code', '=', 'scores.student_code')
                     ->on('classrooms.subject_code', '=', 'scores.subject_code');
@@ -38,7 +38,7 @@ class UpdateGrades extends Command
         scores_component.student_code, 
         classrooms.subject_code, 
         classrooms.class_code,
-        SUM(scores_component.score * categories.value) / SUM(categories.value) AS avg_score 
+        SUM(scores_component.score * assessment_items.weight) / SUM(assessment_items.weight) AS avg_score 
     ')
             ->groupBy('scores_component.student_code', 'classrooms.subject_code', 'classrooms.class_code')
             ->cursor()
