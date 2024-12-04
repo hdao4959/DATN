@@ -34,20 +34,32 @@ class CourseController extends Controller
     {
         $first_year = $request->first_year;
         $final_year = $request->final_year;
+        $course_number  = $request->course_number;
+        $sub_number     = $request->sub_number;
 
-        $first_year_short = substr($first_year, -2);  // Lấy 2 chữ số cuối của first_year
-        $final_year_short = substr($final_year, -2);
+        if (!is_numeric($first_year) || !is_numeric($final_year) || $first_year >= $final_year) {
+            return response()->json(["message" => "Năm bắt đầu và kết thúc không hợp lệ."], 400);
+        }
+
+        if (!is_numeric($course_number) || !is_numeric($sub_number) || $course_number <= 0 || $sub_number <= 0) {
+            return response()->json(["message" => "Số khóa và đợt phải là số nguyên dương."], 400);
+        }
 
 
-        $cate_code = "COURSE" . $first_year_short . $final_year_short;
-        $cate_name = $first_year . '-' . $final_year;
+        $cate_code = "K".$course_number.$sub_number;
+        $cate_name = "Khóa ".$course_number." - "."Đợt ".$sub_number;
+        $course_year = $first_year . '-' . $final_year;
 
-        // Tạo khóa học mới
+        if (Category::where('cate_code', $cate_code)->exists()) {
+            return response()->json(["message" => "Mã khóa học đã tồn tại."], 400);
+        }
+
         $course = Category::create([
             'cate_code' => $cate_code,
             'cate_name' => $cate_name,
+            'value'     => $course_year,
             'type'      => 'course',
-            'is_active' => 1, // Mặc định là active
+            'is_active' => 1,
         ]);
 
         return response()->json($course, 201);
@@ -64,57 +76,7 @@ class CourseController extends Controller
         }
         return response()->json($course);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $code)
-{
-    try{
-        // Tìm khóa học theo id
-    $course = Category::where('cate_code',$code);
-
-    if($course->isEmpty()){
-        return response()->json(['message'=>'không tìm thấy']);
-    }
-    // Lấy first_year và final_year từ request
-    $first_year = $request->first_year;
-    $final_year = $request->final_year;
-
-    // Lấy 2 chữ số cuối của first_year và final_year
-    $first_year_short = substr($first_year, -2);  // Lấy 2 chữ số cuối của first_year
-    $final_year_short = substr($final_year, -2);  // Lấy 2 chữ số cuối của final_year
-
-    // Tạo cate_code theo định dạng yêu cầu
-    $cate_code = "COURSE" . $first_year_short . $final_year_short;
-
-    // Tạo cate_name theo định dạng yêu cầu
-    $cate_name = $first_year . '-' . $final_year;
-
-    // Cập nhật thông tin khóa học
-    $course->update([
-        'cate_code' => $cate_code,
-        'cate_name' => $cate_name,
-    ]);
-
-    // Trả về thông tin khóa học đã được cập nhật
-    return response()->json(['message' => 'cập nhật thành công']);
-    }catch(\Throwable $th){
-        return response()->json(['message'=>$th->getMessage()]);
-    }
-}
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(string $code)
     {
         $course = Category::where('cate_code',$code);
