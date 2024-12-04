@@ -38,15 +38,14 @@ const ClassroomList = () => {
             $("#classroomTable").DataTable({
                 data: classrooms?.map((classes, index) => ({
                     stt: index + 1,
-                    class_code: classes.class_code,
-                    class_name: classes.class_name,
-                    subject_code: classes.subject_code,
-                    subject_name: classes.subject_name,
-                    teacher_code: classes.teacher_code,
-                    teacher_name: classes.teacher_name,
-                    total_student: classes.total_student,
+                    class_code: classes?.class_code,
+                    class_name: classes?.class_name,
+                    subject_name: classes?.subject_name,
+                    teacher_code: classes?.teacher_code,
+                    teacher_name: classes?.teacher_name,
+                    total_student: classes?.total_student,
                     room_name: classes?.room_name,
-                    session_name: classes.session_name,
+                    session_name: classes?.session_name,
                     start: classes?.value?.["start"],
                     end: classes?.value?.["end"],
                 })),
@@ -59,34 +58,57 @@ const ClassroomList = () => {
                         title: "Lớp",
                         data: null,
                         render: function (row) {
-                            return `<div class="class-link hover:text-blue-500" data-id="${row.class_code}">
-                                    ${row.class_code ? row.class_code : ''} - ${row.class_name ? row.class_name : ''}
+                            return `<div class="class-link hover:text-blue-500" data-id="${
+                                row.class_code
+                            }">
+                                   ${row.class_name ? row.class_name : ""}
                                 </div>`;
                         },
                     },
                     {
                         title: "Môn",
                         data: null,
-                        render: (row) => `${row.subject_code ? row.subject_code : ''} - ${row.subject_name ? row.subject_name : ''}`
+                        render: (row) =>
+                            ` ${row.subject_name ? row.subject_name : ""}`,
                     },
                     {
                         title: "Số sinh viên",
                         data: null,
-                        render: (row) => `${row.total_student ? row.total_student : '0'}`,
-                        className: "text-center"
+                        render: (row) =>
+                            `${row.total_student ? row.total_student : "0"}`,
+                        className: "text-center",
                     },
                     {
                         title: "Phòng học",
                         data: null,
-                        render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
+                        render: (row) =>
+                            `${
+                                row.room_name ? row.room_name : "Chưa có phòng"
+                            }`,
                     },
                     {
                         title: "Ca học",
                         data: null,
                         render: (row) => {
-                            return `<div>${row.session_name ? row.session_name : 'Chưa xếp ca'}</div>
-                                    <div>(${row.start ? row.start : ''} - ${row.end ? row.end : ''})</div>`;
-                        }
+                            return `<div>${
+                                row.session_name
+                                    ? row.session_name
+                                    : "Chưa xếp ca"
+                            }</div>
+                                    <div>(${row.start ? row.start : ""} - ${
+                                row.end ? row.end : ""
+                            })</div>`;
+                        },
+                    },
+                    {
+                        title: "Lịch thi",
+                        data: null,
+                        render: function (row) {
+                            return `<span class="schedule-exam-link" data-id="${row.class_code}" style="color:blue; cursor:pointer;">
+                                    <i class="fas fa-eye"></i>
+                                </span>`;
+                        },
+                        className: "text-center",
                     },
                     {
                         title: "",
@@ -95,6 +117,10 @@ const ClassroomList = () => {
                             return `
                                 <button class="btn btn-primary btn-sm schedule-link" data-id="${row.class_code}" style="margin-right: 5px;">
                                     Lịch học
+                                </button>
+                                 <button class="btn btn-info btn-sm exam-link" data-id="${row.class_code}">
+                               
+                                    Lịch thi
                                 </button>
                                 <button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" style="margin-right: 5px;">
                                     Điểm danh
@@ -108,7 +134,7 @@ const ClassroomList = () => {
                         className: "text-center text-nowrap",
                     },
                 ],
-                    
+
                 language: {
                     processing: "Đang tải...",
                     search: "<i class='fas fa-search'> Tìm kiếm: </i>",
@@ -125,6 +151,14 @@ const ClassroomList = () => {
                 },
                 scrollX: true,
             });
+            $("#classroomTable tbody").on(
+                "click",
+                ".schedule-exam-link",
+                function () {
+                    const classCode = $(this).data("id");
+                    navigate(`/teacher/class/${classCode}/examdays`);
+                }
+            );
 
             $("#classroomTable tbody").on(
                 "click",
@@ -149,6 +183,10 @@ const ClassroomList = () => {
             $("#classroomTable tbody").on("click", ".grades-link", function () {
                 const classCode = $(this).data("id");
                 navigate(`/teacher/class/${classCode}/grades`);
+            });
+            $("#classroomTable tbody").on("click", ".exam-link", function () {
+                const classCode = $(this).data("id");
+                navigate(`/teacher/class/${classCode}/examdays`);
             });
         }
     }, [classrooms, navigate]);
