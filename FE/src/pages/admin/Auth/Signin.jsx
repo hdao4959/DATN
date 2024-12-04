@@ -33,7 +33,7 @@ const Signin = () => {
                     navigate("/teacher");
                     break;
                 case "3":
-                    navigate("/student");
+                    navigate("/student/news");
                     break;
                 default:
                     toast.warning("Vai trò không xác định, vui lòng thử lại.");
@@ -45,7 +45,9 @@ const Signin = () => {
         },
         onError: (error) => {
             if (!error.response) {
-                toast.warning("Server chưa hoạt động. Vui lòng kiểm tra lại sau.");
+                toast.warning(
+                    "Server chưa hoạt động. Vui lòng kiểm tra lại sau."
+                );
             } else if (error.response.status === 500) {
                 toast.warning("Lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
@@ -83,13 +85,15 @@ const Signin = () => {
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col-xl-10">
                         <div className="card rounded-3 text-black">
-                            <div className="row g-0" style={{ minHeight: '510px' }}>
+                            <div
+                                className="row g-0"
+                                style={{ minHeight: "510px" }}
+                            >
                                 <div
                                     className={
                                         isForgotPassword
                                             ? "col-lg-6 d-flex align-items-center gradient-custom-2"
                                             : "col-lg-6 d-flex align-items-center gradient-custom-2 order-lg-2"
-
                                     }
                                 >
                                     <div className="text-white px-3 py-4 p-md-5 mx-md-4">
@@ -106,7 +110,8 @@ const Signin = () => {
                                             className="mb-0"
                                         >
                                             Trụ sở chính Tòa nhà F - Education,
-                                            Phố Trịnh Văn Bô, Nam Từ Liêm, Hà Nội.
+                                            Phố Trịnh Văn Bô, Nam Từ Liêm, Hà
+                                            Nội.
                                         </p>
                                         <div
                                             style={{
@@ -126,7 +131,9 @@ const Signin = () => {
                                         <div className="hiden-xs">
                                             <p>Điện thoại: (024) 7300 1955</p>
                                             <p>Fanpage: facebook.com/fedu</p>
-                                            <p>Email: feduacademyvn@gmail.com</p>
+                                            <p>
+                                                Email: feduacademyvn@gmail.com
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -175,19 +182,25 @@ const Signin = () => {
                                                             type="email"
                                                             className="form-control"
                                                             placeholder="Tài khoản được cung cấp bởi nhà trường"
-                                                            {...register("email", {
-                                                                required:
-                                                                    "Vui lòng nhập email",
-                                                                pattern: {
-                                                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                                                                    message:
-                                                                        "Email không đúng định dạng",
-                                                                },
-                                                            })}
+                                                            {...register(
+                                                                "email",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập email",
+                                                                    pattern: {
+                                                                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                                                                        message:
+                                                                            "Email không đúng định dạng",
+                                                                    },
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.email && (
                                                             <p className="text-danger">
-                                                                {errors.email.message}
+                                                                {
+                                                                    errors.email
+                                                                        .message
+                                                                }
                                                             </p>
                                                         )}
                                                     </div>
@@ -202,19 +215,26 @@ const Signin = () => {
                                                         <input
                                                             type="password"
                                                             className="form-control"
-                                                            {...register("password", {
-                                                                required:
-                                                                    "Vui lòng nhập mật khẩu",
-                                                                minLength: {
-                                                                    value: 6,
-                                                                    message:
-                                                                        "Mật khẩu ít nhất 6 kí tự",
-                                                                },
-                                                            })}
+                                                            {...register(
+                                                                "password",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập mật khẩu",
+                                                                    minLength: {
+                                                                        value: 6,
+                                                                        message:
+                                                                            "Mật khẩu ít nhất 6 kí tự",
+                                                                    },
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.password && (
                                                             <p className="text-danger">
-                                                                {errors.password.message}
+                                                                {
+                                                                    errors
+                                                                        .password
+                                                                        .message
+                                                                }
                                                             </p>
                                                         )}
                                                     </div>
@@ -233,17 +253,25 @@ const Signin = () => {
                                                             type="email"
                                                             className="form-control"
                                                             placeholder="Nhập email để lấy lại mật khẩu"
-                                                            {...register("email", {
-                                                                required: "Vui lòng nhập email",
-                                                                pattern: {
-                                                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                                                                    message: "Email không đúng định dạng",
-                                                                },
-                                                            })}
+                                                            {...register(
+                                                                "email",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập email",
+                                                                    pattern: {
+                                                                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                                                                        message:
+                                                                            "Email không đúng định dạng",
+                                                                    },
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.email && (
                                                             <p className="text-danger">
-                                                                {errors.email.message}
+                                                                {
+                                                                    errors.email
+                                                                        .message
+                                                                }
                                                             </p>
                                                         )}
                                                     </div>
@@ -260,57 +288,101 @@ const Signin = () => {
                                                             type="tel"
                                                             className="form-control"
                                                             placeholder="Nhập số điện thoại để lấy lại mật khẩu"
-                                                            {...register("phone", {
-                                                                required: "Vui lòng nhập số điện thoại",
-                                                                pattern: {
-                                                                    value: /^[0-9]{10,11}$/,
-                                                                    message: "Số điện thoại không hợp lệ",
-                                                                },
-                                                            })}
+                                                            {...register(
+                                                                "phone",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập số điện thoại",
+                                                                    pattern: {
+                                                                        value: /^[0-9]{10,11}$/,
+                                                                        message:
+                                                                            "Số điện thoại không hợp lệ",
+                                                                    },
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.phone && (
                                                             <p className="text-danger">
-                                                                {errors.phone.message}
+                                                                {
+                                                                    errors.phone
+                                                                        .message
+                                                                }
                                                             </p>
                                                         )}
                                                     </div>
                                                     {/* Trường Mật khẩu mới */}
                                                     <div className="form-outline mb-4">
-                                                        <label className="form-label">Mật khẩu mới</label>
-                                                        <label className="form-label text-danger">*</label>
+                                                        <label className="form-label">
+                                                            Mật khẩu mới
+                                                        </label>
+                                                        <label className="form-label text-danger">
+                                                            *
+                                                        </label>
                                                         <input
                                                             type="password"
                                                             className="form-control"
                                                             placeholder="Nhập mật khẩu mới"
-                                                            {...register("newPassword", {
-                                                                required: "Vui lòng nhập mật khẩu mới",
-                                                                minLength: {
-                                                                    value: 6,
-                                                                    message: "Mật khẩu phải có ít nhất 6 ký tự",
-                                                                },
-                                                            })}
+                                                            {...register(
+                                                                "newPassword",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập mật khẩu mới",
+                                                                    minLength: {
+                                                                        value: 6,
+                                                                        message:
+                                                                            "Mật khẩu phải có ít nhất 6 ký tự",
+                                                                    },
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.newPassword && (
-                                                            <p className="text-danger">{errors.newPassword.message}</p>
+                                                            <p className="text-danger">
+                                                                {
+                                                                    errors
+                                                                        .newPassword
+                                                                        .message
+                                                                }
+                                                            </p>
                                                         )}
                                                     </div>
 
                                                     {/* Trường Nhập lại mật khẩu mới */}
                                                     <div className="form-outline mb-4">
-                                                        <label className="form-label">Nhập lại mật khẩu mới</label>
-                                                        <label className="form-label text-danger">*</label>
+                                                        <label className="form-label">
+                                                            Nhập lại mật khẩu
+                                                            mới
+                                                        </label>
+                                                        <label className="form-label text-danger">
+                                                            *
+                                                        </label>
                                                         <input
                                                             type="password"
                                                             className="form-control"
                                                             placeholder="Nhập lại mật khẩu mới"
-                                                            {...register("confirmPassword", {
-                                                                required: "Vui lòng nhập lại mật khẩu",
-                                                                validate: (value) =>
-                                                                    value === getValues("newPassword") || "Mật khẩu không khớp",
-                                                            })}
+                                                            {...register(
+                                                                "confirmPassword",
+                                                                {
+                                                                    required:
+                                                                        "Vui lòng nhập lại mật khẩu",
+                                                                    validate: (
+                                                                        value
+                                                                    ) =>
+                                                                        value ===
+                                                                            getValues(
+                                                                                "newPassword"
+                                                                            ) ||
+                                                                        "Mật khẩu không khớp",
+                                                                }
+                                                            )}
                                                         />
                                                         {errors.confirmPassword && (
-                                                            <p className="text-danger">{errors.confirmPassword.message}</p>
+                                                            <p className="text-danger">
+                                                                {
+                                                                    errors
+                                                                        .confirmPassword
+                                                                        .message
+                                                                }
+                                                            </p>
                                                         )}
                                                     </div>
                                                 </>

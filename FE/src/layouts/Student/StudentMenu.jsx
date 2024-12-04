@@ -91,6 +91,14 @@ const StudentMenu = () => {
                                             </p>
                                         </NavLink>
                                     </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/schedules/exam-schedule"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">Lịch thi</p>
+                                        </NavLink>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
