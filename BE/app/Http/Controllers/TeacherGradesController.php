@@ -153,9 +153,18 @@ class TeacherGradesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(UpdateGradesRequest $request, $classCode)
+    public function update(UpdateGradesRequest $request, string $classCode)
     {
         try {
+            $userCode = $request->user()->user_code;
+            $classroom = Classroom::where('user_code', $userCode)->where('class_code', $classCode)->first();
+            if (!$classroom) {
+
+                return response()->json([
+                    'message' => 'Bạn không có quyền thêm điểm vào lớp này'
+                ], 200);
+            }
+
             $studentsData = $request->all(); 
             $students = $studentsData['students'] ?? [];
     
