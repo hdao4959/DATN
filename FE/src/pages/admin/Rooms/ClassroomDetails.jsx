@@ -2,23 +2,34 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
-import { getToken } from "../../../utils/getToken";
+
+const safeParseJSON = (jsonString) => {
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error("Invalid JSON:", jsonString);
+        return null;
+    }
+};
+
+const handleQueryError = (error, defaultMessage) => {
+    const errorMessage = error?.response?.data?.message || defaultMessage;
+    toast.error(errorMessage);
+    return <div className="text-danger">{errorMessage}</div>;
+};
 
 const ClassRoomDetails = () => {
     const { class_code } = useParams();
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["CLASSROOM_DETAIL", class_code],
         queryFn: async () => {
-            const res = await api.get(`/admin/classrooms/${class_code}`);
+            const res = await api.get(`/admin/classrooms/${class_code}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
             return res.data;
         },
     });
-
-    const getWeekDay = (dateString) => {
-        const date = new Date(dateString);
-        const options = { weekday: "long" };
-        return date.toLocaleDateString("vi-VN", options);
-    };
     const {
         data: scheduleData,
         isLoading: isLoadingSchedule,
@@ -38,13 +49,11 @@ const ClassRoomDetails = () => {
     }
 
     if (isError) {
-        toast.error("Lỗi khi tải thông tin lớp học");
-        return <div className="text-danger">Lỗi khi tải thông tin lớp học</div>;
+        return handleQueryError(isError, "Lỗi khi tải thông tin lớp học");
     }
 
     if (isScheduleError) {
-        toast.error("Lỗi khi tải lịch học");
-        return <div className="text-danger">Lỗi khi tải lịch học</div>;
+        return handleQueryError(isScheduleError, "Lỗi khi tải lịch học");
     }
 
     const classroom = data?.classroom || {};
@@ -59,6 +68,12 @@ const ClassRoomDetails = () => {
         return <div className="text-danger">Không có sinh viên trong lớp</div>;
     }
 
+    const getWeekDay = (dateString) => {
+        const date = new Date(dateString);
+        const options = { weekday: "long" };
+        return date.toLocaleDateString("vi-VN", options);
+    };
+
     return (
         <>
             <div className="card">
@@ -66,63 +81,52 @@ const ClassRoomDetails = () => {
                     <h4>Chi Tiết Lớp Học</h4>
                 </div>
                 <div className="card-body">
-                    {/* <div className="row mb-3">
-                        <div className="col-md-4">
-                            <strong>Tên lớp học:</strong>{" "}
-                            {classroom.class_name || "Chưa cập nhật"}
-                        </div>
-                    </div> */}
-
                     <div className="row mb-3">
-                        {/* <div className="col-md-4">
-                            <strong>Mô tả:</strong>{" "}
-                            {classroom.description || "Không có"}
-                        </div> */}
                         <div className="col-md-4">
                             <strong>Tên lớp học:</strong>{" "}
-                            {classroom.class_name || "Chưa cập nhật"}
+                            {classroom?.class_name || "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Mã môn học:</strong>{" "}
-                            {classroom.subject_code || "Chưa cập nhật"}
+                            {classroom?.subject_code || "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Môn học:</strong>{" "}
-                            {classroom.subject_name || "Chưa cập nhật"}
+                            {classroom?.subject_name || "Chưa cập nhật"}
                         </div>
                     </div>
 
                     <div className="row mb-3">
                         <div className="col-md-4">
                             <strong>Ngày bắt đầu:</strong>{" "}
-                            {classroom.date_start
+                            {classroom?.date_start
                                 ? new Date(
-                                      classroom.date_start
+                                      classroom?.date_start
                                   ).toLocaleDateString()
                                 : "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Giảng viên:</strong>{" "}
-                            {classroom.teacher_name ?? "Chưa cập nhật"}
+                            {classroom?.teacher_name ?? "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Mã giảng viên:</strong>{" "}
-                            {classroom.teacher_code ?? "Chưa cập nhật"}
+                            {classroom?.teacher_code ?? "Chưa cập nhật"}
                         </div>
                     </div>
 
                     <div className="row mb-3">
                         <div className="col-md-4">
                             <strong>Email giảng viên:</strong>{" "}
-                            {classroom.teacher_email ?? "Chưa cập nhật"}
+                            {classroom?.teacher_email ?? "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Số điện thoại giảng viên:</strong>{" "}
-                            {classroom.teacher_phone_number ?? "Chưa cập nhật"}
+                            {classroom?.teacher_phone_number ?? "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
                             <strong>Mô tả:</strong>{" "}
-                            {classroom.description || "Không có"}
+                            {classroom?.description || "Không có"}
                         </div>
                     </div>
                 </div>
@@ -146,12 +150,12 @@ const ClassRoomDetails = () => {
                         <tbody>
                             {students.map((student, index) => (
                                 <tr key={index}>
-                                    <td>{student.user_code}</td>
-                                    <td>{student.full_name}</td>
-                                    <td>{student.email}</td>
-                                    <td>{student.phone_number}</td>
+                                    <td>{student?.user_code}</td>
+                                    <td>{student?.full_name}</td>
+                                    <td>{student?.email}</td>
+                                    <td>{student?.phone_number}</td>
                                     <td>
-                                        {student.is_active
+                                        {student?.is_active
                                             ? "Hoạt động"
                                             : "Không hoạt động"}
                                     </td>
@@ -183,27 +187,38 @@ const ClassRoomDetails = () => {
                         </thead>
                         <tbody>
                             {schedules.map((schedule, index) => {
-                                const session = JSON.parse(
-                                    schedule.session_value
+                                const session = safeParseJSON(
+                                    schedule?.session_value
                                 );
-                                const weekDay = getWeekDay(schedule.date);
+                                const weekDay = schedule?.date
+                                    ? getWeekDay(schedule.date)
+                                    : "Không xác định";
 
                                 return (
                                     <tr key={index}>
                                         <td>
-                                            <div>{weekDay}</div>{" "}
+                                            <div>{weekDay}</div>
                                             <div>
-                                                {new Date(
-                                                    schedule.date
-                                                ).toLocaleDateString()}
-                                            </div>{" "}
+                                                {schedule?.date
+                                                    ? new Date(
+                                                          schedule?.date
+                                                      ).toLocaleDateString()
+                                                    : "Không có ngày"}
+                                            </div>
                                         </td>
-                                        <td>{schedule.session_name}</td>
-                                        <td>{schedule.room_name}</td>
                                         <td>
-                                            {session.start} - {session.end}
+                                            {schedule?.session_name ||
+                                                "Không có"}
                                         </td>
-                                        <td>{schedule.type}</td>
+                                        <td>
+                                            {schedule?.room_name || "Không có"}
+                                        </td>
+                                        <td>
+                                            {session?.start} - {session?.end}
+                                        </td>
+                                        <td>
+                                            {schedule?.type || "Không xác định"}
+                                        </td>
                                     </tr>
                                 );
                             })}

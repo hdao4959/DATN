@@ -58,34 +58,47 @@ const ClassroomList = () => {
                         title: "Lớp",
                         data: null,
                         render: function (row) {
-                            return `<div class="class-link hover:text-blue-500" data-id="${row.class_code}">
-                                    ${row.class_name ? row.class_name : ''}
+                            return `<div class="class-link hover:text-blue-500" data-id="${
+                                row.class_code
+                            }">
+                                   ${row.class_name ? row.class_name : ""}
                                 </div>`;
                         },
                     },
                     {
                         title: "Môn",
                         data: null,
-                        render: (row) => `${row.subject_name ? row.subject_name : ''}`
+                        render: (row) =>
+                            ` ${row.subject_name ? row.subject_name : ""}`,
                     },
                     {
                         title: "Số sinh viên",
                         data: null,
-                        render: (row) => `${row.total_student ? row.total_student : '0'}`,
-                        className: "text-center"
+                        render: (row) =>
+                            `${row.total_student ? row.total_student : "0"}`,
+                        className: "text-center",
                     },
                     {
                         title: "Phòng học",
                         data: null,
-                        render: (row) => `${row.room_name ? row.room_name : 'Chưa có phòng'}`
+                        render: (row) =>
+                            `${
+                                row.room_name ? row.room_name : "Chưa có phòng"
+                            }`,
                     },
                     {
                         title: "Ca học",
                         data: null,
                         render: (row) => {
-                            return `<div>${row.session_name ? row.session_name : 'Chưa xếp ca'}</div>
-                                    <div>(${row.start ? row.start : ''} - ${row.end ? row.end : ''})</div>`;
-                        }
+                            return `<div>${
+                                row.session_name
+                                    ? row.session_name
+                                    : "Chưa xếp ca"
+                            }</div>
+                                    <div>(${row.start ? row.start : ""} - ${
+                                row.end ? row.end : ""
+                            })</div>`;
+                        },
                     },
                     {
                         title: "Lịch thi",
@@ -105,6 +118,10 @@ const ClassroomList = () => {
                                 <button class="btn btn-primary btn-sm schedule-link" data-id="${row.class_code}" style="margin-right: 5px;">
                                     Lịch học
                                 </button>
+                                 <button class="btn btn-info btn-sm exam-link" data-id="${row.class_code}">
+                               
+                                    Lịch thi
+                                </button>
                                 <button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" style="margin-right: 5px;">
                                     Điểm danh
                                 </button>
@@ -117,7 +134,7 @@ const ClassroomList = () => {
                         className: "text-center text-nowrap",
                     },
                 ],
-                    
+
                 language: {
                     processing: "Đang tải...",
                     search: "<i class='fas fa-search'> Tìm kiếm: </i>",
@@ -166,6 +183,10 @@ const ClassroomList = () => {
             $("#classroomTable tbody").on("click", ".grades-link", function () {
                 const classCode = $(this).data("id");
                 navigate(`/teacher/class/${classCode}/grades`);
+            });
+            $("#classroomTable tbody").on("click", ".exam-link", function () {
+                const classCode = $(this).data("id");
+                navigate(`/teacher/class/${classCode}/examdays`);
             });
         }
     }, [classrooms, navigate]);
