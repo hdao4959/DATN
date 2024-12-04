@@ -28,7 +28,7 @@ class SessionRepository implements SessionRepositoryInterface {
         return $model->update($data);
     }
 
-    public function delete($code) {
+    public function delete(string $code) {
         return $this->model->where('cate_code', $code)->delete();
     }
 

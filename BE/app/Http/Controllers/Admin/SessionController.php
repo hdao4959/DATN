@@ -43,19 +43,20 @@ class SessionController extends Controller
 
             $existingSessions = $this->sessionRepository->getAll();
 
-            foreach ($existingSessions as $session) {
-                // Tách chuỗi value thành start và end
-                [$existingStart, $existingEnd] = explode('-', $session->value);
+            // foreach ($existingSessions as $session) {
+            //     // Tách chuỗi value thành start và end
+            //     [$existingStart, $existingEnd] = explode('-', $session->value);
 
-                // Chuyển đổi start và end thành Carbon
-                $existingStart = Carbon::parse($existingStart);
-                $existingEnd = Carbon::parse($existingEnd);
+            //     // Chuyển đổi start và end thành Carbon
+            //     $existingStart = Carbon::parse($existingStart);
+            //     $existingEnd = Carbon::parse($existingEnd);
 
-                // Kiểm tra chồng chéo thời gian
-                if ($timeStart < $existingEnd && $timeEnd > $existingStart) {
-                    return response()->json(["message" => "Thời gian bị trùng với ca học khác."], 400);
-                }
-            }
+            //     // Kiểm tra chồng chéo thời gian
+            //     if ($timeStart < $existingEnd && $timeEnd > $existingStart) {
+            //         return response()->json(["message" => "Thời gian bị trùng với ca học khác."], 400);
+            //     }
+            // }
+            
 
             $cate_code = "TS".$request->session;
             $cate_name = "Ca ".$request->session;
@@ -76,6 +77,11 @@ class SessionController extends Controller
 
     public function update(Request $request, $code) {
         try {
+
+            $session = $this->sessionRepository->getModel()->where('cate_code', $code)->first();
+            if (!$session) {
+                return response()->json(["message" => "Ca học không tồn tại."], 404);
+            }
             // Chuyển đổi thời gian bắt đầu và kết thúc
             $timeStart = Carbon::parse($request->time_start);
             $timeEnd = Carbon::parse($request->time_end);
@@ -131,7 +137,7 @@ class SessionController extends Controller
 
     public function destroy(string $code){
         try{
-            $model = $this->sessionRepository->delete($code);
+            $this->sessionRepository->delete($code);
             return response()->json(["message"=> "xóa thành công"], 200);
         }catch(\Throwable $th){
             return response()->json($th->getMessage(), 400);
