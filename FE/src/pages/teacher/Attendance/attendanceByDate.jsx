@@ -141,7 +141,9 @@ const AttendanceTeacherDate = () => {
                             className="btn btn-primary"
                             style={{ float: 'right' }}
                             onClick={handleSave}
-                            disabled={!hasUpdates || !isToday}
+                            disabled={
+{/*                             !hasUpdates || */}
+                            !isToday}
                         >
                             <i className="fas fa-save"> Lưu Điểm Danh</i>
                         </button>
