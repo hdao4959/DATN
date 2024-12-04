@@ -66,25 +66,54 @@ class ScheduleController extends Controller
 
 
 
-    // public function listSchedulesForClassroom(string $classcode){
-    //     try{
-    //         $teacher_code = request()->user()->user_code;
-    //         $class_code = Classroom::where([
-    //             'class_code' => $classcode,
-    //             'user_code' => $teacher_code
-    //         ])->pluck('class_code')->first();
+    public function listSchedulesForClassroom(string $classcode){
+        try{
+            $teacher_code = request()->user()->user_code;
 
-    //         $list_schedules = Schedule::with(
-    //            ['room',
-    //            'session'])
-    //         ->where('class_code', $class_code)
-    //         ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
-    //             return response()->json($list_schedules,200);
-    //     }
-    //    catch(\Throwable $th){
-    //         return $this->handleErrorNotDefine($th);
-    //    }
-    // }
+            $classroom = Classroom::select('class_code', 'class_name', 'user_code', 'subject_code')->with([
+                'schedules' => function($query){
+                    $query->select('class_code', 'room_code', 'session_code', 'teacher_code', 'date', 'type');
+                }, 
+                'schedules.session' => function($query){
+                    $query->select('cate_name', 'cate_code', 'value');
+                }, 
+                'schedules.teacher' => function($query){
+                    $query->select('user_code', 'full_name');
+                }
+            ])->where([
+                'class_code' => $classcode,
+                'user_code' => $teacher_code
+            ])->first();
+
+            if(!$classroom){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Lớp học không tồn tại!'
+                ],404);
+            }
+            
+            $schedules = $classroom->schedules->map(function($schedule){
+                $session_info = optional($schedule->session);
+                $teacher_info = optional($schedule->teacher);
+                return [
+                    'date' => $schedule->date,
+                    'session_name' => $session_info->cate_name,
+                    'session_value' => $session_info->value,
+                    'room_code' => $schedule->room_code,
+                    'type' => $schedule->type,
+                    'teacher_code' => $teacher_info->user_code,
+                    'teacher_name' => $teacher_info->full_name
+                ];
+            });
+            return response()->json([
+                'status' => true,
+                'schedules' => $schedules
+            ],200);
+        }
+       catch(\Throwable $th){
+            return $this->handleErrorNotDefine($th);
+       }
+    }
 
     public function listSchedulesForTeacher(Request $request)
     {

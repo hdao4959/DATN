@@ -86,7 +86,7 @@ const ViewSchedulesForClass = () => {
                             <thead>
                                 <tr>
                                     <th>STT</th>
-                                    <th>Mã Lớp</th>
+                                    <th>Lớp</th>
                                     <th>Ngày</th>
                                     <th>Phòng</th>
                                     <th>Ca Học</th>
@@ -104,12 +104,11 @@ const ViewSchedulesForClass = () => {
                                         schedule?.room_code ||
                                         "Không có phòng học";
                                     const sessionName =
-                                        schedule?.session?.cate_name ||
+                                        schedule?.session_name ||
                                         "Không có ca học";
-                                    const sessionValue = schedule?.session
-                                        ?.value
-                                        ? JSON.parse(schedule.session.value)
-                                        : {
+                                    const sessionValue = schedule?.session_value
+                                        ? JSON.parse(schedule.session_value)
+                                        : { 
                                               start: "Không có thời gian",
                                               end: "Không có thời gian",
                                           };
