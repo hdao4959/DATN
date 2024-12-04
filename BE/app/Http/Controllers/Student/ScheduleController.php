@@ -46,8 +46,8 @@ class ScheduleController extends Controller
 
             $student_code = request()->user()->user_code;
 
+            $today = now()->format('Y-m-d');
             $classroom_codes = ClassroomUser::where('user_code', $student_code)->pluck('class_code');
-
             if (!$classroom_codes) {
                 return response()->json([
                     'status' => false,
@@ -55,11 +55,28 @@ class ScheduleController extends Controller
                 ], 200);
             }
 
-            $schedules = Schedule::whereIn('class_code', $classroom_codes)
-                ->where('date', '>=', now()->toDateString())
-                ->get();
 
-            return response()->json($schedules, 200);
+            $schedules = Schedule::with([
+                'session' => function($query){
+                    $query->select('cate_code', 'cate_name', 'value');
+                }
+            ])->whereIn('class_code', $classroom_codes)
+                ->where('date', '>=', $today)
+                ->get()->map(function($schedule){
+                    $session_info = optional($schedule->session);
+                    return [
+                        'id' => $schedule->id,
+                        'class_code' => $schedule->class_code,
+                        'room_code' => $schedule->room_code,
+                        'teacher_code' => $schedule->teacher_code,
+                        'date' => $schedule->date,
+                        'type' => $schedule->type,
+                        'session_name' => $session_info->cate_name,
+                        'session_value' => $session_info->value
+                    ];
+                });
+                return response()->json($schedules, 200);
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -83,7 +100,23 @@ class ScheduleController extends Controller
             ], 403);
         }
 
-        $schedules = Schedule::where('class_code', $classroom->class_code)->get();
+        $schedules = Schedule::with([
+            'session' => function($query){
+                    $query->select('cate_code', 'cate_name', 'value');
+                }
+        ])->where('class_code', $classroom->class_code)->get()->map(function($schedule){
+            $session_info = optional($schedule->session);
+            return [
+                'id' => $schedule->id,
+                'class_code' => $schedule->class_code,
+                'room_code' => $schedule->room_code,
+                'teacher_code' => $schedule->teacher_code,
+                'date' => $schedule->date,
+                'type' => $schedule->type,
+                'session_name' => $session_info->cate_name,
+                'session_value' => $session_info->value
+            ];
+        });
         return response()->json($schedules, 200);
     }
 
@@ -221,7 +254,7 @@ class ScheduleController extends Controller
                         $query->select('subject_code', 'subject_name');
                     },
                     'schedules' => function ($query) {
-                        $query->orderBy('date', 'asc')->limit(1);
+                        $query->orderBy('date', 'asc');
                     },
                     'schedules.session' => function ($query) {
                         $query->select('cate_code', 'cate_name', 'value');
@@ -239,7 +272,7 @@ class ScheduleController extends Controller
                 ->where('class_code', '!=', $classroom->class_code)
                 ->get()->map(function ($classroom) {
                     $subject_info = optional($classroom->subject);
-                    $first_schedule = optional($classroom->schedules)->first();
+                    $first_schedule = optional($classroom->schedules->first());
                     $session_info = optional($first_schedule->session);
                     $room_info = optional($first_schedule->room);
                     $study_days = (int) (new Datetime($first_schedule->date))->format('N') % 2 == 0 ?

@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Schedule;
-
+use App\Models\Subject;
 use App\Models\User;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PHPUnit\Framework\Constraint\Count;
 
 class ScheduleController extends Controller
 {
@@ -34,11 +35,12 @@ class ScheduleController extends Controller
 
     public function index(Request $request)
     {
+
         try {
             $today = Carbon::today();
             $sevenDaysLater = Carbon::today()->addDays(7);
 
-            $userCode = $request->user_code;
+            $userCode = $request->user()->user_code;
 
             // $list_classroom_codes = Classroom::where([
             //     'user_code' =>  $userCode,
@@ -51,113 +53,124 @@ class ScheduleController extends Controller
             // ->select('class_code', 'room_code' , 'session_code', 'date')
             // ->get();
 
-            $list_schedules = Schedule::whereBetween('date',[$today, $sevenDaysLater])
-                                ->where('type','study')
-                                ->where('teacher_code',$userCode)
-                                ->get();
+            $list_schedules = Schedule::whereBetween('date', [$today, $sevenDaysLater])
+                ->where('type', 'study')
+                ->where('teacher_code', $userCode)
+                ->get();
 
-            return response()->json($list_schedules,200);
-
+            return response()->json($list_schedules, 200);
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
     }
 
-    // public function show(Request $request, string $classCode)
-    // {
-    //     try {
-    //         $userCode = $request->user()->user_code;
 
-    //         $schedules = Classroom::where('user_code', $userCode)->where('class_code', $classCode)
-    //             ->with(['schedules'])
-    //             ->get()->flatMap(function ($classroom) {
-    //                     return $classroom->schedules->map(function ($schedule) {
-    //                         // Giải mã trường JSON `value` của `session`
-    //                         $sessionValue = json_decode($schedule->session->value ?? '{}', true);
-    //                     return [
-    //                         'class_code' => $schedule->class_code,
-    //                         'date' => $schedule->date,
-    //                         'classroom' => [
-    //                             'class_name' => $schedule->classroom->class_name ?? null,
-    //                         ],
-    //                         'room' => [
-    //                             'cate_name' => $schedule->room->cate_name ?? null,
-    //                         ],
-    //                         'session' => [
-    //                             'cate_code' => $schedule->session->cate_code ?? null,
-    //                             'cate_name' => $schedule->session->cate_name ?? null,
-    //                             'start_time' => $sessionValue['start'] ?? null,
-    //                             'end_time' => $sessionValue['end'] ?? null,
-    //                         ],
-    //                     ];
-    //                 });
-    //             });
-    //         if (!$schedules) {
-    //             return $this->handleInvalidId();
-    //         }
-    //         return response()->json($schedules,200);
-    //     } catch (\Throwable $th) {
-    //         return $this->handleErrorNotDefine($th);
+
+    // public function listSchedulesForClassroom(string $classcode){
+    //     try{
+    //         $teacher_code = request()->user()->user_code;
+    //         $class_code = Classroom::where([
+    //             'class_code' => $classcode,
+    //             'user_code' => $teacher_code
+    //         ])->pluck('class_code')->first();
+
+    //         $list_schedules = Schedule::with(
+    //            ['room',
+    //            'session'])
+    //         ->where('class_code', $class_code)
+    //         ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
+    //             return response()->json($list_schedules,200);
     //     }
+    //    catch(\Throwable $th){
+    //         return $this->handleErrorNotDefine($th);
+    //    }
     // }
 
-    public function listSchedulesForClassroom(string $classcode){
-        try{
+    public function listSchedulesForTeacher(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        try {
             $teacher_code = request()->user()->user_code;
-            $class_code = Classroom::where([
-                'class_code' => $classcode,
-                'user_code' => $teacher_code
-            ])->pluck('class_code')->first();
+            $now = Carbon::now('Asia/Ho_Chi_Minh')->startOfDay();
+            $sevenDaysLater = $now->clone()->addDays(7)->endOfDay();
 
-            $list_schedules = Schedule::with(
-               ['room',
-               'session'])
-            ->where('class_code', $class_code)
-            ->select('class_code', 'room_code' , 'session_code', 'date')->get()->makeHidden(['class_code', 'room_code', 'session_code']);
-                return response()->json($list_schedules,200);
-        }
-       catch(\Throwable $th){
+            $list_schedules = Schedule::with(['classroom.subject', 'session', 'classroom'])
+                ->where('teacher_code', $teacher_code)
+                ->whereBetween('date', [$now, $sevenDaysLater])
+                ->orderBy('date', 'asc')
+                ->paginate($perPage);
+
+            $schedules = $list_schedules->map(function ($schedule) {
+                return [
+                    'class_code'    => $schedule->classroom->class_code,
+                    'date'          => $schedule->date,
+                    'subject_name'  => $schedule->classroom->subject->subject_name,
+                    'subject_code'  => $schedule->classroom->subject_code,
+                    'room_code'     => $schedule->room_code,
+                    'session'       => $schedule->session->value,
+                    'session_code'  => $schedule->session->cate_code,
+                    'session_name'  => $schedule->session->cate_name,
+                    'subject_code'  => $schedule->classroom->subject_code,
+                    'subject_name'  => $schedule->classroom?->subject?->subject_name,
+                    'count_users'   => $schedule->classroom?->users->count() ?? 0,
+                ];
+            });
+            $list_schedules->setCollection($schedules);
+            return response()->json($list_schedules, 200);
+        } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
-       }
+        }
     }
 
-    public function listSchedulesForTeacher(Request $request){
-        try{
-            $teacher_code = $request->user_code;
-            $now = Carbon::now();
-            $sevenDaysLater = Carbon::now()->addDays(7);
-
-            $list_schedules = Schedule::query()
-                            ->where('user_code',$teacher_code)
-                            ->whereBetween('date',[$now, $sevenDaysLater])
-                            ->orderBy('date','asc')
-                            ->get();
-            return response()->json($list_schedules,200);
-        }
-       catch(\Throwable $th){
-            return $this->handleErrorNotDefine($th);
-       }
-    }
-
-    public function listSchedulesForStudent(Request $request){
-        try{
-            $student_code = $request->user_code;
+    public function listSchedulesForStudent(Request $request)
+    {
+        try {
+            $student_code = request()->user()->user_code;
             $student = User::where('user_code', $student_code)->first();
 
             if (!$student) {
                 return response()->json(['error' => 'Student not found'], 404);
             }
 
-            $list_schedules = $student->classrooms()
-                            ->with('schedules')
-                            ->get()
-                            ->pluck('schedules')
-                            ->flatten();
-            return response()->json($list_schedules,200);
-        }
-       catch(\Throwable $th){
+            // Lấy lịch học của sinh viên với thông tin từ 'classroom.subject' và 'session'
+            // $schedules = $student->schedules()
+            // ->with('classroom.subject', 'session')->get();
+            $schedules = $student->schedules()
+                ->with([
+                    'classroom' => function ($query) {
+                        // Lấy chỉ các cột cần thiết từ bảng classroom
+                        $query->select('id', 'class_code', 'class_name', 'subject_code');
+                        $query->with([
+                            'subject' => function ($query) {
+                                // Lấy chỉ các cột cần thiết từ bảng subject
+                                $query->select('id', 'subject_code', 'subject_name');
+                            }
+                        ]);
+                    },
+                    'session' => function ($query) {
+                        // Lấy chỉ các cột cần thiết từ bảng session
+                        $query->select('id', 'cate_code', 'cate_name', 'value');
+                    }
+                ])
+                ->select('id', 'class_code', 'room_code', 'session_code', 'teacher_code', 'date', 'type')
+                ->get();
+            // Tạo dữ liệu mảng để trả về
+            $data = $schedules->map(function ($schedule) {
+                return [
+                    'date'          => $schedule->date,
+                    'room_code'     => $schedule->room_code,
+                    'subject_code'  => $schedule->classroom->subject_code,
+                    'subject_name'  => $schedule->classroom->subject->subject_name,
+                    'class_code'    => $schedule->classroom->class_code,
+                    'session'       => $schedule->session->cate_name,
+                    'session_time'  => $schedule->session->value,
+                ];
+            });
+
+            return response()->json($data, 200);
+        } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
-       }
+        }
     }
 
 

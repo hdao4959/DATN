@@ -121,6 +121,13 @@ class User extends Authenticatable
         ->withPivot('user_code');
     }
 
+    public function schedules()
+    {
+        return $this->belongsToMany(Schedule::class, 'schedule_student', 'student_code', 'schedule_id','user_code','id')
+        ->withPivot('student_code');
+
+    }
+
     public function fees(){
         return $this->hasMany(Fee::class);
     }

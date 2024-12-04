@@ -181,51 +181,51 @@ class AttendanceController extends Controller
     }
 }
 
-    // public function show(string $classCode)
-    // {
-    //     try {
+    public function show(string $classCode)
+    {
+        try {
 
-    //         $attendances = Classroom::where('class_code', $classCode)
-    //                                 ->with('users', 'schedules')
-    //                                 ->get()
-    //                                 ->map(function ($attendance) {
-    //                                     $currentDate = Carbon::now()->toDateString();
+            $attendances = Classroom::where('class_code', $classCode)
+                                    ->with('users', 'schedules')
+                                    ->get()
+                                    ->map(function ($attendance) {
+                                        $currentDate = Carbon::now()->toDateString();
 
-    //                                     // Lọc schedules theo ngày hiện tại
-    //                                     $filteredSchedules = $attendance->schedules
-    //                                         ->filter(function ($schedule) use ($currentDate) {
-    //                                             return $schedule->date == $currentDate;
-    //                                         })
-    //                                         ->pluck('date')
-    //                                         ->toArray();
+                                        // Lọc schedules theo ngày hiện tại
+                                        $filteredSchedules = $attendance->schedules
+                                            ->filter(function ($schedule) use ($currentDate) {
+                                                return $schedule->date == $currentDate;
+                                            })
+                                            ->pluck('date')
+                                            ->toArray();
                                 
-    //                                     // Gắn schedules vào từng user
-    //                                     $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
-    //                                         return [
-    //                                             'student_code' => $user->user_code,
-    //                                             'full_name' => $user->full_name,
-    //                                             'schedules' => $filteredSchedules,
-    //                                         ];
-    //                                     });
+                                        // Gắn schedules vào từng user
+                                        $usersWithSchedules = $attendance->users->map(function ($user) use ($filteredSchedules) {
+                                            return [
+                                                'student_code' => $user->user_code,
+                                                'full_name' => $user->full_name,
+                                                'schedules' => $filteredSchedules,
+                                            ];
+                                        });
                                 
-    //                                     // Trả về dữ liệu
-    //                                     return [
-    //                                         'class_code' => $attendance->class_code,
-    //                                         'users' => $usersWithSchedules,
-    //                                     ];
-    //                                 });
-    //         if (!$attendances) {
+                                        // Trả về dữ liệu
+                                        return [
+                                            'class_code' => $attendance->class_code,
+                                            'users' => $usersWithSchedules,
+                                        ];
+                                    });
+            if (!$attendances) {
 
-    //             return $this->handleInvalidId();
-    //         } else {
+                return $this->handleInvalidId();
+            } else {
 
-    //             return response()->json($attendances, 200);                
-    //         }
-    //     } catch (\Throwable $th) {
+                return response()->json($attendances, 200);                
+            }
+        } catch (\Throwable $th) {
 
-    //         return $this->handleErrorNotDefine($th);
-    //     }
-    // }
+            return $this->handleErrorNotDefine($th);
+        }
+    }
 
     public function store(StoreAttendanceRequest $request, string $classCode)
     {

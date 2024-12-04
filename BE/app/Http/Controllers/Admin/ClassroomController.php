@@ -59,42 +59,62 @@ class ClassroomController extends Controller
     {
         try {
             $perPage = $request->input('per_page', 10);
-            // Lấy ra danh sách các lớp học
-            $classrooms = Classroom::select(['class_code', 'class_name', 'user_code', 'subject_code'])->withCount('users')->with([
-                'subject' => function ($query) {
-                    $query->select('subject_code', 'subject_name');
-                },
-                'teacher' => function ($query) {
-                    $query->select('user_code', 'full_name');
-                },
-                'schedules' => function ($query) {
-                    $query->select('class_code', 'date', 'session_code')->orderBy('date', 'desc')->limit(1);
-                },
-                'schedules.session' => function ($query) {
-                    $query->select('cate_code', 'cate_name', 'value');
-                }
-            ])->get()
-                ->map(function ($classroom) {
-                    return [
-                        'class_code' => $classroom->class_code,
-                        'class_name' => $classroom->class_name,
-                        'students_count' => $classroom->users_count ?? null,
-                        'subject_code' => $classroom->subject->subject_code ?? null,
-                        'subject_name' => $classroom->subject->subject_name ?? null,
-                        'teacher_code' => $classroom->teacher->user_code ?? null,
-                        'teacher_name' => $classroom->teacher->full_name ?? null,
-                        'date_start' => $classroom->schedules->first()->date ?? null,
-                        'session_name' => $classroom->schedules->first()->session->cate_name ?? null,
-                        'session_value' => $classroom->schedules->first()->session->value ?? null,
-                    ];
-                });
+
+            // Lấy danh sách các lớp học
+            $classrooms = Classroom::select(['class_code', 'class_name', 'user_code', 'subject_code'])
+                ->withCount('users')
+                ->with([
+                    'subject' => function ($query) {
+                        $query->select('subject_code', 'subject_name');
+                    },
+                    'teacher' => function ($query) {
+                        $query->select('user_code', 'full_name');
+                    },
+                    'schedules' => function ($query) {
+                        $query->select('class_code', 'date', 'session_code');
+                    },
+                    'schedules.session' => function ($query) {
+                        $query->select('cate_code', 'cate_name', 'value');
+                    }
+                ])->paginate($perPage);
+
+            // return response()->json($classrooms);
+
+            $classrooms->getCollection()->transform(function ($classroom) {
+                $subject_info = $classroom->subject;
+                $teacher_info = $classroom->teacher;
+                $schedule_first = optional($classroom->schedules->first()); // Lấy lịch học đầu tiên
+                $session_info = optional($schedule_first->session);
+
+                return [
+                    'class_code' => $classroom->class_code,
+                    'class_name' => $classroom->class_name,
+                    'students_count' => $classroom->users_count,
+                    'subject_code' => optional($subject_info)->subject_code,
+                    'subject_name' => optional($subject_info)->subject_name,
+                    'teacher_code' => optional($teacher_info)->user_code,
+                    'teacher_name' => optional($teacher_info)->full_name,
+                    'date_start' => optional($schedule_first)->date,
+                    'session_name' => optional($session_info)->cate_name,
+                    'session_value' => optional($session_info)->value,
+                ];
+            });
+
+            // Kiểm tra nếu không có dữ liệu
             if ($classrooms->isEmpty()) {
                 return response()->json(
                     ['message' => "Không có lớp học nào!"],
                     204
                 );
             }
-            return response()->json($classrooms, 200);
+
+            // Trả về danh sách lớp học
+            return response()->json([
+                'status' => true,
+                'classrooms' => $classrooms
+            ], 200);
+
+
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
@@ -149,8 +169,8 @@ class ClassroomController extends Controller
             // Danh sách các ngày ngày học sẽ được thêm vào
             $study_dates = [];
             $total_exam_sessions = 3;
-            $curentDate = new DateTime($dateFrom);
 
+            $curentDate = new DateTime($dateFrom);
             do {
 
                 if (in_array($curentDate->format('N'), $studyDays)) {
@@ -217,6 +237,7 @@ class ClassroomController extends Controller
                     'major_code' => $data['major_code'],
                     'role' => '2'
                 ])->select('user_code', 'full_name')->limit(10)->get();
+
 
 
             return response()->json([
@@ -323,6 +344,7 @@ class ClassroomController extends Controller
                 "class_name"  => $data['course_code'] . "_" . $data['subject_code'] . "." . $number,
                 "subject_code"  => $data['subject_code'],
                 "user_code" => $data['teacher_code'],
+
             ];
 
             $student_codes_valid = User::whereIn('user_code', $data['student_codes'])->pluck('user_code');
@@ -338,22 +360,22 @@ class ClassroomController extends Controller
             $classroom->users()->attach($student_codes_valid, ['class_code' => $classroom->class_code]);
 
             $data_to_insert_schedules_table = [];
-            
+
             foreach ($data['list_study_dates'] as $date) {
                 $data_to_insert_schedules_table[] = [
                     'class_code' => $classroom->class_code,
                     'session_code' => $data['session_code'],
                     'room_code' => $data['room_code'],
                     'teacher_code' => $data['teacher_code'] ?? null,
-                    'date' => $date, 
+                    'date' => $date,
                     'type' => 'study'
                 ];
             }
 
             $total_dates = count($data_to_insert_schedules_table);
             // Lấy 3 ngày cuối là các ngày thi
-            for($i = $total_dates - 3; $i < $total_dates ; $i++){
-                if($i > 0){
+            for ($i = $total_dates - 3; $i < $total_dates; $i++) {
+                if ($i > 0) {
                     $data_to_insert_schedules_table[$i]['type'] = 'exam';
                 }
             }
@@ -424,7 +446,7 @@ class ClassroomController extends Controller
 
             $subject_info = optional($classroom->subject);
             $major_info = optional($subject_info->major);
-            $schedule_info = optional($classroom->schedules)->first();
+            $schedule_info = optional($classroom->schedules->first());
             $session_info = optional($schedule_info->session);
             $room_info = optional($schedule_info->room);
             $teacher_info = optional($classroom->teacher);

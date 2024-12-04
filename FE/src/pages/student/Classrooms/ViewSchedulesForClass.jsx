@@ -19,7 +19,7 @@ const ViewSchedulesForClass = () => {
             const res = await api.get(
                 `/student/classrooms/${class_code}/schedules`
             );
-            return res?.data;
+            return res?.data || [];
         },
         onError: (error) => {
             console.error("Error fetching schedules:", error);
@@ -95,21 +95,39 @@ const ViewSchedulesForClass = () => {
                             </thead>
                             <tbody>
                                 {schedules.map((schedule, index) => {
-                                    const sessionValue = JSON.parse(
-                                        schedule.session.value
-                                    );
+                                    const classCode =
+                                        schedule?.class_code ||
+                                        "Không có mã lớp";
+                                    const date =
+                                        schedule?.date || "Không có ngày học";
+                                    const roomName =
+                                        schedule?.room_code ||
+                                        "Không có phòng học";
+                                    const sessionName =
+                                        schedule?.session?.cate_name ||
+                                        "Không có ca học";
+                                    const sessionValue = schedule?.session
+                                        ?.value
+                                        ? JSON.parse(schedule.session.value)
+                                        : {
+                                              start: "Không có thời gian",
+                                              end: "Không có thời gian",
+                                          };
+                                    const startTime =
+                                        sessionValue?.start ||
+                                        "Không có thời gian";
+                                    const endTime =
+                                        sessionValue?.end ||
+                                        "Không có thời gian";
+
                                     return (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
-                                            <td>{schedule.class_code}</td>
-                                            <td>{schedule.date}</td>
-                                            <td>{schedule.room.cate_name}</td>
-                                            <td>
-                                                {schedule.session.cate_name}
-                                            </td>
-                                            <td>
-                                                {`${sessionValue.start} - ${sessionValue.end}`}
-                                            </td>
+                                            <td>{classCode}</td>
+                                            <td>{date}</td>
+                                            <td>{roomName}</td>
+                                            <td>{sessionName}</td>
+                                            <td>{`${startTime} - ${endTime}`}</td>
                                         </tr>
                                     );
                                 })}

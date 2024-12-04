@@ -16,8 +16,8 @@ class Subject extends Model
         'subject_code',
         'subject_name',
         'tuition',
-        're_study_fee',
         'credit_number',
+        're_study_fee',
         'total_sessions',
         'assessments',
         'exam_day',
@@ -31,6 +31,11 @@ class Subject extends Model
     protected $casts = [
         'assessments' => 'array',
     ];
+
+    public function classrooms()
+    {
+        return $this->hasMany(Classroom::class, 'subject_code', 'subject_code');
+    }
 
     public function major(){
         return $this->belongsTo(Category::class, 'major_code', 'cate_code');

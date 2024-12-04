@@ -15,7 +15,7 @@ const MySchedule = () => {
         queryKey: ["MY_SCHEDULE"],
         queryFn: async () => {
             const res = await api.get("/teacher/schedules");
-            return res?.data;
+            return res?.data.data;
         },
     });
 
@@ -45,29 +45,38 @@ const MySchedule = () => {
                 data: "class_code",
             },
             {
-                title: "Phòng học",
-                data: "room_code",
+                title: "Mã môn",
+                data: "subject_code",
             },
             {
                 title: "Môn học",
-                data: "classroom",
-                render: (classroom) => {
-                    return `${classroom.subject_code}`;
+                data: "subject_name",
+            },
+            {
+                title: "Sinh viên",
+                data: "count_users",
+            },
+            {
+                title: "Thời gian",
+                data: "session",
+                render: (session) => {
+                    const sessionValParse = JSON.parse(session);
+
+                    return `${sessionValParse.start} - ${sessionValParse.end}`;
                 },
+            },
+            {
+                title: "Ca học",
+                data: "session_name",
+            },
+            {
+                title: "Phòng học",
+                data: "room_code",
             },
             {
                 title: "Ngày",
                 data: "date",
                 render: (date) => dayjs(date).format("DD/MM/YYYY"),
-            },
-            {
-                title: "Ca",
-                data: "session",
-                render: (session) => {
-                    const sessionValParse = JSON.parse(session.value);
-
-                    return `${session.cate_name} (${sessionValParse.start} - ${sessionValParse.end})`;
-                },
             },
         ];
 
@@ -76,9 +85,9 @@ const MySchedule = () => {
                 $("#major-table").DataTable().clear().destroy();
             }
             $("#major-table").DataTable({
+                data: currentSchedule,
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
-                data: currentSchedule,
                 columns,
                 order: [[5, "asc"]],
                 language: {
@@ -102,6 +111,25 @@ const MySchedule = () => {
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 data: next7DaysSchedule,
+                processing: true,
+                serverSide: true, 
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/teacher/schedules`, {
+                            params: { page, per_page: data.length },
+                        });
+                        const result = response.data;
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: result.data,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
                 columns,
                 order: [[5, "asc"]],
                 language: {

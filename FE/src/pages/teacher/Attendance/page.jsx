@@ -8,15 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 const ShowAttendance = () => {
-    const [changedRecords, setChangedRecords] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
     const { class_code } = useParams();
     const navigate = useNavigate();
 
     const { data: attendanceData, error, isLoading, refetch } = useQuery({
         queryKey: ["attendances"],
         queryFn: async () => {
-            const response = await api.get(`/teacher/attendances/${class_code}`);
+            const response = await api.get(`/teacher/attendances/${class_code}/`);
             return response?.data;
             // const attendanceDataI = [
             //     {
@@ -82,8 +80,8 @@ const ShowAttendance = () => {
             attendanceData.forEach((record) => {
                 const { student_code, full_name, date, status, noted } = record;
                 const formattedDate = new Date(date)
-                    .toISOString()
-                    .split("T")[0];
+                    // .toISOString()
+                    // .split("T")[0];
 
                 if (!students[student_code]) {
                     students[student_code] = {
@@ -132,79 +130,30 @@ const ShowAttendance = () => {
                         data: null,
                         render: (data, type, row) => {
                             const attendance = row.attendance[date] || {};
-
-                            if (!isEditing) {
-                                // Chế độ xem: Hiển thị trạng thái (P, A, C)
-                                const status = attendance.status || "C";
-                                const displayStatus = status === 'present' ? 'P' : (status === 'absent' ? 'A' : 'C');
-                                let statusClass = '';
-                                let statusText = '';
-                                if (displayStatus === 'P') {
-                                    statusClass = 'text-success';
-                                    statusText = 'Có mặt';
-                                } else if (displayStatus === 'A') {
-                                    statusClass = 'text-danger';
-                                    statusText = 'Vắng';
-                                } else {
-                                    statusClass = 'text-secondary';
-                                    statusText = 'Chưa điểm danh';
-                                }
-                                return `<div class="${statusClass} text-center" title="${statusText}">${displayStatus}</div>`;
+                            // Chế độ xem: Hiển thị trạng thái (P, A, C)
+                            const status = attendance.status || "C";
+                            const displayStatus = status === 'present' ? 'P' : (status === 'absent' ? 'A' : 'C');
+                            let statusClass = '';
+                            let statusText = '';
+                            if (displayStatus === 'P') {
+                                statusClass = 'text-success';
+                                statusText = 'Có mặt';
+                            } else if (displayStatus === 'A') {
+                                statusClass = 'text-danger';
+                                statusText = 'Vắng';
+                            } else {
+                                statusClass = 'text-secondary';
+                                statusText = 'Chưa điểm danh';
                             }
-
-                            const checked = attendance.status === "present" ? "checked" : "";
-                            return `
-                                <div class="form-check form-switch d-flex justify-content-center">
-                                    <input class="form-check-input attendance-checkbox" style='transform: scale(1.5);' type="checkbox" ${checked} data-student="${row.student_code}" data-date="${date}" />
-                                </div>
-                            `;
+                            return `<div class="${statusClass} text-center" title="${statusText}">${displayStatus}</div>`;
                         }
 
                     })),
                 ],
                 scrollY: true,
             });
-
-            // Lắng nghe sự kiện thay đổi trên input-status
-            $("#attendanceTable").on("change", ".attendance-checkbox", function () {
-                const studentCode = $(this).data("student");
-                const date = $(this).data("date");
-                const isChecked = $(this).is(":checked");
-                const newStatus = isChecked ? "present" : "absent";
-
-                // Cập nhật changedRecords
-                setChangedRecords((prevRecords) => {
-                    const updatedRecords = prevRecords.filter(
-                        (record) => !(record.student_code === studentCode && record.date === date)
-                    );
-                    updatedRecords.push({
-                        student_code: studentCode,
-                        date,
-                        status: newStatus,
-                        classCode: class_code,
-                    });
-                    return updatedRecords;
-                });
-            });
         }
-    }, [attendanceData, isEditing]);
-
-
-    const saveChanges = async () => {
-        if (changedRecords.length === 0) {
-            toast.info("Chưa có thay đổi nào để lưu.");
-            return;
-        }
-
-        try {
-            await api.put(`/api/teacher/attendances`, changedRecords);
-            toast.success("Lưu thành công!");
-            setChangedRecords([]);
-        } catch (error) {
-            toast.error("Đã xảy ra lỗi khi lưu.");
-            console.error(error);
-        }
-    };
+    }, [attendanceData]);
 
     return (
         <div className="row">
@@ -226,22 +175,6 @@ const ShowAttendance = () => {
                                 onClick={() => navigate(-1)}
                             >
                                 <i className="fas fa-backward"> Quay lại</i>
-                            </button>
-                            {/* Thêm nút sửa */}
-                            <button
-                                type="button"
-                                className="btn btn-secondary ms-2"
-                                onClick={() => setIsEditing(!isEditing)} // Chuyển chế độ sửa
-                            >
-                                {isEditing ? <i className='fas fa-redo'> Hủy</i> : <i className='fas fa-recycle'> Sửa</i>}
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn btn-primary ms-2"
-                                onClick={saveChanges}
-                            >
-                                <i className='fas fa-save'> Lưu</i>
                             </button>
                         </div>
                     </div>
