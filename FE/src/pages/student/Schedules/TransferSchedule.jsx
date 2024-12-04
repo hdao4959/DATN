@@ -289,6 +289,10 @@ const TransferSchedule = () => {
                                             </strong>{" "}
                                             {newClass.study_days}
                                         </p>
+                                        <p>
+                                            <strong>Ngày bắt đầu:</strong>{" "}
+                                            {newClass.date_from}
+                                        </p>
 
                                         <button
                                             className="btn btn-success btn-sm"

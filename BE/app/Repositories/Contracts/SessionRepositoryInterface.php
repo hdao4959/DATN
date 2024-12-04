@@ -9,4 +9,6 @@ interface SessionRepositoryInterface {
     public function update(array $data , string $code);
 
     public function delete(string $code);
+
+    public function getModel();
 }

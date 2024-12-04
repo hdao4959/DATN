@@ -12,16 +12,16 @@ const ShowAttendance = () => {
     const navigate = useNavigate();
 
     const { data: attendanceData, error, isLoading, refetch } = useQuery({
-        queryKey: ["attendances"],
+        queryKey: ["attendances", class_code],
         queryFn: async () => {
-            const response = await api.get(`/teacher/attendances/${class_code}/`);
+            const response = await api.get(`/teacher/attendances/${class_code}`);
             return response?.data;
             // const attendanceDataI = [
             //     {
             //         student_code: "SV001",
             //         full_name: "Nguyễn Văn A",
             //         date: "2024-11-01T00:00:00Z",
-            //         status: "present",
+            //         status: "absent",
             //         noted: "On time",
             //     },
             //     {
@@ -42,6 +42,13 @@ const ShowAttendance = () => {
             //         student_code: "SV001",
             //         full_name: "Nguyễn Văn A",
             //         date: "2024-11-02T00:00:00Z",
+            //         status: "absent",
+            //         noted: "Traveling",
+            //     },
+            //     {
+            //         student_code: "SV001",
+            //         full_name: "Nguyễn Văn A",
+            //         date: "2024-11-03T00:00:00Z",
             //         status: "absent",
             //         noted: "Traveling",
             //     },
@@ -77,23 +84,27 @@ const ShowAttendance = () => {
         if (attendanceData) {
             const students = {};
 
+            // Xử lý dữ liệu attendance
             attendanceData.forEach((record) => {
-                const { student_code, full_name, date, status, noted } = record;
-                const formattedDate = new Date(date)
-                    // .toISOString()
-                    // .split("T")[0];
+                const { student_code, full_name, date, status } = record;
+                // Kiểm tra và xử lý định dạng date
+                const formattedDate = date; // Trường hợp chỉ chứa ngày
+
 
                 if (!students[student_code]) {
                     students[student_code] = {
                         student_code,
                         full_name,
                         attendance: {},
+                        absentCount: 0, // Khởi tạo số buổi vắng
                     };
                 }
 
-                students[student_code].attendance[formattedDate] = {
-                    status,
-                };
+                // Cập nhật trạng thái điểm danh
+                students[student_code].attendance[formattedDate] = { status };
+                if (status === "absent") {
+                    students[student_code].absentCount++; // Tăng số buổi vắng
+                }
             });
 
             const firstStudent = Object.values(students)[0];
@@ -104,6 +115,7 @@ const ShowAttendance = () => {
                 : [];
             const tableData = Object.values(students);
 
+            // Khởi tạo DataTable
             const table = $("#attendanceTable").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50, 100],
@@ -126,30 +138,31 @@ const ShowAttendance = () => {
                     { title: "Tên SV", data: "full_name" },
                     ...sortedDates.map((date) => ({
                         title: formatDate(date),
-                        className: 'text-center',
+                        className: "text-center",
                         data: null,
                         render: (data, type, row) => {
                             const attendance = row.attendance[date] || {};
-                            // Chế độ xem: Hiển thị trạng thái (P, A, C)
                             const status = attendance.status || "C";
-                            const displayStatus = status === 'present' ? 'P' : (status === 'absent' ? 'A' : 'C');
-                            let statusClass = '';
-                            let statusText = '';
-                            if (displayStatus === 'P') {
-                                statusClass = 'text-success';
-                                statusText = 'Có mặt';
-                            } else if (displayStatus === 'A') {
-                                statusClass = 'text-danger';
-                                statusText = 'Vắng';
+                            const displayStatus =
+                                status === "present" ? "P" : status === "absent" ? "A" : "C";
+                            let statusClass = "";
+                            if (displayStatus === "P") {
+                                statusClass = "text-success";
+                            } else if (displayStatus === "A") {
+                                statusClass = "text-danger";
                             } else {
-                                statusClass = 'text-secondary';
-                                statusText = 'Chưa điểm danh';
+                                statusClass = "text-secondary";
                             }
-                            return `<div class="${statusClass} text-center" title="${statusText}">${displayStatus}</div>`;
-                        }
-
+                            return `<div class="${statusClass}">${displayStatus}</div>`;
+                        },
                     })),
                 ],
+                createdRow: (row, data) => {
+                    // Kiểm tra số buổi vắng >= 3 và cập nhật màu sắc hàng
+                    if (data.absentCount >= 3) {
+                        $(row).css("background-color", "rgba(255, 0, 0, 0.1)"); // Sắc đỏ nhạt
+                    }
+                },
                 scrollY: true,
             });
         }
@@ -163,6 +176,12 @@ const ShowAttendance = () => {
                         <div className="card-title text-center">Điểm danh Lớp {class_code}</div>
                     </div>
                     <div className='card-body'>
+                        {isLoading && (
+                            <div>
+                                <div className="spinner-border" role="status"></div>
+                                <p>Đang tải dữ liệu</p>
+                            </div>
+                        )}
                         <div className="table-responsive">
                             <table
                                 id="attendanceTable"

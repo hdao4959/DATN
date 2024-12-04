@@ -103,7 +103,7 @@ const AddSubject = () => {
                   <div className="row">
                     <div className="col-md-6">
                       {/* Mã môn */}
-                      <div className="form-group">
+                      {/* <div className="form-group">
                         <label>Mã Môn:</label>
                         <input
                           type="text"
@@ -111,7 +111,7 @@ const AddSubject = () => {
                           {...register('subject_code', { required: 'Mã môn không được để trống.' })}
                         />
                         {errors.subject_code && <span className="text-danger">{errors.subject_code.message}</span>}
-                      </div>
+                      </div> */}
 
                       {/* Tên môn học */}
                       <div className="form-group">
@@ -168,16 +168,16 @@ const AddSubject = () => {
                       <div className="form-group">
                         <label>Các Đầu Điểm:</label>
                         {score_categories?.map((headpoint) => (
-                          <div className='form-check' key={headpoint.id}>
+                          <div className='form-check' key={headpoint.assessment_code}>
                             <input
                               type="checkbox"
-                              value={headpoint.id}
+                              value={headpoint.assessment_code}
                               {...register('assessment_items')}
                               className='form-check-input w-5 h-5'
-                              id={`headpoint-${headpoint.id}`}
+                              id={`headpoint-${headpoint.assessment_code}`}
                               defaultChecked
                             />
-                            <label className='form-check-label' htmlFor={`headpoint-${headpoint.id}`}>
+                            <label className='form-check-label' htmlFor={`headpoint-${headpoint.assessment_code}`}>
                               {`${headpoint.name} (Trọng số: ${headpoint.weight})`}
                             </label>
                           </div>

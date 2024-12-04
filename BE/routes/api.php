@@ -94,11 +94,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
+        
+        Route::apiResource('sessions', SessionController::class);
+        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
+        Route::post('sessions/{code}',[SessionController::class,'update']);
+
+        // khóa học
         Route::apiResource('course', CourseController::class);
         Route::put('course/{code}',[CourseController::class,'update']);
         Route::delete('course/{code}',[CourseController::class,'destroy']);
-        Route::apiResource('sessions', SessionController::class);
-        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
+
 
         Route::apiResource('teachers', TeacherController::class);
         Route::apiResource('students', StudentController::class);
@@ -318,7 +323,6 @@ Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::
 
 // Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
-// Route::get('teacher/schedules', [TeacherScheduleController::class, 'listSchedulesForTeacher']);
 
 Route::apiResource('fees', FeeController::class);
 
@@ -326,7 +330,10 @@ Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 
 Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
                                             ->name('forget.password.post');
-                                            
+
 Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
                                             ->name('reset.password.post');
+
+
+
 
