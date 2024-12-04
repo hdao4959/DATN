@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import api from '../../../config/axios';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,12 +10,12 @@ const EditSubject = () => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const { id } = useParams();
-
+  const nav = useNavigate();
   const { data: subjectData, isLoading: isLoadingSubject } = useQuery({
     queryKey: ['subject', id],
     queryFn: async () => {
       const response = await api.get(`/admin/subjects/${id}`);
-      return response?.data?.data;
+      return response?.data?.subject;
     },
   });
 
@@ -48,6 +48,7 @@ const EditSubject = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['LIST_SUBJECT']);
       toast.success("Chỉnh sửa môn học thành công!");
+      nav("/admin/subjects")
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -143,13 +144,7 @@ const EditSubject = () => {
                       </div>
 
                       {/* Mô tả */}
-                      <div className="form-group">
-                        <label>Mô Tả:</label>
-                        <textarea
-                          className="form-control"
-                          {...register('description')}
-                        />
-                      </div>
+
 
                       {/* Học phí */}
                       <div className="form-group">
@@ -263,6 +258,13 @@ const EditSubject = () => {
                           <option value="1">Kích hoạt</option>
                           <option value="0">Vô hiệu</option>
                         </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Mô Tả:</label>
+                        <textarea
+                          className="form-control"
+                          {...register('description')}
+                        />
                       </div>
                     </div>
                     <div className="card-action d-flex justify-content-end gap-x-3">
