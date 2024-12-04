@@ -222,7 +222,38 @@ const ViewSchedules = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* Dữ liệu tất cả lịch học sẽ được thêm vào DataTable */}
+
+                            {schedules?.map((schedule, index) => (
+                                <tr key={schedule.id}>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                        {schedule.date
+                                            ? 
+                                            // new Date(
+                                                  schedule.date
+                                            //   ).toLocaleDateString()
+                                            : "Không xác định"}{" "}
+                                        {/* Kiểm tra nếu date không có */}
+                                    </td>
+                                    <td>{schedule.class_code || "N/A"}</td>{" "}
+                                    {/* Kiểm tra nếu class_code không có */}
+                                    <td>
+                                        {schedule.room_code ||
+                                            "Không có thông tin"}
+                                    </td>{" "}
+                                    {/* Kiểm tra nếu room_code không có */}
+                                    <td>
+                                        {schedule.session_name ||
+                                            "Không có thông tin"}
+                                    </td>{" "}
+                                    {/* Kiểm tra nếu session_code không có */}
+                                    <td>
+                                        {schedule.session_value
+                                            ? `${JSON.parse(schedule.session_value).start}` + ' - ' + `${JSON.parse(schedule.session_value).end}`
+                                            : "Không có thông tin"}
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
