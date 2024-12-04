@@ -98,7 +98,7 @@ class SubjectController extends Controller
             return response()->json(
 
                 [
-                    'status' => false,
+                    'status' => true,
                     'subject' => [
                         'subject_code' => $subject->subject_code,
                         'subject_name' => $subject->subject_name,
