@@ -171,14 +171,14 @@ const EditSubject = () => {
                         <label>Các Đầu Điểm:</label>
                         {score_categories?.map((headpoint) => {
                           const isChecked = subjectData?.assessment_items?.some(
-                            (item) => item.id === headpoint.id
+                            (item) => item.assessment_code === headpoint.assessment_code
                           );
 
                           return (
-                            <div className="form-check" key={headpoint.id}>
+                            <div className="form-check" key={headpoint.assessment_code}>
                               <input
                                 type="checkbox"
-                                value={headpoint.id}
+                                value={headpoint.assessment_code}
                                 defaultChecked={isChecked}
                                 {...register('assessment_items')}
                                 className="form-check-input w-5 h-5"

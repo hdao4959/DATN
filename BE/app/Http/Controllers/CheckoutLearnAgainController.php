@@ -127,8 +127,8 @@ class CheckoutLearnAgainController extends Controller
         }
 
         if ($data['resultCode'] == 0) {
-            $service->status = 'approved';
-            $service->save();
+            // $service->status = 'approved';
+            // $service->save();
             $score->update(['status'=>true]);
             return response()->json(['message' => 'Thanh toán thành công!', 'service' => $service], 200);
         } else {

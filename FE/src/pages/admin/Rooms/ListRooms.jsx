@@ -263,9 +263,9 @@ const ClassRoomsList = () => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             placeholder="Chọn ngày bắt đầu"
-                            min={new Date(
-                                new Date().setDate(new Date().getDate() + 1)
-                            ).toLocaleDateString("en-CA")}
+                            // min={new Date(
+                            //     new Date().setDate(new Date().getDate() + 1)
+                            // ).toLocaleDateString("en-CA")}
                         />
                         <button
                             className="btn btn-primary text-nowrap"

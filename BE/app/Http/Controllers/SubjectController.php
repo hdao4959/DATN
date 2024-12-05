@@ -138,12 +138,12 @@ class SubjectController extends Controller
 
             $is_studying = Classroom::where('subject_code', $subject_code)->exists();
 
-            if ($is_studying) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Bạn không thể sửa môn học này vì có lớp đang học!'
-                ], 409);
-            }
+            // if ($is_studying) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Bạn không thể sửa môn học này vì có lớp đang học!'
+            //     ], 409);
+            // }
 
 
             $subject->update($data);

@@ -43,6 +43,25 @@ const SubjectsList = () => {
     if (subjects) {
       $('#subjectList').DataTable({
         data: subjects,
+        processing: true,
+        serverSide: true,
+        ajax: async (data, callback) => {
+          try {
+            const page = data.start / data.length + 1;
+            const response = await api.get(`/admin/subjects`, {
+              params: { page, per_page: data.length },
+            });
+            const result = response.data;
+            callback({
+              draw: data.draw,
+              recordsTotal: result.total,
+              recordsFiltered: result.total,
+              data: result.subjects.data,
+            });
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        },
         columns: [
           { title: "STT", data: null, render: (data, type, row, meta) => meta.row + 1 },
           { title: "Mã Môn", data: "subject_code" },

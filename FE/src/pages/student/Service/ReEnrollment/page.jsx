@@ -23,7 +23,7 @@ const ReEnrollmentForm = () => {
             });
             return response.data;
         },
-        onSuccess:async  (data) => {
+        onSuccess: async (data) => {
             toast.success('Dịch vụ đăng ký học lại thành công');
             console.log("Dịch vụ đăng ký học lại thành công:", data);
             const redirectUrl = `student/send-email/learn-again/${data.service.id}`;
@@ -31,6 +31,7 @@ const ReEnrollmentForm = () => {
                 const emailResponse = await api.post(redirectUrl, {
                     subject_code: selectedCourse,  // Truyền subject_code
                 });
+                setAmount(0);
                 console.log("Gửi email thành công:", emailResponse.data);
                 toast.success("Gửi email thành công");
             } catch (emailError) {
@@ -44,6 +45,7 @@ const ReEnrollmentForm = () => {
             toast.error('Có lỗi xảy ra');
 
         },
+
     });
     // const courses = [
     //     { subject_code: 'SUB001', subject_name: "Lập trình Web", re_study_fee: 50000 },
@@ -68,7 +70,7 @@ const ReEnrollmentForm = () => {
                 </div>
                 <div className="card-body">
                     {/* Hiển thị thông tin trên */}
-                    <div className="row">
+                    {/* <div className="row">
                         <div className="col-md-3">
                             <strong>Loại dịch vụ:</strong> Đăng kí học lại
                         </div>
@@ -81,7 +83,7 @@ const ReEnrollmentForm = () => {
                         <div className="col-md-3">
                             <strong>Ngành học:</strong> Công nghệ thông tin
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Form đăng ký học lại */}
                     <form onSubmit={handleSubmit} className="mt-4">

@@ -65,7 +65,7 @@ const AddSubject = () => {
       re_study_fee: data.re_study_fee,
       major_code: data.major_code,
       semester_code: data.semester_code,
-      total_sessions: data.total_sessions,
+      total_sessions: 40,
       image: data.image[0],
       is_active: data.is_active,
       assessment_items: data.assessment_items,
