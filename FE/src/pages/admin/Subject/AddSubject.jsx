@@ -27,14 +27,14 @@ const AddSubject = () => {
   const { data: categories, isLoading: isLoadingMajor } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/getAllCategory/major');
+      const response = await api.get('/listMajorsForForm');
       return response?.data;
     }
   });
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: async () => {
-      const response = await api.get('/admin/semesters');
+      const response = await api.get('/listSemestersForForm');
       return response?.data;
     }
   });

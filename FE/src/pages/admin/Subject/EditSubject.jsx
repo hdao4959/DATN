@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import api from '../../../config/axios';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,23 +10,29 @@ const EditSubject = () => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const { id } = useParams();
-
+  const nav = useNavigate();
   const { data: subjectData, isLoading: isLoadingSubject } = useQuery({
     queryKey: ['subject', id],
     queryFn: async () => {
       const response = await api.get(`/admin/subjects/${id}`);
-      return response?.data?.data;
+      return response?.data?.subject;
     },
   });
 
   const { data: categories, isLoading: isLoadingMajor } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/getAllCategory/major');
+      const response = await api.get('/listMajorsForForm');
       return response?.data;
     }
   });
-
+  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+    queryKey: ['semesters'],
+    queryFn: async () => {
+      const response = await api.get('/listSemestersForForm');
+      return response?.data;
+    }
+  });
   const { data: score_categories, isLoading: isLoadingScore } = useQuery({
     queryKey: ['score'],
     queryFn: async () => {
@@ -42,6 +48,7 @@ const EditSubject = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['LIST_SUBJECT']);
       toast.success("Chỉnh sửa môn học thành công!");
+      nav("/admin/subjects")
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -52,15 +59,15 @@ const EditSubject = () => {
     const selectedAssessmentItems = data.assessment_items.map(id => ({
       id: Number(id)
     }));
-  
+
     const updatedData = {
       ...data,
-      assessment_items: selectedAssessmentItems, 
+      assessment_items: selectedAssessmentItems,
     };
-  
+
     mutate(updatedData);
   };
-  
+
   useEffect(() => {
     if (subjectData) {
       console.log(subjectData);
@@ -137,13 +144,7 @@ const EditSubject = () => {
                       </div>
 
                       {/* Mô tả */}
-                      <div className="form-group">
-                        <label>Mô Tả:</label>
-                        <textarea
-                          className="form-control"
-                          {...register('description')}
-                        />
-                      </div>
+
 
                       {/* Học phí */}
                       <div className="form-group">
@@ -178,7 +179,7 @@ const EditSubject = () => {
                               <input
                                 type="checkbox"
                                 value={headpoint.id}
-                                defaultChecked={isChecked} 
+                                defaultChecked={isChecked}
                                 {...register('assessment_items')}
                                 className="form-check-input w-5 h-5"
                                 id={`headpoint-${headpoint.id}`}
@@ -211,11 +212,19 @@ const EditSubject = () => {
                       {/* Kỳ học */}
                       <div className="form-group">
                         <label>Học kỳ:</label>
-                        <input
-                          type="text"
+
+                        <select
                           className="form-control"
                           {...register('semester_code', { required: 'Học kỳ không được để trống.' })}
-                        />
+                        >
+                          <option value="">Chọn kỳ học</option>
+                          {semesters?.map((semester) => (
+                            <option key={semester.cate_code} value={semester.cate_code}>
+                              {semester.cate_name}
+                            </option>
+                          ))}
+                        </select>
+
                         {errors.semester_code && <span className="text-danger">{errors.semester_code.message}</span>}
                       </div>
 
@@ -249,6 +258,13 @@ const EditSubject = () => {
                           <option value="1">Kích hoạt</option>
                           <option value="0">Vô hiệu</option>
                         </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Mô Tả:</label>
+                        <textarea
+                          className="form-control"
+                          {...register('description')}
+                        />
                       </div>
                     </div>
                     <div className="card-action d-flex justify-content-end gap-x-3">
