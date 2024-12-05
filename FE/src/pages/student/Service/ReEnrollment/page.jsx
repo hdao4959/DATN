@@ -1,19 +1,63 @@
 import React, { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "./../../../../config/axios";
+import { toast } from "react-toastify";
 
 const ReEnrollmentForm = () => {
-    const [selectedCourse, setSelectedCourse] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState();
     const [amount, setAmount] = useState(0);
     const [note, setNote] = useState("");
+    const { data: ListLearnAgain, refetch } = useQuery({
+        queryKey: ["LIST_LEARNAGAIN"],
+        queryFn: async () => {
+            const res = await api.get("student/services/getListLearnAgain");
+            return res.data.data;
+        },
+    });
+    console.log(ListLearnAgain);
+    // Sử dụng useMutation để gọi API khi người dùng gửi biểu mẫu
+    const { mutate, isLoading, error } = useMutation({
+        mutationFn: async () => {
+            const response = await api.post("student/services/learn-again", {
+                subject_code: selectedCourse,  // Gửi mã môn học
+            });
+            return response.data;
+        },
+        onSuccess:async  (data) => {
+            toast.success('Dịch vụ đăng ký học lại thành công');
+            console.log("Dịch vụ đăng ký học lại thành công:", data);
+            const redirectUrl = `student/send-email/learn-again/${data.service.id}`;
+            try {
+                const emailResponse = await api.post(redirectUrl, {
+                    subject_code: selectedCourse,  // Truyền subject_code
+                });
+                console.log("Gửi email thành công:", emailResponse.data);
+                toast.success("Gửi email thành công");
+            } catch (emailError) {
+                console.error("Có lỗi khi gửi email:", emailError);
+                toast.error("Có lỗi khi gửi email");
+            }
 
-    const courses = [
-        { subject_code: 'SUB001', subject_name: "Lập trình Web", re_study_fee: 50000 },
-        { subject_code: 'SUB002', subject_name: "Mạng máy tính", re_study_fee: 60000 },
-        { subject_code: 'SUB003', subject_name: "Cơ sở dữ liệu", re_study_fee: 70000 },
-    ];
+        },
+        onError: (error) => {
+            console.error("Có lỗi xảy ra:", error);
+            toast.error('Có lỗi xảy ra');
+
+        },
+    });
+    // const courses = [
+    //     { subject_code: 'SUB001', subject_name: "Lập trình Web", re_study_fee: 50000 },
+    //     { subject_code: 'SUB002', subject_name: "Mạng máy tính", re_study_fee: 60000 },
+    //     { subject_code: 'SUB003', subject_name: "Cơ sở dữ liệu", re_study_fee: 70000 },
+    // ];
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Đăng ký học lại", { selectedCourse, amount, note });
+        console.log("Đăng ký học lại", { selectedCourse, amount });
+        if (selectedCourse) {
+            // Gọi API khi gửi biểu mẫu
+            mutate();
+        }
     };
 
     return (
@@ -50,15 +94,29 @@ const ReEnrollmentForm = () => {
                                             id="course"
                                             className="form-control"
                                             value={selectedCourse}
-                                            onChange={(e) => setSelectedCourse(e.target.value)}
+                                            onChange={(e) => {
+                                                const selectedSubjectCode = e.target.value;
+                                                setSelectedCourse(selectedSubjectCode);
+
+                                                // Tìm môn học trong ListLearnAgain dựa trên subject_code
+                                                const selectedSubject = ListLearnAgain.find(
+                                                    (LearnAgain) => LearnAgain?.subject?.subject_code === selectedSubjectCode
+                                                );
+
+                                                // Cập nhật số tiền học lại (re_study_fee) của môn học đã chọn
+                                                if (selectedSubject) {
+                                                    setAmount(selectedSubject?.subject?.re_study_fee || 0);
+                                                }
+                                            }}
                                         >
                                             <option value="">Lựa chọn môn học lại</option>
-                                            {courses.map((course) => (
-                                                <option key={course.subject_code} value={course.subject_code}>
-                                                    {course.subject_name}
+                                            {ListLearnAgain?.map((LearnAgain) => (
+                                                <option key={LearnAgain.subject_code} value={LearnAgain?.subject?.subject_code}>
+                                                    {LearnAgain?.subject?.subject_name}
                                                 </option>
                                             ))}
                                         </select>
+
                                     </td>
                                 </tr>
 

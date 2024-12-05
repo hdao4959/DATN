@@ -32,47 +32,41 @@ class CheckoutLearnAgainController extends Controller
     }
 
     public function momo_payment(Request $request)
-    {
+{
+    try {
         $ServiceId = $request->input('id');
-        $user_code = $request->user_code;
-        $subject_code = $request->subject_code;
+        $user_code = $request->input('user_code');
+        $subject_code = $request->input('subject_code');
 
         if (!$user_code || !$subject_code) {
-            return redirect()->back()->with('error', '1.Thiếu thông tin user_code hoặc subject_code!');
+            return redirect()->back()->with('error', 'Thiếu thông tin: Vui lòng cung cấp user_code và subject_code!');
         }
-        // Kiểm tra fee_id
         $service = Service::find($ServiceId);
         if (!$service) {
             return redirect()->back()->with('error', 'Không tìm thấy dịch vụ!');
         }
+        // return $service;
 
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
         $orderInfo = "Thanh toán qua MoMo";
-        // $amount = 10000;
         $amount = $service->amount;
-        // $amount = $fee->total_amount ;
         $orderId = time() . "";
-        // url khi thanh toan thanh cong
         $redirectUrl = url('/payment-success/learn-again');
         $ipnUrl = url('/payment-callback/learn-again');
-
-        $extraData = json_encode(['id' => $service->id,'user_code'=>$user_code,'subject_code'=>$subject_code]);
-
+        $extraData = json_encode(['id' => $service->id, 'user_code' => $user_code, 'subject_code' => $subject_code]);
 
         $requestId = time() . "";
         $requestType = "payWithATM";
-        // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
-        //before sign HMAC SHA256 signature
         $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
-        // dd($signature);
-        $data = array(
+
+        $data = [
             'partnerCode' => $partnerCode,
             'partnerName' => "Test",
-            "storeId" => "MomoTestStore",
+            'storeId' => "MomoTestStore",
             'requestId' => $requestId,
             'amount' => $amount,
             'orderId' => $orderId,
@@ -82,17 +76,24 @@ class CheckoutLearnAgainController extends Controller
             'lang' => 'vi',
             'extraData' => $extraData,
             'requestType' => $requestType,
-            'signature' => $signature
-        );
+            'signature' => $signature,
+        ];
+
         $result = $this->execPostRequest($endpoint, json_encode($data));
-        // return dd($amount,$result);
-        $jsonResult = json_decode($result, true);  // decode json
+        $jsonResult = json_decode($result, true);
+
         if (!isset($jsonResult['payUrl'])) {
+            // Log::error("MoMo API Error: " . json_encode($jsonResult));
             return redirect()->back()->with('error', 'Không thể tạo liên kết thanh toán. Vui lòng thử lại!');
         }
 
         return redirect()->to($jsonResult['payUrl']);
+    } catch (\Exception $e) {
+        // Log::error("MoMo Payment Error: " . $e->getMessage());
+        return redirect()->back()->with('error', 'Đã xảy ra lỗi trong quá trình xử lý thanh toán.');
     }
+}
+
 
     public function handleCallback(Request $request)
     {

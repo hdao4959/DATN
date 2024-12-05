@@ -89,6 +89,7 @@ class SendEmailController extends Controller
 
     public function sendMailLearnAgain(Request $request, $id)
     {
+        // return dd("ok");
         try {
             // Kiểm tra service
             $service = Service::with('student')->find($id);
@@ -104,7 +105,7 @@ class SendEmailController extends Controller
             // Tạo dữ liệu email
             $emailData = [
                 'id'           => $service->id,
-                'subject_code' => $request->subject_code,
+                'subject_code' => $request->input('subject_code'),
                 'service_name' => $service->service_name,
                 'content'      => $service->content,
                 'student_name' => $service->student->full_name ?? 'N/A',

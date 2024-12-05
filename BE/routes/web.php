@@ -9,6 +9,7 @@ use App\Http\Controllers\FeeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ForgerPasswordController;
 use App\Http\Controllers\ForgetPasswordController;
+use App\Http\Controllers\SendEmailController;
 use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Support\Facades\Password;
@@ -55,6 +56,7 @@ Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo
 
 Route::post('/payment-callback/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
 Route::get('/payment-success/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
+Route::post('/send-email/learn-again/{id}/{subject_code}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
 
 
