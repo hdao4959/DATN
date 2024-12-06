@@ -13,8 +13,8 @@ const AddPost = () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const [content, setContent] = useState();
-    const [classrooms, setClassrooms] = useState(['123', '1123', 'dhfdf']);
-    const [classroomsObject, setClassroomsObject] = useState();
+    const [classrooms, setClassrooms] = useState([]);
+    const [classroomsObject, setClassroomsObject] = useState([]);
 
     const {
         register,
@@ -63,17 +63,19 @@ const AddPost = () => {
         const formData = new FormData();
         formData.append("code", values.code);
         formData.append("title", values.title);
-        formData.append("tags", values.tags.join(","));
+        formData.append("tags", JSON.stringify(values.tags.map(tag => ({ tag_name: tag }))) || '');
         formData.append("content", content);
         formData.append("description", values.description);
         formData.append("type", values.type);
-        formData.append("notification_object", values.notification_object);
+        formData.append("notification_object", JSON.stringify(classroomsObject) || '');
         formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
         if (values.image && values.image.length > 0) {
             formData.append("image", values.image[0]);
         }
-
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}:`, value);
+        // }
         mutate(formData);
     };
 
@@ -81,8 +83,8 @@ const AddPost = () => {
         const selectedClass = event.target.value;
 
         // Kiểm tra xem lớp học đã được chọn hay chưa trước khi thêm vào state
-        if (selectedClass && !classroomsObject?.includes(selectedClass)) {
-            setClassroomsObject((prevState) => [...prevState ?? '', selectedClass]); // Thêm lớp học vào mảng
+        if (selectedClass && !classroomsObject?.some(item => item.class_code === selectedClass)) {
+            setClassroomsObject((prevState) => [...(prevState || []), { class_code: selectedClass }]); // Thêm lớp học vào mảng
         }
     };
     const handleRemoveClass = (classToRemove) => {
@@ -181,7 +183,7 @@ const AddPost = () => {
                                         )}
                                     </div> */}
 
-                                    <div className="form-group hidden">
+                                    <div className="form-group">
                                         <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -344,7 +346,7 @@ const AddPost = () => {
                                                             marginBottom: "10px",
                                                         }}
                                                     >
-                                                        {classItem}{" "}
+                                                        {classItem.class_code || ''}{" "}
                                                         <span
                                                             style={{
                                                                 cursor: "pointer",
