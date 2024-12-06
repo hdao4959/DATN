@@ -112,22 +112,31 @@ class AttendanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAttendanceRequest $request, string $id)
+    public function update(UpdateAttendanceRequest $request, string $classCode)
     {
         DB::beginTransaction();
         try {
-            $attendances = Attendance::where('id', $id)->lockForUpdate()->first();
-            if (!$attendances) {
-                DB::rollBack();
+            $attendances = $request->validated();
+            // Kiểm tra nếu dữ liệu là mảng và có dữ liệu
+            if (is_array($attendances) && count($attendances) > 0) {
+                foreach ($attendances as $atd) {
+                    $noted = $atd['noted'] ??  "";
+                    Attendance::where('student_code', $atd['student_code'])->where('class_code', $atd['class_code'])->whereDate('date', '=', $currentTime)
+                        ->update([
+                            'student_code' => $atd['student_code'],
+                            'class_code' => $atd['class_code'],
+                            'date' => Carbon::now(),
+                            'status' => $atd['status'],
+                            'noted' => $noted,
+                        ]);
+                }
 
-                return $this->handleInvalidId();
+                return response()->json($attendances, 200);
             } else {
-                $params = $request->except('_token', '_method');
-      
-                $attendances->update($params);
-                DB::commit();
 
-                return response()->json($attendances, 201);          
+                return response()->json([
+                    'message' => 'Đã quá 15 phút',
+                ]);
             }
         } catch (Throwable $th) {
 
