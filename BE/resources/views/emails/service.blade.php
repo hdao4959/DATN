@@ -49,8 +49,8 @@
 <body>
     <h1>THÔNG BÁO ĐĂNG KÝ DỊCH VỤ</h1>
 
-    <p><strong>Thân gửi sinh viên:</strong> </p>
-    <p><strong>Mã số sinh viên:</strong> </p>
+    <p><strong>Thân gửi sinh viên:  {{ $data['student_name'] }}</strong> </p>
+    <p><strong>Mã số sinh viên: {{ $data['user_code']}}</strong> </p>
 
     <p>Trường Cao đẳng F-Education - Cơ sở Hà Nội gửi đến bạn thông
         tin dịch vụ đã đăng kí</p>
@@ -66,14 +66,16 @@
             <th>Phí dịch vụ</th>
         </tr>
         <tr>
-            <td>Tên dịch vụ</td>
-            <td>Nội dung</td>
-            <td>Trạng thái</td>
-            <td>Lí do</td>
-            <td>0 VND</td>
+            <td> {{$data['service_name'] }}</td>
+            <td>{{ $data['content'] }}</td>
+            <td>  {{ $data['status'] }}  </td>
+            <td></td>
+            <td>{{ $data['amount'] }}</td>
         </tr>
     </table>
-
+    <a href="http://127.0.0.1:8000/total_momo/learn-again?id={{$data['id']}}&user_code={{$data['user_code']}}&subject_code={{$data['subject_code']}}">
+        Thanh toán ngay
+    </a>
     <p class="note">Sinh viên có thắc mắc hoặc cần hỗ trợ thêm thông tin vui lòng liên hệ theo thông tin dưới đây trong
         giờ hành chính:</p>
     <ul>

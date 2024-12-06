@@ -8,41 +8,60 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SubjectsList = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const { data: subjects, isLoading } = useQuery({
     queryKey: ["LIST_SUBJECT"],
     queryFn: async () => {
       const res = await api.get("/admin/subjects");
-      return res?.data;
+      return res?.data.subjects.data;
     }
   });
 
-    const { mutate } = useMutation({
-        mutationFn: (id) => api.delete(`/admin/subjects/${id}`),
-        onSuccess: () => {
-            toast.success("Xóa môn học thành công");
-            queryClient.invalidateQueries("LIST_SUBJECT");
-        },
-        onError: () => {
-            toast.error("Có lỗi xảy ra khi xóa môn học");
-        },
-    });
+  const { mutate } = useMutation({
+    mutationFn: (id) => api.delete(`/admin/subjects/${id}`),
+    onSuccess: () => {
+      toast.success("Xóa môn học thành công");
+      queryClient.invalidateQueries("LIST_SUBJECT");
+    },
+    onError: () => {
+      toast.error("Có lỗi xảy ra khi xóa môn học");
+    },
+  });
 
-    const handleDelete = (id) => {
-        const confirmed = window.confirm(
-            "Bạn có chắc chắn muốn xóa môn học này không?"
-        );
-        if (confirmed) {
-            return mutate(id);
-        }
-        return;
-    };
+  const handleDelete = (id) => {
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn muốn xóa môn học này không?"
+    );
+    if (confirmed) {
+      return mutate(id);
+    }
+    return;
+  };
 
   useEffect(() => {
     if (subjects) {
       $('#subjectList').DataTable({
         data: subjects,
+        processing: true,
+        serverSide: true,
+        ajax: async (data, callback) => {
+          try {
+            const page = data.start / data.length + 1;
+            const response = await api.get(`/admin/subjects`, {
+              params: { page, per_page: data.length },
+            });
+            const result = response.data;
+            callback({
+              draw: data.draw,
+              recordsTotal: result.total,
+              recordsFiltered: result.total,
+              data: result.subjects.data,
+            });
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
+        },
         columns: [
           { title: "STT", data: null, render: (data, type, row, meta) => meta.row + 1 },
           { title: "Mã Môn", data: "subject_code" },
@@ -71,11 +90,11 @@ const SubjectsList = () => {
               return `
               <div className="whitespace-nowrap">
                   <button>
-                    <a href="/admin/subjects/${row.id}/edit">
+                    <a href="/admin/subjects/${row.subject_code}/edit">
                       <i class='fas fa-edit hover:text-blue-500'></i>
                     </a>
                   </button>
-                  <button class="delete-button ml-2" data-id="${row.id}">
+                  <button class="delete-button ml-2" data-id="${row.subject_code}">
                     <i class='fas fa-trash hover:text-red-500'></i>
                   </button>
               </div>`;

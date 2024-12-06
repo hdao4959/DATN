@@ -129,6 +129,16 @@ class AttendanceController extends Controller
                 ])
                 ->get(['id', 'student_code', 'class_code', 'status', 'noted', 'date']);
 
+            $sessions = Schedule::where('class_code', $classCode)
+                ->with('session')
+                ->get()
+                ->map(function ($session) {
+                    return [
+                        'session' => $session->session ? $session->session->value : null
+                    ];
+                });
+            $sessionData = json_decode($sessions[0]['session'], true);
+
             $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($date) {
                 $firstAttendance = $studentGroup->first();
 
@@ -168,6 +178,7 @@ class AttendanceController extends Controller
                     'student_code' => $userCode,
                     'full_name' => $fullName,
                     'attendance' => $attendanceData->values(), // Bỏ key đánh chỉ số
+                    'session' => $sessionData,
                 ];
             })->filter()->values()->all();
 

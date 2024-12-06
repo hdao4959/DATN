@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
 import "datatables.net-dt/css/dataTables.dataTables.css";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../../../components/Modal/Modal";
 
 const ClassRoomsList = () => {
+    const queryClient = useQueryClient();
     const accessToken = getToken();
     const navigate = useNavigate();
 
@@ -51,7 +52,7 @@ const ClassRoomsList = () => {
             }),
         onSuccess: () => {
             toast.success("Xóa lớp học thành công!");
-            refetch();
+            queryClient.invalidateQueries("LIST_ROOMS");
             setDeleteModalOpen(false);
         },
         onError: (error) => {
@@ -72,89 +73,79 @@ const ClassRoomsList = () => {
 
     const { mutate: autoSchedule } = useMutation({
         mutationFn: async () => {
-            if (!startDate) {
-                toast.error("Vui lòng chọn ngày bắt đầu.");
-            }
             const payload = {
                 startDate: startDate,
             };
             try {
                 const res1 = await api.post(
                     "/getListClassByRoomAndSession",
-                    payload,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            "Content-Type": "application/json",
-                        },
-                    }
+                    payload
                 );
                 if (res1.data.error) {
-                    return toast.error(
+                    toast.error(
                         res1.data.message ||
                             "Có lỗi xảy ra khi lấy thông tin lớp học."
                     );
+                    throw new Error(
+                        res1.data.message || "Lỗi lấy thông tin lớp học."
+                    );
                 }
-                const res2 = await api.get("/addStudent", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+
+                const res2 = await api.get("/addStudent");
                 if (res2.data.error) {
-                    return toast.error(
+                    toast.error(
                         res2.data.message ||
                             "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
                     );
+                    throw new Error(res2.data.message || "Lỗi thêm sinh viên.");
                 }
-                const res3 = await api.get("/addTeacher", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+
+                const res3 = await api.get("/addTeacher");
                 if (res3.data.error) {
-                    return toast.error(
+                    toast.error(
                         res3.data.message ||
                             "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
                     );
+                    throw new Error(
+                        res3.data.message || "Lỗi thêm giảng viên."
+                    );
                 }
-                const res4 = await api.get("/generateSchedule", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
 
+                const res4 = await api.get("/generateSchedule");
                 if (res4.data.error) {
-                    return toast.error(
+                    toast.error(
                         res4.data.message ||
                             "Có lỗi xảy ra khi tạo lịch học và lịch thi."
                     );
+                    throw new Error(
+                        res4.data.message || "Lỗi tạo lịch học và lịch thi."
+                    );
                 }
-                const res5 = await api.get("/generateAttendances", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+
+                const res5 = await api.get("/generateAttendances");
+                if (res5.data.error) {
+                    toast.error(
+                        res5.data.message ||
+                            "Có lỗi xảy ra khi tạo danh sách điểm danh."
+                    );
+                    throw new Error(
+                        res5.data.message || "Lỗi tạo danh sách điểm danh."
+                    );
+                }
+
                 return { res1, res2, res3, res4, res5 };
             } catch (error) {
-                return toast.error(
-                    error.response?.data?.message ||
-                        error.message ||
-                        "Có lỗi xảy ra khi tạo lịch tự động."
-                );
+                throw new Error(error.response?.data?.message || error.message);
             }
         },
         onSuccess: (response) => {
             toast.success("Tạo lịch tự động thành công!");
             console.log("Response:", response);
-            refetch(); // Refetch danh sách lớp học
+            refetch();
         },
         onError: (error) => {
-            console.error("Error:", error);
-            toast.error("Có lỗi xảy ra khi tạo lịch tự động.");
+            console.error("Error:", error.message);
+            toast.error(error.message || "Có lỗi xảy ra khi tạo lịch tự động.");
         },
     });
 
@@ -272,9 +263,9 @@ const ClassRoomsList = () => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             placeholder="Chọn ngày bắt đầu"
-                            min={new Date(
-                                new Date().setDate(new Date().getDate() + 1)
-                            ).toLocaleDateString("en-CA")}
+                            // min={new Date(
+                            //     new Date().setDate(new Date().getDate() + 1)
+                            // ).toLocaleDateString("en-CA")}
                         />
                         <button
                             className="btn btn-primary text-nowrap"

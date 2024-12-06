@@ -83,6 +83,7 @@ import EditSession from "./pages/admin/Sessions/EditMajor.jsx";
 import AttendanceTeacherDate from "./pages/teacher/Attendance/attendanceByDate.jsx";
 import ClassExams from "./pages/teacher/MyClass/ClassExams.jsx";
 import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
+import ShowAttendance from "./pages/admin/Attendance/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -187,6 +188,13 @@ function App() {
                 {
                     path: "classrooms/view/:class_code/grades",
                     element: <ShowGrades />,
+                },
+                {
+                    path: "class/:class_code/attendances",
+                    element: <AttendanceTeacher />,
+                },{
+                    path: "classrooms/view/:class_code/attendances",
+                    element: <AttendanceManagement />,
                 },
                 {
                     path: "semesters",

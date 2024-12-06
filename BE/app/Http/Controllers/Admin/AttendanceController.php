@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Attendance\StoreAttendanceRequest;
 use App\Http\Requests\Attendance\UpdateAttendanceRequest;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -40,11 +41,11 @@ class AttendanceController extends Controller
         try {
             $classCode = $request->input('search');
             $classrooms = Classroom::query()
-                                    ->when($classCode, function ($query, $classCode) {
-                                        return $query
-                                                ->where('class_code', 'like', "%{$classCode}%");
-                                    })
-                                    ->paginate(10);
+                ->when($classCode, function ($query, $classCode) {
+                    return $query
+                        ->where('class_code', 'like', "%{$classCode}%");
+                })
+                ->paginate(10);
             if ($classrooms->isEmpty()) {
 
                 return $this->handleInvalidId();
@@ -80,33 +81,57 @@ class AttendanceController extends Controller
      */
     public function show(string $classCode)
     {
-        try {
-            $attendances = Attendance::where('class_code', $classCode)
-                                        ->with('user')
-                                        ->get()
-                                        ->map(function ($attendance) {
-                                            return [
-                                                'id' => $attendance->id,
-                                                'student_code' => $attendance->student_code,
-                                                'full_name' => $attendance->user ? $attendance->user->full_name : null,
-                                                'class_code' => $attendance->class_code,
-                                                'date' => $attendance->date,
-                                                'status' => $attendance->status,
-                                                'noted' => $attendance->noted,
-                                            ];
-                                        });
-            // $attendances = Attendance::where('class_code', $classCode)->with('classroomUser')->get();
-            if (!$attendances) {
+        // try {
+        $attendances = Attendance::where('class_code', $classCode)
+            ->with('user', 'schedule.session')
+            ->get()
+            ->map(function ($attendance) {
+                // if (Carbon::parse($attendance->date)->isFuture()) {
+                //     $attendance->status = 'pending';
+                // }
 
-                return $this->handleInvalidId();
-            } else {
+                $currentDateTime =  now()->format('Y-m-d H:i');
+                $schedule = $attendance->schedule;
+                $session = $schedule ? $schedule->session : null;
+                $timeRange = [];
+                if ($session && $session->value) {
+                    $timeRange = json_decode($session->value, true); // Giải mã JSON
+                }
+                // return $currentDateTime;
 
-                return response()->json($attendances, 200);                
-            }
-        } catch (\Throwable $th) {
+                if ($timeRange['start'] && $timeRange['end']) {
+                    $startDateTime = Carbon::parse($attendance->date . ' ' . $timeRange['start']);
+                    $endDateTime = Carbon::parse($attendance->date . ' ' . $timeRange['end']);
+                    $startDateTimeStr = $startDateTime->format('Y-m-d H:i');
+                    $endDateTimeStr = $endDateTime->format('Y-m-d H:i');
+                    // return ($currentDateTime);
+                    if ($currentDateTime < $startDateTimeStr) {
+                        // Nếu chưa đến thời gian bắt đầu, trạng thái là pending
+                        $attendance->status = 'pending';
+                    }
+                }
+                return [
+                    'id' => $attendance->id,
+                    'student_code' => $attendance->student_code,
+                    'full_name' => $attendance->user ? $attendance->user->full_name : null,
+                    'class_code' => $attendance->class_code,
+                    'date' => $attendance->date,
+                    'status' => $attendance->status,
+                    'noted' => $attendance->noted,
+                ];
+            });
+        // $attendances = Attendance::where('class_code', $classCode)->with('classroomUser')->get();
+        if (!$attendances) {
 
-            return $this->handleErrorNotDefine($th);
+            return $this->handleInvalidId();
+        } else {
+
+            return response()->json($attendances, 200);
         }
+        // } catch (\Throwable $th) {
+
+        //     return $this->handleErrorNotDefine($th);
+        // }
     }
 
     /**
@@ -132,11 +157,6 @@ class AttendanceController extends Controller
                 }
 
                 return response()->json($attendances, 200);
-            } else {
-
-                return response()->json([
-                    'message' => 'Đã quá 15 phút',
-                ]);
             }
         } catch (Throwable $th) {
 
@@ -162,7 +182,7 @@ class AttendanceController extends Controller
 
                 return response()->json([
                     'message' => 'Xoa thanh cong'
-                ], 200);            
+                ], 200);
             }
         } catch (Throwable $th) {
 

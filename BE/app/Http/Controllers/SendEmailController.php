@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendEmailJob;
 use App\Jobs\SendEmailServiceJob;
+use App\Jobs\SendEmailServiceLearnAgain;
+
 use App\Models\Fee;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -84,18 +87,46 @@ class SendEmailController extends Controller
     }
 
 
-    public function sendMailServices()
+    public function sendMailLearnAgain(Request $request, $id)
     {
-
+        // return dd("ok");
         try {
-            dispatch(new SendEmailServiceJob([]));
+            // Kiểm tra service
+            $service = Service::with('student')->find($id);
+            if (!$service) {
+                return response()->json(['message' => 'Không tìm thấy dịch vụ.', 'data' => ''], 404);
+            }
+
+            // Kiểm tra subject_code
+            if (!$request->has('subject_code')) {
+                return response()->json(['message' => 'Thiếu subject_code trong request.'], 400);
+            }
+
+            // Tạo dữ liệu email
+            $emailData = [
+                'id'           => $service->id,
+                'subject_code' => $request->input('subject_code'),
+                'service_name' => $service->service_name,
+                'content'      => $service->content,
+                'student_name' => $service->student->full_name ?? 'N/A',
+                'user_code'    => $service->student->user_code ?? 'N/A',
+                'status'       => $service->status ?? 'N/A',
+                'email'        => $service->student->email ?? 'N/A',
+                'amount'       => $service->amount,
+            ];
+
+
+            Log::info('Email data:', $emailData);
+
+            // Nếu cần gửi email thực tế:
+            dispatch(new SendEmailServiceLearnAgain($emailData));
+
+            return response()->json(['message' => 'Đã gửi email thành công', 'data' => $emailData], 200);
         } catch (\Exception $e) {
-            Log::error('Error dispatching email job for Fee ID: . Error: ' . $e->getMessage());
+            Log::error('Error dispatching email job for Service ID: ' . $id . '. Error: ' . $e->getMessage());
+            return response()->json(['message' => 'Có lỗi xảy ra khi gửi email.', 'data' => $e->getMessage()], 500);
         }
-
-
-        return response()->json(['message' => 'Đã gửi email thành công', 'data' => '']);
     }
 
-    
+
 }

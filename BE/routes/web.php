@@ -3,11 +3,13 @@
 use App\Http\Controllers\Admin\ClassRoomController;
 
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CheckoutLearnAgainController;
 use App\Http\Controllers\FeeController;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ForgerPasswordController;
 use App\Http\Controllers\ForgetPasswordController;
+use App\Http\Controllers\SendEmailController;
 use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Support\Facades\Password;
@@ -35,6 +37,7 @@ Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderS
 
 
 Route::get('total_momo', [CheckoutController::class, 'momo_payment']);
+
 Route::post('/payment-callback', [CheckoutController::class, 'handleCallback']);
 Route::get('/payment-success', [CheckoutController::class, 'handleCallback']);
 
@@ -47,6 +50,13 @@ Route::get('/reset-password', [ForgetPasswordController::class,'resetPassword'])
                                             ->name('reset.password');
 Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
                                             ->name('reset.password.post');
+
+
+Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
+
+Route::post('/payment-callback/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
+Route::get('/payment-success/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
+Route::post('/send-email/learn-again/{id}/{subject_code}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
 
 
