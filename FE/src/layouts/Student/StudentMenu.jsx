@@ -4,9 +4,9 @@ import styles from "../index.module.css";
 
 const StudentMenu = () => {
     return (
-        <div className="sidebar" data-background-color="dark">
+        <div className="sidebar" style={{backgroundColor: '#FFFFFF', color: '#333333'}}>
             <div className="sidebar-logo">
-                <div className="logo-header" data-background-color="dark">
+                <div className="logo-header" style={{backgroundColor: '#FFFFFF'}}>
                     <Link to={"/student"} className="logo">
                         <img
                             src="http://localhost:8000/storage/logo/logo3.2-white.png"
