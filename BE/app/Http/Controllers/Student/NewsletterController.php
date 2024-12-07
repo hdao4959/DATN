@@ -68,6 +68,7 @@ class NewsletterController extends Controller
                     foreach ($listClass as $classCode) {
                         $query->orWhereJsonContains('notification_object', ['class_code' => $classCode]);
                     }
+                    $query->orWhereNull('notification_object');
                 })
                     ->with(['category', 'user'])
                     ->get()->map(function ($newsletter) {
