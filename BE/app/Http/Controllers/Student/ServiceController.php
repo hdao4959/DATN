@@ -32,6 +32,23 @@ class ServiceController extends Controller
     }
   }
 
+  public function getAllServiesByStudent(Request $request)
+  {
+    try {
+      $user_code = request()->user()->user_code;
+      $data = Service::query()->where('user_code',$user_code);
+
+      if ($request['status']) {
+        $data->where('status', $request['status']);
+      }
+
+      $data->paginate(25);
+      return response()->json($data);
+    } catch (\Throwable $th) {
+      return response()->json(['message' => $th->getMessage()]);
+    }
+  }
+
   public function getListLearnAgain(Request $request)
   {
     $user_code = request()->user()->user_code;
@@ -141,8 +158,10 @@ class ServiceController extends Controller
         'note'             => 'nullable|string|max:500',
     ]);
 
-      $user_code = $request->user()->user_code;
-      if($user_code){
+      $user_code = request()->user()->user_code;
+    //   $user_code = $request->user_code;
+
+      if(!$user_code){
         return response()->json(['message' => 'không tìm thấy user_code']);
       }
 
@@ -195,7 +214,10 @@ class ServiceController extends Controller
         ]);
 
       $user_code = $request->user()->user_code;
-
+      if(!$user_code){
+        return response()->json(['message' => 'không tìm thấy user_code']);
+      }
+      
       $service_name = "Đăng kí thay đổi thông tin";
       $slug =  Str::slug($service_name);
 
