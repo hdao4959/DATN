@@ -278,6 +278,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
         Route::get('service',      [ServiceController::class, 'getAllServies']);
+        // dịch vụ cung cấp bảng điểm
+        Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
+        // dịch vụ thay đổi thông tin
+        Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
     });
 
     // Các route phục vụ cho form
@@ -316,15 +320,11 @@ Route::post('students/change-major/{id}', [StudentController::class, 'changeMajo
 
 
 // Student
+
 Route::post('services/change-major/{user_code}',            [ServiceController::class, 'changeMajor']);
-Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class, 'provideScoreboard']);
-Route::post('services/change-info/{user_code}',             [ServiceController::class, 'ChangeInfo']);
-Route::post('services/provide-student-card/{user_code}',    [ServiceController::class, 'provideStudentCard']);
-Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
 
-
-
-// dịch vụ học lại
+// cung cấp thẻ sinh viên
+Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
 
 
 
