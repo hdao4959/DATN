@@ -100,7 +100,8 @@ const AttendanceTeacherDate = () => {
 
     const [timeRemaining, setTimeRemaining] = useState(15 * 60); // Thời gian đếm ngược 15 phút (tính bằng giây)
     const [isTimeUp, setIsTimeUp] = useState(false); // Kiểm tra nếu hết thời gian
-    const sessionStart = att[0]?.session?.start || '00:00';
+    // const sessionStart = att[0]?.session?.start || '00:00';
+    const sessionStart = att?.session?.start || '00:00';
     // const sessionStart = '18:30';
     useEffect(() => {
         // Tạo đối tượng Date từ chuỗi sessionStart kiểu '09:00'
