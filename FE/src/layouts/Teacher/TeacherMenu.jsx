@@ -8,7 +8,7 @@ const TeacherMenu = () => {
                 <div className="logo-header" style={{backgroundColor: '#F5FFFA'}}>
                     <Link to={"/teacher"} className="logo">
                         <img
-                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
+                            src="http://localhost:8000/storage/logo/snapedit_1733630664663.png"
                             width={150}
                             alt="navbar brand"
                             className="navbar-brand"

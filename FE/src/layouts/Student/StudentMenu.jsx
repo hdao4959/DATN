@@ -9,11 +9,11 @@ const StudentMenu = () => {
                 <div className="logo-header" style={{backgroundColor: '#FFFFFF'}}>
                     <Link to={"/student"} className="logo">
                         <img
-                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
+                            src="http://localhost:8000/storage/logo/logo3.png"
                             width={150}
                             alt="navbar brand"
                             className="navbar-brand"
-                            height={20}
+                            height={15}
                         />
                     </Link>
                     <button
