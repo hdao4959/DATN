@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import api from "../../../config/axios";
@@ -9,6 +9,8 @@ import "datatables.net";
 import Modal from "../../../components/Modal/Modal";
 
 const DegreeProgramList = () => {
+    const navigate = useNavigate();
+    
     const { data, refetch, isLoading } = useQuery({
         queryKey: ["DEGREE_PROGRAM"],
         queryFn: async () => {
@@ -41,26 +43,24 @@ const DegreeProgramList = () => {
 
     useEffect(() => {
         if (data) {
-            if ($.fn.dataTable.isDataTable("#major-table")) {
-                $("#major-table").DataTable().clear().destroy();
+            if ($.fn.dataTable.isDataTable("#degree-program-table")) {
+                $("#degree-program-table").DataTable().clear().destroy();
             }
 
-            $("#major-table").DataTable({
+            $("#degree-program-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 data,
                 columns: [
-                    { title: "Mã khoá học", data: "cate_code" },
+                    { title: "Mã khoá học", data: "cate_code" , className: 'text-start'},
                     { title: "Tên khoá học", data: "cate_name" },
                     {
                         title: "Hành động",
                         data: null,
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center whitespace-nowrap">
-                                <button class="fs-4">
-                                    <a href="/admin/degree-program/${row.cate_code}/edit">
-                                        <i class='fas fa-edit hover:text-blue-500'></i>
-                                    </a>
+                                <button class="fs-4 degree-program-link" data-id="${row.cate_code}" >
+                                    <i class='fas fa-edit hover:text-blue-500'></i>
                                 </button>
                                 <button class="delete-btn ml-2 fs-4">
                                     <i class="fas fa-trash hover:text-red-500"></i>
@@ -86,11 +86,15 @@ const DegreeProgramList = () => {
                 },
                 scrollX: true,
             });
+            $("#degree-program-table tbody").on("click", ".degree-program-link", function () {
+                const cate_code = $(this).data("id");
+                navigate(`/admin/degree-program/${cate_code}/edit`);
+            });
         }
 
         return () => {
-            if ($.fn.dataTable.isDataTable("#major-table")) {
-                $("#major-table").DataTable().clear().destroy();
+            if ($.fn.dataTable.isDataTable("#degree-program-table")) {
+                $("#degree-program-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
@@ -107,7 +111,7 @@ const DegreeProgramList = () => {
                     <h4 className="card-title">Quản lý khoá học</h4>
                 </div>
                 <div className="card-body">
-                    <table id="major-table" className="table">
+                    <table id="degree-program-table" className="table">
                         {isLoading && <p>Đang tải dữ liệu...</p>}
                     </table>
                 </div>

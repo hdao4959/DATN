@@ -56,7 +56,7 @@ const EditDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/admin/degree-program">
                     <button className="btn btn-primary">DS khoá học</button>
                 </Link>
             </div>

@@ -41,11 +41,11 @@ const SessionList = () => {
 
     useEffect(() => {
         if (data) {
-            if ($.fn.dataTable.isDataTable("#major-table")) {
-                $("#major-table").DataTable().clear().destroy();
+            if ($.fn.dataTable.isDataTable("#session-table")) {
+                $("#session-table").DataTable().clear().destroy();
             }
 
-            $("#major-table").DataTable({
+            $("#session-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 data,
@@ -66,10 +66,8 @@ const SessionList = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center whitespace-nowrap">
-                                <button class="fs-4">
-                                    <a href="/admin/sessions/${row.cate_code}/edit">
-                                        <i class='fas fa-edit hover:text-blue-500'></i>
-                                    </a>
+                                <button class="fs-4 session-link" data-id="${row.cate_code}">
+                                    <i class='fas fa-edit hover:text-blue-500'></i>
                                 </button>
                                 <button class="delete-btn ml-2 fs-4">
                                     <i class="fas fa-trash hover:text-red-500"></i>
@@ -95,11 +93,15 @@ const SessionList = () => {
                 },
                 scrollX: true,
             });
+            $("#degree-program-table tbody").on("click", ".session-link", function () {
+                const cate_code = $(this).data("id");
+                navigate(`/admin/sessions/${cate_code}/edit`);
+            });
         }
 
         return () => {
-            if ($.fn.dataTable.isDataTable("#major-table")) {
-                $("#major-table").DataTable().clear().destroy();
+            if ($.fn.dataTable.isDataTable("#session-table")) {
+                $("#session-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
@@ -116,7 +118,7 @@ const SessionList = () => {
                     <h4 className="card-title">Quản lý ca học</h4>
                 </div>
                 <div className="card-body">
-                    <table id="major-table" className="table">
+                    <table id="session-table" className="table">
                         {isLoading && <p>Đang tải dữ liệu...</p>}
                     </table>
                 </div>
