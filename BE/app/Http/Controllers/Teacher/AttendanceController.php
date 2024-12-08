@@ -105,10 +105,11 @@ class AttendanceController extends Controller
         }
     }
 
-    public function showAttendanceByDate(Request $request, string $classCode, $date)
+    public function showAttendanceByDate(Request $request, string $classCode, string $byDate)
     {
         try {
             $userCode = $request->user()->user_code;
+            $byDateCopy = $byDate;
             // $date = Carbon::now()->toDateString(); // Lấy ngày hiện tại (YYYY-MM-DD)
             $attendances = Attendance::whereHas('classroom', function ($query) use ($userCode, $classCode) {
                 $query->where('user_code', $userCode)->where('class_code', $classCode);
@@ -138,17 +139,17 @@ class AttendanceController extends Controller
                     ];
                 });
             $sessionData = json_decode($sessions[0]['session'], true);
-
-            $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($date) {
+            
+            $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($byDateCopy, $sessionData){
                 $firstAttendance = $studentGroup->first();
-
+                return $byDateCopy[0];
                 // Lấy `user_code` từ nhóm hiện tại
                 $userCode = $firstAttendance->student_code;
 
                 // Lấy `full_name` từ danh sách `users` dựa trên `user_code`
                 $user = $firstAttendance->classroom->users->firstWhere('pivot.user_code', $userCode);
                 $fullName = $user ? $user->full_name : null;
-
+                
                 // Lọc điểm danh theo ngày ($date)
                 $attendanceData = $studentGroup->filter(function ($attendance) use ($date) {
                     return Carbon::parse($attendance->date)->toDateString() === $date;
@@ -343,8 +344,8 @@ class AttendanceController extends Controller
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
             $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
-            $currentTime = Carbon::now(); // Lay gio hien tai
-            // $currentTime = Carbon::createFromFormat('H:i', '12:01'); // Fix cung gio hien tai
+            // $currentTime = Carbon::now(); // Lay gio hien tai
+            $currentTime = Carbon::createFromFormat('H:i', '18:00'); // Fix cung gio hien tai
 
             // if (1) {
             if ($currentTime->diffInMinutes($startTime) <= 15) {
