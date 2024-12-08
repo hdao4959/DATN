@@ -16,8 +16,9 @@ const AttendanceTeacherDate = () => {
             const formattedData = res?.flatMap(item =>
                 item.attendance.map(att => ({
                     student_code: item.student_code,
+                    class_code: class_code,
                     full_name: item.full_name || "",
-                    status: att.status || null,
+                    status: att.status || "present",
                     noted: att.noted || ""
                 }))
             );
@@ -44,6 +45,7 @@ const AttendanceTeacherDate = () => {
 
     const handleSave = async () => {
         try {
+            console.log(attendanceDetails);
             let response;
             response = await api.put(`/teacher/attendances/${class_code}`, attendanceDetails);
             if (response.status === 200) {
