@@ -33,19 +33,21 @@ const EditSession = () => {
         queryKey: ["SESSION_DETAIL", id],
         queryFn: async () => {
             const res = await api.get(`/admin/sessions/${id}`);
-
-            return res.data?.[0];
+            return res.data;
         },
     });
 
     useEffect(() => {
         if (sessionDetail) {
-            console.log("352 ~ useEffect ~ sessionDetail:", sessionDetail);
+            const parsedValue = JSON.parse(sessionDetail?.value);
+            reset({...sessionDetail, value: parsedValue});
         }
     }, [sessionDetail, reset]);
 
     const onSubmit = (data) => {
-        mutate(data);
+        console.log(data);
+
+        // mutate(data);
     };
 
     return (
@@ -77,7 +79,7 @@ const EditSession = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("session", {
+                                            {...register("cate_name", {
                                                 required:
                                                     "Tên ca đầu là bắt buộc",
                                                 pattern: {
@@ -96,24 +98,19 @@ const EditSession = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="final_year">
+                                        <label htmlFor="start_time">
                                             Thời gian bắt đầu
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">*</span>
                                         </label>
                                         <input
                                             type="time"
                                             className="form-control"
-                                            {...register("time_start", {
-                                                required:
-                                                    "Thời gian bắt đầu là bắt buộc",
+                                            {...register("value.start", {
+                                                required: "Thời gian bắt đầu là bắt buộc",
                                             })}
                                         />
-                                        {errors.time_start && (
-                                            <span className="text-danger">
-                                                {errors.time_start.message}
-                                            </span>
+                                        {errors.value?.start && (
+                                            <span className="text-danger">{errors.value.start.message}</span>
                                         )}
                                     </div>
 
@@ -127,14 +124,14 @@ const EditSession = () => {
                                         <input
                                             type="time"
                                             className="form-control"
-                                            {...register("time_end", {
+                                            {...register("value.end", {
                                                 required:
                                                     "Thời gian kết thúc là bắt buộc",
                                             })}
                                         />
-                                        {errors.time_end && (
+                                        {errors.value?.end && (
                                             <span className="text-danger">
-                                                {errors.time_end.message}
+                                                {errors.value?.end.message}
                                             </span>
                                         )}
                                     </div>
