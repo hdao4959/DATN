@@ -84,6 +84,7 @@ import AttendanceTeacherDate from "./pages/teacher/Attendance/attendanceByDate.j
 import ClassExams from "./pages/teacher/MyClass/ClassExams.jsx";
 import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import ShowAttendance from "./pages/admin/Attendance/page.jsx";
+import ServiceList from "./pages/admin/Service/ListService.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -319,6 +320,10 @@ function App() {
                     path: "sessions/:id/edit",
                     element: <EditSession />,
                 },
+                {
+                    path: "services",
+                    element: <ServiceList /> ,
+                }
             ],
         },
         {
@@ -388,7 +393,7 @@ function App() {
                 {
                     path: "post/:id/edit",
                     element: <TeacherUpdatePost />,
-                },
+                }
             ],
         },
         {

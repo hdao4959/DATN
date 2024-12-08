@@ -16,21 +16,56 @@ use Illuminate\Support\Facades\Http;
 class ServiceController extends Controller
 {
 
-  public function getAllServies(Request $request)
-  {
-    try {
-      $data = Service::query();
+    public function getAllServices(Request $request)
+    {
+        try {
 
-      if ($request['status']) {
-        $data->where('status', $request['status']);
-      }
+            $query = Service::query()
+            ->select([
+                'id',
+                'user_code',
+                'service_name',
+                'slug',
+                'content',
+                'status',
+                'amount',
+                'created_at',
+                'updated_at'
+            ])
+            ->with([
+                'student:id,user_code,full_name,email,phone_number' // Chỉ lấy cột cần thiết từ bảng User
+            ]);
 
-      $data->paginate(25);
-      return response()->json($data);
-    } catch (\Throwable $th) {
-      return response()->json(['message' => $th->getMessage()]);
+            // Lọc theo trạng thái nếu có
+            if ($request->has('status') && !empty($request->status)) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->has('student_id') && !empty($request->student_id)) {
+                $query->where('student_id', $request->student_id);
+            }
+
+            // Sắp xếp theo cột nếu có tham số 'sort_by' và 'order'
+            if ($request->has('sort_by') && $request->has('order')) {
+                $query->orderBy($request->sort_by, $request->order === 'desc' ? 'desc' : 'asc');
+            } else {
+                $query->orderBy('created_at', 'desc'); // Mặc định sắp xếp theo thời gian tạo
+            }
+
+            $data = $query->paginate($request->get('per_page', 25)); // Mặc định 25 bản ghi mỗi trang
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lấy danh sách dịch vụ thành công.',
+                'data' => $data,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi: ' . $th->getMessage(),
+            ], 500);
+        }
     }
-  }
 
   public function getAllServiesByStudent(Request $request)
   {
@@ -217,7 +252,7 @@ class ServiceController extends Controller
       if(!$user_code){
         return response()->json(['message' => 'không tìm thấy user_code']);
       }
-      
+
       $service_name = "Đăng kí thay đổi thông tin";
       $slug =  Str::slug($service_name);
 

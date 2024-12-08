@@ -277,7 +277,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('services/getListLearnAgain',    [ServiceController::class, "getListLearnAgain"]);
         Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
-        Route::get('service',      [ServiceController::class, 'getAllServies']);
+
         // dịch vụ cung cấp bảng điểm
         Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
         // dịch vụ thay đổi thông tin
@@ -338,3 +338,7 @@ Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswor
 
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost'])
     ->name('reset.password.post');
+
+
+Route::get('services',               [ServiceController::class, 'getAllServices']);
+Route::get('/student/services',      [ServiceController::class, 'getAllServices']);
