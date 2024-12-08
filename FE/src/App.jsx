@@ -85,6 +85,7 @@ import ClassExams from "./pages/teacher/MyClass/ClassExams.jsx";
 import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import ShowAttendance from "./pages/admin/Attendance/page.jsx";
 import ServiceList from "./pages/admin/Service/ListService.jsx";
+import ServiceDetail from "./pages/admin/Service/ListService.jsx";
 
 function App() {
     const router = createBrowserRouter([

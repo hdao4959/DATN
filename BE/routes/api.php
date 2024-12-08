@@ -163,8 +163,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::apiResource('newsletters', NewsletterController::class);
         Route::apiResource('attendances', AttendanceController::class);
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
-
-
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
         Route::apiResource('majors', MajorController::class);
@@ -197,6 +195,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
         Route::apiResource('fees', FeeController::class);
+
+
+        Route::get('services',               [ServiceController::class, 'getAllServices']);
+        Route::get('services/{id}',          [ServiceController::class, 'ServiceInformation']);
+        Route::put('services/changeStatus/{id}',  [ServiceController::class, 'changeStatus']);
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
@@ -282,6 +285,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
         // dịch vụ thay đổi thông tin
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
+
+        Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
     });
 
     // Các route phục vụ cho form
@@ -340,5 +345,8 @@ Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordP
     ->name('reset.password.post');
 
 
-Route::get('services',               [ServiceController::class, 'getAllServices']);
-Route::get('/student/services',      [ServiceController::class, 'getAllServices']);
+
+
+
+
+

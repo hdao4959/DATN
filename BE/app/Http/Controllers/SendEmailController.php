@@ -101,7 +101,6 @@ class SendEmailController extends Controller
             if (!$request->has('subject_code')) {
                 return response()->json(['message' => 'Thiếu subject_code trong request.'], 400);
             }
-
             // Tạo dữ liệu email
             $emailData = [
                 'id'           => $service->id,
