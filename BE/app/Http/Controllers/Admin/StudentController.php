@@ -52,6 +52,7 @@ class StudentController extends Controller
     {
         try {
             $perPage = $request->input('per_page', 10);
+            $search = $request->input('search');
             $list_users = User::with([
                 'major' => function ($query) {
                     $query->select('cate_code', 'cate_name', 'parent_code');
@@ -63,6 +64,13 @@ class StudentController extends Controller
                     $query->select('cate_code', 'cate_name');
                 }
             ])->where('role', '3')
+                ->when($search, function ($query, $search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->where('full_name', 'LIKE', "%$search%")
+                            ->orWhere('user_code', 'LIKE', "%$search%")
+                            ->orWhere('email', 'LIKE', "%$search%");
+                    });
+                })
                 ->orderBy('id', 'desc')
                 ->select('id', 'user_code', 'full_name', 'email', 'phone_number', 'address', 'sex', 'place_of_grant', 'nation', 'avatar', 'role', 'is_active', 'major_code', 'course_code', 'semester_code')
                 ->paginate($perPage);

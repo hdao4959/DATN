@@ -18,7 +18,7 @@ const GradeComponentList = () => {
     const toggleModal = () => setModalOpen((prev) => !prev);
     const toggleStatusModal = () => setStatusModalOpen((prev) => !prev);
 
-    const { data, refetch, isFetching } = useQuery({
+    const { data, refetch, isFetching, isLoading } = useQuery({
         queryKey: ["GRADE_COMPONENTS"],
         queryFn: async () => {
             const res = await api.get("/admin/pointheads");
@@ -143,9 +143,15 @@ const GradeComponentList = () => {
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Grade Components Management</h4>
+                    <h4 className="card-title">Quản lý đầu điểm</h4>
                 </div>
                 <div className="card-body">
+                    {isLoading && (
+                        <div>
+                            <div className='spinner-border' role='status'></div>
+                            <p>Đang tải dữ liệu</p>
+                        </div>
+                    )}
                     <div className="table-responsive">
                         <table id="classroomsTable" className="display"></table>
                     </div>

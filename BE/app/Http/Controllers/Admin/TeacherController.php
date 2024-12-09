@@ -45,9 +45,17 @@ class TeacherController extends Controller
     {
         // try {
             $perPage = $request->input('per_page', 10);
+            $search = $request->input('search');
             $teachers = User::where([
                 'role' => '2'
-            ])->select(
+            ])->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('user_code', 'LIKE', "%$search%")
+                          ->orWhere('full_name', 'LIKE', "%$search%")
+                          ->orWhere('email', 'LIKE', "%$search%");
+                });
+            })
+            ->select(
                 'user_code',
                 'full_name',
                 'email',
