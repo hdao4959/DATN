@@ -198,6 +198,7 @@ function App() {
                     path: "classrooms/view/:class_code/attendances",
                     element: <AttendanceManagement />,
                 },
+
                 {
                     path: "semesters",
                     element: <ListSemester />,

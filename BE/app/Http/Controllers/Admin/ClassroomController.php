@@ -72,32 +72,40 @@ class ClassroomController extends Controller
                         $query->select('user_code', 'full_name');
                     },
                     'schedules' => function ($query) {
-                        $query->select('class_code', 'date', 'session_code');
+                        $query->select('class_code', 'date', 'session_code', 'room_code');
                     },
                     'schedules.session' => function ($query) {
                         $query->select('cate_code', 'cate_name', 'value');
+                    },
+                    'schedules.room' => function($query){
+                        $query->select('cate_code', 'cate_name');
                     }
                 ])->paginate($perPage);
 
-            // return response()->json($classrooms);
+
+
+            // return response()->json($classrooms[0]);
 
             $classrooms->getCollection()->transform(function ($classroom) {
-                $subject_info = $classroom->subject;
-                $teacher_info = $classroom->teacher;
+                $subject_info = optional($classroom->subject);
+                $teacher_info = optional($classroom->teacher);
                 $schedule_first = optional($classroom->schedules->first()); // Lấy lịch học đầu tiên
                 $session_info = optional($schedule_first->session);
+                $room_info = optional($schedule_first->room);
 
                 return [
                     'class_code' => $classroom->class_code,
                     'class_name' => $classroom->class_name,
                     'students_count' => $classroom->users_count,
-                    'subject_code' => optional($subject_info)->subject_code,
-                    'subject_name' => optional($subject_info)->subject_name,
-                    'teacher_code' => optional($teacher_info)->user_code,
-                    'teacher_name' => optional($teacher_info)->full_name,
-                    'date_start' => optional($schedule_first)->date,
-                    'session_name' => optional($session_info)->cate_name,
-                    'session_value' => optional($session_info)->value,
+                    'subject_code' => $subject_info->subject_code,
+                    'subject_name' => $subject_info->subject_name,
+                    'teacher_code' => $teacher_info->user_code,
+                    'teacher_name' => $teacher_info->full_name,
+                    'date_start' => $schedule_first->date,
+                    'type_day' => (new DateTime($schedule_first->date))->format('d') %2 != 0 ? "Ngày 2,4,6" : 'Ngày 3,5,7',
+                    'room_name' => $room_info->cate_name,
+                    'session_name' => $session_info->cate_name,
+                    'session_value' => $session_info->value,
                 ];
             });
 
@@ -107,7 +115,7 @@ class ClassroomController extends Controller
                     ['message' => "Không có lớp học nào!"],
                     204
                 );
-            }
+            }   
 
             // Trả về danh sách lớp học
             return response()->json([
@@ -124,7 +132,6 @@ class ClassroomController extends Controller
 
     public function handleStep1(HandleStep1 $request)
     {
-
         try {
             $data = $request->validated();
             // Lấy ra danh sách các lớp học đã được tạo bởi môn học này + khoá học này

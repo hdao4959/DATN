@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\User;
 use App\Models\ClassroomUser;
-
+use DateTime;
 
 class ClassroomController extends Controller
 {
@@ -55,18 +55,19 @@ class ClassroomController extends Controller
                                 
                             }])->get(['class_code', 'class_name', 'user_code', 'is_active', 'subject_code']);
             $result = $classrooms->map(function($classroom) {
-                $schedules = $classroom->schedules->first();
-                $student = $classroom->users;
+                $schedules_first = optional($classroom->schedules->first());
+                $student = optional($classroom->users);
                 $totalStudent = $student->count();
-                $studyTime = json_decode($schedules->session['value'], true);
+                $studyTime = json_decode($schedules_first->session['value'], true);
                 return [
                     'class_code' => $classroom->class_code ?? null,
                     'class_name' => $classroom->class_name ?? null,
                     'subject_name' => $classroom->subject->subject_name ?? null,
                     'teacher_name' => $classroom->teacher->full_name ?? null,
+                    'type_day' => (new DateTime($schedules_first->date))->format('d') % 2 != 0 ? 'Thứ 2,4,6' : 'Thứ 3,5,7',
                     'total_student' => $totalStudent ?? null,
-                    'room_name' => $schedules->room->cate_name ?? null,
-                    'session_name' => $schedules->session->cate_name ?? null,
+                    'room_name' => $schedules_first->room->cate_name ?? null,
+                    'session_name' => $schedules_first->session->cate_name ?? null,
                     'value' => $studyTime ?? null,                    
                 ];
             });
