@@ -85,7 +85,7 @@ const MajorTable = ({ data = [], refetch }) => {
                             <img
                                 src={
                                     it.image
-                                        ? "http://localhost:8000/storage/" +
+                                        ? "https://admin.feduvn.com/storage/" +
                                           it.image
                                         : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
                                 }
@@ -146,7 +146,7 @@ const MajorTable = ({ data = [], refetch }) => {
                                     <img
                                         src={
                                             child.image
-                                                ? "http://localhost:8000/storage/" +
+                                                ? "https://admin.feduvn.com/storage/" +
                                                   child.image
                                                 : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
                                         }
