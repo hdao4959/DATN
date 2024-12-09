@@ -56,7 +56,7 @@ const ListTeacher = () => {
                     try {
                         const page = data.start / data.length + 1;
                         const response = await api.get(`/admin/teachers`, {
-                            params: { page, per_page: data.length },
+                            params: { page, per_page: data.length, search: data.search.value || '' },
                         });
                         const result = response.data;
 

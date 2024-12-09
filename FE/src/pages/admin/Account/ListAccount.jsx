@@ -59,6 +59,7 @@ const ListAccount = () => {
                     try {
                         // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
+                        const searchValue = data.search.value;
 
                         // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
@@ -66,7 +67,7 @@ const ListAccount = () => {
                             params: {
                                 page: page, // Trang hiện tại
                                 per_page: data.length, // Số bản ghi mỗi trang
-                                // search: data.search.value || "", // Từ khóa tìm kiếm
+                                search: data.search.value || "", // Từ khóa tìm kiếm
                                 // order_column: data.order[0].column, // Cột được sắp xếp
                                 // order_dir: data.order[0].dir, // Hướng sắp xếp
                             },
