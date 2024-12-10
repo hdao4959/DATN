@@ -142,7 +142,7 @@ class AttendanceController extends Controller
             
             $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($byDateCopy, $sessionData){
                 $firstAttendance = $studentGroup->first();
-                return $byDateCopy[0];
+                // return $byDateCopy[0];
                 // Lấy `user_code` từ nhóm hiện tại
                 $userCode = $firstAttendance->student_code;
 

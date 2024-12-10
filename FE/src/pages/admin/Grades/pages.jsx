@@ -82,7 +82,7 @@ const ShowGrades = () => {
                     { title: "Mã SV", data: "student_code", className: "text-center" },
                     { title: "Tên SV", data: "student_name", className: "text-center" },
                     ...selectedGrade?.students[0]?.scores.map((score, index) => ({
-                        title: `${score.assessment_name} (${score.weight / totalWeight * 100}%)`,
+                        title: `${score.assessment_name}`,
                         data: null,
                         render: (data, type, row) => {
                             let scoreData = row.scores[index]?.score || 0;

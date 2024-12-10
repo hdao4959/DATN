@@ -198,7 +198,7 @@ const ShowAttendance = () => {
         }
 
         try {
-            await api.put(`/admin/attendances`, changedRecords);
+            await api.put(`/admin/attendances/${class_code}`, changedRecords);
             toast.success("Lưu thành công!");
             setChangedRecords([]);
         } catch (error) {
