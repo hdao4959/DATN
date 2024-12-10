@@ -173,9 +173,12 @@ const ClassRoomsList = () => {
                         title: "Lớp học",
                         data: null,
                         render: (data) =>
-                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
-                                ${data.class_name}
-                            </a>`,
+                            // `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
+                            //     ${data.class_name}
+                            // </a>`,
+                            `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
+                                     ${data.class_name}
+                                </span>`
                     },
                     {
                         title: "<i class='fas fa-book'> Môn</i>",
@@ -194,9 +197,7 @@ const ClassRoomsList = () => {
                         data: null,
                         className: "text-center",
                         render: (data) =>
-                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
-                ${data.students_count}
-            </a>`,
+                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
                     },
                     {
                         title: "Ca học",
@@ -225,7 +226,12 @@ const ClassRoomsList = () => {
                 const classCode = $(this).data("class_code");
                 toggleDeleteModal(classCode);
             });
-
+            $("#classroomsTable tbody").on("click", ".viewDetail", function () {
+                const classCode = $(this).data("class_code");
+                console.log(classCode);
+                
+                navigate(`/admin/classrooms/view/${classCode}/detail`);
+            });
             $("#classroomsTable tbody").on(
                 "click",
                 "[data-class_code]",
