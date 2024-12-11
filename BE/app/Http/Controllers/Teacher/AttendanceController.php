@@ -139,36 +139,26 @@ class AttendanceController extends Controller
                     ];
                 });
             $sessionData = json_decode($sessions[0]['session'], true);
-            
-            $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($byDateCopy, $sessionData){
+            $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($byDateCopy, $sessionData) {
                 $firstAttendance = $studentGroup->first();
-                return $byDateCopy;
-                // Lấy `user_code` từ nhóm hiện tại
-                $userCode = $firstAttendance->student_code;
-
-                // Lấy `full_name` từ danh sách `users` dựa trên `user_code`
-                $user = $firstAttendance->classroom->users->firstWhere('pivot.user_code', $userCode);
-                $fullName = $user ? $user->full_name : null;
                 
-                // Lọc điểm danh theo ngày ($date)
-                $attendanceData = $studentGroup->filter(function ($attendance) use ($date) {
-                    return Carbon::parse($attendance->date)->toDateString() === $date;
-                })->map(function ($attendance) {
-                    return [
-                        'date' => Carbon::parse($attendance->date)->toDateString(),
-                        'cate_name' => $attendance->classroom->schedules->firstWhere('date', Carbon::parse($attendance->date)->toDateString())->session->cate_name ?? null,
-                        'status' => $attendance->status,
-                        'noted' => $attendance->noted,
-                    ];
-                })->values(); // Bỏ key đánh chỉ số
-
+                // Giữ nguyên giá trị của `byDateCopy` và trả lại nó mà không thay đổi
                 return [
-                    'student_code' => $userCode,
-                    'full_name' => $fullName,
-                    'attendance' => $attendanceData->values(), // Bỏ key đánh chỉ số
+                    'byDate' => $byDateCopy,  // Trả về giá trị ban đầu của `byDateCopy`
+                    'student_code' => $firstAttendance->student_code,
+                    'full_name' => $firstAttendance->classroom->users->firstWhere('pivot.user_code', $firstAttendance->student_code)->full_name ?? null,
+                    'attendance' => $studentGroup->map(function ($attendance) {
+                        return [
+                            'date' => Carbon::parse($attendance->date)->toDateString(),
+                            'cate_name' => $attendance->classroom->schedules->firstWhere('date', Carbon::parse($attendance->date)->toDateString())->session->cate_name ?? null,
+                            'status' => $attendance->status,
+                            'noted' => $attendance->noted,
+                        ];
+                    })->values(),
                     'session' => $sessionData,
                 ];
             })->filter()->values()->all();
+            
 
             return response()->json($result, 200);
         } catch (Throwable $th) {
