@@ -128,7 +128,7 @@ const MySchedule = () => {
                             const timeLeft = startTime.diff(now, "second");
 
                             return `<button class="btn btn-secondary btn-sm">
-                                        <span class="countdown c-before" data-time="${timeLeft}">
+                                        <span class="countdown  c-before" data-time="${timeLeft}">
                                             Điểm danh sau ${formatTime(timeLeft)}
                                         </span>
                                         <p> <i class='fas fa-times'> Điểm danh</i></p>

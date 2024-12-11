@@ -917,7 +917,7 @@ class CategoryController extends Controller
 
         $studentRelearnsGrouped = $studentRelearns->groupBy('subject_code');
         $data = DB::table('categories')->where([
-            'categories.is_active'=>  true,
+            'categories.is_active' =>  true,
             'categories.type' => 'major'
         ])
             ->leftJoin('subjects', 'categories.cate_code', '=', 'subjects.major_code')
@@ -1026,6 +1026,124 @@ class CategoryController extends Controller
     }
 
 
+    // public function generateSchedule()
+    // {
+    //     $data = DB::table('schedules')
+    //         ->leftJoin('classrooms', 'classrooms.class_code', '=', 'schedules.class_code')
+    //         ->whereDate('classrooms.created_at', '=', date('Y-m-d'))
+    //         ->leftJoin('subjects', 'classrooms.subject_code', '=', 'subjects.subject_code')
+    //         ->select(
+    //             'schedules.*',
+    //             'subjects.total_sessions'
+    //         )
+    //         ->get();
+
+    //     $createdDates = []; // Mảng lưu các ngày cần tạo
+    //     $insertData = []; // Mảng để lưu dữ liệu chờ insert vào DB
+
+    //     foreach ($data as $item) {
+    //         $startDate = Carbon::parse($item->date); // Ngày ban đầu
+    //         $totalSessions = $item->total_sessions; // Số buổi cần tạo
+    //         $currentSession = 0; // Biến đếm số buổi đã tạo
+
+    //         // Xác định ngày trong tuần ban đầu
+    //         $startDayOfWeek = $startDate->dayOfWeek;
+
+    //         // Mảng chứa các ngày trong tuần sẽ tạo
+    //         $weekDays = [];
+
+    //         // Xác định ngày tiếp theo cần lấy (thứ 2-4-6, hoặc thứ 3-5-7,...)
+    //         if ($startDayOfWeek == 1) { // Thứ 2
+    //             $weekDays = [1, 3, 5]; // Thứ 2, thứ 4, thứ 6
+    //         } elseif ($startDayOfWeek == 2) { // Thứ 3
+    //             $weekDays = [2, 4, 6]; // Thứ 3, thứ 5, thứ 7
+    //         } elseif ($startDayOfWeek == 3) { // Thứ 4
+    //             $weekDays = [3, 5]; // Thứ 4, thứ 6
+    //         } elseif ($startDayOfWeek == 4) { // Thứ 5
+    //             $weekDays = [4, 6]; // Thứ 5, thứ 7
+    //         } elseif ($startDayOfWeek == 5) { // Thứ 6
+    //             $weekDays = [5, 7]; // Thứ 6, thứ 2 tuần sau
+    //         } elseif ($startDayOfWeek == 6) { // Thứ 7
+    //             $weekDays = [6, 1]; // Thứ 7, thứ 3 tuần sau
+    //         } else { // Chủ nhật
+    //             $weekDays = [7, 2]; // Chủ nhật, thứ 4 tuần sau
+    //         }
+
+    //         // Lặp tạo ngày cho đến khi đạt đủ total_sessions
+    //         while ($currentSession < $totalSessions) {
+    //             if (in_array($startDate->dayOfWeek, $weekDays)) {
+    //                 // Kiểm tra trùng lặp trong cơ sở dữ liệu
+    //                 $exists = DB::table('schedules')
+    //                     ->where('date', $startDate->format('Y-m-d'))
+    //                     ->where('class_code', $item->class_code)
+    //                     ->where('room_code', $item->room_code ?? null)
+    //                     ->where('session_code', $item->session_code)
+    //                     ->exists();
+
+    //                 if (!$exists) {
+    //                     $createdDates[] = $startDate->format('Y-m-d');
+    //                     $insertData[] = [
+    //                         'date' => $startDate->format('Y-m-d'),
+    //                         'room_code' => $item->room_code ?? null,
+    //                         'class_code' => $item->class_code,
+    //                         'session_code' => $item->session_code,
+    //                         'teacher_code' => $item->teacher_code,
+    //                         'type' => 'study'
+    //                     ];
+
+    //                     $currentSession++;
+    //                 }
+    //             }
+
+    //             // Tiến đến ngày tiếp theo
+    //             $startDate->addDay();
+    //         }
+    //         // Sau khi hoàn tất các buổi học, tạo 3 buổi thi cách 1 tuần
+    //         $examDays = [];
+    //         $startDate->addWeek(); // Cách 1 tuần sau buổi học cuối cùng
+    //         $examCount = 0; // Biến đếm số buổi thi
+
+    //         while ($examCount < 3) {
+    //             if (in_array($startDate->dayOfWeek, $weekDays)) {
+    //                 // Kiểm tra trùng lặp trong cơ sở dữ liệu
+    //                 $exists = DB::table('schedules')
+    //                     ->where('date', $startDate->format('Y-m-d'))
+    //                     ->where('class_code', $item->class_code)
+    //                     ->where('room_code', $item->room_code ?? null)
+    //                     ->where('session_code', $item->session_code)
+    //                     ->exists();
+
+    //                 if (!$exists) {
+    //                     $examDays[] = $startDate->format('Y-m-d');
+    //                     $insertData[] = [
+    //                         'date' => $startDate->format('Y-m-d'),
+    //                         'room_code' => $item->room_code ?? null,
+    //                         'class_code' => $item->class_code,
+    //                         'session_code' => $item->session_code,
+    //                         'teacher_code' => $item->teacher_code,
+    //                         'type' => 'exam' // Loại buổi thi
+    //                     ];
+
+    //                     $examCount++;
+    //                 }
+    //             }
+
+    //             // Tiến đến ngày tiếp theo
+    //             $startDate->addDay();
+    //         }
+
+    //         $createdDates = array_merge($createdDates, $examDays); // Gộp các ngày đã tạo
+    //     }
+
+    //     // Chèn dữ liệu vào bảng schedules
+    //     DB::table('schedules')->insert($insertData);
+
+    //     return response()->json([
+    //         'created_dates' => $createdDates,
+    //         'message' => 'Schedules have been generated and inserted successfully!'
+    //     ]);
+    // }
+
     public function generateSchedule()
     {
         $data = DB::table('schedules')
@@ -1037,112 +1155,98 @@ class CategoryController extends Controller
                 'subjects.total_sessions'
             )
             ->get();
-
-        $createdDates = []; // Mảng lưu các ngày cần tạo
-        $insertData = []; // Mảng để lưu dữ liệu chờ insert vào DB
-
-        foreach ($data as $item) {
-            $startDate = Carbon::parse($item->date); // Ngày ban đầu
-            $totalSessions = $item->total_sessions; // Số buổi cần tạo
-            $currentSession = 0; // Biến đếm số buổi đã tạo
-
-            // Xác định ngày trong tuần ban đầu
-            $startDayOfWeek = $startDate->dayOfWeek;
-
-            // Mảng chứa các ngày trong tuần sẽ tạo
-            $weekDays = [];
-
-            // Xác định ngày tiếp theo cần lấy (thứ 2-4-6, hoặc thứ 3-5-7,...)
-            if ($startDayOfWeek == 1) { // Thứ 2
-                $weekDays = [1, 3, 5]; // Thứ 2, thứ 4, thứ 6
-            } elseif ($startDayOfWeek == 2) { // Thứ 3
-                $weekDays = [2, 4, 6]; // Thứ 3, thứ 5, thứ 7
-            } elseif ($startDayOfWeek == 3) { // Thứ 4
-                $weekDays = [3, 5]; // Thứ 4, thứ 6
-            } elseif ($startDayOfWeek == 4) { // Thứ 5
-                $weekDays = [4, 6]; // Thứ 5, thứ 7
-            } elseif ($startDayOfWeek == 5) { // Thứ 6
-                $weekDays = [5, 7]; // Thứ 6, thứ 2 tuần sau
-            } elseif ($startDayOfWeek == 6) { // Thứ 7
-                $weekDays = [6, 1]; // Thứ 7, thứ 3 tuần sau
-            } else { // Chủ nhật
-                $weekDays = [7, 2]; // Chủ nhật, thứ 4 tuần sau
-            }
-
-            // Lặp tạo ngày cho đến khi đạt đủ total_sessions
-            while ($currentSession < $totalSessions) {
-                if (in_array($startDate->dayOfWeek, $weekDays)) {
-                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
-                    $exists = DB::table('schedules')
-                        ->where('date', $startDate->format('Y-m-d'))
-                        ->where('class_code', $item->class_code)
-                        ->where('room_code', $item->room_code ?? null)
-                        ->where('session_code', $item->session_code)
-                        ->exists();
-
-                    if (!$exists) {
-                        $createdDates[] = $startDate->format('Y-m-d');
-                        $insertData[] = [
-                            'date' => $startDate->format('Y-m-d'),
-                            'room_code' => $item->room_code ?? null,
-                            'class_code' => $item->class_code,
-                            'session_code' => $item->session_code,
-                            'teacher_code' => $item->teacher_code,
-                            'type' => 'study'
-                        ];
-
-                        $currentSession++;
-                    }
-                }
-
-                // Tiến đến ngày tiếp theo
-                $startDate->addDay();
-            }
-            // Sau khi hoàn tất các buổi học, tạo 3 buổi thi cách 1 tuần
-            $examDays = [];
-            $startDate->addWeek(); // Cách 1 tuần sau buổi học cuối cùng
-            $examCount = 0; // Biến đếm số buổi thi
-
-            while ($examCount < 3) {
-                if (in_array($startDate->dayOfWeek, $weekDays)) {
-                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
-                    $exists = DB::table('schedules')
-                        ->where('date', $startDate->format('Y-m-d'))
-                        ->where('class_code', $item->class_code)
-                        ->where('room_code', $item->room_code ?? null)
-                        ->where('session_code', $item->session_code)
-                        ->exists();
-
-                    if (!$exists) {
-                        $examDays[] = $startDate->format('Y-m-d');
-                        $insertData[] = [
-                            'date' => $startDate->format('Y-m-d'),
-                            'room_code' => $item->room_code ?? null,
-                            'class_code' => $item->class_code,
-                            'session_code' => $item->session_code,
-                            'teacher_code' => $item->teacher_code,
-                            'type' => 'exam' // Loại buổi thi
-                        ];
-
-                        $examCount++;
-                    }
-                }
-
-                // Tiến đến ngày tiếp theo
-                $startDate->addDay();
-            }
-
-            $createdDates = array_merge($createdDates, $examDays); // Gộp các ngày đã tạo
+    
+        if ($data->isEmpty()) {
+            return response()->json([
+                'message' => 'No schedules found for today!'
+            ], 404);
         }
-
-        // Chèn dữ liệu vào bảng schedules
-        DB::table('schedules')->insert($insertData);
-
+    
+        $existingSchedules = DB::table('schedules')
+            ->select('date', 'class_code', 'room_code', 'session_code')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->date . '-' . $item->class_code . '-' . $item->room_code . '-' . $item->session_code;
+            });
+    
+        $createdDates = [];
+        $insertData = [];
+    
+        foreach ($data as $item) {
+            $startDate = Carbon::parse($item->date);
+            $totalSessions = $item->total_sessions;
+            $currentSession = 0;
+    
+            // Xác định các ngày trong tuần (2-4-6 hoặc 3-5-7)
+            $weekDays = in_array($startDate->dayOfWeek, [1, 3, 5]) ? [1, 3, 5] : [2, 4, 6];
+    
+            // Tiến đến ngày hợp lệ đầu tiên trong tuần
+            while (!in_array($startDate->dayOfWeek, $weekDays)) {
+                $startDate->addDay();
+                return $weekDays;
+            }
+    
+            // Tạo buổi học theo lịch 2-4-6 hoặc 3-5-7
+            while ($currentSession < $totalSessions) {
+                $key = $startDate->format('Y-m-d') . '-' . $item->class_code . '-' . ($item->room_code ?? '') . '-' . $item->session_code;
+    
+                if (!isset($existingSchedules[$key])) {
+                    $createdDates[] = $startDate->format('Y-m-d');
+                    $insertData[] = [
+                        'date' => $startDate->format('Y-m-d'),
+                        'room_code' => $item->room_code ?? null,
+                        'class_code' => $item->class_code,
+                        'session_code' => $item->session_code,
+                        'teacher_code' => $item->teacher_code,
+                        'type' => 'study'
+                    ];
+    
+                    $currentSession++;
+                }
+    
+                // Tăng ngày học tiếp theo trong tuần (chỉ chọn 2-4-6 hoặc 3-5-7)
+                do {
+                    $startDate->addDay();
+                } while (!in_array($startDate->dayOfWeek, $weekDays));
+            }
+    
+            // Thêm lịch thi (3 buổi cách 1 tuần sau buổi cuối)
+            $startDate->addWeek();
+            $examCount = 0;
+    
+            while ($examCount < 3) {
+                $key = $startDate->format('Y-m-d') . '-' . $item->class_code . '-' . ($item->room_code ?? '') . '-' . $item->session_code;
+    
+                if (!isset($existingSchedules[$key]) && in_array($startDate->dayOfWeek, $weekDays)) {
+                    $insertData[] = [
+                        'date' => $startDate->format('Y-m-d'),
+                        'room_code' => $item->room_code ?? null,
+                        'class_code' => $item->class_code,
+                        'session_code' => $item->session_code,
+                        'teacher_code' => $item->teacher_code,
+                        'type' => 'exam'
+                    ];
+    
+                    $examCount++;
+                }
+    
+                // Tăng ngày thi tiếp theo (chỉ chọn 2-4-6 hoặc 3-5-7)
+                do {
+                    $startDate->addDay();
+                } while (!in_array($startDate->dayOfWeek, $weekDays));
+            }
+        }
+    
+        DB::table('schedules')->upsert($insertData, ['date', 'class_code', 'room_code', 'session_code'], ['type', 'teacher_code']);
+    
         return response()->json([
             'created_dates' => $createdDates,
             'message' => 'Schedules have been generated and inserted successfully!'
         ]);
     }
+    
+
+
 
 
     public function generateAttendances()
@@ -1153,7 +1257,7 @@ class CategoryController extends Controller
             // Lấy danh sách sinh viên trong lớp của lịch học
             $students = DB::table('classroom_user')
                 ->where('class_code', $schedule->class_code)
-                ->get();
+                ->get();    
 
             foreach ($students as $student) {
                 // Tạo bản ghi điểm danh
@@ -1410,61 +1514,6 @@ class CategoryController extends Controller
 
     public function addTeacher()
     {
-
-        // $majors = $this->getListByMajor();
-        // $classRoomIndex = 0;
-        // foreach ($majors as $major) {
-        //     foreach ($major['subjects'] as $subject) {
-        //         $classrooms = Classroom::where('subject_code', $subject['subject_code'])->whereNotNull('subject_code')->get();
-        //         foreach ($subject['teachers'] as $teacher) {
-        //             $assigned = false;
-        //             foreach ($classrooms as $classroom) {
-        //                 // Tách class_code thành các phần để lấy thông tin về ngày học và ca học
-        //                 $classCodeParts = explode('_', $classroom['class_code']);  // Tách phần tử từ class_code
-        //                 $day = (Carbon::createFromTimestamp($classCodeParts[0]))->format('Y/m/d');
-        //                 $session = $classCodeParts[1];  // Ca học (TS1, TS2, ...)
-
-        //                 // Check if the teacher is already assigned to a class on the same session and date
-        //                 $existingSchedule = Schedule::where('teacher_code', $teacher['user_code'])
-        //                     ->where('session_code', $session)
-        //                     ->where('date', $day)
-        //                     ->first();
-
-        //                 if ($existingSchedule) {
-        //                     // Teacher already assigned to this session, skip to next classroom
-        //                     continue;
-        //                 }
-
-        //                 // Now check if the teacher is already assigned to the session on the same date
-        //                 $duplicateCheck = Schedule::where('teacher_code', $teacher['user_code'])
-        //                     ->where('session_code', $session)
-        //                     ->whereRaw('DATE(date) = ?', [now()->format('Y-m-d')])  // Check current date
-        //                     ->exists();
-
-        //                 if ($duplicateCheck) {
-        //                     // If a duplicate exists, skip assigning this teacher
-        //                     continue;
-        //                 }
-
-        //                 // Now assign the teacher to this classroom's schedule
-        //                 $schedule = Schedule::where('class_code', $classroom['class_code'])->first();
-        //                 if ($schedule) {
-        //                     // Update the teacher_code if no conflict
-        //                     $schedule->teacher_code = $teacher['user_code'];
-        //                     $schedule->save();  // Save the updated schedule
-        //                     $assigned = true;
-        //                     break; // Exit the loop once the teacher is assigned
-        //                 }
-        //             }
-
-        //             if (!$assigned) {
-        //                 continue;
-        //             }
-        //         }
-        //         $classRoomIndex++;
-        //     }
-        // }
-        // return response()->json(['message' => 'Teachers assigned to classrooms successfully']);
         try {
             DB::beginTransaction();
 
@@ -1491,7 +1540,7 @@ class CategoryController extends Controller
                 ->select('user_code', 'major_code')
                 ->get();
 
-                // return $schedules;
+            // return $schedules;
             if ($teachers->isEmpty() || $schedules->isEmpty()) {
                 return response()->json([
                     'message' => 'Không có giảng viên hoặc lịch học cần xếp.',
@@ -1722,10 +1771,9 @@ class CategoryController extends Controller
                 'count' => count($createdClassrooms),
                 'startDates' => $startDates
             ]);
-
         } catch (\Throwable $th) {
             return response()->json([
-                'error' => false, 
+                'error' => false,
                 'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động',
             ], 400);
         }

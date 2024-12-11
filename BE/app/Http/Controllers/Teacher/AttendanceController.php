@@ -142,7 +142,7 @@ class AttendanceController extends Controller
             
             $result = $attendances->groupBy('student_code')->map(function ($studentGroup) use ($byDateCopy, $sessionData){
                 $firstAttendance = $studentGroup->first();
-                // return $byDateCopy[0];
+                return $byDateCopy;
                 // Lấy `user_code` từ nhóm hiện tại
                 $userCode = $firstAttendance->student_code;
 
@@ -161,19 +161,6 @@ class AttendanceController extends Controller
                         'noted' => $attendance->noted,
                     ];
                 })->values(); // Bỏ key đánh chỉ số
-
-                // Nếu không có dữ liệu điểm danh cho ngày này, trả về data mặc định
-                if ($attendanceData->isEmpty()) {
-                    $schedule = $firstAttendance->classroom->schedules->firstWhere('date', $date);
-                    $attendanceData = collect([
-                        [
-                            'date' => $date,
-                            'cate_name' => $schedule ? $schedule->session->cate_name : 'Chưa có ca học',
-                            'status' => null,
-                            'noted' => 'Chưa điểm danh'
-                        ]
-                    ]);
-                }
 
                 return [
                     'student_code' => $userCode,
