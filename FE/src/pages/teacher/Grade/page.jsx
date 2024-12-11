@@ -136,6 +136,7 @@ const ShowGrades = () => {
                                     "
                                 />
                             `;
+
                         },
                         className: "text-center",
                     })),

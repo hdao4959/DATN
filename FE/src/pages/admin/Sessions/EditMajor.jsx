@@ -40,14 +40,17 @@ const EditSession = () => {
     useEffect(() => {
         if (sessionDetail) {
             const parsedValue = JSON.parse(sessionDetail?.value);
-            reset({...sessionDetail, value: parsedValue});
+            reset({ ...sessionDetail, value: parsedValue, cate_name: sessionDetail.cate_name.replace(/[^0-9]/g, "") });
         }
     }, [sessionDetail, reset]);
 
-    const onSubmit = (data) => {
-        console.log(data);
-
-        // mutate(data);
+    const onSubmit = (dataI) => {
+        const data = {
+            session: dataI.cate_name,
+            time_start: dataI.value.start,
+            time_end: dataI.value.end
+        }
+        mutate(data);
     };
 
     return (
@@ -76,20 +79,23 @@ const EditSession = () => {
                                                 *
                                             </span>
                                         </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            {...register("cate_name", {
-                                                required:
-                                                    "Tên ca đầu là bắt buộc",
-                                                pattern: {
+                                        <div className="input-group">
+                                            <span className="input-group-text">Ca</span>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                value={sessionDetail.value.start}
+                                                {...register("cate_name", {
+                                                    required: "Tên ca đầu là bắt buộc",
+                                                    pattern: {
                                                     value: /^[0-9]+$/,
                                                     message:
                                                         "Tên ca đầu phải là số",
                                                 },
-                                            })}
-                                            placeholder="Nhập tên ca, VD: 1"
-                                        />
+                                                })}
+                                                placeholder="Nhập số ca, VD: 1"
+                                            />
+                                        </div>
                                         {errors.session && (
                                             <span className="text-danger">
                                                 {errors.session.message}
