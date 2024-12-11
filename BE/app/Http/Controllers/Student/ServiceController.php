@@ -12,6 +12,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ServiceController extends Controller
@@ -226,9 +227,9 @@ public function changeStatus(int $id, Request $request)
         'receive_address'  => 'nullable|string|max:255',
         'note'             => 'nullable|string|max:500',
     ]);
-    
-    $user_code = request()->user()->user_code;
-    //   $user_code = $request->user_code;
+
+    // $user_code = request()->user()->user_code;
+      $user_code = $request->user_code;
 
       if(!$user_code){
         return response()->json(['message' => 'không tìm thấy user_code']);
@@ -356,5 +357,25 @@ public function changeStatus(int $id, Request $request)
     } catch (\Throwable $th) {
       return response()->json(['message' => $th->getMessage()]);
     }
+  }
+
+  public function cancelServiceByStudent(int $id){
+        try{
+            $service = Service::find($id);
+            if(!$service){
+                return response()->json(['message' => 'không tìm thấy dịch vụ']);
+            }
+
+            $status = $service->status;
+            if($status != "pending"){
+                return response()->json(['message' => 'dịch vụ đã được chấp nhận hoặc bị hủy, không thể hủy dịch vụ']);
+            }
+
+            $service->delete();
+            return response()->json(['message' => 'hủy dịch vụ thành công']);
+        }catch(\Throwable $th){
+            Log::error('Cancel Service Error: ' . $th->getMessage());
+            return response()->json(['message' => $th->getMessage()]);
+        }
   }
 }

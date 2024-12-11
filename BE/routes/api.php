@@ -285,8 +285,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // dịch vụ thay đổi thông tin
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
-
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
+        Route::delete('services/delete/{id}',[ServiceController::class, 'cancelServiceByStudent']);
     });
 
     // Các route phục vụ cho form
@@ -338,6 +338,9 @@ Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswor
 
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost'])
     ->name('reset.password.post');
+
+
+
 
 
 
