@@ -126,12 +126,17 @@ const ShowGrades = () => {
                                     data-exam-index="${index}" 
                                     oninput="
                                         const value = parseFloat(this.value);
-                                        if (value < 0) this.value = '0.00';
-                                        else if (value > 10) this.value = '10.00';
-                                        else this.value = value.toFixed(2);
+                                        if (value < 0) this.value = '0';
+                                        else if (value > 10) this.value = '10';
+                                    "
+                                    onblur="
+                                        if (!isNaN(this.value)) {
+                                            this.value = parseFloat(this.value).toFixed(2);
+                                        }
                                     "
                                 />
                             `;
+
                         },
                         className: "text-center",
                     })),

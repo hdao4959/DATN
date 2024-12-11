@@ -133,5 +133,17 @@ class User extends Authenticatable
         return $this->hasMany(Fee::class);
     }
 
-
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'student_code', 'user_code');
+    }
+    
+    public function subjectMajor()
+    {
+        return $this->belongsToMany(Subject::class, 'categories', 'cate_code', 'cate_code', 'major_code', 'major_code');
+    }
+    public function subjectNarrowMajor()
+    {
+        return $this->belongsToMany(Subject::class, 'categories', 'cate_code', 'cate_code', 'narrow_major_code', 'major_code');
+    }
 }
