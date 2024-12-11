@@ -36,6 +36,8 @@ Route::post('/renderScheduleForClassroom', [ClassRoomController::class, 'renderS
 
 Route::get('total_momo', [CheckoutController::class, 'momo_payment']);
 
+Route::get('total_vnpay', [CheckoutController::class, 'vnpay_payment']);
+
 Route::post('/payment-callback', [CheckoutController::class, 'handleCallback']);
 Route::get('/payment-success', [CheckoutController::class, 'handleCallback']);
 
@@ -55,6 +57,7 @@ Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo
 Route::post('/payment-callback/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
 Route::get('/payment-success/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
 Route::post('/send-email/learn-again/{id}/{subject_code}',  [SendEmailController::class, 'sendMailLearnAgain']);
+
 
 
 

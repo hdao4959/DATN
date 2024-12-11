@@ -226,8 +226,8 @@ public function changeStatus(int $id, Request $request)
         'receive_address'  => 'nullable|string|max:255',
         'note'             => 'nullable|string|max:500',
     ]);
-
-      $user_code = request()->user()->user_code;
+    
+    $user_code = request()->user()->user_code;
     //   $user_code = $request->user_code;
 
       if(!$user_code){
@@ -247,8 +247,6 @@ public function changeStatus(int $id, Request $request)
       }
 
       $service_name = "Đăng ký cấp bảng điểm";
-
-
       $amount = $validatedData['number_board'] * 100000;
       $data = [
         'user_code'     => $user_code,
@@ -266,7 +264,6 @@ public function changeStatus(int $id, Request $request)
         ], 500);
     }
   }
-
 
   public function changeInfo( Request $request)
   {
