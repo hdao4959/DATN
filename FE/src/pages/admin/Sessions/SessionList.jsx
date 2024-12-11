@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import api from "../../../config/axios";
@@ -9,6 +9,7 @@ import "datatables.net";
 import Modal from "../../../components/Modal/Modal";
 
 const SessionList = () => {
+    const navigate = useNavigate();
     const { data, refetch, isLoading } = useQuery({
         queryKey: ["SESSION_LIST"],
         queryFn: async () => {
@@ -93,7 +94,7 @@ const SessionList = () => {
                 },
                 scrollX: true,
             });
-            $("#degree-program-table tbody").on("click", ".session-link", function () {
+            $("#session-table tbody").on("click", ".session-link", function () {
                 const cate_code = $(this).data("id");
                 navigate(`/admin/sessions/${cate_code}/edit`);
             });
