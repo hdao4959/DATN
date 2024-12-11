@@ -8,7 +8,7 @@ const DashboardCards = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/count-info");
+                const response = await fetch("https://admin.feduvn.com/api/count-info");
                 if (!response.ok) {
                     throw new Error("Failed to fetch data");
                 }

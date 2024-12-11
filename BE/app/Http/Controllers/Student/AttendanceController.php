@@ -49,8 +49,11 @@ class AttendanceController extends Controller
                             }, 'classroom.teacher' => function ($query) {
                                 $query->select('user_code', 'full_name');
 
-                            },'classroom.schedules.session' => function ($query) {
-                                $query->select('cate_code', 'cate_name'); // Tải thêm session
+                            },'classroom.schedules' => function ($query) {
+                                $query->select('date', 'room_code', 'class_code', 'session_code')
+                                    ->with('session', function ($query) {
+                                        $query->select('cate_code', 'cate_name');
+                                    });
                                 
                             }
                         ])
@@ -60,7 +63,7 @@ class AttendanceController extends Controller
                 $firstAttendance = $classGroup->first();
                 // Lấy tất cả các lịch học từ lớp học
                 $schedules = $firstAttendance->classroom->schedules;
-            
+                // dd($schedules);
                 // Gộp dữ liệu điểm danh và lịch học
                 $attendanceData = $classGroup->map(function ($attendance) use ($schedules) {
                     $currentDate = Carbon::now()->toDateString();
@@ -68,7 +71,7 @@ class AttendanceController extends Controller
             
                     return [
                         'date' => $attendanceDate,
-                        'cate_name' => optional($schedules->firstWhere('date', $attendanceDate)->session)->cate_name ?? null,
+                        'cate_name' => $schedules->firstWhere('date', $attendanceDate)->session->cate_name ?? null,
                         'full_name' => $attendance->classroom->teacher->full_name,
                         'status' => $attendanceDate > $currentDate ? null : $attendance->status,
                         'noted' => $attendanceDate > $currentDate ? 'Chưa điểm danh' : $attendance->noted,

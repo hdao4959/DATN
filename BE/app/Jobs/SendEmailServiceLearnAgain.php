@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\SendEmailLearnAgain;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,7 +12,7 @@ use App\Mail\SendEmailService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class SendEmailServiceJob implements ShouldQueue
+class SendEmailServiceLearnAgain implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -29,7 +30,7 @@ class SendEmailServiceJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $email = new SendEmailService($this->data);
+        $email = new SendEmailLearnAgain($this->data);
         Log::info('User data:', $this->data);
 
         // Mail::to($this->data['user']['email'])->send($email);

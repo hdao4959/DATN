@@ -11,12 +11,12 @@ class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */ 
+     */
     public function index(Request $request)
     {
         try {
             // return response()->json($request->all()); // Hiển thị dữ liệu từ request
-            $userCode = $request->user()->user_code;     
+            $userCode = $request->user()->user_code;
             // $userCode = 'student05';
             if (!$userCode) {
                 return response()->json('Không có user_code', 400);
@@ -35,7 +35,7 @@ class TransactionController extends Controller
                 'wallets' => $wallets,
             ]);
             
-        } catch (Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th], 404);
         }
     }

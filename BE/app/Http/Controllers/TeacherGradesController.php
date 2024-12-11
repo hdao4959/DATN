@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Grades;
 use App\Http\Requests\UpdateGradesRequest;
-use App\Models\ClassRoom;
+use App\Models\Classroom;
 use App\Models\Subject;
 use App\Repositories\Contracts\GradeRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

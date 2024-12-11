@@ -9,17 +9,15 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendEmailService extends Mailable
+class ServiceStatusChanged extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $data;
-    /**
-     * Create a new message instance.
-     */
+
     public function __construct($data)
     {
-        $this->data = $data;
+        $this->data = $data; // Lưu dữ liệu vào thuộc tính $data
     }
 
     /**
@@ -28,7 +26,7 @@ class SendEmailService extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Thông báo đăng kí dịch vụ',
+            subject: 'Thông báo thay đổi trạng thái dịch vụ', // Tiêu đề email
         );
     }
 
@@ -38,7 +36,10 @@ class SendEmailService extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.service',
+            view: 'emails.serviceStatusChanged', // Tên view email của bạn
+            with: [
+                'data' => $this->data, // Truyền dữ liệu vào view
+            ]
         );
     }
 

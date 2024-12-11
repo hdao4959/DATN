@@ -45,6 +45,14 @@ class Attendance extends Model
     
     public function schedule()
     {
-        return $this->belongsToThrough(Schedule::class, Classroom::class, 'class_code', 'class_code', 'class_code', 'class_code');
+        return $this->hasOneThrough(
+            Schedule::class,
+            Classroom::class,
+            'class_code', // Foreign key on Classroom
+            'class_code', // Foreign key on Schedule
+            'class_code', // Local key on Attendance
+            'class_code'  // Local key on Classroom
+        );
     }
+
 }

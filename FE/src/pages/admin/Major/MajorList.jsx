@@ -140,7 +140,7 @@ const MajorList = () => {
                         data: "image",
                         render: (data) =>
                             `<img src="${data
-                                ? `http://localhost:8000/storage/${data}`
+                                ? `https://admin.feduvn.com/storage/${data}`
                                 : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
                             }" alt="image" width="50" height="50" />`,
                         className: "text-center d-flex justify-content-center",

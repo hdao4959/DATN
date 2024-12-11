@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\ClassRoom;
+use App\Models\Classroom;
 use App\Repositories\Contracts\ScoreRepositoryInterface;
 
 class ScoreController extends Controller{

@@ -11,7 +11,7 @@ const Dashboard = () => {
         const fetchData = async () => {
             try {
                 // Gọi API trạng thái nộp học phí
-                const feeResponse = await axios.get("http://127.0.0.1:8000/api/status-fee-all");
+                const feeResponse = await axios.get("https://admin.feduvn.com/api/status-fee-all");
                 const { pending, paid, unpaid } = feeResponse.data["status-fee"];
                 setStatusFeeData([pending, paid, unpaid]);
 
@@ -48,7 +48,7 @@ const Dashboard = () => {
                 });
 
                 // Gọi API trạng thái điểm danh
-                const attendanceResponse = await axios.get("http://127.0.0.1:8000/api/status-attendances");
+                const attendanceResponse = await axios.get("https://admin.feduvn.com/api/status-attendances");
                 const { absent, present } = attendanceResponse.data["status-attendances"];
                 setAttendanceData([absent, present]);
 
@@ -83,7 +83,7 @@ const Dashboard = () => {
                 });
 
                 // Gọi API số lượng sinh viên theo ngành
-                const studentCountResponse = await axios.get("http://127.0.0.1:8000/api/count-student");
+                const studentCountResponse = await axios.get("https://admin.feduvn.com/api/count-student");
                 const studentData = studentCountResponse.data;
                 const labels = studentData.map((item) => item.major_name);
                 const data = studentData.map((item) => item.total);

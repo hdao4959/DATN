@@ -14,7 +14,7 @@ dayjs.extend(isBetween);
 
 const MySchedule = () => {
     const navigate = useNavigate();
-    
+
     const { data, isLoading } = useQuery({
         queryKey: ["MY_SCHEDULE"],
         queryFn: async () => {
@@ -41,6 +41,35 @@ const MySchedule = () => {
 
         return { currentSchedule, next7DaysSchedule };
     }, [data]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            $(".countdown").each(function () {
+                if ($(this).hasClass("c-before")) {
+                    const time = parseInt($(this).attr("data-time"), 10) - 1;
+                    $(this).attr("data-time", time);
+                    $(this).text(`Điểm danh sau ${formatTime(time)}`);
+                } else if ($(this).hasClass("c-middle")) {
+                    const time = parseInt($(this).attr("data-time"), 10) - 1;
+                    $(this).attr("data-time", time);
+                    $(this).text(`Điểm danh còn ${formatTime(time)}`);
+                } else {
+                    const time = parseInt($(this).attr("data-time"), 10) + 1;
+                    $(this).attr("data-time", time);
+                    $(this).text(`Đã qua ${formatTime(time)}`);
+                }
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const formatTime = (totalSeconds) => {
+        const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+        const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+        const seconds = String(totalSeconds % 60).padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
+    };
 
     useEffect(() => {
         const columns = [
@@ -87,16 +116,52 @@ const MySchedule = () => {
                 data: null,
                 render: (row) => {
                     const isToday = dayjs(row.date).isSame(dayjs(), "date");
+                    const sessionValParse = JSON.parse(row.session);
+                    const startTime = dayjs(`${row.date}T${sessionValParse.start}`);
+                    // const startTime = dayjs(`${row.date}T${'19:40'}`);
+                    const endTime = startTime.add(15, "minute");
+
                     if (isToday) {
-                        return `<button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}" style="margin-right: 5px;">
-                                    Điểm danh
-                                </button>`;
+                        const now = dayjs();
+                        if (now.isBefore(startTime)) {
+                            // Trước StartTime
+                            const timeLeft = startTime.diff(now, "second");
+
+                            return `<button class="btn btn-secondary btn-sm">
+                                        <span class="countdown c-before" data-time="${timeLeft}">
+                                            Điểm danh sau ${formatTime(timeLeft)}
+                                        </span>
+                                        <p> <i class='fas fa-times'> Điểm danh</i></p>
+                                    </button>
+                                    `;
+                        } else if (now.isBetween(startTime, endTime)) {
+                            // Trong vòng 15 phút sau StartTime
+                            const timeLeft = endTime.diff(now, "second");
+                            
+                            return `<button class="btn btn-success btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}">
+                                        <span class="countdown c-middle" data-time="${timeLeft}">
+                                            Điểm danh còn ${formatTime(timeLeft)}
+                                        </span>
+                                        <p> <i class='fas fa-arrow-right'> Điểm danh</i></p>
+                                    </button>
+                                    `;
+                        } else {
+                            // Sau 15 phút từ StartTime
+                            const timePassed = now.diff(endTime, "second");
+                            
+                            return `<button class="btn btn-danger btn-sm attendances-link" data-id="${row.class_code}" data-date="${row.date}">
+                                        <span class="countdown c-after" data-time="${timePassed}">
+                                                    Đã qua ${formatTime(timePassed)}
+                                                </span>
+                                        <p> <i class='fas fa-arrow-right'> Xem điểm danh</i></p>
+                                    </button>
+                                    `;
+                        }
                     }
-                    return ""; // Không hiển thị gì nếu không phải hôm nay
+                    return "";
                 },
-                className: 'text-nowrap',
+                className: "text-nowrap text-center",
             },
-            
         ];
 
         if (currentSchedule) {
@@ -136,7 +201,7 @@ const MySchedule = () => {
                 lengthMenu: [10, 20, 50],
                 data: next7DaysSchedule,
                 processing: true,
-                serverSide: true, 
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;

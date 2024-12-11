@@ -6,7 +6,7 @@ use Throwable;
 use App\Models\Grades;
 use App\Models\Subject;
 use App\Models\Category;
-use App\Models\ClassRoom;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
 use App\Models\ClassroomUser;
 use Illuminate\Support\Facades\DB;
