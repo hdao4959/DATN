@@ -22,7 +22,7 @@ class ServiceController extends Controller
         try {
 
             $query = Service::query()
-            ->select(['id','user_code','service_name','slug','content','status','amount','created_at','updated_at'])
+            ->select(['id','user_code','service_name','content','status','amount','created_at','updated_at'])
             ->with([
                 'student:id,user_code,full_name,email,phone_number' // Chỉ lấy cột cần thiết từ bảng User
             ]);
@@ -247,13 +247,12 @@ public function changeStatus(int $id, Request $request)
       }
 
       $service_name = "Đăng ký cấp bảng điểm";
-      $slug =  Str::slug($service_name);
+
 
       $amount = $validatedData['number_board'] * 100000;
       $data = [
         'user_code'     => $user_code,
         'service_name'  => $service_name,
-        'slug'          => $slug,
         'content'       => $content,
         'amount'        => $amount
       ];
@@ -288,7 +287,7 @@ public function changeStatus(int $id, Request $request)
       }
 
       $service_name = "Đăng kí thay đổi thông tin";
-      $slug =  Str::slug($service_name);
+
 
       $content = "";
 
@@ -318,7 +317,7 @@ public function changeStatus(int $id, Request $request)
       $data = [
         'user_code'     => $user_code,
         'service_name'  => $service_name,
-        'slug'          => $slug,
+
         'content'       => $content,
       ];
 
