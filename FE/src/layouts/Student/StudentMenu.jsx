@@ -4,9 +4,9 @@ import styles from "../index.module.css";
 
 const StudentMenu = () => {
     return (
-        <div className="sidebar" style={{backgroundColor: '#FFFFFF', color: '#333333'}}>
+        <div className="sidebar" style={{ backgroundColor: '#FFFFFF', color: '#333333' }}>
             <div className="sidebar-logo">
-                <div className="logo-header" style={{backgroundColor: '#FFFFFF'}}>
+                <div className="logo-header" style={{ backgroundColor: '#FFFFFF' }}>
                     <Link to={"/student"} className="logo">
                         <img
                             src="https://admin.feduvn.com/storage/logo/logo3.png"
@@ -162,15 +162,17 @@ const StudentMenu = () => {
                             </a>
                             <div className="collapse" id="services">
                                 <ul className="nav nav-collapse">
-                                    {/* <li>
+                                    <li>
                                         <NavLink
-                                            to="/student/services"
+                                            to="/student/services/list"
                                             className={`${styles.menuItem} group`}
                                         >
-                                            <p className="sub-item">Dịch Vụ</p>{" "}
+                                            <p className="sub-item">
+                                                Dịch vụ đã đăng ký
+                                            </p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li> */}
+                                    </li>
                                     <li>
                                         <NavLink
                                             to="/student/change-major"
@@ -193,6 +195,17 @@ const StudentMenu = () => {
                                             <br />
                                         </NavLink>
                                     </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/services/yeu-cau-cap-bang-diem"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Yêu cầu cấp bảng điểm
+                                            </p>{" "}
+                                            <br />
+                                        </NavLink>
+                                    </li>
                                     {/* <li>
                                         <NavLink
                                             to="/student/services"
@@ -204,17 +217,7 @@ const StudentMenu = () => {
                                             <br />
                                         </NavLink>
                                     </li>
-                                    <li>
-                                        <NavLink
-                                            to="/student/services"
-                                            className={`${styles.menuItem} group`}
-                                        >
-                                            <p className="sub-item">
-                                                Yêu cầu cấp bảng điểm
-                                            </p>{" "}
-                                            <br />
-                                        </NavLink>
-                                    </li>
+                                   
                                     <li>
                                         <NavLink
                                             to="/student/services"
