@@ -10,6 +10,7 @@ use App\Models\Wallet;
 use App\Repositories\Contracts\FeeRepositoryInterface;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class FeeController extends Controller
@@ -90,65 +91,53 @@ class FeeController extends Controller
      */
     public function update(Request $request, Fee $fee)
     {
-        $validatedData = $request->validate([
-            'amount' => 'required|numeric|min:0',
-        ]);
+        // return $request;
+        // DB::beginTransaction();
+        $fee->status = $request['status'];
+        try {
+            $isFullyPaid = $request['status'] == 'paid';
 
-        // Cập nhật số tiền cho khoản phí
-        $fee->amount = $validatedData['amount'];
-        $isFullyPaid = $validatedData['amount'] >= $fee->total_amount;
+            if ($isFullyPaid) {
+                $fee->amount = $fee->total_amount;
+                // Tìm hoặc tạo ví tiền
+                $wallet = Wallet::firstOrCreate(
+                    ['user_code' => $fee->user_code],
+                    ['total' => 0, 'paid' => 0]
+                );
+                $wallet->total += $isFullyPaid ? $fee->total_amount : 0;
+                $wallet->paid += $fee->total_amount;
+                $wallet->save();
+                $transactions = [];
+                $transactions[] = [
+                    'fee_id' => $fee->id,
+                    'payment_date' => now(),
+                    'amount_paid' => $fee->total_amount,
+                    'payment_method' => 'cash',
+                    'receipt_number' => "",
+                    'is_deposit' => 1,
+                ];
+                $transactions[] = [
+                    'fee_id' => $fee->id,
+                    'payment_date' => now(),
+                    'amount_paid' => $fee->total_amount,
+                    'payment_method' => 'transfer',
+                    'receipt_number' => "",
+                    'is_deposit' => 0,
+                ];
+                Transaction::insert($transactions);
+            }
+            $fee->save();
 
-        // Cập nhật trạng thái nếu đã thanh toán đầy đủ
-        if ($isFullyPaid) {
-            $fee->status = 'paid';
+            return response()->json([
+                'message' => 'Cập nhật học phí cho sinh viên thành công.',
+                'data' => $fee,
+            ], 200);
+            // Logic xử lý
+            // DB::commit();
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            return response()->json(['error' => 'Something went wrong!'], 500);
         }
-
-        // Tìm hoặc tạo ví tiền
-        $wallet = Wallet::firstOrCreate(
-            ['user_code' => $fee->user_code],
-            ['total' => 0, 'paid' => 0]
-        );
-
-        // Cập nhật thông tin ví
-        $wallet->total += $isFullyPaid ? $fee->total_amount : 0;
-        $wallet->paid += $validatedData['amount'];
-        $wallet->save();
-
-        // Tạo giao dịch
-        $transactions = [];
-
-        // Giao dịch nạp tiền
-        $transactions[] = [
-            'fee_id' => $fee->id,
-            'payment_date' => now(),
-            'amount_paid' => $validatedData['amount'],
-            'payment_method' => 'cash',
-            'receipt_number' => "",
-            'is_deposit' => 1,
-        ];
-
-        // Giao dịch thanh toán đầy đủ
-        if ($isFullyPaid) {
-            $transactions[] = [
-                'fee_id' => $fee->id,
-                'payment_date' => now(),
-                'amount_paid' => $fee->total_amount,
-                'payment_method' => 'transfer',
-                'receipt_number' => "",
-                'is_deposit' => 0,
-            ];
-        }
-
-        // Lưu giao dịch
-        Transaction::insert($transactions);
-
-        // Lưu khoản phí
-        $fee->save();
-
-        return response()->json([
-            'message' => 'Fee updated successfully.',
-            'data' => $fee,
-        ], 200);
     }
 
 

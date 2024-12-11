@@ -22,6 +22,28 @@ const StudentWalletList = () => {
             return res.data;
         },
     });
+    const updateStatusFeeMutation = useMutation({
+        mutationFn: async (data) => {
+            // Kiểm tra giá trị id và data
+            console.log("Mutation ID: ", data.id);
+            console.log("Mutation Data: ", data);
+            await api.put(`/admin/fees/${data.id}`, data.data);
+        },
+        onSuccess: () => {
+            toast.success("Cập nhật công nợ thành công");
+        },
+        onError: (error) => {
+            const msg = error.response?.data?.message || "Có lỗi xảy ra";
+            toast.error(msg);
+        },
+    });
+    
+    const handleUpdateStatusFee = (id, newStatus) => {
+        updateStatusFeeMutation.mutate({
+            id, data: { status: newStatus },
+        });
+    };
+
     console.log(wallets);
     useEffect(() => {
         if (wallets) {
@@ -100,31 +122,36 @@ const StudentWalletList = () => {
                         }
 
                     },
+                    // {
+                    //     title: "Trạng thái",
+                    //     data: "status",
+                    //     className: "text-center, fw-bold",
+                    //     render: (data, type, row) => {
+                    //         if (data == 'pending') {
+                    //             return `<span Style="color:#ffad46">Đang chờ</span>`
+                    //         } else if (data == 'paid') {
+                    //             return `<span Style="color:green">Đã thanh toán</span>`
+                    //         } else if (data == 'unpaid') {
+                    //             return `<span Style="color:red">Chưa thanh toán</span>`
+                    //         } else {
+                    //             return `<span Style="color:red">Chưa thanh toán</span>`
+                    //         }
+                    //     }
+
+                    // },
                     {
                         title: "Trạng thái",
                         data: "status",
                         className: "text-center, fw-bold",
                         render: (data, type, row) => {
-                            if (data == 'pending') {
-                                return `<span Style="color:#ffad46">Đang chờ</span>`
-                            } else if (data == 'paid') {
-                                return `<span Style="color:green">Đã thanh toán</span>`
-                            } else if (data == 'unpaid') {
-                                return `<span Style="color:red">Chưa thanh toán</span>`
-                            } else {
-                                return `<span Style="color:red">Chưa thanh toán</span>`
-                            }
-                        }
-
-                    },
-                    {
-                        title: "Hành động",
-                        data: null,
-                        render: (data, type, row) => {
+                            const color = data === 'pending' ? '#ffad46' : data === 'paid' ? 'green' : 'red';
+                            const isDisabled = data === 'paid' ? 'disabled' : ''; 
                             return `
-                                <div style="display: flex; justify-content: center; align-items: center;gap: 10px">
-                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.id}" id="edit_${row.id}"></i>
-                                </div>
+                                <select class="status-select p-2" style="background:none; color:${color};" data-id="${row.id}" ${isDisabled}>
+                                    <option style="color:#ffad46" value="pending" ${data === 'pending' ? 'selected' : ''}>Đang chờ</option>
+                                    <option style="color:green"  value="paid" ${data === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+                                    <option style="color:red"  value="unpaid" ${data === 'unpaid' ? 'selected' : ''}>Chưa thanh toán</option>
+                                </select>
                             `;
                         }
                     }
@@ -148,9 +175,7 @@ const StudentWalletList = () => {
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
                         console.log(classCode);
-
                         navigate(`/admin/wallets/${classCode}/edit`);
-
                     });
 
                     $('#select_all').on('click', function () {
@@ -161,6 +186,13 @@ const StudentWalletList = () => {
                         const allChecked = $('.row-checkbox').length === $('.row-checkbox:checked').length;
                         $('#select_all').prop('checked', allChecked);
                     });
+                    $(document).off('change', '.status-select').on('change', '.status-select', function () {
+                        const status = $(this).val();
+                        const id = $(this).data('id');
+                        handleUpdateStatusFee(id, status);
+                    });
+                    
+
                 }
             })
         }
@@ -171,7 +203,7 @@ const StudentWalletList = () => {
             if (selectedUserCodes.length == 0) {
                 return toast.error('Vui lòng chọn sinh viên muốn gửi mail')
             }
-            
+
             await api.get(`/send-email2`, {
                 params: { UserCode: selectedUserCodes },
             });
