@@ -162,8 +162,8 @@ const ClassRoomsList = () => {
                     students_count: cls.students_count || 0,
                     session_name: cls.session_name || "Chưa xếp ca",
                     room_time: cls.session_value
-                        // ? JSON.parse(cls.session_value.value)
-                        // : { start: "", end: "" },
+                        ? JSON.parse(cls.session_value.value)
+                        : { start: "", end: "" },
                 })),
                 columns: [
                     {
