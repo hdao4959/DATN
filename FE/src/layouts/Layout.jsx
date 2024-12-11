@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { toast } from "react-toastify";
+import api from "../config/axios";
 
 const AdminLayout = () => {
     const userData = localStorage.getItem("user");
@@ -12,23 +13,17 @@ const AdminLayout = () => {
     }
     const Signout = async () => {
         try {
-            const response = await fetch("https://admin.feduvn.com/api/logout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            const response = await api.post("/logout", {});
 
-            if (response.ok) {
+            if (response.status === 200) {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
 
                 toast.success("Đăng xuất thành công");
+
                 window.location.href = "/signin";
             } else {
-                const data = await response.json();
-                console.error("Lỗi khi đăng xuất:", data);
+                console.error("Lỗi khi đăng xuất:", response.data);
                 toast.error("Có lỗi xảy ra khi đăng xuất");
             }
         } catch (error) {
