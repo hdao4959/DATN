@@ -108,56 +108,104 @@ class ScoreController extends Controller
     {
         try {
             $userCode = $request->user()->user_code;
-            $classRooms = ClassroomUser::where('user_code', $userCode)
-                            ->with(['classroom' => function ($query) {
-                                $query->select('class_code', 'class_name', 'score', 'subject_code')
-                                    ->with(['subject' => function ($query) {
-                                        $query->select('subject_code', 'subject_name', 'credit_number', 'semester_code')
-                                                ->with('semester:cate_code,cate_name');
-                                        }
-                                    ]);
-                                }
-                            ])
-                            ->select('user_code', 'class_code')
-                            ->get();
-            $listClassRoom = $classRooms->map(function ($classRoom) use ($userCode) {
-                // Nếu `classroom` là một mảng, cần lặp qua từng phần tử của nó.
-                return collect($classRoom->classroom)->map(function ($classroom) use ($userCode) {
-                    $subject = $classroom->subject ?? null;
-                    $semester = $subject ? $subject->semester : null;
-
-                    $scores = json_decode($classroom['score'], true); // Giả sử 'score' là chuỗi JSON.
-                    $diem = 0;
-                    $heSo = 0;
-            
-                    if (is_array($scores)) {
-                        // Lọc các phần tử có 'student_code' trùng với $userCode
-                        $filteredScores = array_filter($scores, function ($scoreSet) use ($userCode) {
-                            return $scoreSet['student_code'] === $userCode;
-                        });
-
-                        foreach ($filteredScores as $scoreSet) {
-                            foreach ($scoreSet['scores'] as $score) {
-                                $diem += $score['score'] + $score['value']; // tổng của điểm và hệ số với nha: ( (đ1+hs1)+(đ2+hs2)+... )
-                                $heSo += $score['value']; // Tổng của hệ số
+            $listSubject = User::where('user_code', $userCode)
+                        ->with([
+                            'subjectMajor' => function ($query) {
+                                $query->select('subject_code', 'subject_name', 'credit_number', 'semester_code', 'major_code')
+                                    ->with('semester:cate_code,cate_name');
+                            },
+                            'subjectNarrowMajor' => function ($query) {
+                                $query->select('subject_code', 'subject_name', 'credit_number', 'semester_code', 'major_code')
+                                    ->with('semester:cate_code,cate_name');
+                            },
+                            'scores' => function ($query) {
+                                $query->select('subject_code', 'score', 'is_pass')
+                                    ->with('subject:subject_code,subject_name,credit_number,semester_code,major_code')
+                                    ->with(['subject.semester' => function ($query) {
+                                        $query->select('cate_code', 'cate_name');
+                                    }]);
+                            },
+                            'major' => function ($query) {
+                                $query->select('cate_code', 'cate_name');
+                            },
+                            'narrow_major' => function ($query) {
+                                $query->select('cate_code', 'cate_name');
                             }
-                        }
-                    }
-            
-                    $averageScore = $heSo > 0 ? ($diem / $heSo) * 100 : 0;
-                    $formattedScore = number_format($averageScore, 1, ',', '');
-            
-                    return [
-                        'cate_name' => $semester ? $semester->cate_name : null,
-                        'subject_name' => $subject ? $subject->subject_name : null,
-                        'subject_code' => $subject ? $subject->subject_code : null,
-                        'credit_number' => $subject ? $subject->credit_number : null,
-                        'score' => $formattedScore
-                    ];
-                });
-            })->flatten(1); // Dùng `flatten` để gộp tất cả các kết quả lại thành một mảng đơn lẻ.
+                        ])
+                        ->get(['user_code', 'major_code', 'narrow_major_code', 'semester_code']);
 
-            return response()->json($listClassRoom, 200);
+            $result = $listSubject->map(function ($user) {
+                $userSemesterCode = $user->semester_code; 
+                $subjectsMajor = $user->subjectMajor;
+                $subjectsNarrowMajor = $user->subjectNarrowMajor;
+                $scores = $user->scores;
+                $major = $user->major->cate_name;
+                $narrowMajor = $user->narrow_major->cate_name ?? null;
+
+                // Chuyển `scores` thành danh sách `subject_code` để dễ so sánh
+                $scoresMap = $scores->keyBy('subject_code');
+
+                $finalSubjects = [];
+
+                // Gộp tất cả các `subject` từ `subjectMajor` và `subjectNarrowMajor`
+                $allSubjects = collect($subjectsMajor)->merge($subjectsNarrowMajor);
+
+                foreach ($allSubjects as $subject) {
+                    $subjectCode = $subject->subject_code;
+
+                    if ($scoresMap->has($subjectCode)) {
+                        // Nếu trùng với `scores`, lấy thông tin từ `scores`
+                        $score = $scoresMap->get($subjectCode);
+                        $isPass = $score->subject->semester_code === $userSemesterCode ? 'Studying' : ($score->is_pass ? 'Passed' : 'Failed');
+                        $finalSubjects[] = [
+                            'semester_code' => $score->subject->semester->cate_code,
+                            'semester_name' => $score->subject->semester->cate_name,
+                            'subject_code' => $score->subject->subject_name,
+                            'subject_name' => $score->subject->subject_name,
+                            'credit_number' => $score->subject->credit_number,
+                            'score' => $score->score,
+                            'is_pass' => $isPass,
+                        ];
+                    } else {
+                        // Nếu không trùng, lấy thông tin từ `subjectMajor` hoặc `subjectNarrowMajor`
+                        $isPass = $subject->semester_code === $userSemesterCode ? 'Studying' : 'Notyet';
+                        $finalSubjects[] = [
+                            'semester_code' => $subject->semester->cate_code,
+                            'semester_name' => $subject->semester->cate_name,
+                            'subject_code' => $subject->subject_code,
+                            'subject_name' => $subject->subject_name,
+                            'credit_number' => $subject->credit_number,
+                            'score' => 0,
+                            'is_pass' => $isPass,
+                        ];
+                    }
+                }
+                // Tính toán các thông tin
+                $subjectsCollection = collect($finalSubjects);
+
+                // Tính điểm trung bình của các môn có `is_pass` thuộc Passed, Failed, Studying
+                $averageScore = $subjectsCollection
+                    ->filter(fn($subject) => in_array($subject['is_pass'], ['Passed', 'Failed', 'Studying']))
+                    ->avg('score');
+
+                // Đếm tổng các môn theo từng trạng thái
+                $countNotyet = $subjectsCollection->where('is_pass', 'Notyet')->count();
+                $countPassed = $subjectsCollection->where('is_pass', 'Passed')->count();
+                $countFailed = $subjectsCollection->where('is_pass', 'Failed')->count();
+                $countStudying = $subjectsCollection->where('is_pass', 'Studying')->count();
+
+                return [
+                    'major' => $major,
+                    'narrowMajor' => $narrowMajor,
+                    'subjects' => $finalSubjects,
+                    'averageScore' => $averageScore,
+                    'countNotyet' => $countNotyet,
+                    'countPassed' => $countPassed,
+                    'countFailed' => $countFailed,
+                    'countStudying' => $countStudying,
+                ];
+            });
+            return response()->json($result, 200);
         } catch (Throwable $th) {
             Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
 
