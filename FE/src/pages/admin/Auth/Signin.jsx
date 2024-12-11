@@ -98,7 +98,7 @@ const Signin = () => {
                                 >
                                     <div className="text-white px-3 py-4 p-md-5 mx-md-4">
                                         <img
-                                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
+                                            src="https://admin.feduvn.com/storage/logo/logo3.2-white.png"
                                             alt="White Logo"
                                             className="mb-4"
                                         />
@@ -150,7 +150,7 @@ const Signin = () => {
                                         <div className="d-flex justify-content-center mb-3">
                                             <div>
                                                 <img
-                                                    src="http://localhost:8000/storage/logo/logo3.png"
+                                                    src="https://admin.feduvn.com/storage/logo/logo3.png"
                                                     alt="FPT Logo"
                                                     style={{ width: "185px" }}
                                                 />

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\SessionController;
+use App\Http\Controllers\CheckoutLearnAgainController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Models\User;
 use App\Models\Category;
@@ -94,15 +95,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Khu vực admin
     Route::middleware('role:0')->prefix('/admin')->as('admin.')->group(function () {
 
-        // ca học
+
         Route::apiResource('sessions', SessionController::class);
-        Route::delete('sessions/{code}',[SessionController::class,'destroy']);
-        Route::post('sessions/{code}',[SessionController::class,'update']);
+        Route::delete('sessions/{code}', [SessionController::class, 'destroy']);
+        Route::post('sessions/{code}', [SessionController::class, 'update']);
 
         // khóa học
         Route::apiResource('course', CourseController::class);
-        Route::put('course/{code}',[CourseController::class,'update']);
-        Route::delete('course/{code}',[CourseController::class,'destroy']);
+        Route::put('course/{code}', [CourseController::class, 'update']);
+        Route::delete('course/{code}', [CourseController::class, 'destroy']);
 
 
         Route::apiResource('teachers', TeacherController::class);
@@ -112,10 +113,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('export-students', 'exportStudents');
         });
         Route::get('/subjects', [SubjectController::class, 'index']);
-        Route::get('/subjects/{id}', [SubjectController::class, 'show']);
+        Route::get('/subjects/{subject_code}', [SubjectController::class, 'show']);
         Route::post('/subjects', [SubjectController::class, 'store']);
-        Route::put('/subjects/{id}', [SubjectController::class, 'update']);
-        Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
+        Route::put('/subjects/{subject_code}', [SubjectController::class, 'update']);
+        Route::delete('/subjects/{subject_code}', [SubjectController::class, 'destroy']);
         Route::apiResource('classrooms', ClassroomController::class);
         Route::post('/classrooms/updateActive/{classCode}', [ClassroomController::class, 'updateActive']);
         Route::controller(ClassroomController::class)->group(function () {
@@ -123,9 +124,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('classrooms/renderSchedules', 'renderSchedules');
             Route::post('classrooms/renderRoomsAndTeachers', 'renderRoomsAndTeachers');
             Route::post('classrooms/handleStep2', 'handleStep2');
+        });
 
-
-        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function(){
+        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
             Route::get('transfer_schedule_timeframe', 'transfer_schedule_timeframe');
             Route::post('create_transfer_schedule_timeframe', 'create_transfer_schedule_timeframe');
             Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
@@ -133,11 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
         });
 
-        Route::controller(\App\Http\Controllers\Admin\ScheduleController::class)->group(function () {
-            Route::get('classrooms/{class_code}/schedules', 'schedulesOfClassroom');
-            Route::get('teachers/{teacher_code}/schedules', 'schedulesOfTeacher');
-            Route::get('students/{student_code}/schedules', 'schedulesOfStudent');
-        });
+
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::apiResource('majors', MajorController::class);
         Route::get('getAllMajor/{type}', [MajorController::class, 'getAllMajor']);
@@ -166,8 +163,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::apiResource('newsletters', NewsletterController::class);
         Route::apiResource('attendances', AttendanceController::class);
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
-
-
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
         Route::apiResource('majors', MajorController::class);
@@ -200,24 +195,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
         Route::apiResource('fees', FeeController::class);
-    });
+
+
+        Route::get('services',               [ServiceController::class, 'getAllServices']);
+        Route::get('services/{id}',          [ServiceController::class, 'ServiceInformation']);
+        Route::put('services/changeStatus/{id}',  [ServiceController::class, 'changeStatus']);
     });
 
     Route::middleware('role:2')->prefix('teacher')->as('teacher.')->group(function () {
         // Lịch dạy của giảng viên
         Route::controller(TeacherScheduleController::class)->group(function () {
             Route::get('schedules', 'listSchedulesForTeacher');
+            // Lịch dạy của giảng viên trong 1 lớp học
+            Route::get('classrooms/{classcode}/schedules', 'listSchedulesForClassroom');
         });
 
-
-        // Lịch dạy của giảng viên trong 1 lớp học
-        Route::get('classrooms/{classcode}/schedules', [TeacherScheduleController::class, 'listSchedulesForClassroom']);
-
-        Route::get('classrooms', [TeacherClassroomController::class, 'index']);
-        Route::get('classrooms/{classcode}', [TeacherClassroomController::class, 'show']);
+        Route::controller(TeacherClassroomController::class)->group(function () {
+            Route::get('classrooms', 'index');
+            Route::get('classrooms/{classcode}', 'show');
+        });
         Route::get('classrooms/{classcode}/students', [TeacherStudentController::class, 'listStudentForClassroom']);
-        Route::get('classrooms/{classcode}/examdays', [ExamController::class,'listExamDays']);
-        Route::post('classrooms/{classcode}/examdays', [ExamController::class,'store']);
+
+        Route::controller(ExamController::class)->group(function () {
+            Route::get('classrooms/{classcode}/examdays', 'listExamDays');
+            Route::post('classrooms/{classcode}/examdays', 'store');
+        });
 
 
         Route::get('/attendances', [TeacherAttendanceController::class, 'index']);
@@ -242,9 +244,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/import-attendances', 'importAttendance');
             Route::get('/export-attendances', 'exportAttendance');
         });
-
-
-
     });
 
     Route::middleware('role:3')->prefix('student')->as('student.')->group(function () {
@@ -277,6 +276,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
         Route::apiResource('transaction', TransactionController::class);
         Route::get('getListDebt', [FeeController::class, 'getListDebt']);
+        Route::post('services/learn-again',    [ServiceController::class, "LearnAgain"]);
+        Route::get('services/getListLearnAgain',    [ServiceController::class, "getListLearnAgain"]);
+        Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
+
+
+        // dịch vụ cung cấp bảng điểm
+        Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
+        // dịch vụ thay đổi thông tin
+        Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
+
+        Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
     });
 
     // Các route phục vụ cho form
@@ -308,31 +318,35 @@ Route::get('count-student',     [DashboardController::class, 'getStudentCountByM
 Route::get('status-fee-date',   [DashboardController::class, 'getStatusFeesByDate']);
 Route::get('status-fee-all',    [DashboardController::class, 'getStatusFeesAll']);
 Route::get('status-attendances', [DashboardController::class, 'getStatusAttendances']);
+
+
 // Admin
 Route::post('students/change-major/{id}', [StudentController::class, 'changeMajorStudent']);
 
 
 // Student
+
 Route::post('services/change-major/{user_code}',            [ServiceController::class, 'changeMajor']);
-Route::post('services/provide-scoreboard/{user_code}',      [ServiceController::class, 'provideScoreboard']);
-Route::post('services/change-info/{user_code}',             [ServiceController::class, 'ChangeInfo']);
-Route::post('services/provide-student-card/{user_code}',    [ServiceController::class, 'provideStudentCard']);
-Route::post('services/drop-out-of-school/{user_code}',      [ServiceController::class, 'DropOutOfSchool']);
+
+// cung cấp thẻ sinh viên
+Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
 
 
-
-// Route::get('student/schedules', [TeacherScheduleController::class, 'listSchedulesForStudent']);
 
 
 Route::apiResource('fees', FeeController::class);
-
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
+Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
 
-Route::post('/forgot-password', [ForgetPasswordController::class,'forgetPasswordPost'])
-                                            ->name('forget.password.post');
+Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost'])
+    ->name('forget.password.post');
 
-Route::post('/reset-password',[ForgetPasswordController::class, 'resetPasswordPost'])
-                                            ->name('reset.password.post');
+Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost'])
+    ->name('reset.password.post');
+
+
+
+
 
 
 

@@ -86,7 +86,7 @@ const StudentWalletList = () => {
                         render: (data, type, row) => {
                             return ` 
                                 <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                    <a href="http://127.0.0.1:8000/total_momo?fee_id=${row.id}" class="text-primary fw-bold" data-id="${row.id}" id="edit_${row.id}">
+                                    <a href="https://admin.feduvn.com/total_momo?fee_id=${row.id}" class="text-primary fw-bold" data-id="${row.id}" id="edit_${row.id}">
                                         Thanh toán ngay
                                     </a>
                                 </div>

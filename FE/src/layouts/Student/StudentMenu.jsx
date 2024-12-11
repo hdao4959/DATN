@@ -9,11 +9,11 @@ const StudentMenu = () => {
                 <div className="logo-header" style={{backgroundColor: '#FFFFFF'}}>
                     <Link to={"/student"} className="logo">
                         <img
-                            src="http://localhost:8000/storage/logo/logo3.2-white.png"
+                            src="https://admin.feduvn.com/storage/logo/logo3.png"
                             width={150}
                             alt="navbar brand"
                             className="navbar-brand"
-                            height={20}
+                            height={15}
                         />
                     </Link>
                     <button
@@ -162,7 +162,7 @@ const StudentMenu = () => {
                             </a>
                             <div className="collapse" id="services">
                                 <ul className="nav nav-collapse">
-                                    <li>
+                                    {/* <li>
                                         <NavLink
                                             to="/student/services"
                                             className={`${styles.menuItem} group`}
@@ -170,7 +170,7 @@ const StudentMenu = () => {
                                             <p className="sub-item">Dịch Vụ</p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <NavLink
                                             to="/student/change-major"
@@ -184,16 +184,16 @@ const StudentMenu = () => {
                                     </li>
                                     <li>
                                         <NavLink
-                                            to="/student/services"
+                                            to="/student/services/re-enrollment"
                                             className={`${styles.menuItem} group`}
                                         >
                                             <p className="sub-item">
-                                                Yêu cầu học lại
+                                                Đăng kí học lại
                                             </p>{" "}
                                             <br />
                                         </NavLink>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <NavLink
                                             to="/student/services"
                                             className={`${styles.menuItem} group`}
@@ -236,7 +236,7 @@ const StudentMenu = () => {
                                             </p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <NavLink
                                             to="/student/request-attendance"

@@ -1,58 +1,92 @@
+import React, { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import api from "./../../../../config/axios";
+import { toast } from "react-toastify";
 
 const ReEnrollmentForm = () => {
-    const [selectedCourse, setSelectedCourse] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState();
     const [amount, setAmount] = useState(0);
     const [note, setNote] = useState("");
-
-    const { data: courses, isLoading, refetch } = useQuery({
-        queryKey: ["LIST_COURSES"],
+    const { data: ListLearnAgain, refetch } = useQuery({
+        queryKey: ["LIST_LEARNAGAIN"],
         queryFn: async () => {
-            // const res = await api.get(`/student/re-enrollment`);
-            // return res?.data?.subject;
-
-            const coursesData = [
-                { subject_code: 'SUB001', subject_name: "Lập trình Web", re_study_fee: 50000 },
-                { subject_code: 'SUB002', subject_name: "Mạng máy tính", re_study_fee: 60000 },
-                { subject_code: 'SUB003', subject_name: "Cơ sở dữ liệu", re_study_fee: 70000 },
-            ];
-            return coursesData;
-        }
-    });
-
-    const { mutate } = useMutation({
-        mutationFn: async () => {
-            await api.put(`/student/re-enrollment/${selectedCourse}`);
+            const res = await api.get("student/services/getListLearnAgain");
+            return res.data.data;
         },
-        onSuccess: () => {
-            toast.success("Chỉnh sửa thành công!");
+    });
+    console.log(ListLearnAgain);
+    // Sử dụng useMutation để gọi API khi người dùng gửi biểu mẫu
+    const { mutate, isLoading, error } = useMutation({
+        mutationFn: async () => {
+            const response = await api.post("student/services/learn-again", {
+                subject_code: selectedCourse,  // Gửi mã môn học
+            });
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            toast.success('Dịch vụ đăng ký học lại thành công');
+            console.log("Dịch vụ đăng ký học lại thành công:", data);
+            const redirectUrl = `student/send-email/learn-again/${data.service.id}`;
+            try {
+                const emailResponse = await api.post(redirectUrl, {
+                    subject_code: selectedCourse,  // Truyền subject_code
+                });
+                setAmount(0);
+                console.log("Gửi email thành công:", emailResponse.data);
+                toast.success("Gửi email thành công");
+            } catch (emailError) {
+                console.error("Có lỗi khi gửi email:", emailError);
+                toast.error("Có lỗi khi gửi email");
+            }
+
         },
         onError: (error) => {
-            toast.error("Có lỗi xảy ra");
+            console.error("Có lỗi xảy ra:", error);
+            toast.error('Có lỗi xảy ra');
+
         },
+
     });
+    // const courses = [
+    //     { subject_code: 'SUB001', subject_name: "Lập trình Web", re_study_fee: 50000 },
+    //     { subject_code: 'SUB002', subject_name: "Mạng máy tính", re_study_fee: 60000 },
+    //     { subject_code: 'SUB003', subject_name: "Cơ sở dữ liệu", re_study_fee: 70000 },
+    // ];
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutate();
-        console.log("Đăng ký học lại", { selectedCourse, amount, note });
+        console.log("Đăng ký học lại", { selectedCourse, amount });
+        if (selectedCourse) {
+            // Gọi API khi gửi biểu mẫu
+            mutate();
+        }
     };
 
-    useEffect(() => {
-        if(selectedCourse) {
-            const reStudyFee = courses.find((course) => course.subject_code === selectedCourse).re_study_fee;
-            setAmount(reStudyFee);
-        }
-    }, [selectedCourse])
     return (
         <div className="container">
             <div className="card">
                 <div className="card-header">
-                    <h4>Đăng ký học lại</h4>
+                    <h4>Thông tin đăng ký học lại</h4>
                 </div>
                 <div className="card-body">
-                    <form onSubmit={handleSubmit}>
+                    {/* Hiển thị thông tin trên */}
+                    {/* <div className="row">
+                        <div className="col-md-3">
+                            <strong>Loại dịch vụ:</strong> Đăng kí học lại
+                        </div>
+                        <div className="col-md-3">
+                            <strong>Số dư ví:</strong> 500.000 VND
+                        </div>
+                        <div className="col-md-3">
+                            <strong>Kỳ học hiện tại:</strong> Kỳ 2, 2024
+                        </div>
+                        <div className="col-md-3">
+                            <strong>Ngành học:</strong> Công nghệ thông tin
+                        </div>
+                    </div> */}
+
+                    {/* Form đăng ký học lại */}
+                    <form onSubmit={handleSubmit} className="mt-4">
                         <table className="table">
                             <tbody>
                                 <tr>
@@ -62,15 +96,29 @@ const ReEnrollmentForm = () => {
                                             id="course"
                                             className="form-control"
                                             value={selectedCourse}
-                                            onChange={(e) => setSelectedCourse(e.target.value)}
+                                            onChange={(e) => {
+                                                const selectedSubjectCode = e.target.value;
+                                                setSelectedCourse(selectedSubjectCode);
+
+                                                // Tìm môn học trong ListLearnAgain dựa trên subject_code
+                                                const selectedSubject = ListLearnAgain.find(
+                                                    (LearnAgain) => LearnAgain?.subject?.subject_code === selectedSubjectCode
+                                                );
+
+                                                // Cập nhật số tiền học lại (re_study_fee) của môn học đã chọn
+                                                if (selectedSubject) {
+                                                    setAmount(selectedSubject?.subject?.re_study_fee || 0);
+                                                }
+                                            }}
                                         >
                                             <option value="">Lựa chọn môn học lại</option>
-                                            {courses?.map((course) => (
-                                                <option key={course.subject_code} value={course.subject_code}>
-                                                    {course.subject_name}
+                                            {ListLearnAgain?.map((LearnAgain) => (
+                                                <option key={LearnAgain.subject_code} value={LearnAgain?.subject?.subject_code}>
+                                                    {LearnAgain?.subject?.subject_name}
                                                 </option>
                                             ))}
                                         </select>
+
                                     </td>
                                 </tr>
 
@@ -82,35 +130,9 @@ const ReEnrollmentForm = () => {
                                             id="amount"
                                             className="form-control"
                                             value={amount}
-                                            // onChange={(e) => setAmount(e.target.value)}
                                             placeholder="Nhập số tiền"
+                                            disabled
                                         />
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>Trường hợp không xếp được lớp</strong></td>
-                                    <td>
-                                        <div>
-                                            <input
-                                                type="radio"
-                                                id="refund"
-                                                name="action"
-                                                value="refund"
-                                                onChange={() => setNote("Hủy đăng ký và hoàn lại 100% học phí")}
-                                            />
-                                            <label htmlFor="refund">Hủy đăng ký và hoàn lại 100% học phí</label>
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="radio"
-                                                id="defer"
-                                                name="action"
-                                                value="defer"
-                                                onChange={() => setNote("Bảo lưu đăng ký, đợi xếp lớp trong các kỳ tiếp theo")}
-                                            />
-                                            <label htmlFor="defer">Bảo lưu đăng ký, đợi xếp lớp trong các kỳ tiếp theo</label>
-                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

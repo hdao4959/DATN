@@ -20,7 +20,7 @@ const EditClassroom = () => {
 
     useEffect(() => {
         axios
-            .get(`http://127.0.0.1:8000/api/admin/classrooms/${class_code}`, {
+            .get(`https://admin.feduvn.com/api/admin/classrooms/${class_code}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const EditClassroom = () => {
 
         axios
             .put(
-                `http://127.0.0.1:8000/api/admin/classrooms/${class_code}`,
+                `https://admin.feduvn.com/api/admin/classrooms/${class_code}`,
                 updatedData
             )
             .then(() => {

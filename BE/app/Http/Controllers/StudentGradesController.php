@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Grades;
 use App\Http\Requests\UpdateGradesRequest;
-use App\Models\ClassRoom;
 use App\Models\Subject;
 use App\Models\User;
 use App\Repositories\Contracts\GradeRepositoryInterface;
@@ -15,6 +14,7 @@ use Throwable;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ClassroomUser;
 use App\Models\Category;
+use App\Models\Classroom;
 
 class StudentGradesController extends Controller
 {

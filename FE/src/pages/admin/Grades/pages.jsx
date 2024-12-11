@@ -22,31 +22,6 @@ const ShowGrades = () => {
             if (!selectedGrade) {
                 setSelectedGrade(response?.data[0]);
             }
-            // setSelectedGrade({
-            //     class_code: 'abc',
-            //     class_name: 'abc',
-            //     students: [
-            //         {
-            //             student_code: 'sv01',
-            //             student_name: 'sv01',
-            //             scores: [
-            //                 {
-            //                     assessment_code: 'Lab1',
-            //                     assessment_name: 'Lab1',
-            //                     score: 5.6,
-            //                     weight: 1,
-            //                 },
-            //                 {
-            //                     assessment_code: 'Lab2',
-            //                     assessment_name: 'Lab2',
-            //                     score: 5,
-            //                     weight: 2,
-            //                 },
-            //             ],
-            //             average_score: 3,
-            //         }
-            //     ]
-            // })
             return response?.data;
         },
         onSuccess: () => {

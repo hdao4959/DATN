@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('user_code',20)->comment('Mã sinh viên');
             $table->foreign('user_code')->references('user_code')->on('users')
                     ->cascadeOnDelete()->cascadeOnUpdate();
-
-            $table->string('name');
+            $table->string('service_name');
+            $table->string('slug');
             $table->text('content');
-            $table->enum('status',['pending','approved','rejected'])->default('pending');
+            $table->enum('status',['pending','approved','rejected',])->default('pending');
 
             $table->text('reason')->nullable()->default(null);
-            $table->decimal('fees',15,0)->default(0);
+            $table->decimal('amount',15,0)->default(0);
             $table->string('file_path')->nullable();
             $table->timestamps();
         });

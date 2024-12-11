@@ -384,6 +384,33 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
+            <li className="nav-item ">
+    <a data-bs-toggle="collapse" href="#services-management">
+        <i className="fas fa-layer-group" />
+        <p>Quản lý dịch vụ</p>
+        <span className="caret" />
+    </a>
+    <div className="collapse" id="services-management">
+        <ul className="nav nav-collapse">
+            <li>
+                <NavLink
+                    to="/admin/services"
+                    className={`${styles.menuItem} group`}
+                >
+                    <p className="sub-item">Danh sách dịch vụ sinh viên</p>
+                </NavLink>
+            </li>
+            <li>
+                <NavLink
+                    to="/admin/services/add"
+                    className={`${styles.menuItem} group`}
+                >
+                    <p className="sub-item">Thêm mới dịch vụ</p>
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+</li>
             {/* <li className="nav-item ">
                 <a data-bs-toggle="collapse" href="#attendance">
                     <i className="fas fa-layer-group" />

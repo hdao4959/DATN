@@ -13,7 +13,7 @@ const NewsDetail = (Type) => {
     queryKey: ["LIST_NEWS", id],
     queryFn: async () => {
       const res = await api.get(`/student/newsletters/${id}`);
-      return res?.data[0];
+      return res?.data[0] || null;
     },
   });
   // useEffect(() => {
@@ -46,7 +46,7 @@ const NewsDetail = (Type) => {
         ) : (
           <>
             <div className="">
-              <h2 className="text-lg"><strong>{data.title}</strong></h2>
+              <h2 className="text-lg"><strong>{data.title || ''}</strong></h2>
             </div>
             <div className="" style={{ lineHeight: '2' }}>
               {data ? (
@@ -59,11 +59,11 @@ const NewsDetail = (Type) => {
                     /> */}
                   </div>
                   <div>
-                    <div dangerouslySetInnerHTML={{ __html: data.content }} style={{ minHeight: '300px' }} />
+                    <div dangerouslySetInnerHTML={{ __html: data.content || '' }} style={{ minHeight: '300px' }} />
                   </div>
                   <div className="mt-3 text-muted text-sm">
-                    <p>Tác giả: {data.full_name}</p>
-                    <p>Ngày: {formatDateTime(data.created_at)}</p>
+                    <p>Tác giả: {data.full_name || ''}</p>
+                    <p>Ngày: {formatDateTime(data.created_at || '')}</p>
                   </div>
                   <button
                     className="btn btn-danger mt-3"
