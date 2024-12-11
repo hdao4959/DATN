@@ -17,8 +17,135 @@ use Illuminate\Support\Facades\Mail;
 class ServiceController extends Controller
 {
 
+
   public function getAllServices(Request $request)
   {
+    try {
+
+      $query = Service::query()
+        ->select(['id', 'user_code', 'service_name', 'content', 'status', 'amount', 'created_at', 'updated_at'])
+        ->with([
+          'student:id,user_code,full_name,email,phone_number' // Chỉ lấy cột cần thiết từ bảng User
+        ]);
+
+      // Lọc theo trạng thái nếu có
+      if ($request->has('status') && !empty($request->status)) {
+        $query->where('status', $request->status);
+      }
+
+      if ($request->has('student_id') && !empty($request->student_id)) {
+        $query->where('student_id', $request->student_id);
+      }
+
+      // Sắp xếp theo cột nếu có tham số 'sort_by' và 'order'
+      if ($request->has('sort_by') && $request->has('order')) {
+        $query->orderBy($request->sort_by, $request->order === 'desc' ? 'desc' : 'asc');
+      } else {
+        $query->orderBy('created_at', 'desc'); // Mặc định sắp xếp theo thời gian tạo
+      }
+
+      $data = $query->paginate($request->get('per_page', 25)); // Mặc định 25 bản ghi mỗi trang
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Lấy danh sách dịch vụ thành công.',
+        'data' => $data,
+      ], 200);
+    } catch (\Throwable $th) {
+      return response()->json([
+        'success' => false,
+        'message' => 'Đã xảy ra lỗi: ' . $th->getMessage(),
+      ], 500);
+    }
+  }
+
+  public function ServiceInformation(int $id)
+  {
+    try {
+
+      $data = Service::with('student')->find($id);
+
+      if (!$data) {
+        return response()->json(['message' => 'Service not found'], 404);
+      }
+
+      return response()->json(['data' => $data]);
+    } catch (\Throwable $th) {
+      return response()->json(['message' => $th->getMessage()], 500);
+    }
+  }
+
+  public function getAllServicesByStudent(Request $request)
+  {
+    try {
+      // Assuming user_code is dynamically retrieved from the authenticated user
+      $user_code = request()->user()->user_code;
+
+      $data = Service::query()->where('user_code', $user_code);
+
+      // Check if status is provided in the request
+      if ($request->has('status') && $request['status']) {
+        $data->where('status', $request['status']);
+      }
+
+      // Paginate the results and return the paginated response
+      $services = $data->paginate(25);
+
+      return response()->json($services);
+    } catch (\Throwable $th) {
+      return response()->json(['message' => $th->getMessage()], 500);
+    }
+  }
+
+  public function getListLearnAgain(Request $request)
+  {
+    $user_code = request()->user()->user_code;
+    $subject = Score::Where('is_pass', false)->where('status', false)->where('student_code', $user_code)->with('Subject')->get();
+    return response()->json(['data' => $subject], 200);
+  }
+
+  public function LearnAgain(Request $request)
+  {
+    try {
+      $user_code = request()->user()->user_code;
+      $subject_code = $request->subject_code;
+
+      $subject = Subject::where('subject_code', $subject_code)->firstOrFail();
+      $content = $subject->subject_code;
+      $amount  = $subject->re_study_fee;
+      $data = [
+        'user_code'      =>    $user_code,
+        'service_name'   =>    "Đăng kí học lại môn " . $subject->subject_name,
+        'content'        =>    $content,
+        'amount'         =>    $amount
+      ];
+
+      $service = Service::create($data);
+      // if ($service) {
+      // Xây dựng URL cho API gửi email
+      // $redirectUrl = url("/send-email/learn-again/{$service->id}");
+
+      // // Gọi API gửi email
+      // $response = Http::post($redirectUrl, [
+      //     'subject_code' => $subject_code,  // Gửi danh sách user_code
+      // ]);
+
+      // if ($response->successful()) {
+      //     return response()->json(['message' => 'Gửi dịch vụ thành công và email đã được gửi', 'service' => $service]);
+      // } else {
+      //     return response()->json(['message' => 'Gửi dịch vụ thành công nhưng không thể gửi email', 'service' => $service]);
+      // }
+      // }
+      return response()->json(['message' => 'gửi dịch vụ thành công', 'service' => $service]);
+    } catch (\Throwable $th) {
+      return response()->json(['message' => $th->getMessage()]);
+    }
+  }
+
+  // thay đổi trạng thái
+  public function changeStatus(int $id, Request $request)
+  {
+
     try {
 
       $query = Service::query()
@@ -234,7 +361,10 @@ class ServiceController extends Controller
         'receive_method'   => 'required|string', // Hình thức nhận
         'receive_address'  => 'nullable|string|max:255',
         'note'             => 'nullable|string|max:500',
+
       ]);
+
+
 
 
       $user_code = $request->user()->user_code;
@@ -255,13 +385,10 @@ class ServiceController extends Controller
       }
 
       $service_name = "Đăng ký cấp bảng điểm";
-      $slug =  Str::slug($service_name);
-
       $amount = $validatedData['number_board'] * 100000;
       $data = [
         'user_code'     => $user_code,
         'service_name'  => $service_name,
-        'slug'          => $slug,
         'content'       => $content,
         'amount'        => $amount
       ];
@@ -276,8 +403,9 @@ class ServiceController extends Controller
     }
   }
 
-
   public function changeInfo(Request $request)
+
+
   {
     try {
 
@@ -296,7 +424,7 @@ class ServiceController extends Controller
       }
 
       $service_name = "Đăng kí thay đổi thông tin";
-      $slug =  Str::slug($service_name);
+
 
       $content = "";
 
@@ -326,7 +454,7 @@ class ServiceController extends Controller
       $data = [
         'user_code'     => $user_code,
         'service_name'  => $service_name,
-        'slug'          => $slug,
+
         'content'       => $content,
       ];
 

@@ -23,23 +23,20 @@ const StudentLayout = () => {
 
     const Signout = async () => {
         try {
-            const response = await fetch("https://admin.feduvn.com/api/logout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            const response = await api.post("/logout", {});
 
-            if (response.ok) {
+            if (response.status === 200) {
+                // Xóa dữ liệu người dùng khỏi localStorage
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
 
+                // Hiển thị thông báo thành công
                 toast.success("Đăng xuất thành công");
+
+                // Điều hướng về trang đăng nhập
                 window.location.href = "/signin";
             } else {
-                const data = await response.json();
-                console.error("Lỗi khi đăng xuất:", data);
+                console.error("Lỗi khi đăng xuất:", response.data);
                 toast.error("Có lỗi xảy ra khi đăng xuất");
             }
         } catch (error) {

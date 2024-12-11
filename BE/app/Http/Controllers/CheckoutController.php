@@ -165,4 +165,7 @@ class CheckoutController extends Controller
 
         return response()->json(['message' => 'Payment failed'], 400);
     }
+
+    public function vnpay_payment(){
+    }
 }

@@ -13,17 +13,20 @@ const AttendanceTeacherDate = () => {
         queryFn: async () => {
             const response = await api.get(`/teacher/attendances/${class_code}/${date}`);
             const res = response?.data;
+
             const formattedData = res?.flatMap(item =>
-                item.attendance.map(att => ({
-                    student_code: item.student_code,
-                    class_code: class_code,
-                    full_name: item.full_name || "",
-                    status: att.status || "present",
-                    noted: att.noted || ""
-                }))
+                item.attendance
+                    .filter(att => att.date === date) // Lọc điểm danh theo ngày
+                    .map(att => ({
+                        student_code: item.student_code,
+                        class_code: class_code,
+                        full_name: item.full_name || "",
+                        status: att.status || "present",
+                        noted: att.noted || ""
+                    }))
             );
             setAttendanceDetails(formattedData || []);
-            return res;     
+            return res;
         },
     });
 
