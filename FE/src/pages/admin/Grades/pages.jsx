@@ -36,6 +36,8 @@ const ShowGrades = () => {
     }, [])
     const { mutate } = useMutation({
         mutationFn: async (data) => {
+            console.log(data);
+            
             await api.put(`/admin/grades/${classCode}`, data);
         },
         onSuccess: () => {
@@ -46,7 +48,7 @@ const ShowGrades = () => {
         },
     });
     const calculateAverageScore = (scores) => {
-        const totalWeight = scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+        const totalWeight = scores?.reduce((sum, score) => sum + (score.weight || 0), 0);
         if (totalWeight === 0) return 0;
         return scores.reduce((sum, score) => {
             const scoreValue = parseFloat(score?.score?.replace(',', '.') || 0);
@@ -62,6 +64,8 @@ const ShowGrades = () => {
             if ($.fn.dataTable.isDataTable("#gradesTable")) {
                 $("#gradesTable").DataTable().clear().destroy();
             }
+            console.log(selectedGrade);
+
             const totalWeight = selectedGrade?.students[0]?.scores.reduce((total, score) => total + score.weight, 0);
             // Khởi tạo DataTable
             $("#gradesTable").DataTable({
@@ -82,7 +86,7 @@ const ShowGrades = () => {
                     { title: "Mã SV", data: "student_code", className: "text-center" },
                     { title: "Tên SV", data: "student_name", className: "text-center" },
                     ...selectedGrade?.students[0]?.scores.map((score, index) => ({
-                        title: `${score.assessment_name}`,
+                        title: `${score.assessment_name}<br/>(${(score.weight / totalWeight * 100).toFixed(2) || 0}%)`,
                         data: null,
                         render: (data, type, row) => {
                             let scoreData = row.scores[index]?.score || 0;
@@ -94,11 +98,18 @@ const ShowGrades = () => {
                                     value="${scoreData}" 
                                     min="0" 
                                     max="10" 
+                                    step="0.25" 
                                     class="form-control form-control-sm text-center score-input"
                                     data-index="${row.stt - 1}" 
                                     data-exam-index="${index}" 
-                                    oninput="this.value = Math.min(Math.max(this.value, 0), 10)"
-                                />`;
+                                    oninput="
+                                        const value = parseFloat(this.value);
+                                        if (value < 0) this.value = '0.00';
+                                        else if (value > 10) this.value = '10.00';
+                                        else this.value = value.toFixed(2);
+                                    "
+                                />
+                            `;
                         },
                         className: "text-center",
                     })),
@@ -106,8 +117,9 @@ const ShowGrades = () => {
                         title: "Điểm Tổng",
                         data: "average_score",
                         className: "text-center",
-                        render: (data) => {
-                            const isBelowThreshold = parseFloat(data?.replace(',', '.') || 0) < 5;
+                        render: (data, row) => {
+                            console.log(data);
+                            const isBelowThreshold = parseFloat(data || 0) < 5;
                             data = parseFloat(
                                 (typeof data === 'string' ? data.replace(',', '.') : data) || 0
                             ).toFixed(2);
@@ -116,6 +128,14 @@ const ShowGrades = () => {
                         },
                     },
                 ],
+                rowCallback: function (row, data) {
+                    const averageScore = parseFloat(
+                        (typeof data.average_score === "string" ? data.average_score.replace(",", ".") : data.average_score) || 0
+                    );
+                    if (averageScore < 5) {
+                        $(row).css("background-color", "rgba(255, 0, 0, 0.1)");
+                    }
+                },
 
                 scrollX: true,
                 scrollY: true,
@@ -131,20 +151,37 @@ const ShowGrades = () => {
                 const rowIndex = $(this).data('index');
                 const examIndex = $(this).data('exam-index');
                 const newScore = parseFloat($(this).val()) || 0;
-                selectedGrade.score[rowIndex].scores[examIndex].score = newScore;
-                const totalValue = selectedGrade.score[rowIndex].scores.reduce((sum, scoreItem) => sum + (scoreItem?.value || 0), 0);
-                const averageScore = calculateAverageScore(selectedGrade.score[rowIndex].scores, totalValue);
-                selectedGrade.score[rowIndex].average_score = parseFloat(averageScore);
-                const $averageScoreCell = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1}) td:last-child strong`);
+
+                // Cập nhật điểm vào selectedGrade
+                selectedGrade.students[rowIndex].scores[examIndex].score = newScore;
+
+                // Tính lại điểm trung bình của sinh viên
+                const totalWeight = selectedGrade.students[rowIndex].scores.reduce((sum, score) => sum + (score.weight || 0), 0);
+                const averageScore = selectedGrade.students[rowIndex].scores.reduce((sum, score) => {
+                    const scoreValue = parseFloat(score?.score || 0);
+                    return sum + (scoreValue * (score.weight / totalWeight));
+                }, 0).toFixed(2);
+
+                selectedGrade.students[rowIndex].average_score = averageScore;
+
+                // Cập nhật điểm trung bình trong bảng
+                const $row = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1})`);
+                const $averageScoreCell = $row.find('td:last-child strong');
+
+                // Cập nhật giá trị ô `averageScore`
                 $averageScoreCell.text(averageScore);
+                $row.css('background-color', '');
+                // Cập nhật màu cho ô và cả hàng
                 if (averageScore < 5) {
-                    $averageScoreCell.removeClass('text-success');
-                    $averageScoreCell.addClass('text-danger');
+                    $averageScoreCell.removeClass('text-success').addClass('text-danger');
+                    $row.css('background-color', 'rgba(255, 0, 0, 0.1)');
                 } else {
-                    $averageScoreCell.addClass('text-success');
-                    $averageScoreCell.removeClass('text-danger');
+                    $averageScoreCell.removeClass('text-danger').addClass('text-success');
+                    $row.removeClass('bg-danger'); // Thay đổi màu cho hàng
                 }
+
             });
+
 
             $('#gradesTable').on('change', '.note-input', function (event) {
                 const rowIndex = $(this).data('index');
@@ -165,8 +202,23 @@ const ShowGrades = () => {
     }, [selectedGrade, data]);
 
     const handleSaveClick = () => {
-        mutate(selectedGrade);
+        const updatedData = selectedGrade.students.map(student => ({
+            student_code: student.student_code,
+            scores: student.scores.map(score => ({
+                assessment_name: score.assessment_name,
+                assessment_code: score.assessment_code,
+                weight: score.weight,
+                score: score.score,  // Điểm đã được cập nhật
+            })),
+        }));
+
+        mutate({
+            class_code: selectedGrade.class_code,
+            class_name: selectedGrade.class_name,
+            students: updatedData,  // Gửi dữ liệu đã cập nhật
+        });
     };
+
 
     return (
         <div>
@@ -174,7 +226,7 @@ const ShowGrades = () => {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="card-header">
-                            <div className="card-title text-center">Bảng điểm Lớp {selectedGrade && selectedGrade?.class_code} - Môn {selectedGrade && selectedGrade?.subject_code} </div>
+                            <div className="card-title text-center">Bảng điểm Lớp {selectedGrade && selectedGrade?.class_code} {selectedGrade?.subject_code && ` - Môn ${selectedGrade?.subject_code}`} </div>
                         </div>
                         <div className='card-body'>
                             {isLoading ? (
