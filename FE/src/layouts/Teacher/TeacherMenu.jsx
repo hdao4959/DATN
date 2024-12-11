@@ -91,48 +91,6 @@ const TeacherMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#grades">
-                                <i className="fas fa-th-list" />
-                                <p>Bảng Điểm</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="grades">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <NavLink
-                                            to="/teacher/grades"
-                                            className={`${styles.menuItem} group`}
-                                        >
-                                            <p className="sub-item">
-                                                Bảng điểm
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item">
-                            <a data-bs-toggle="collapse" href="#attendances">
-                                <i className="fas fa-th-list" />
-                                <p>Điểm Danh</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="attendances">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <NavLink
-                                            to="/teacher/attendances"
-                                            className={`${styles.menuItem} group`}
-                                        >
-                                            <p className="sub-item">
-                                                Điểm Danh
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#post">
                                 <i className="fas fa-th-list" />
                                 <p>Thông Báo</p>

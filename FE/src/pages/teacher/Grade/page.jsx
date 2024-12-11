@@ -108,7 +108,7 @@ const ShowGrades = () => {
                     { title: "Mã SV", data: "student_code", className: "text-center" },
                     { title: "Tên SV", data: "student_name", className: "text-center" },
                     ...selectedGrade?.students[0]?.scores.map((score, index) => ({
-                        title: `${score.assessment_name} (${score.weight / totalWeight * 100}%)`,
+                        title: `${score.assessment_name}<br/>(${(score.weight / totalWeight * 100).toFixed(2) || 0}%)`,
                         data: null,
                         render: (data, type, row) => {
                             let scoreData = row.scores[index]?.score || 0;
@@ -150,6 +150,14 @@ const ShowGrades = () => {
                         },
                     },
                 ],
+                rowCallback: function (row, data) {
+                    const averageScore = parseFloat(
+                        (typeof data.average_score === "string" ? data.average_score.replace(",", ".") : data.average_score) || 0
+                    );
+                    if (averageScore < 5) {
+                        $(row).css("background-color", "rgba(255, 0, 0, 0.1)");
+                    }
+                },
 
                 scrollX: true,
                 scrollY: true,
