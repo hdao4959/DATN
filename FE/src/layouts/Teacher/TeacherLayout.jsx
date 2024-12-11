@@ -2,33 +2,27 @@ import { Link, Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import TeacherMenu from "./TeacherMenu";
 import "/src/css/sidebar.css";
+import api from "../../config/axios";
 
 const TeacherLayout = () => {
     const userData = localStorage.getItem("user");
     const user = userData ? JSON.parse(userData) : {};
     const tokenData = localStorage.getItem("token");
     const token = tokenData ? JSON.parse(tokenData) : {};
-    const accessToken = token?.access_token || "";
 
     const Signout = async () => {
         try {
-            const response = await fetch("https://admin.feduvn.com/api/logout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
+            const response = await api.post("/logout", {});
 
-            if (response.ok) {
+            if (response.status === 200) {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
 
                 toast.success("Đăng xuất thành công");
+
                 window.location.href = "/signin";
             } else {
-                const data = await response.json();
-                console.error("Lỗi khi đăng xuất:", data);
+                console.error("Lỗi khi đăng xuất:", response.data);
                 toast.error("Có lỗi xảy ra khi đăng xuất");
             }
         } catch (error) {

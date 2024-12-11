@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getToken } from "../../../utils/getToken";
+import api from "../../../config/axios";
 
 const EditClassroom = () => {
     const navigate = useNavigate();
@@ -19,13 +20,7 @@ const EditClassroom = () => {
     const accessToken = getToken();
 
     useEffect(() => {
-        axios
-            .get(`https://admin.feduvn.com/api/admin/classrooms/${class_code}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            })
+        api.get(`/admin/classrooms/${class_code}`)
             .then((response) => {
                 const classroomData = response.data.classroom;
 
@@ -59,11 +54,7 @@ const EditClassroom = () => {
                 .map((date) => date.trim()),
         };
 
-        axios
-            .put(
-                `https://admin.feduvn.com/api/admin/classrooms/${class_code}`,
-                updatedData
-            )
+        api.put(`/admin/classrooms/${class_code}`, updatedData)
             .then(() => {
                 toast.success("Lớp học đã được cập nhật thành công!");
                 navigate("/admin/classrooms");

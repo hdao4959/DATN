@@ -31,7 +31,8 @@ const MajorList = () => {
     const [currentCateCode, setCurrentCateCode] = useState(null); // Cate code để cập nhật trạng thái
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
-    const toggleConfirmationModal = () => setConfirmationModalOpen((prev) => !prev);
+    const toggleConfirmationModal = () =>
+        setConfirmationModalOpen((prev) => !prev);
 
     // Mutation cập nhật trạng thái
     const updateStatusMutation = useMutation({
@@ -82,7 +83,7 @@ const MajorList = () => {
     const flattenMajorData = (data) => {
         let result = [];
         let sortOrder = 0; // Đếm thứ tự hiển thị
-        
+
         data.forEach((major) => {
             // Thêm chuyên ngành cha
             result.push({
@@ -94,7 +95,7 @@ const MajorList = () => {
                 is_parent: true,
                 sortOrder: sortOrder++, // Tăng thứ tự
             });
-    
+
             // Nếu có chuyên ngành con, thêm vào danh sách
             major.childrens.forEach((child) => {
                 result.push({
@@ -110,14 +111,13 @@ const MajorList = () => {
         });
         return result;
     };
-    
 
     useEffect(() => {
         if (data) {
             if ($.fn.dataTable.isDataTable("#major-table")) {
                 $("#major-table").DataTable().clear().destroy();
             }
-    
+
             $("#major-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
@@ -129,22 +129,14 @@ const MajorList = () => {
                         title: "Trạng thái",
                         data: "is_active",
                         render: (data) =>
-                            `<i class="change-status fas ${data === 1
-                                ? "fa-check-circle text-green-500"
-                                : "fa-ban text-red-500"
+                            `<i class="change-status fas ${
+                                data === 1
+                                    ? "fa-check-circle text-green-500"
+                                    : "fa-ban text-red-500"
                             }" style="font-size: 20px;"></i>`,
                         className: "text-center",
                     },
-                    {
-                        title: "Hình ảnh",
-                        data: "image",
-                        render: (data) =>
-                            `<img src="${data
-                                ? `https://admin.feduvn.com/storage/${data}`
-                                : "https://thumbs.dreamstime.com/b/no-image-icon-vector-available-picture-symbol-isolated-white-background-suitable-user-interface-element-205805243.jpg"
-                            }" alt="image" width="50" height="50" />`,
-                        className: "text-center d-flex justify-content-center",
-                    },
+
                     {
                         title: "Hành động",
                         data: null,
@@ -161,13 +153,19 @@ const MajorList = () => {
                             </div>`,
                         className: "text-center",
                     },
-                    { title: "Thứ tự sắp xếp", data: "sortOrder", visible: false }, // Ẩn cột sortOrder
+                    {
+                        title: "Thứ tự sắp xếp",
+                        data: "sortOrder",
+                        visible: false,
+                    }, // Ẩn cột sortOrder
                 ],
                 order: [[5, "asc"]], // Sắp xếp theo cột thứ 5 (sortOrder)
                 createdRow: (row, rowData) => {
                     $(row)
                         .find(".change-status")
-                        .on("click", () => handleUpdateStatus(rowData.cate_code));
+                        .on("click", () =>
+                            handleUpdateStatus(rowData.cate_code)
+                        );
                     $(row)
                         .find(".delete-btn")
                         .on("click", () => handleDelete(rowData.cate_code));
@@ -184,20 +182,21 @@ const MajorList = () => {
                 scrollX: true,
             });
         }
-    
+
         return () => {
             if ($.fn.dataTable.isDataTable("#major-table")) {
                 $("#major-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
-    
 
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
                 <Link to="/admin/major/add">
-                    <button className="btn btn-primary">Thêm chuyên ngành</button>
+                    <button className="btn btn-primary">
+                        Thêm chuyên ngành
+                    </button>
                 </Link>
             </div>
             <div className="card">

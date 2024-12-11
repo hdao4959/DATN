@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardCards from "./DashboardCards";
+import api from "../../../config/axios";
 
 const Dashboard = () => {
     const [statusFeeData, setStatusFeeData] = useState(null);
     const [attendanceData, setAttendanceData] = useState(null);
-    const [studentCountData, setStudentCountData] = useState({ labels: [], data: [] });
+    const [studentCountData, setStudentCountData] = useState({
+        labels: [],
+        data: [],
+    });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Gọi API trạng thái nộp học phí
-                const feeResponse = await axios.get("https://admin.feduvn.com/api/status-fee-all");
-                const { pending, paid, unpaid } = feeResponse.data["status-fee"];
+                const feeResponse = await api.get("/status-fee-all");
+                const { pending, paid, unpaid } =
+                    feeResponse.data["status-fee"];
                 setStatusFeeData([pending, paid, unpaid]);
 
                 // Khởi tạo biểu đồ 1
@@ -47,9 +51,9 @@ const Dashboard = () => {
                     },
                 });
 
-                // Gọi API trạng thái điểm danh
-                const attendanceResponse = await axios.get("https://admin.feduvn.com/api/status-attendances");
-                const { absent, present } = attendanceResponse.data["status-attendances"];
+                const attendanceResponse = await api.get("/status-attendances");
+                const { absent, present } =
+                    attendanceResponse.data["status-attendances"];
                 setAttendanceData([absent, present]);
 
                 // Khởi tạo biểu đồ 2
@@ -83,7 +87,7 @@ const Dashboard = () => {
                 });
 
                 // Gọi API số lượng sinh viên theo ngành
-                const studentCountResponse = await axios.get("https://admin.feduvn.com/api/count-student");
+                const studentCountResponse = await api.get("/count-student");
                 const studentData = studentCountResponse.data;
                 const labels = studentData.map((item) => item.major_name);
                 const data = studentData.map((item) => item.total);
@@ -147,7 +151,9 @@ const Dashboard = () => {
                         <canvas id="chart1"></canvas>
                     </div>
                     <div className="col-md-4">
-                        <h5 className="text-center">Số lượng học sinh theo chuyên ngành</h5>
+                        <h5 className="text-center">
+                            Số lượng học sinh theo chuyên ngành
+                        </h5>
                         <canvas id="chart3"></canvas>
                     </div>
                     <div className="col-md-4">

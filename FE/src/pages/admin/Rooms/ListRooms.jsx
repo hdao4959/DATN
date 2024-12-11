@@ -53,21 +53,18 @@ const ClassRoomsList = () => {
         onSuccess: () => {
             toast.success("Xóa lớp học thành công!");
             queryClient.invalidateQueries("LIST_ROOMS");
-            setDeleteModalOpen(false);
         },
         onError: (error) => {
             toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
         },
     });
 
-    const toggleDeleteModal = (classCode) => {
-        setCurrentClassCode(classCode);
-        setDeleteModalOpen((prev) => !prev);
-    };
-
-    const confirmDeleteClass = () => {
-        if (currentClassCode) {
-            deleteClassMutation.mutate(currentClassCode);
+    const confirmDeleteClass = (classCode) => {
+        const isConfirmed = window.confirm(
+            "Bạn có chắc chắn muốn xóa lớp học này?"
+        );
+        if (isConfirmed) {
+            deleteClassMutation.mutate(classCode);
         }
     };
 
@@ -173,12 +170,9 @@ const ClassRoomsList = () => {
                         title: "Lớp học",
                         data: null,
                         render: (data) =>
-                            // `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>
-                            //     ${data.class_name}
-                            // </a>`,
                             `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
                                      ${data.class_name}
-                                </span>`
+                                </span>`,
                     },
                     {
                         title: "<i class='fas fa-book'> Môn</i>",
@@ -221,15 +215,15 @@ const ClassRoomsList = () => {
                 ],
                 destroy: true,
             });
-
             $("#classroomsTable tbody").on("click", ".delete-btn", function () {
                 const classCode = $(this).data("class_code");
-                toggleDeleteModal(classCode);
+                confirmDeleteClass(classCode);
             });
+
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
                 console.log(classCode);
-                
+
                 navigate(`/admin/classrooms/view/${classCode}/detail`);
             });
             $("#classroomsTable tbody").on(
@@ -269,9 +263,6 @@ const ClassRoomsList = () => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             placeholder="Chọn ngày bắt đầu"
-                            // min={new Date(
-                            //     new Date().setDate(new Date().getDate() + 1)
-                            // ).toLocaleDateString("en-CA")}
                         />
                         <button
                             className="btn btn-primary text-nowrap"
@@ -305,16 +296,6 @@ const ClassRoomsList = () => {
                     </div>
                 </div>
             </div>
-
-            <Modal
-                title="Xóa lớp học"
-                description="Bạn có chắc chắn muốn xóa lớp học này?"
-                visible={deleteModalOpen}
-                onVisible={toggleDeleteModal}
-                onOk={confirmDeleteClass}
-                closeTxt="Hủy"
-                okTxt="Xác nhận"
-            />
         </>
     );
 };
