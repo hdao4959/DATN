@@ -86,7 +86,7 @@ import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import RequesAcademicTranscript from "./pages/student/Service/RequestAcademicTranscript/page.jsx";
 import ServicesList from "./pages/student/Service/ServicesList.jsx";
 import ServiceList from "./pages/admin/Service/ListService.jsx"
-
+import StudentCourseHistory from "./pages/student/GradeHistory/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -422,6 +422,10 @@ function App() {
                 {
                     path: "grades",
                     element: <StudentGrades />,
+                },
+                {
+                    path: "grades-all",
+                    element: <StudentCourseHistory />,
                 },
                 {
                     path: "services",
