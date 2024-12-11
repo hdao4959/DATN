@@ -151,6 +151,16 @@ const StudentMenu = () => {
                                             </p>
                                         </NavLink>
                                     </li>
+                                    <li>
+                                        <NavLink
+                                            to="/student/grades-all"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Bảng Điểm Tổng
+                                            </p>
+                                        </NavLink>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
