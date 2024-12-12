@@ -31,6 +31,7 @@ const StudentWalletList = () => {
         },
         onSuccess: () => {
             toast.success("Cập nhật công nợ thành công");
+            refetch();
         },
         onError: (error) => {
             const msg = error.response?.data?.message || "Có lỗi xảy ra";
