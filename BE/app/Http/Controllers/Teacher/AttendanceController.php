@@ -321,8 +321,8 @@ class AttendanceController extends Controller
             $attendances = $request->validated();
             // Log::info('Request Data:', $request->all());
             $startTime = Carbon::createFromFormat('H:i', $this->startTime($classCode));
-            // $currentTime = Carbon::now(); // Lay gio hien tai
-            $currentTime = Carbon::createFromFormat('H:i', '18:00'); // Fix cung gio hien tai
+            $currentTime = Carbon::now(); // Lay gio hien tai
+            // $currentTime = Carbon::createFromFormat('H:i', '18:00'); // Fix cung gio hien tai
 
             // if (1) {
             if ($currentTime->diffInMinutes($startTime) <= 15) {
