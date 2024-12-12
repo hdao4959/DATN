@@ -118,7 +118,14 @@ const StudentCourseHistory = () => {
                                                                     : "text-danger"
                                                     }
                                                 >
-                                                    {subject.is_pass}
+                                                    {subject.is_pass === "Passed"
+                                                            ? "Đã qua"
+                                                            : subject.is_pass === "Studying"
+                                                                ? "Đang học"
+                                                                : subject.is_pass === "Notyet"
+                                                                    ? "Chưa học"
+                                                                    : "Trượt"
+                                                    }
                                                 </span>
                                             </td>
                                         </tr>
@@ -158,7 +165,7 @@ const StudentCourseHistory = () => {
                                 </tr>
                                 <tr>
                                     <td>2</td>
-                                    <td>Số môn đã Pass</td>
+                                    <td>Số môn đã qua</td>
                                     <td>{studentHistory?.countPassed}</td>
                                 </tr>
                                 <tr>
@@ -168,7 +175,7 @@ const StudentCourseHistory = () => {
                                 </tr>
                                 <tr>
                                     <td>4</td>
-                                    <td>Số môn đã Fail</td>
+                                    <td>Số môn đã trượt</td>
                                     <td>{studentHistory?.countFailed}</td>
                                 </tr>
                             </tbody>
