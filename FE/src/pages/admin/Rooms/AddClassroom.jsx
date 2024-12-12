@@ -282,7 +282,11 @@ const AddClassroom = () => {
         }
     };
     const handlePrev = () => {
-        setCurrentStep((prev) => prev - 1);
+        if (currentStep == 1) {
+            setCurrentStep(navigate("/admin/classrooms"));
+        } else {
+            setCurrentStep((prev) => prev - 1);
+        }
     };
 
     const handleSubmit = async () => {
@@ -301,7 +305,7 @@ const AddClassroom = () => {
         <div className="container mt-4">
             <div className="card shadow">
                 <div className="card-header bg-primary text-white">
-                    <h3>Thông tin chung</h3>
+                    <h3>1. Thông tin chung</h3>
                 </div>
                 <div className="card-body">
                     <div className="mb-3">
@@ -419,7 +423,7 @@ const AddClassroom = () => {
         <div className="container mt-4">
             <div className="card shadow">
                 <div className="card-header bg-secondary text-white">
-                    <h3>Thông tin lịch học</h3>
+                    <h3>2. Thông tin lịch học</h3>
                 </div>
                 <div className="card-body">
                     <label className="form-label">
@@ -550,7 +554,7 @@ const AddClassroom = () => {
                                     key={teacher.user_code}
                                     value={teacher.user_code}
                                 >
-                                    {teacher.user_code}
+                                    {teacher.user_code} - {teacher.full_name}
                                 </option>
                             ))}
                         </select>
@@ -564,13 +568,14 @@ const AddClassroom = () => {
         <div className="container mt-4">
             <div className="card shadow">
                 <div className="card-header bg-success text-white">
-                    <h3>Xác nhận sinh viên</h3>
+                    <h3>3. Xác nhận sinh viên</h3>
                 </div>
                 <div className="card-body">
                     <table className="table table-bordered table-striped">
                         <thead className="table-success">
                             <tr>
-                                <th scope="col">Chọn</th>
+                                <th scope="col"></th>
+                                <th scope="col">STT</th>
                                 <th scope="col">Mã sinh viên</th>
                                 <th scope="col">Tên</th>
                                 <th scope="col">Email</th>
@@ -578,7 +583,7 @@ const AddClassroom = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {students.map((student) => (
+                            {students.map((student, index) => (
                                 <tr key={student.user_code}>
                                     <td>
                                         <input
@@ -609,6 +614,8 @@ const AddClassroom = () => {
                                             }}
                                         />
                                     </td>
+                                    <td key={index}>{index + 1}</td>
+
                                     <td>{student.user_code}</td>
                                     <td>{student.full_name}</td>
                                     <td>{student.email}</td>
@@ -632,7 +639,7 @@ const AddClassroom = () => {
 
             <div className="container mt-4">
                 <div className="d-flex justify-content-between">
-                    {currentStep > 1 && (
+                    {currentStep >= 1 && (
                         <button
                             className="btn btn-secondary"
                             onClick={handlePrev}
