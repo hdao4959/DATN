@@ -8,11 +8,15 @@ api.interceptors.request.use(
     function (config) {
         const token = JSON.parse(localStorage.getItem("token") || "{}");
         const accessToken = token?.access_token;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
         if (accessToken) {
             config.headers["Authorization"] = `Bearer ${accessToken}`;
         }
 
+        if (csrfToken) {
+            config.headers["X-CSRF-TOKEN"] = csrfToken;
+        }
         return config;
     },
     function (error) {

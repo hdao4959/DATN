@@ -12,7 +12,7 @@ const ServiceList = () => {
     const { data, isLoading, error } = useQuery({
         queryKey: ["services"], // Chỉ mục của query
         queryFn: async () => {
-            const response = await api.get("services"); // Gọi API lấy dịch vụ
+            const response = await api.get("admin/services"); // Gọi API lấy dịch vụ
             return response.data; // Trả về dữ liệu từ API
         }
     });
@@ -40,15 +40,15 @@ const ServiceList = () => {
     }
 
     return (
-        <div className="container mt-4">
-                <h1 className="mb-4">Danh sách dịch vụ</h1>
+        <div className=" mt-4">
+                {/* <h1 className="mb-4">Danh sách dịch vụ</h1> */}
                 <div className="card">
                 <div className="card-header">
                     <div className="d-flex justify-content-between align-items-center">
                         <h5 className="m-0">Quản lý dịch vụ</h5>
-                        <Link to="/admin/services/add" className="btn btn-primary">
+                        {/* <Link to="/admin/services/add" className="btn btn-primary">
                             Danh sách dịch vụ
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
                 <div className="card-body">
@@ -57,8 +57,8 @@ const ServiceList = () => {
                             <tr>
                                 <th>#</th>
                                 <th>Tên dịch vụ</th>
-                                <th>Mã học sinh</th> {/* Thêm cột Mã học sinh */}
-                                <th>Học sinh</th>
+                                <th>Mã sinh viên</th> {/* Thêm cột Mã học sinh */}
+                                <th>Sinh viên</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -68,11 +68,11 @@ const ServiceList = () => {
                                 <tr key={service.id}>
                                     <td>{index + 1}</td>
                                     <td>{service.service_name}</td>
-                                    <td>{service.student ? service.student.user_code : "Chưa có học sinh"}</td> {/* Hiển thị mã học sinh */}
+                                    <td>{service.student ? service.student.user_code : "Chưa có học sinh"}</td>
                                     <td>{service.student ? service.student.full_name : "Chưa có học sinh"}</td>
-                                    <td>
+                                    <td className="text-center">
                                         <span
-                                            className={`badge ${
+                                            className={`badge fs-5  ${
                                                 service.status === "pending" ? "bg-info" : "bg-success"
                                             }`}
                                         >

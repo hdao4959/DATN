@@ -12,6 +12,7 @@ use App\Models\Service;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -25,9 +26,9 @@ class ServiceController extends Controller
     try {
 
       $query = Service::query()
-        ->select(['id', 'user_code', 'service_name', 'content', 'status', 'amount', 'created_at', 'updated_at'])
+        ->select(['id', 'user_code', 'service_name', 'content', 'status', 'amount', 'created_at', 'updated_at',])
         ->with([
-          'student:id,user_code,full_name,email,phone_number' // Chỉ lấy cột cần thiết từ bảng User
+          'student:id,user_code,full_name,email,phone_number'
         ]);
 
       // Lọc theo trạng thái nếu có

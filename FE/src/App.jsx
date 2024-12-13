@@ -367,7 +367,7 @@ function App() {
                     element: <ClassList />,
                 },
                 {
-                    path: "class/:class_code/students",
+                    path: "class/:class_code/detail",
                     element: <ClassroomStudents />,
                 },
                 {
