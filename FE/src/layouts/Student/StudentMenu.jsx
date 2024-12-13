@@ -12,7 +12,7 @@ const StudentMenu = () => {
                             src="https://admin.feduvn.com/storage/logo/logo3.png"
                             width={150}
                             alt="navbar brand"
-                            className="navbar-brand"
+                            className="navbar-brand mt-4"
                             height={15}
                         />
                     </Link>
@@ -41,33 +41,13 @@ const StudentMenu = () => {
                     </div>
                 </div>
             </div>
+            
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
-                        <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#attendances">
-                                <i className="fas fa-clipboard-list" />
-                                <p>Điểm Danh</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="attendances">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <NavLink
-                                            to="/student/attendances"
-                                            className={`${styles.menuItem} group`}
-                                        >
-                                            <p className="sub-item">
-                                                Điểm danh
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="nav-item ">
+                    <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#schedules">
-                                <i className="fas fa-clipboard-list" />
+                                <i className="fas fa-calendar" />
                                 <p>Lịch học</p>
                                 <span className="caret" />
                             </a>
@@ -103,8 +83,30 @@ const StudentMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#attendances">
+                                <i className="fas fa-clipboard-check" />
+                                <p>Điểm Danh</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="attendances">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/attendances"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Điểm danh
+                                            </p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        
+                        <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#classrooms">
-                                <i className="fas fa-clipboard-list" />
+                                <i className="fas fa-folder" />
                                 <p>Lớp học</p>
                                 <span className="caret" />
                             </a>
@@ -285,7 +287,7 @@ const StudentMenu = () => {
                         </li>
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#FAQS">
-                                <i className="fas fa-clipboard-list" />
+                                <i className="fas fa-question" />
                                 <p>Câu hỏi thường gặp</p>
                                 <span className="caret" />
                             </a>

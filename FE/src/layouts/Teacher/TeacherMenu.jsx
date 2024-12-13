@@ -11,7 +11,7 @@ const TeacherMenu = () => {
                             src="https://admin.feduvn.com/storage/logo/snapedit_1733630664663.png"
                             width={150}
                             alt="navbar brand"
-                            className="navbar-brand"
+                            className="navbar-brand mt-4"
                             height={20}
                         />
                     </Link>
@@ -43,6 +43,12 @@ const TeacherMenu = () => {
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
+                    <li className="nav-section">
+                            <span className="sidebar-mini-icon">
+                                <i className="fa fa-ellipsis-h" />
+                            </span>
+                            <h4 className="text-section">Quản lý chung</h4>
+                        </li>
                         <li className="nav-item">
                             <a
                                 data-bs-toggle="collapse"
@@ -66,16 +72,11 @@ const TeacherMenu = () => {
                                 </ul>
                             </div>
                         </li>
-                        <li className="nav-section">
-                            <span className="sidebar-mini-icon">
-                                <i className="fa fa-ellipsis-h" />
-                            </span>
-                            <h4 className="text-section">Quản lý chung</h4>
-                        </li>
+                        
                         <li className="nav-item">
                             <a data-bs-toggle="collapse" href="#base">
                                 <i className="fas fa-layer-group" />
-                                <p>Lớp học của tôi</p>
+                                <p>Quản lý lớp dạy</p>
                                 <span className="caret" />
                             </a>
                             <div className="collapse" id="base">
