@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'user_code' => 'AM' . fake()->unique()->numberBetween(100, 999), // Tạo mã sinh viên ngẫu nhiên ST100 - ST999
             'full_name' => fake()->name,
-            'email' => 'loc1@gmail.com',
+            'email' => 'admin1@gmail.com',
             'password' => '123456', // Mật khẩu mẫu
             'phone_number' => fake()->phoneNumber(),
             'address' => fake()->address(),
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         //     'user_code' => 'TC' . fake()->unique()->numberBetween(100, 999),
         //     'full_name' => 'Giảng viên 1',
         //     'email' => 'teacher2@gmail.com',
-        //     'password' => bcrypt('password'), // Mật khẩu mẫu
+        //     'password' => 'password', // Mật khẩu mẫu
         //     'phone_number' => '0123456789',
         //     'address' => 'Hà Nội',
         //     'sex' => 'male',

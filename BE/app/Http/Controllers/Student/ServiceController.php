@@ -103,7 +103,10 @@ class ServiceController extends Controller
   public function getListLearnAgain(Request $request)
   {
     $user_code = request()->user()->user_code;
-    $subject = Score::Where('is_pass', false)->where('status', false)->where('student_code', $user_code)->with('Subject')->get();
+    $subject = Score::Where('is_pass', false)
+                    ->where('status', false)
+                    ->where('student_code', $user_code)
+                    ->with('Subject')->get();
     return response()->json(['data' => $subject], 200);
   }
 
@@ -124,21 +127,21 @@ class ServiceController extends Controller
       ];
 
       $service = Service::create($data);
-      // if ($service) {
-      // Xây dựng URL cho API gửi email
-      // $redirectUrl = url("/send-email/learn-again/{$service->id}");
+      if ($service) {
+    
+      $redirectUrl = url("/send-email/learn-again/{$service->id}");
 
-      // // Gọi API gửi email
-      // $response = Http::post($redirectUrl, [
-      //     'subject_code' => $subject_code,  // Gửi danh sách user_code
-      // ]);
+      // Gọi API gửi email
+      $response = Http::post($redirectUrl, [
+          'subject_code' => $subject_code,  // Gửi danh sách user_code
+      ]);
 
-      // if ($response->successful()) {
-      //     return response()->json(['message' => 'Gửi dịch vụ thành công và email đã được gửi', 'service' => $service]);
-      // } else {
-      //     return response()->json(['message' => 'Gửi dịch vụ thành công nhưng không thể gửi email', 'service' => $service]);
-      // }
-      // }
+      if ($response->successful()) {
+          return response()->json(['message' => 'Gửi dịch vụ thành công và email đã được gửi', 'service' => $service]);
+      } else {
+          return response()->json(['message' => 'Gửi dịch vụ thành công nhưng không thể gửi email', 'service' => $service]);
+      }
+      }
       return response()->json(['message' => 'gửi dịch vụ thành công', 'service' => $service]);
     } catch (\Throwable $th) {
       return response()->json(['message' => $th->getMessage()]);
@@ -310,8 +313,6 @@ class ServiceController extends Controller
       }
 
       $service_name = "Đăng kí thay đổi thông tin";
-
-
       $content = "";
 
       if (!empty($validatedData['full_name'])) {

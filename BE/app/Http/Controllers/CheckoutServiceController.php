@@ -100,7 +100,7 @@ class CheckoutServiceController extends Controller
     public function handleCallback(Request $request)
     {
         $data = $request->all();
-        dd($data);
+
         if (!isset($data['extraData'])) {
             return response()->json(['message' => 'Missing extraData parameter'], 400);
         }
@@ -192,7 +192,9 @@ class CheckoutServiceController extends Controller
             "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
-            "vnp_TxnRef" => $vnp_TxnRef,
+            "vnp_TxnRef"    => $vnp_TxnRef,
+            "id_service"    =>  $ServiceId,
+            "user_code"     => $user_code,
         );
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
             $inputData['vnp_BankCode'] = $vnp_BankCode;
@@ -233,7 +235,25 @@ class CheckoutServiceController extends Controller
         return redirect($vnp_Url);
     }
 
-    public function vnpay_payment_return(){
-        dd('xu li logic');
+    public function vnpay_payment_return(Request $request){
+        $data = $request->all();
+        $id_service = $request->input('id_service'); // Lấy id
+        $user_code = $request->input('user_code');
+        $payDate = \Carbon\Carbon::createFromFormat('YmdHis', $request->input('vnp_PayDate'))
+                                    ->format('Y-m-d H:i:s');
+        $vnp_TransactionNo = $request->input('vnp_TransactionNo');
+        $vnp_Amount        = $request->input('vnp_Amount');
+        $vnp_ResponseCode  = $request->input('vnp_ResponseCode');
+
+        $dataTransaction = [
+            
+            'service_id'        => $id_service,
+            'payment_date'      => $payDate,
+            'amount_paid'       => $vnp_Amount,
+            'payment_method'    => 'transfer',
+            'type'              => 'add',
+            'receipt_number'    => $vnp_TransactionNo,
+        ];
+        Transaction::create($dataTransaction);
     }
 }

@@ -65,6 +65,7 @@ Route::get('payment-success/service', [CheckoutServiceController::class, 'Paymen
 
 Route::post('/payment-callback/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
 Route::get('/payment-success/learn-again', [CheckoutLearnAgainController::class, 'handleCallback']);
+
 Route::post('/send-email/learn-again/{id}/{subject_code}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
 Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment']);

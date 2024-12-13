@@ -326,15 +326,10 @@ Route::post('services/change-major/{user_code}',            [ServiceController::
 // cung cấp thẻ sinh viên
 Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
 
-
-
 Route::apiResource('fees', FeeController::class);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
-
 Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost']);
-
-
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost']);
 
 
