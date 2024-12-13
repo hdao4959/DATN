@@ -63,7 +63,7 @@ class SessionController extends Controller
             $value_json = json_encode($value);
 
 
-            $cate_code = "TS".$request->session;
+            $cate_code = "SS0".$request->session;
             $cate_name = "Ca ".$request->session;
             $value = $value_json;
             $data = [

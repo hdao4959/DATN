@@ -246,7 +246,6 @@ class CheckoutServiceController extends Controller
         $vnp_ResponseCode  = $request->input('vnp_ResponseCode');
 
         $dataTransaction = [
-            
             'service_id'        => $id_service,
             'payment_date'      => $payDate,
             'amount_paid'       => $vnp_Amount,
@@ -255,5 +254,10 @@ class CheckoutServiceController extends Controller
             'receipt_number'    => $vnp_TransactionNo,
         ];
         Transaction::create($dataTransaction);
+        $service = Service::findOrFail($id_service);
+
+        $service->update('status','paid');
+
+        return response()->json(['message' => 'giao dịch thành công']);
     }
 }

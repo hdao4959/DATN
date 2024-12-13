@@ -128,7 +128,7 @@ class ServiceController extends Controller
 
       $service = Service::create($data);
       if ($service) {
-    
+
       $redirectUrl = url("/send-email/learn-again/{$service->id}");
 
       // Gọi API gửi email
@@ -243,6 +243,7 @@ class ServiceController extends Controller
         'number_board'     => 'required|integer|min:1',
         'number_phone'     => 'required|string|max:15',
         'receive_method'   => 'required|string',
+        'amount'           => 'required',
         'receive_address'  => 'nullable|string|max:255',
         'note'             => 'nullable|string|max:500',
       ]);
@@ -266,7 +267,7 @@ class ServiceController extends Controller
       }
 
       $service_name = "Đăng ký cấp bảng điểm";
-      $amount = $validatedData['number_board'] * 100000;
+      $amount = $validatedData['amount'];
       $data = [
         'user_code'     => $user_code,
         'service_name'  => $service_name,

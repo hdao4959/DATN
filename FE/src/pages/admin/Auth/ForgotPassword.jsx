@@ -111,11 +111,9 @@ const ForgotPassword = () => {
                                                 {errors.email && <p className="text-danger">{errors.email.message}</p>}
                                             </div>
                                             <button type="submit" className="btn btn-primary w-100">
-                                                Đặt lại mật khẩu
+                                                Gửi liên kết đặt lại mật khẩu
                                             </button>
-                                            <Link className="btn" to="/signin">
-                                                Quay lại
-                                            </Link>
+                                            <Link className="form-group text-center" to={'/signin'}>Quay lại</Link>
                                         </form>
                                     </div>
                                 </div>
