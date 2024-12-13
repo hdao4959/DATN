@@ -102,7 +102,7 @@ function App() {
             path: "/signin",
             element: <Signin />,
         },
-// quên mật khẩu
+        // quên mật khẩu
         {
             path: "/forgot-password",
             element: <ForgotPassword />,
@@ -120,7 +120,7 @@ function App() {
             ),
             children: [
                 {
-                    path: "/",
+                    path: "",
                     element: <Dashboard />,
                 },
                 {
