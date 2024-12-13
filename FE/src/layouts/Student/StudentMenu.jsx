@@ -83,28 +83,6 @@ const StudentMenu = () => {
                             </div>
                         </li>
                         <li className="nav-item ">
-                            <a data-bs-toggle="collapse" href="#attendances">
-                                <i className="fas fa-clipboard-check" />
-                                <p>Điểm Danh</p>
-                                <span className="caret" />
-                            </a>
-                            <div className="collapse" id="attendances">
-                                <ul className="nav nav-collapse">
-                                    <li>
-                                        <NavLink
-                                            to="/student/attendances"
-                                            className={`${styles.menuItem} group`}
-                                        >
-                                            <p className="sub-item">
-                                                Điểm danh
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        
-                        <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#classrooms">
                                 <i className="fas fa-folder" />
                                 <p>Lớp học</p>
@@ -135,6 +113,29 @@ const StudentMenu = () => {
                                 </ul>
                             </div>
                         </li>
+                        <li className="nav-item ">
+                            <a data-bs-toggle="collapse" href="#attendances">
+                                <i className="fas fa-clipboard-check" />
+                                <p>Điểm Danh</p>
+                                <span className="caret" />
+                            </a>
+                            <div className="collapse" id="attendances">
+                                <ul className="nav nav-collapse">
+                                    <li>
+                                        <NavLink
+                                            to="/student/attendances"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Điểm danh
+                                            </p>
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        
+                        
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#grades">
                                 <i className="fas fa-clipboard-list" />
