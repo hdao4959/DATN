@@ -8,6 +8,10 @@ import MajorList from "./pages/admin/Major/MajorList";
 import AddMajor from "./pages/admin/Major/AddMajor";
 import EditMajor from "./pages/admin/Major/EditMajor";
 import Signin from "./pages/admin/Auth/Signin";
+import ForgotPassword from "./pages/admin/Auth/ForgotPassword";
+import ResetPassword from "./pages/admin/Auth/ResetPassword";
+
+
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
 import EditSubject from "./pages/admin/Subject/EditSubject";
@@ -97,6 +101,15 @@ function App() {
         {
             path: "/signin",
             element: <Signin />,
+        },
+// quên mật khẩu
+        {
+            path: "/forgot-password",
+            element: <ForgotPassword />,
+        },
+        {
+            path: "/reset-password/:token/:email",
+            element: <ResetPassword />
         },
         {
             path: "admin",
