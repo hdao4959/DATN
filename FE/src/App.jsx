@@ -99,7 +99,7 @@ function App() {
             element: <Signin />,
         },
         {
-            path: "admin",
+            path: "/admin",
             element: (
                 <CheckRole>
                     <Layout />
