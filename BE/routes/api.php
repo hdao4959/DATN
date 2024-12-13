@@ -282,7 +282,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         // dịch vụ cung cấp bảng điểm
-
+        Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
         // dịch vụ thay đổi thông tin
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
@@ -326,7 +326,7 @@ Route::post('services/change-major/{user_code}',            [ServiceController::
 // cung cấp thẻ sinh viên
 Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
 
-Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
+
 
 Route::apiResource('fees', FeeController::class);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);

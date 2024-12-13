@@ -244,8 +244,8 @@ class ServiceController extends Controller
         'note'             => 'nullable|string|max:500',
       ]);
 
-    //   $user_code = $request->user()->user_code;
-        $user_code = $request->user_code;
+      $user_code = $request->user()->user_code;
+        // $user_code = $request->user_code;
       if (!$user_code) {
         return response()->json(['message' => 'không tìm thấy user_code']);
       }
@@ -295,7 +295,6 @@ class ServiceController extends Controller
   public function changeInfo(Request $request)
   {
     try {
-
       $validatedData = $request->validate([
         'full_name'     => 'nullable|string|max:255',
         'sex'           => 'nullable|string|in:Nam,Nữ',  // Giới tính, chỉ có 2 giá trị
