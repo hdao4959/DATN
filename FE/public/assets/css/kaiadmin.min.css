@@ -1726,6 +1726,10 @@ body {
       transition: all .3s
    }
 
+   .scrollbar::-webkit-scrollbar {
+      width: 2px !important;
+   }
+
    .sidebar_minimize .sidebar .sidebar-wrapper .user {
       padding-left: 0;
       padding-right: 0
