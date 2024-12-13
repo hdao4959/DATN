@@ -102,6 +102,7 @@ const ClassroomList = () => {
                                     Lịch học
                                 </button>
                                 <button class="btn btn-info btn-sm exam-link" data-id="${row.class_code}">
+
                                     Lịch thi
                                 </button>
                                 <button class="btn btn-secondary btn-sm attendances-link" data-id="${row.class_code}" style="margin-right: 5px;">

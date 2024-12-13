@@ -3,12 +3,13 @@ import "datatables.net-dt/css/dataTables.dataTables.css";
 import $ from "jquery";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../config/axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SubjectsList = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: subjects, isLoading } = useQuery({
     queryKey: ["LIST_SUBJECT"],
@@ -49,14 +50,14 @@ const SubjectsList = () => {
           try {
             const page = data.start / data.length + 1;
             const response = await api.get(`/admin/subjects`, {
-              params: { page, per_page: data.length },
+              params: { page, per_page: data.length, search: data.search.value },
             });
-            const result = response.data;
+            const result = response?.data?.subjects;
             callback({
               draw: data.draw,
               recordsTotal: result.total,
               recordsFiltered: result.total,
-              data: result.subjects.data,
+              data: result.data,
             });
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -89,10 +90,8 @@ const SubjectsList = () => {
             render: (data, type, row) => {
               return `
               <div className="whitespace-nowrap">
-                  <button>
-                    <a href="/admin/subjects/${row.subject_code}/edit">
+                  <button class='detail-link' data-link='/admin/subjects/${row.subject_code}/edit'>
                       <i class='fas fa-edit hover:text-blue-500'></i>
-                    </a>
                   </button>
                   <button class="delete-button ml-2" data-id="${row.subject_code}">
                     <i class='fas fa-trash hover:text-red-500'></i>
@@ -114,6 +113,10 @@ const SubjectsList = () => {
         },
         destroy: true
       });
+      $('#subjectList').on('click', '.detail-link', function () {
+                      const link = $(this).data('link');
+                      navigate(link);
+                  });
       $('#subjectList tbody').off('click', '.delete-button');
       $('#subjectList tbody').on('click', '.delete-button', function () {
         const id = $(this).data('id');

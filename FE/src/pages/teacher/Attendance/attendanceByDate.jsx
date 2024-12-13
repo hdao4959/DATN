@@ -48,9 +48,11 @@ const AttendanceTeacherDate = () => {
 
     const handleSave = async () => {
         try {
-            console.log(attendanceDetails);
             let response;
             response = await api.put(`/teacher/attendances/${class_code}`, attendanceDetails);
+            if (response.data.message == 'Đã quá 15 phút') {
+                return toast.error(response?.data?.message);
+            }
             if (response.status === 200) {
                 toast.success("Cập nhật điểm danh thành công!");
                 refetch();
@@ -75,39 +77,50 @@ const AttendanceTeacherDate = () => {
     };
     const hasUpdates = attendanceDetails.some((student) => {
         const originalStatus = att.find(item => item.student_code === student.student_code)?.attendance[0]?.status;
-
-        // Lấy giờ bắt đầu và giờ kết thúc của ca học
-        const sessionStart = att.find(item => item.student_code === student.student_code)?.session?.start || '00:00';
-        const sessionEnd = att.find(item => item.student_code === student.student_code)?.session?.end || '00:00';
-
-        // Chuyển đổi giờ ca học và giờ hiện tại
+    
+        // Lấy giờ bắt đầu và kết thúc của ca học
+        let sessionStart = att.find(item => item.student_code === student.student_code)?.session?.start || '00:00';
+        sessionStart = '18:00';
+        let sessionEnd = att.find(item => item.student_code === student.student_code)?.session?.end || '00:00';
+        sessionEnd = '22:50';
+    
+        // Chuyển đổi giờ hiện tại và giờ ca học
         const currentTime = new Date();
         const [startHour, startMinute] = sessionStart.split(":").map(Number);
         const [endHour, endMinute] = sessionEnd.split(":").map(Number);
-
-        const sessionStartDate = new Date(currentTime.setHours(startHour, startMinute, 0, 0));
-        const sessionEndDate = new Date(currentTime.setHours(endHour, endMinute, 0, 0));
-
-        // Kiểm tra thời gian hiện tại so với giờ ca học
+    
+        const sessionStartDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute, 0);
+        const sessionEndDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), endHour, endMinute, 0);
+    
+        // Thời gian 15 phút sau khi ca học bắt đầu
         const fifteenMinutesAfterStart = new Date(sessionStartDate.getTime() + 15 * 60000);
-
-        // Nếu thời gian hiện tại đã qua giờ kết thúc hoặc quá 15 phút sau giờ bắt đầu, không cho phép thay đổi trạng thái từ absent thành present
-        if (
-            (originalStatus === 'absent' && student.status === 'present' && currentTime > fifteenMinutesAfterStart) ||
-            currentTime > sessionEndDate
-        ) {
+    
+        // Kiểm tra thời gian hiện tại so với giờ ca học
+        const isBeforeSessionStart = currentTime < sessionStartDate;
+        const isAfterSessionEnd = currentTime > sessionEndDate;
+        const isTimeExceeded = currentTime > fifteenMinutesAfterStart || isAfterSessionEnd;
+    
+        // Kiểm tra trạng thái thay đổi
+        const isStatusChanged = originalStatus === 'absent' && student.status === 'present';
+    
+        // Nếu chưa đến thời điểm bắt đầu hoặc đã qua thời điểm kết thúc
+        if (isBeforeSessionStart || isAfterSessionEnd) {
             return true;
         }
-        return (
-            (originalStatus === 'absent' && student.status === 'present')
-        );
+    
+        // Không cho phép cập nhật nếu điều kiện vượt thời gian
+        if (isTimeExceeded && isStatusChanged) {
+            return true;
+        }
+    
+        return isStatusChanged;
     });
-
+    
     const [timeRemaining, setTimeRemaining] = useState(15 * 60); // Thời gian đếm ngược 15 phút (tính bằng giây)
     const [isTimeUp, setIsTimeUp] = useState(false); // Kiểm tra nếu hết thời gian
     // const sessionStart = att[0]?.session?.start || '00:00';
     const sessionStart = att?.session?.start || '00:00';
-    // const sessionStart = '18:30';
+    // const sessionStart = '22:09';
     useEffect(() => {
         // Tạo đối tượng Date từ chuỗi sessionStart kiểu '09:00'
         const [hours, minutes] = sessionStart.split(':');
