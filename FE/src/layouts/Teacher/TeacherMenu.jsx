@@ -3,9 +3,15 @@ import styles from "../index.module.css";
 
 const TeacherMenu = () => {
     return (
-        <div className="sidebar" style={{backgroundColor: '#F5FFFA', color: '#333333'}}>
+        <div
+            className="sidebar"
+            style={{ backgroundColor: "#F5FFFA", color: "#333333" }}
+        >
             <div className="sidebar-logo">
-                <div className="logo-header" style={{backgroundColor: '#F5FFFA'}}>
+                <div
+                    className="logo-header"
+                    style={{ backgroundColor: "#F5FFFA" }}
+                >
                     <Link to={"/teacher"} className="logo">
                         <img
                             src="https://admin.feduvn.com/storage/logo/snapedit_1733630664663.png"
@@ -100,11 +106,13 @@ const TeacherMenu = () => {
                             <div className="collapse" id="post">
                                 <ul className="nav nav-collapse">
                                     <li>
-                                        <NavLink to="/teacher/post" className={`${styles.menuItem} group`}>
+                                        <NavLink
+                                            to="/teacher/post"
+                                            className={`${styles.menuItem} group`}
+                                        >
                                             <p className="sub-item">
                                                 Thông Báo
                                             </p>
-
                                         </NavLink>
                                     </li>
                                 </ul>

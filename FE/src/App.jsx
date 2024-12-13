@@ -112,6 +112,7 @@ function App() {
             element: <ResetPassword />
         },
         {
+
             path: "/admin",
             element: (
                 <CheckRole>

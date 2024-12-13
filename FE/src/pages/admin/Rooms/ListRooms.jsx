@@ -155,6 +155,7 @@ const ClassRoomsList = () => {
             $("#classroomsTable").DataTable({
                 data: classrooms.map((cls) => ({
                     class_name: cls.class_name || "N/A",
+                    date_start: cls.date_start || "N/A",
                     class_code: cls.class_code || "N/A",
                     subject_name: cls.subject_name || "N/A",
                     teacher_code: cls.teacher_code || "N/A",
@@ -237,6 +238,11 @@ const ClassRoomsList = () => {
                         data: null,
                         render: (data) =>
                             `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`
+                    },
+                    {
+                        title: "Ngày bắt đầu",
+                        data: null,
+                        render: "date_start",
                     },
                     {
                         title: "",

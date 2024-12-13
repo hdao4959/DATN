@@ -12,7 +12,6 @@ import "datatables.net";
 const ServicesList = () => {
     const accessToken = getToken();
 
-    // Sử dụng React Query để gọi API
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["SERVICE_LIST"],
         queryFn: async () => {
@@ -22,16 +21,15 @@ const ServicesList = () => {
                     "Content-Type": "application/json",
                 },
             });
-            return res?.data?.data ?? []; // Lấy dữ liệu từ API trả về
+            return res?.data?.data ?? [];
         },
     });
 
-    const [modalOpen, setModalOpen] = useState(false); // Modal hủy dịch vụ
-    const [selectedService, setSelectedService] = useState(null); // Dịch vụ được chọn
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
-    // Chuyển đổi dữ liệu từ API thành định dạng DataTable
     const flattenServiceData = (data) => {
         return data.map((service, index) => ({
             id: service.id,
@@ -51,7 +49,6 @@ const ServicesList = () => {
                 $("#service-table").DataTable().clear().destroy();
             }
 
-            // Khởi tạo DataTable
             $("#service-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
@@ -72,46 +69,55 @@ const ServicesList = () => {
                         },
                         className: "text-center",
                     },
-                    { title: "Số tiền", data: "amount" },
+                    {
+                        title: "Số tiền",
+                        data: "amount",
+                        render: (data) =>
+                            `${new Intl.NumberFormat("vi-VN").format(data)} đ`,
+                        width: "90px",
+                    },
                     {
                         title: "Lý do",
                         data: "reason",
-                        render: (data) => data ? data : "Không có lý do",
+                        render: (data) => (data ? data : "Không có lý do"),
                     },
                     {
                         title: "Ngày tạo",
                         data: "createdAt",
-                        render: (data) => data ? new Date(data).toLocaleString() : "Chưa có",
+                        render: (data) =>
+                            data ? new Date(data).toLocaleString() : "Chưa có",
                     },
                     {
                         title: "Hành động",
                         data: null,
                         render: (data, type, row) => {
-                            // Kiểm tra trạng thái và quyết định có vô hiệu hóa nút hủy hay không
-                            const disableCancel = row.status === "approved" || row.status === "rejected" ? "disabled" : "";
-                            const opacity = row.status === "approved" || row.status === "rejected" ? "opacity-50" : "";
-
-                            // Nếu trạng thái là pending, cho phép mở modal
-                            const onClickCancel = row.status === "pending" ? `handleCancel(${row.id})` : '';
-
+                            const disableCancel =
+                                row.status === "approved" ||
+                                row.status === "rejected";
                             return `
                                 <div class="d-flex justify-content-center">
-                                    <button class="fs-4 ${opacity}" ${disableCancel} onclick="${onClickCancel}">
-                                        <a href="" class="text-decoration-none">
-                                            <i class="fas fa-times-circle hover:text-red-100"></i>
-                                        </a>
+                                    <button 
+                                        class="fs-4 ${
+                                            disableCancel ? "opacity-50" : ""
+                                        }" 
+                                        ${disableCancel ? "disabled" : ""}
+                                        data-id="${row.id}">
+                                        <i class="fas fa-times-circle hover:text-red-100"></i>
                                     </button>
                                 </div>`;
                         },
                         className: "text-center",
                     },
-
-                    { title: "Thứ tự sắp xếp", data: "sortOrder", visible: false },
+                    {
+                        title: "Thứ tự sắp xếp",
+                        data: "sortOrder",
+                        visible: false,
+                    },
                 ],
-                order: [[6, "asc"]], // Sắp xếp theo thứ tự
+                order: [[6, "asc"]],
                 createdRow: (row, rowData) => {
                     $(row)
-                        .find(".delete-btn")
+                        .find("button")
                         .on("click", () => handleCancel(rowData.id));
                 },
                 language: {
@@ -152,26 +158,29 @@ const ServicesList = () => {
                 </div>
             </div>
 
-            {/* Modal xác nhận hủy dịch vụ */}
             <Modal
                 title="Hủy dịch vụ"
-                description="Bạn có chắc chắn muốn hủy dịch vụ này?"
+                description={`Bạn có chắc chắn muốn hủy dịch vụ ${
+                    data?.find((service) => service.id === selectedService)
+                        ?.service_name || ""
+                }?`}
                 visible={modalOpen}
                 onVisible={onModalVisible}
                 onOk={() => {
-                    // Gọi API để hủy dịch vụ
                     api.delete(`/student/services/${selectedService}`, {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",
                         },
-                    }).then(() => {
-                        toast.success("Hủy dịch vụ thành công");
-                        onModalVisible();
-                        refetch();
-                    }).catch(() => {
-                        toast.error("Có lỗi xảy ra khi hủy dịch vụ");
-                    });
+                    })
+                        .then(() => {
+                            toast.success("Hủy dịch vụ thành công");
+                            onModalVisible();
+                            refetch();
+                        })
+                        .catch(() => {
+                            toast.error("Có lỗi xảy ra khi hủy dịch vụ");
+                        });
                 }}
                 closeTxt="Huỷ"
                 okTxt="Xác nhận"
