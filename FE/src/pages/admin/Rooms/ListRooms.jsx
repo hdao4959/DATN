@@ -162,9 +162,48 @@ const ClassRoomsList = () => {
                     students_count: cls.students_count || 0,
                     session_name: cls.session_name || "Chưa xếp ca",
                     room_time: cls.session_value
-                        ? JSON.parse(cls.session_value.value)
+                        ? JSON.parse(cls.session_value)
                         : { start: "", end: "" },
                 })),
+                processing: true,
+                serverSide: true, 
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        const response = await api.get(`/admin/classrooms`, {
+                            params: { page, per_page: data.length, search: data.search.value || "", },
+                        });
+                        const result = response?.data?.classrooms;
+                        const dataI = result?.data?.map((cls) => ({
+                            class_name: cls.class_name || "N/A",
+                            class_code: cls.class_code || "N/A",
+                            subject_name: cls.subject_name || "N/A",
+                            teacher_code: cls.teacher_code || "N/A",
+                            teacher_name: cls.teacher_name || "N/A",
+                            students_count: cls.students_count || 0,
+                            session_name: cls.session_name || "Chưa xếp ca",
+                            room_time: cls.session_value
+                                ? JSON.parse(cls.session_value)
+                                : { start: "", end: "" },
+                        }));
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: dataI,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
+                pageLength: 10,
+                lengthMenu: [10, 20, 50],
+                language: {
+                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
+                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
+                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
+                    search: "<i class='fas fa-search'> Tìm kiếm </i>",
+                },
                 columns: [
                     {
                         title: "Lớp học",
@@ -175,7 +214,7 @@ const ClassRoomsList = () => {
                                 </span>`,
                     },
                     {
-                        title: "<i class='fas fa-book'> Môn</i>",
+                        title: "Môn",
                         data: "subject_name",
                     },
                     {
@@ -187,7 +226,7 @@ const ClassRoomsList = () => {
                             </a>`,
                     },
                     {
-                        title: "<i class='fas fa-users'> Số sinh viên</i>",
+                        title: "Số sinh viên",
                         data: null,
                         className: "text-center",
                         render: (data) =>
@@ -197,9 +236,7 @@ const ClassRoomsList = () => {
                         title: "Ca học",
                         data: null,
                         render: (data) =>
-                            `<a href='/admin/sessions/${data.class_code}/edit' class='text-dark'>
-                ${data.session_name} (${data.room_time.start} - ${data.room_time.end})
-            </a>`,
+                            `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`
                     },
                     {
                         title: "",
