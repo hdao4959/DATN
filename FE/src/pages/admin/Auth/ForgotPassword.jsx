@@ -5,7 +5,11 @@ import api from "../../../config/axios";
 import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
 
     const onSubmit = async (data) => {
         try {
@@ -101,19 +105,42 @@ const ForgotPassword = () => {
                                             </div>
                                         </div>
                                         <form onSubmit={handleSubmit(onSubmit)}>
-                                            <div className="form-group mb-4">
-                                                <label>Email</label>
+                                            <div className="form-outline mb-4">
+                                                <label className="form-label">
+                                                    Email: {""}
+                                                </label>
+                                                <label className="text-danger">
+                                                    *
+                                                </label>
                                                 <input
                                                     type="email"
                                                     className="form-control"
-                                                    {...register("email", { required: "Vui lòng nhập email" })}
+                                                    {...register("email", {
+                                                        required:
+                                                            "Vui lòng nhập email",
+                                                    })}
                                                 />
-                                                {errors.email && <p className="text-danger">{errors.email.message}</p>}
+                                                {errors.email && (
+                                                    <p className="text-danger">
+                                                        {errors.email.message}
+                                                    </p>
+                                                )}
                                             </div>
-                                            <button type="submit" className="btn btn-primary w-100">
-                                                Gửi liên kết đặt lại mật khẩu
-                                            </button>
-                                            <Link className="form-group text-center" to={'/signin'}>Quay lại</Link>
+                                            <div className="text-center pt-1 mb-2  d-grid gap-2 col-7 mx-auto">
+                                                <button
+                                                    type="submit"
+                                                    className="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
+                                                >
+                                                    Đặt lại mật khẩu
+                                                </button>
+                                            </div>
+
+                                            <Link
+                                                className="text-center d-grid  col-2 mx-auto"
+                                                to={"/signin"}
+                                            >
+                                                Quay lại
+                                            </Link>
                                         </form>
                                     </div>
                                 </div>

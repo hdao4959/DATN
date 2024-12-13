@@ -155,6 +155,7 @@ const ClassRoomsList = () => {
             $("#classroomsTable").DataTable({
                 data: classrooms.map((cls) => ({
                     class_name: cls.class_name || "N/A",
+                    date_start: cls.date_start || "N/A",
                     class_code: cls.class_code || "N/A",
                     subject_name: cls.subject_name || "N/A",
                     teacher_code: cls.teacher_code || "N/A",
@@ -175,7 +176,7 @@ const ClassRoomsList = () => {
                                 </span>`,
                     },
                     {
-                        title: "<i class='fas fa-book'> Môn</i>",
+                        title: "Môn",
                         data: "subject_name",
                     },
                     {
@@ -187,7 +188,7 @@ const ClassRoomsList = () => {
                             </a>`,
                     },
                     {
-                        title: "<i class='fas fa-users'> Số sinh viên</i>",
+                        title: "Số sinh viên",
                         data: null,
                         className: "text-center",
                         render: (data) =>
@@ -200,6 +201,11 @@ const ClassRoomsList = () => {
                             `<a href='/admin/sessions/${data.class_code}/edit' class='text-dark'>
                 ${data.session_name} (${data.room_time.start} - ${data.room_time.end})
             </a>`,
+                    },
+                    {
+                        title: "Ngày bắt đầu",
+                        data: null,
+                        render: "date_start",
                     },
                     {
                         title: "",
