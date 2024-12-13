@@ -58,7 +58,7 @@ const ClassroomList = () => {
                         title: "Lớp",
                         data: null,
                         render: function (row) {
-                            return `<div class="class-link hover:text-blue-500" data-id="${
+                            return `<div class="detail-link hover:text-blue-500" data-id="${
                                 row.class_code
                             }">
                                    ${row.class_name ? row.class_name : ""}
@@ -185,9 +185,9 @@ const ClassroomList = () => {
                 const classCode = $(this).data("id");
                 navigate(`/teacher/class/${classCode}/grades`);
             });
-            $("#classroomTable tbody").on("click", ".exam-link", function () {
+            $("#classroomTable tbody").on("click", ".detail-link", function () {
                 const classCode = $(this).data("id");
-                navigate(`/teacher/class/${classCode}/examdays`);
+                navigate(`/teacher/class/${classCode}/detail`);
             });
         }
     }, [classrooms, navigate]);

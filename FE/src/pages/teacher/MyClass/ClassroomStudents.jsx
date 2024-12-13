@@ -42,12 +42,12 @@ const ClassroomStudents = () => {
                     return;
                 }
 
-                const response = api.get(
+                const response = await api.get(
                     `/teacher/classrooms/${class_code}/students`
                 );
 
-                if (response.ok) {
-                    const data = await response.json();
+                if (response) {
+                    const data = response?.data;
                     setStudents(data);
                 } else {
                     setErrorMessage(
@@ -67,16 +67,16 @@ const ClassroomStudents = () => {
     useEffect(() => {
         if (students) {
             if ($.fn.dataTable.isDataTable("#studentsTable")) {
-                $("#studentsTable").DataTable().destroy(true);
+                $("#studentsTable").DataTable().destroy();
             }
-
+            
             $("#studentsTable").DataTable({
+                data: students,
                 paging: false,
                 info: false,
                 language: {
                     search: "<i class='fas fa-search'> Tìm kiếm: </i>",
                 },
-                data: students,
                 columns: [
                     {
                         title: "#",
@@ -94,31 +94,21 @@ const ClassroomStudents = () => {
                         className: "text-left",
                     },
                     {
-                        title: "Email",
-                        data: "email",
-                        className: "text-left",
-                        render: (data) => {
-                            if (data) {
-                                return `<a href="mailto:${data}">${data}</a>`;
-                            }
-                            return "";
-                        },
+                        title: 'Email',
+                        data: 'email',
+                        className: 'text-left',
+                        render: (data) => data ? `<a href="mailto:${data}">${data}</a>` : '',
                     },
                     {
-                        title: "Số điện thoại",
-                        data: "phone_number",
-                        className: "text-left",
-                        render: (data) => {
-                            if (data) {
-                                return `<a href="tel:${data}">${data}</a>`;
-                            }
-                            return "";
-                        },
+                        title: 'Số điện thoại',
+                        data: 'phone_number',
+                        className: 'text-left',
+                        render: (data) => data ? `<a href="tel:${data}">${data}</a>` : '',
                     },
                 ],
             });
         }
-    }, [loading, errorMessage, students]);
+    }, [students]);
 
     const handleSendMail = () => {
         const emails = students.map((student) => student.email).join(",");
@@ -142,7 +132,63 @@ const ClassroomStudents = () => {
                     </div>
                     <div className="card-body">
                         {classDetails ? (
-                            <div className="mb-4">
+                            <>
+                                <div className="row mb-3">
+                                    <div className="col-md-4">
+                                        <strong>Tên lớp học:</strong>{" "}
+                                        {classDetails?.class_name || "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Mã môn học:</strong>{" "}
+                                        {classDetails?.subject_code || "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Môn học:</strong>{" "}
+                                        {classDetails?.subject_name || "Chưa cập nhật"}
+                                    </div>
+                                </div>
+
+                                <div className="row mb-3">
+                                    <div className="col-md-4">
+                                        <strong>Ngày bắt đầu:</strong>{" "}
+                                        {classDetails?.date_start
+                                            ? new Date(
+                                                classDetails?.date_start
+                                            ).toLocaleDateString()
+                                            : "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Giảng viên:</strong>{" "}
+                                        {classDetails?.teacher_name ?? "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Mã giảng viên:</strong>{" "}
+                                        {classDetails?.teacher_code ?? "Chưa cập nhật"}
+                                    </div>
+                                </div>
+
+                                <div className="row mb-3">
+                                    <div className="col-md-4">
+                                        <strong>Email giảng viên:</strong>{" "}
+                                        {classDetails?.teacher_email ? (
+                                            <a
+                                                href={`mailto:${classDetails?.teacher?.email || ""
+                                                    }`}
+                                            >
+                                                {classDetails?.teacher?.email || ""}
+                                            </a>
+                                        ) : "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Số điện thoại giảng viên:</strong>{" "}
+                                        {classDetails?.teacher_phone_number ?? "Chưa cập nhật"}
+                                    </div>
+                                    <div className="col-md-4">
+                                        <strong>Mô tả:</strong>{" "}
+                                        {classDetails?.description || "Không có"}
+                                    </div>
+                                </div>
+                                {/* <div className="mb-4">
                                 <p>Mã lớp học: {classDetails?.class_code}</p>
                                 <p>Tên lớp học: {classDetails?.class_name}</p>
                                 <p>Mô tả: {classDetails?.description}</p>
@@ -177,7 +223,8 @@ const ClassroomStudents = () => {
                                         {classDetails?.teacher?.email || ""}
                                     </a>
                                 </p>
-                            </div>
+                            </div> */}
+                            </>
                         ) : (
                             <div className="d-flex justify-content-center">
                                 <div
@@ -204,7 +251,7 @@ const ClassroomStudents = () => {
                         ) : (
                             <>
                                 <button
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-sm"
                                     onClick={handleSendMail}
                                     id="getSelectedButton"
                                 >
