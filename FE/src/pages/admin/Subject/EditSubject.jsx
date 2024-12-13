@@ -56,13 +56,9 @@ const EditSubject = () => {
   });
 
   const onSubmitForm = (data) => {
-    const selectedAssessmentItems = data.assessment_items.map(id => ({
-      id: Number(id)
-    }));
-
     const updatedData = {
       ...data,
-      assessment_items: selectedAssessmentItems,
+      assessment_items: data.assessment_items,
     };
 
     mutate(updatedData);
@@ -70,8 +66,6 @@ const EditSubject = () => {
 
   useEffect(() => {
     if (subjectData) {
-      console.log(subjectData);
-
       reset(subjectData);
     }
   }, [subjectData, reset])
