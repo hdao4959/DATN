@@ -12,6 +12,7 @@ import "datatables.net";
 const ServicesList = () => {
     const accessToken = getToken();
 
+    // Sử dụng React Query để gọi API
     const { data, refetch, isFetching } = useQuery({
         queryKey: ["SERVICE_LIST"],
         queryFn: async () => {
@@ -21,12 +22,12 @@ const ServicesList = () => {
                     "Content-Type": "application/json",
                 },
             });
-            return res?.data?.data ?? [];
+            return res?.data?.data ?? []; // Lấy dữ liệu từ API trả về
         },
     });
 
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false); // Modal hủy dịch vụ
+    const [selectedService, setSelectedService] = useState(null); // Dịch vụ được chọn
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
@@ -53,7 +54,6 @@ const ServicesList = () => {
     };
 
     // Chuyển đổi dữ liệu từ API thành định dạng DataTable
-
     const flattenServiceData = (data) => {
         return data.map((service, index) => ({
             id: service.id,
@@ -73,6 +73,7 @@ const ServicesList = () => {
                 $("#service-table").DataTable().clear().destroy();
             }
 
+            // Khởi tạo DataTable
             $("#service-table").DataTable({
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
@@ -92,13 +93,7 @@ const ServicesList = () => {
                         },
                         className: "text-center",
                     },
-                    {
-                        title: "Số tiền",
-                        data: "amount",
-                        render: (data) =>
-                            `${new Intl.NumberFormat("vi-VN").format(data)} đ`,
-                        width: "90px",
-                    },
+                    { title: "Số tiền", data: "amount" },
                     {
                         title: "Lý do",
                         data: "reason",
@@ -115,7 +110,6 @@ const ServicesList = () => {
                         data: null,
                         render: (data, type, row) => {
                             const disableCancel =
-
                                 row.status === "approved" || row.status === "rejected"
                                     ? "disabled"
                                     : "";
@@ -125,16 +119,14 @@ const ServicesList = () => {
                                     : "";
 
                             return `
-                                < div class="d-flex justify-content-center" >
+                                <div class="d-flex justify-content-center">
                                     <button class="delete-btn fs-4 ${opacity}" ${disableCancel}>
                                         <i class="fas fa-times-circle hover:text-red-100"></i>
                                     </button>
-                                </div > `;
+                                </div>`;
                         },
                         className: "text-center",
                     },
-
-
                     { title: "Thứ tự sắp xếp", data: "sortOrder", visible: false },
                 ],
                 order: [[5, "asc"]], // Sắp xếp theo thứ tự
@@ -176,30 +168,15 @@ const ServicesList = () => {
                 </div>
             </div>
 
+            {/* Modal xác nhận hủy dịch vụ */}
             <Modal
                 title="Hủy dịch vụ"
-                description={`Bạn có chắc chắn muốn hủy dịch vụ ${data?.find((service) => service.id === selectedService)
-                    ?.service_name || ""
-                    }?`}
+                description="Bạn có chắc chắn muốn hủy dịch vụ này?"
                 visible={modalOpen}
                 onVisible={onModalVisible}
-                onOk={() => {
-                    api.delete(`/ student / services / ${selectedService} `, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken} `,
-                            "Content-Type": "application/json",
-                        },
-                    })
-                        .then(() => {
-                            toast.success("Hủy dịch vụ thành công");
-                            onModalVisible();
-                            refetch();
-                        })
-                        .catch(() => {
-                            toast.error("Có lỗi xảy ra khi hủy dịch vụ");
-                        });
-                }}
-
+                onOk={confirmCancel}
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
             />
         </>
     );
