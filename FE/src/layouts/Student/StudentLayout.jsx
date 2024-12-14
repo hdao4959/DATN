@@ -242,7 +242,7 @@ const StudentLayout = () => {
                                                             {user.email}
                                                         </p>
                                                         {/* <a
-                                                            href="/admin/account/details/:user_code"
+                                                            href="/sup-admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             View Profile

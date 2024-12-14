@@ -41,11 +41,11 @@ const StudentMenu = () => {
                     </div>
                 </div>
             </div>
-            
+
             <div className="sidebar-wrapper scrollbar scrollbar-inner">
                 <div className="sidebar-content">
                     <ul className="nav nav-secondary">
-                    <li className="nav-item ">
+                        <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#schedules">
                                 <i className="fas fa-calendar" />
                                 <p>Lịch học</p>
@@ -134,8 +134,8 @@ const StudentMenu = () => {
                                 </ul>
                             </div>
                         </li>
-                        
-                        
+
+
                         <li className="nav-item ">
                             <a data-bs-toggle="collapse" href="#grades">
                                 <i className="fas fa-clipboard-list" />
@@ -186,7 +186,7 @@ const StudentMenu = () => {
                                             <br />
                                         </NavLink>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <NavLink
                                             to="/student/change-major"
                                             className={`${styles.menuItem} group`}
@@ -196,7 +196,7 @@ const StudentMenu = () => {
                                             </p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <NavLink
                                             to="/student/services/re-enrollment"
@@ -241,10 +241,10 @@ const StudentMenu = () => {
                                             </p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li>
-                                    <li>
+                                    </li> */}
+                                    {/* <li>
                                         <NavLink
-                                            to="/student/services"
+                                            to="/student/services/request-change-info"
                                             className={`${styles.menuItem} group`}
                                         >
                                             <p className="sub-item">
@@ -253,7 +253,7 @@ const StudentMenu = () => {
                                             <br />
                                         </NavLink>
                                     </li> */}
-                                    <li>
+                                    {/* <li>
                                         <NavLink
                                             to="/student/request-attendance"
                                             className={`${styles.menuItem} group`}
@@ -263,7 +263,7 @@ const StudentMenu = () => {
                                             </p>{" "}
                                             <br />
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </div>
                         </li>

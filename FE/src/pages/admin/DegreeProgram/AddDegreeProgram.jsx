@@ -20,7 +20,7 @@ const AddDegreeProgram = () => {
         onSuccess: () => {
             toast.success("Thêm khoá học thành công");
             reset();
-            nav("/admin/degree-program");
+            nav("/sup-admin/degree-program");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -35,7 +35,7 @@ const AddDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/degree-program">
+                <Link to="/sup-admin/degree-program">
                     <button className="btn btn-primary">DS khoá học</button>
                 </Link>
             </div>
@@ -49,6 +49,25 @@ const AddDegreeProgram = () => {
                             </div>
                             <div className="card-body">
                                 <div className="row">
+                                    <div className="form-group">
+                                        <label htmlFor="first_year">
+                                            Khóa học
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            {...register("course_number")}
+                                            placeholder="Nhập khóa học"
+                                        />
+                                        {/* {errors.first_year && (
+                                            <span className="text-danger">
+                                                {errors.first_year.message}
+                                            </span>
+                                        )} */}
+                                    </div>
                                     <div className="form-group">
                                         <label htmlFor="first_year">
                                             Năm bắt đầu
@@ -127,7 +146,7 @@ const AddDegreeProgram = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/degree-program")}
+                                    onClick={() => nav("/sup-admin/degree-program")}
                                 >
                                     Hủy
                                 </button>

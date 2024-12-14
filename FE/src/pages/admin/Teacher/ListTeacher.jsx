@@ -94,11 +94,11 @@ const ListTeacher = () => {
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
 
-                            <a href="/admin/teachers/edit/${row.user_code}">
+                            <a href="/sup-admin/teachers/edit/${row.user_code}">
                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
             </a>
                             
-                             <a href="/admin/teachers/${row.user_code}">
+                             <a href="/sup-admin/teachers/${row.user_code}">
                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
             </a>
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
@@ -123,7 +123,7 @@ const ListTeacher = () => {
                     $(row)
                         .find(".fa-edit")
                         .on("click", () => {
-                            navigate(`/admin/teachers/${data.user_code}`);
+                            navigate(`/sup-admin/teachers/${data.user_code}`);
                         });
                 },
             });
@@ -135,7 +135,7 @@ const ListTeacher = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/teachers/create">
+                <Link to="/sup-admin/teachers/create">
                     <button className="btn btn-primary">Thêm giảng viên</button>
                 </Link>
             </div>

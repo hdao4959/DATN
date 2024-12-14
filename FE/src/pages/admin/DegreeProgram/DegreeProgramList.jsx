@@ -10,7 +10,7 @@ import Modal from "../../../components/Modal/Modal";
 
 const DegreeProgramList = () => {
     const navigate = useNavigate();
-    
+
     const { data, refetch, isLoading } = useQuery({
         queryKey: ["DEGREE_PROGRAM"],
         queryFn: async () => {
@@ -52,8 +52,14 @@ const DegreeProgramList = () => {
                 lengthMenu: [10, 20, 50],
                 data,
                 columns: [
-                    { title: "Mã khoá học", data: "cate_code" , className: 'text-start'},
+                    { title: "Mã khoá học", data: "cate_code", className: 'text-start' },
                     { title: "Tên khoá học", data: "cate_name" },
+                    {
+                        title: "Thời gian",
+                        data: "value",
+                        render: (data) => data || "Chưa cập nhật", // Hiển thị "Chưa cập nhật" nếu giá trị null
+                        className: 'text-center',
+                    },
                     {
                         title: "Hành động",
                         data: null,
@@ -86,9 +92,10 @@ const DegreeProgramList = () => {
                 },
                 scrollX: true,
             });
+
             $("#degree-program-table tbody").on("click", ".degree-program-link", function () {
                 const cate_code = $(this).data("id");
-                navigate(`/admin/degree-program/${cate_code}/edit`);
+                navigate(`/sup-admin/degree-program/${cate_code}/edit`);
             });
         }
 
@@ -102,7 +109,7 @@ const DegreeProgramList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/degree-program/add">
+                <Link to="/sup-admin/degree-program/add">
                     <button className="btn btn-primary">Thêm khoá học</button>
                 </Link>
             </div>

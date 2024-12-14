@@ -22,7 +22,7 @@ const EditMajor = () => {
         mutationFn: (data) => api.post(`/admin/majors/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật chuyên ngành thành công");
-            nav("/admin/major");
+            nav("/sup-admin/major");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -73,7 +73,7 @@ const EditMajor = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/sup-admin/major">
                     <button className="btn btn-primary">DS chuyên ngành</button>
                 </Link>
             </div>
@@ -258,7 +258,7 @@ const EditMajor = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/major")}
+                                    onClick={() => nav("/sup-admin/major")}
                                 >
                                     Hủy
                                 </button>

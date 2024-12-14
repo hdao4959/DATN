@@ -17,7 +17,7 @@ const ScheduleTimeFrame = () => {
         onSuccess: () => {
             toast.success("Giới hạn thời gian thành công!");
             setFormData({ start_time: "", end_time: "" });
-            nav("/admin/viewtimeframes");
+            nav("/sup-admin/viewtimeframes");
         },
         onError: (error) => {
             toast.error(

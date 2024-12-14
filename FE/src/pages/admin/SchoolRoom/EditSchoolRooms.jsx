@@ -23,7 +23,7 @@ const EditSchoolRooms = () => {
         onSuccess: () => {
             toast.success("Cập nhật phòng thành công");
             queryClient.invalidateQueries(["SCHOOLROOMS_DETAIL", id]);
-            nav("/admin/schoolrooms");
+            nav("/sup-admin/schoolrooms");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -91,7 +91,7 @@ const EditSchoolRooms = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/schoolrooms">
+                <Link to="/sup-admin/schoolrooms">
                     <button className="btn btn-primary">DS phòng học</button>
                 </Link>
             </div>
@@ -255,7 +255,7 @@ const EditSchoolRooms = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/schoolrooms")}
+                                    onClick={() => nav("/sup-admin/schoolrooms")}
                                 >
                                     Hủy
                                 </button>

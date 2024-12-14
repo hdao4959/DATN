@@ -143,7 +143,7 @@ const MajorList = () => {
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center whitespace-nowrap">
                                 <button class="fs-4">
-                                    <a href="/admin/major/${row.cate_code}/edit">
+                                    <a href="/sup-admin/major/${row.cate_code}/edit">
                                         <i class='fas fa-edit hover:text-blue-500'></i>
                                     </a>
                                 </button>
@@ -193,7 +193,7 @@ const MajorList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/major/add">
+                <Link to="/sup-admin/major/add">
                     <button className="btn btn-primary">
                         Thêm chuyên ngành
                     </button>

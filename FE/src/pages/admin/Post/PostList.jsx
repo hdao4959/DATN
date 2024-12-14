@@ -131,7 +131,7 @@ const PostList = () => {
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center">
                                 <button class="fs-4">
-                                    <a href="/admin/post/${row.code}/edit">
+                                    <a href="/sup-admin/post/${row.code}/edit">
                                         <i class='fas fa-edit hover:text-blue-500'></i>
                                     </a>
                                 </button>
@@ -177,7 +177,7 @@ const PostList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/post/add">
+                <Link to="/sup-admin/post/add">
                     <button className="btn btn-primary">Thêm bài viết</button>
                 </Link>
             </div>

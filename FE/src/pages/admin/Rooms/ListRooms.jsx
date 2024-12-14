@@ -81,7 +81,7 @@ const ClassRoomsList = () => {
                 if (res1.data.error) {
                     toast.error(
                         res1.data.message ||
-                            "Có lỗi xảy ra khi lấy thông tin lớp học."
+                        "Có lỗi xảy ra khi lấy thông tin lớp học."
                     );
                     throw new Error(
                         res1.data.message || "Lỗi lấy thông tin lớp học."
@@ -92,7 +92,7 @@ const ClassRoomsList = () => {
                 if (res2.data.error) {
                     toast.error(
                         res2.data.message ||
-                            "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
+                        "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
                     );
                     throw new Error(res2.data.message || "Lỗi thêm sinh viên.");
                 }
@@ -101,7 +101,7 @@ const ClassRoomsList = () => {
                 if (res3.data.error) {
                     toast.error(
                         res3.data.message ||
-                            "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
+                        "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
                     );
                     throw new Error(
                         res3.data.message || "Lỗi thêm giảng viên."
@@ -112,7 +112,7 @@ const ClassRoomsList = () => {
                 if (res4.data.error) {
                     toast.error(
                         res4.data.message ||
-                            "Có lỗi xảy ra khi tạo lịch học và lịch thi."
+                        "Có lỗi xảy ra khi tạo lịch học và lịch thi."
                     );
                     throw new Error(
                         res4.data.message || "Lỗi tạo lịch học và lịch thi."
@@ -123,7 +123,7 @@ const ClassRoomsList = () => {
                 if (res5.data.error) {
                     toast.error(
                         res5.data.message ||
-                            "Có lỗi xảy ra khi tạo danh sách điểm danh."
+                        "Có lỗi xảy ra khi tạo danh sách điểm danh."
                     );
                     throw new Error(
                         res5.data.message || "Lỗi tạo danh sách điểm danh."
@@ -167,7 +167,7 @@ const ClassRoomsList = () => {
                         : { start: "", end: "" },
                 })),
                 processing: true,
-                serverSide: true, 
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
@@ -176,6 +176,7 @@ const ClassRoomsList = () => {
                         });
                         const result = response?.data?.classrooms;
                         const dataI = result?.data?.map((cls) => ({
+                            date_start: cls.date_start || "N/A",
                             class_name: cls.class_name || "N/A",
                             class_code: cls.class_code || "N/A",
                             subject_name: cls.subject_name || "N/A",
@@ -241,8 +242,7 @@ const ClassRoomsList = () => {
                     },
                     {
                         title: "Ngày bắt đầu",
-                        data: null,
-                        render: "date_start",
+                        data: "date_start",
                     },
                     {
                         title: "",
@@ -267,7 +267,7 @@ const ClassRoomsList = () => {
                 const classCode = $(this).data("class_code");
                 console.log(classCode);
 
-                navigate(`/admin/classrooms/view/${classCode}/detail`);
+                navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
             });
             $("#classroomsTable tbody").on(
                 "click",
@@ -275,12 +275,12 @@ const ClassRoomsList = () => {
                 function () {
                     const classCode = $(this).data("class_code");
                     if ($(this).text() === "Xem điểm") {
-                        navigate(`/admin/classrooms/view/${classCode}/grades`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/grades`);
                     } else if ($(this).text() === "Chi tiết") {
-                        navigate(`/admin/classrooms/view/${classCode}/detail`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
                     } else if ($(this).text() === "Xem điểm danh") {
                         navigate(
-                            `/admin/classrooms/view/${classCode}/attendances`
+                            `/sup-admin/classrooms/view/${classCode}/attendances`
                         );
                     }
                 }
@@ -291,7 +291,7 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/sup-admin/classrooms/add">
                     <button className="btn btn-primary">Tạo lớp học mới</button>
                 </Link>
             </div>

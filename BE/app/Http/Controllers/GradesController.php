@@ -195,7 +195,7 @@ class GradesController extends Controller
                             'scorecomponents' => function ($query) use ($classCode) {
                                 $query->where('class_code', $classCode)
                                     ->with('assessmentItem', function ($query) {
-                                            $query->select('assessment_code', 'name', 'weight');
+                                            $query->select('assessment_code', 'name', 'weight')->orderBy('weight','asc');
                                     })
                                     ->select('student_code', 'class_code', 'score', 'assessment_code');
                             }
@@ -218,14 +218,17 @@ class GradesController extends Controller
                                         $score->student_code === $student->user_code;
                             });
                         return [
+                            'assessment_code' => $matchedScore->assessmentItem->assessment_code ?? $assessment->assessment_code,
                             'assessment_name' => $matchedScore->assessmentItem->name ?? $assessment->name,
                             'weight' => $matchedScore->assessmentItem->weight ?? $assessment->weight,
                             'score' => $matchedScore->score ?? 0 // Điểm mặc định là 0 nếu không có
                         ];
                     });
+                    $sortedScores = $scores->sortBy('weight')->values();
                     $diem = 0;
                     $heSo = 0;
-                    foreach ($scores as $scoreEntry) {
+
+                    foreach ($sortedScores as $scoreEntry) {
                         $diem += $scoreEntry['score'] * $scoreEntry['weight'];
                         $heSo += $scoreEntry['weight'];
                     }
@@ -236,7 +239,7 @@ class GradesController extends Controller
                         'student_code' => $student->user_code,
                         'student_name' => $student->full_name,
                         'average_score' => $formattedScore,
-                        'scores' => $scores
+                        'scores' => $sortedScores
                     ];
                 });
             
@@ -282,29 +285,51 @@ class GradesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $classCode)
-    {
-        try {
-            $studentsData = $request->all(); 
-                DB::table('classrooms')
-                    ->where('class_code', $classCode)
-                    ->update([
-                        'score' => json_encode($studentsData), 
-                        'updated_at' => now(),
-                    ]);
-    
-            return response()->json([
-                'message' => 'Cập nhật điểm thành công',
-                'error' => false,
-                'abc' => $studentsData
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
-                'error' => true,
-            ]);
-        }
-    }
+     public function update(UpdateGradesRequest $request, string $classCode)
+     {
+         try {
+             $studentsData = $request->all(); 
+             $students = $studentsData['students'] ?? [];
+     
+             foreach ($students as $student) {
+                 $studentCode = $student['student_code'];
+                 $scores = $student['scores'] ?? [];
+     
+                 foreach ($scores as $score) {
+                     $assessmentCode = $score['assessment_code'] ?? null; // Lấy mã bài kiểm tra
+                     $scoreValue = $score['score'] ?? null; // Lấy điểm
+     
+                     if (!$assessmentCode) {
+                         throw new \Exception("Thiếu mã bài kiểm tra cho sinh viên {$studentCode}");
+                     }
+     
+                     // Thêm mới hoặc cập nhật vào bảng `scores_component`
+                     DB::table('scores_component')->updateOrInsert(
+                         [
+                             'class_code' => $classCode,
+                             'student_code' => $studentCode,
+                             'assessment_code' => $assessmentCode,
+                         ],
+                         [
+                             'score' => $scoreValue,
+                             'updated_at' => now(),
+                         ]
+                     );
+                 }
+             }
+     
+             return response()->json([
+                 'message' => 'Cập nhật điểm thành công',
+                 'error' => false,
+             ], 200);
+         } catch (\Throwable $th) {
+             return response()->json([
+                 'message' => 'Có lỗi xảy ra: ' . $th->getMessage(),
+                 'error' => true,
+             ], 500);
+         }
+     }
+      
     }
 
 

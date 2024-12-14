@@ -11,7 +11,7 @@ const NotFound = () => {
         if (!accessToken) {
             navigate("/signin");
         } else if (user.role === "0") {
-            navigate("/admin");
+            navigate("/sup-admin");
         } else if (user.role === "2") {
             navigate("/teacher");
         } else if (user.role === "3") {

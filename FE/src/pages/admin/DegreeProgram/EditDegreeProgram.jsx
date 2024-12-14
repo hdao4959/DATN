@@ -22,7 +22,7 @@ const EditDegreeProgram = () => {
         mutationFn: (data) => api.put(`/admin/course/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật khoá học thành công");
-            nav("/admin/degree-program");
+            nav("/sup-admin/degree-program");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -39,15 +39,15 @@ const EditDegreeProgram = () => {
         },
     });
 
-    useEffect(() => {
-        if (courseDetail) {
-            const [firstYear, finalYear] = courseDetail.cate_name.split("-");
-            reset({
-                first_year: firstYear,
-                final_year: finalYear,
-            });
-        }
-    }, [courseDetail, reset]);
+    // useEffect(() => {
+    //     if (courseDetail) {
+    //         const [firstYear, finalYear] = courseDetail.cate_name.split("-");
+    //         reset({
+    //             first_year: firstYear,
+    //             final_year: finalYear,
+    //         });
+    //     }
+    // }, [courseDetail, reset]);
 
     const onSubmit = (data) => {
         mutate(data);
@@ -56,7 +56,7 @@ const EditDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/degree-program">
+                <Link to="/sup-admin/degree-program">
                     <button className="btn btn-primary">DS khoá học</button>
                 </Link>
             </div>
@@ -72,6 +72,25 @@ const EditDegreeProgram = () => {
                             </div>
                             <div className="card-body">
                                 <div className="row">
+                                    <div className="form-group">
+                                        <label htmlFor="final_year">
+                                            Khóa học
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            {...register("course_number")}
+                                            placeholder="Nhập khóa học"
+                                        />
+                                        {/* {errors.final_year && (
+                                            <span className="text-danger">
+                                                {errors.final_year.message}
+                                            </span>
+                                        )} */}
+                                    </div>
                                     <div className="form-group">
                                         <label htmlFor="first_year">
                                             Năm bắt đầu
@@ -150,7 +169,7 @@ const EditDegreeProgram = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/degree-program")}
+                                    onClick={() => nav("/sup-admin/degree-program")}
                                 >
                                     Hủy
                                 </button>

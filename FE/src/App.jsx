@@ -113,7 +113,7 @@ function App() {
         },
         {
 
-            path: "/admin",
+            path: "/sup-admin",
             element: (
                 <CheckRole>
                     <Layout />
@@ -213,6 +213,7 @@ function App() {
                     path: "classrooms/view/:class_code/attendances",
                     element: <AttendanceManagement />,
                 },
+
 
                 {
                     path: "semesters",
@@ -511,8 +512,7 @@ function App() {
                 {
                     path: "wallet-balance",
                     element: <WalletBalance />,
-                },
-
+                },  
                 {
                     path: "debt",
                     element: <Debt />,

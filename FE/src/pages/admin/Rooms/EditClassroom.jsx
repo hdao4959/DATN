@@ -57,7 +57,7 @@ const EditClassroom = () => {
         api.put(`/admin/classrooms/${class_code}`, updatedData)
             .then(() => {
                 toast.success("Lớp học đã được cập nhật thành công!");
-                navigate("/admin/classrooms");
+                navigate("/sup-admin/classrooms");
             })
             .catch((error) => {
                 console.error("Error updating classroom:", error);
@@ -71,7 +71,7 @@ const EditClassroom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/classrooms">
+                <Link to="/sup-admin/classrooms">
                     <button className="btn btn-primary">
                         Danh sách lớp học
                     </button>
@@ -278,7 +278,7 @@ const EditClassroom = () => {
                                     type="button"
                                     className="btn btn-danger"
                                     onClick={() =>
-                                        navigate("/admin/classrooms")
+                                        navigate("/sup-admin/classrooms")
                                     }
                                 >
                                     Hủy

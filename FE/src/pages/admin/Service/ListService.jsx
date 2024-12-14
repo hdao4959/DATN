@@ -46,7 +46,7 @@ const ServiceList = () => {
                 <div className="card-header">
                     <div className="d-flex justify-content-between align-items-center">
                         <h5 className="m-0">Quản lý dịch vụ</h5>
-                        {/* <Link to="/admin/services/add" className="btn btn-primary">
+                        {/* <Link to="/sup-admin/services/add" className="btn btn-primary">
                             Danh sách dịch vụ
                         </Link> */}
                     </div>

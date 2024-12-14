@@ -201,7 +201,7 @@ const AddClassroom = () => {
         ) {
             try {
                 const scheduleResponse = await api.post(
-                    "/admin/classrooms/renderSchedules",
+                    "/sup-admin/classrooms/renderSchedules",
                     {
                         course_code: updatedFormData.course_code,
                         subject_code: updatedFormData.subject_code,
@@ -219,7 +219,7 @@ const AddClassroom = () => {
                 }));
 
                 const roomsAndTeachersResponse = await api.post(
-                    "/admin/classrooms/renderRoomsAndTeachers",
+                    "/sup-admin/classrooms/renderRoomsAndTeachers",
                     {
                         session_code: updatedFormData.session_code,
                         major_code: updatedFormData.major_code,
@@ -251,7 +251,7 @@ const AddClassroom = () => {
                 setResForm1(res.data);
             } else if (currentStep === 2) {
                 const response = await api.post(
-                    "/admin/classrooms/handleStep2",
+                    "/sup-admin/classrooms/handleStep2",
                     {
                         course_code: formData.course_code,
                         subject_code: formData.subject_code,
@@ -283,7 +283,7 @@ const AddClassroom = () => {
     };
     const handlePrev = () => {
         if (currentStep == 1) {
-            setCurrentStep(navigate("/admin/classrooms"));
+            setCurrentStep(navigate("/sup-admin/classrooms"));
         } else {
             setCurrentStep((prev) => prev - 1);
         }
@@ -293,7 +293,7 @@ const AddClassroom = () => {
         try {
             await api.post("/admin/classrooms", formData);
             toast.success("Tạo lớp học thành công!");
-            navigate("/admin/classrooms");
+            navigate("/sup-admin/classrooms");
         } catch (error) {
             toast.error(
                 error.response?.data?.message || "Không thể tạo lớp học."
