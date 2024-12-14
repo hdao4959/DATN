@@ -11,7 +11,7 @@ const ViewTimeFrame = () => {
         queryKey: ["timeFrames"],
         queryFn: async () => {
             const response = await api.get(
-                "/sup-admin/transfer_schedule_timeframe"
+                "/admin/transfer_schedule_timeframe"
             );
             return response.data;
         },
