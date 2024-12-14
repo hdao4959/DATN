@@ -46,7 +46,7 @@ const UpdatePost = () => {
         mutationFn: (data) => api.post(`/admin/newsletters/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật bài viết thành công");
-            navigate("/admin/post");
+            navigate("/sup-admin/post");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -124,7 +124,7 @@ const UpdatePost = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/post">
+                <Link to="/sup-admin/post">
                     <button className="btn btn-primary">DS bài viết</button>
                 </Link>
             </div>

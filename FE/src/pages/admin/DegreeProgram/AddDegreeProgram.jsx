@@ -20,7 +20,7 @@ const AddDegreeProgram = () => {
         onSuccess: () => {
             toast.success("Thêm khoá học thành công");
             reset();
-            nav("/admin/degree-program");
+            nav("/sup-admin/degree-program");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -35,7 +35,7 @@ const AddDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/degree-program">
+                <Link to="/sup-admin/degree-program">
                     <button className="btn btn-primary">DS khoá học</button>
                 </Link>
             </div>
@@ -146,7 +146,7 @@ const AddDegreeProgram = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/degree-program")}
+                                    onClick={() => nav("/sup-admin/degree-program")}
                                 >
                                     Hủy
                                 </button>

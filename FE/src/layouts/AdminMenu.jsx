@@ -6,7 +6,7 @@ const AdminMenu = () => {
     return (
         <ul className="nav nav-secondary">
             <li className="nav-item">
-                <NavLink to="/admin" className={`${styles.menuItem} group`}>
+                <NavLink to="/sup-admin" className={`${styles.menuItem} group`}>
                     <i className="fas fa-home text-lg text-[#b9babf] group-hover:text-[#6861ce]" />
                     <p className="text-[#b9babf]">Trang chủ</p>
                 </NavLink>
@@ -27,7 +27,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/classrooms"
+                                to="/sup-admin/classrooms"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách lớp học</p>
@@ -35,7 +35,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/classrooms/add"
+                                to="/sup-admin/classrooms/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới lớp học</p>
@@ -54,7 +54,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/teachers"
+                                to="/sup-admin/teachers"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách giảng viên</p>
@@ -62,7 +62,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/teachers/create"
+                                to="/sup-admin/teachers/create"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới giảng viên</p>
@@ -81,7 +81,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/students"
+                                to="/sup-admin/students"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách sinh viên</p>
@@ -89,7 +89,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/students/create"
+                                to="/sup-admin/students/create"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới sinh viên</p>
@@ -108,7 +108,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/subjects"
+                                to="/sup-admin/subjects"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách môn học</p>
@@ -116,7 +116,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/subjects/add"
+                                to="/sup-admin/subjects/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới môn học</p>
@@ -135,7 +135,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/sessions"
+                                to="/sup-admin/sessions"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách ca học</p>
@@ -143,7 +143,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/sessions/add"
+                                to="/sup-admin/sessions/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới ca học</p>
@@ -162,7 +162,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/major"
+                                to="/sup-admin/major"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">
@@ -172,7 +172,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/major/add"
+                                to="/sup-admin/major/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">
@@ -193,7 +193,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/degree-program"
+                                to="/sup-admin/degree-program"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách khoá học</p>
@@ -201,7 +201,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/degree-program/add"
+                                to="/sup-admin/degree-program/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới khoá học</p>
@@ -226,7 +226,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/schoolrooms"
+                                to="/sup-admin/schoolrooms"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách phòng học</p>
@@ -234,7 +234,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/schoolrooms/add"
+                                to="/sup-admin/schoolrooms/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới phòng học</p>
@@ -253,7 +253,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/viewtimeframes"
+                                to="/sup-admin/viewtimeframes"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Xem khung thời gian </p>
@@ -261,7 +261,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/timeframes"
+                                to="/sup-admin/timeframes"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">
@@ -289,7 +289,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/student-wallet"
+                                to="/sup-admin/student-wallet"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách học phí</p>
@@ -315,7 +315,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/post-category"
+                                to="/sup-admin/post-category"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách danh mục</p>
@@ -323,7 +323,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/post-category/add"
+                                to="/sup-admin/post-category/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới danh mục</p>
@@ -343,7 +343,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/post"
+                                to="/sup-admin/post"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách bài viết</p>
@@ -351,7 +351,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/post/add"
+                                to="/sup-admin/post/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới bài viết</p>
@@ -377,7 +377,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/services"
+                                to="/sup-admin/services"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách dịch vụ sinh viên</p>
@@ -385,7 +385,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/services/add"
+                                to="/sup-admin/services/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới dịch vụ</p>
@@ -410,7 +410,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/grade-components"
+                                to="/sup-admin/grade-components"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách đầu điểm</p>
@@ -418,7 +418,7 @@ const AdminMenu = () => {
                         </li>
                         <li>
                             <NavLink
-                                to="/admin/grade-components/add"
+                                to="/sup-admin/grade-components/add"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Thêm mới đầu điểm</p>
@@ -438,7 +438,7 @@ const AdminMenu = () => {
                     <ul className="nav nav-collapse">
                         <li>
                             <NavLink
-                                to="/admin/attendance"
+                                to="/sup-admin/attendance"
                                 className={`${styles.menuItem} group`}
                             >
                                 <p className="sub-item">Danh sách điểm danh</p>

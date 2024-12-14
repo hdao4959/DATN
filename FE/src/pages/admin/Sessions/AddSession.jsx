@@ -19,7 +19,7 @@ const AddSession = () => {
         onSuccess: () => {
             toast.success("Thêm ca học thành công");
             reset();
-            nav("/admin/sessions");
+            nav("/sup-admin/sessions");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -34,7 +34,7 @@ const AddSession = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/sessions">
+                <Link to="/sup-admin/sessions">
                     <button className="btn btn-primary">DS ca học</button>
                 </Link>
             </div>
@@ -131,7 +131,7 @@ const AddSession = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/sessions")}
+                                    onClick={() => nav("/sup-admin/sessions")}
                                 >
                                     Hủy
                                 </button>

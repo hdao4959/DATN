@@ -109,7 +109,7 @@ const DegreeProgramList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/degree-program/add">
+                <Link to="/sup-admin/degree-program/add">
                     <button className="btn btn-primary">Thêm khoá học</button>
                 </Link>
             </div>

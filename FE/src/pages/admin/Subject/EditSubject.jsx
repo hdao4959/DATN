@@ -48,7 +48,7 @@ const EditSubject = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['LIST_SUBJECT']);
       toast.success("Chỉnh sửa môn học thành công!");
-      nav("/admin/subjects")
+      nav("/sup-admin/subjects")
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -82,7 +82,7 @@ const EditSubject = () => {
         </div>
       </div>
       <div className="mb-6 mt-2">
-        <Link to="/admin/subjects">
+        <Link to="/sup-admin/subjects">
           <button className="btn btn-primary">
             <i className='fas fa-list'></i> Danh sách môn học
           </button>

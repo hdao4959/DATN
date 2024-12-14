@@ -113,7 +113,7 @@ function App() {
         },
         {
 
-            path: "/admin",
+            path: "/sup-admin",
             element: (
                 <CheckRole>
                     <Layout />

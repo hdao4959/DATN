@@ -291,7 +291,7 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/sup-admin/classrooms/add">
                     <button className="btn btn-primary">Tạo lớp học mới</button>
                 </Link>
             </div>

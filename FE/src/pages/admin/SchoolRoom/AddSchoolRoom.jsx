@@ -19,7 +19,7 @@ const AddSchoolRoom = () => {
         onSuccess: () => {
             toast.success("Thêm phòng học thành công");
             reset();
-            nav("/admin/schoolrooms");
+            nav("/sup-admin/schoolrooms");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -46,7 +46,7 @@ const AddSchoolRoom = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/schoolrooms">
+                <Link to="/sup-admin/schoolrooms">
                     <button className="btn btn-primary">DS phòng học</button>
                 </Link>
             </div>
@@ -212,7 +212,7 @@ const AddSchoolRoom = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/schoolrooms")}
+                                    onClick={() => nav("/sup-admin/schoolrooms")}
                                 >
                                     Hủy
                                 </button>

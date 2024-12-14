@@ -18,8 +18,8 @@ const CheckRole = ({ children }) => {
                 navigate("/student");
             } else if (user.role === "2" && !window.location.pathname.startsWith("/teacher")) {
                 navigate("/teacher");
-            } else if ((user.role === "0"||user.role === "1") && !window.location.pathname.startsWith("/admin")) {
-                navigate("/admin");
+            } else if ((user.role === "0"||user.role === "1") && !window.location.pathname.startsWith("/sup-admin")) {
+                navigate("/sup-admin");
             }
         }
     }, [accessToken, user.role, navigate]);

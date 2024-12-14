@@ -58,7 +58,7 @@ const ListTimeslot = () => {
                             return `
                             <div className="whitespace-nowrap">
                                 <button>
-                                  <a href="/admin/timeslot/${row.id}/edit">
+                                  <a href="/sup-admin/timeslot/${row.id}/edit">
                                     <i class='fas fa-edit hover:text-blue-500'></i>
                                   </a>
                                 </button>

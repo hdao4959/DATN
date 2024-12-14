@@ -110,7 +110,7 @@ const SessionList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/sessions/add">
+                <Link to="/sup-admin/sessions/add">
                     <button className="btn btn-primary">Thêm ca học</button>
                 </Link>
             </div>
