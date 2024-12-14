@@ -102,7 +102,7 @@ function App() {
             path: "/signin",
             element: <Signin />,
         },
-// quên mật khẩu
+        // quên mật khẩu
         {
             path: "/forgot-password",
             element: <ForgotPassword />,
@@ -112,6 +112,7 @@ function App() {
             element: <ResetPassword />
         },
         {
+
             path: "/admin",
             element: (
                 <CheckRole>
@@ -212,6 +213,7 @@ function App() {
                     path: "classrooms/view/:class_code/attendances",
                     element: <AttendanceManagement />,
                 },
+
 
                 {
                     path: "semesters",
@@ -510,8 +512,7 @@ function App() {
                 {
                     path: "wallet-balance",
                     element: <WalletBalance />,
-                },
-
+                },  
                 {
                     path: "debt",
                     element: <Debt />,

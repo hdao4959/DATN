@@ -42,7 +42,6 @@ const AddSubject = () => {
   const { mutate } = useMutation({
     mutationFn: async (data) => {
       await api.post(`admin/subjects`, data);
-      console.log('Sending data to API:', data);
     },
     onSuccess: () => {
       query_client.invalidateQueries(['LIST_SUBJECT']);
@@ -57,7 +56,7 @@ const AddSubject = () => {
   const on_submit_form = (data) => {
 
     const request_data = {
-      subject_code: data.subject_code,
+      subject_code: data.subject_code || '',
       subject_name: data.subject_name,
       credit_number: data.credit_number,
       description: data.description,
@@ -70,7 +69,6 @@ const AddSubject = () => {
       is_active: data.is_active,
       assessment_items: data.assessment_items,
     };
-    console.log('rqdt', request_data);
 
     mutate(request_data);
   };
