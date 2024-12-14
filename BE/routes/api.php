@@ -33,6 +33,7 @@ use App\Http\Controllers\Teacher\ScheduleController as TeacherScheduleController
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CheckoutServiceController;
 use App\Http\Controllers\Teacher\ScheduleController;
 use App\Http\Controllers\Teacher\ClassroomController as TeacherClassroomController;
 use App\Http\Controllers\Teacher\AttendanceController as TeacherAttendanceController;
@@ -333,12 +334,18 @@ Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswor
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost']);
 
 
+Route::get('return-vnpay', [CheckoutController::class, 'vnpay_payment_return']);
 
 
 
+Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo_payment']);
 
 
-
-
+// api dẫn đến trang thanh toán vnpay của dịch vụ
+Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment'])
+    ->name('total_vnpay_service');
+Route::get('return-vnpay/service', [CheckoutServiceController::class, 'vnpay_payment_return']);
+Route::get('failed-vnpay', [CheckoutServiceController::class, 'vnpay_payment_fail'])->name('payment.failed');
+Route::get('success-vnpay', [CheckoutServiceController::class, 'vnpay_payment_success'])->name('payment.success');
 
 

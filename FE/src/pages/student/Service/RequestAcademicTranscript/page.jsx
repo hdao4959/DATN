@@ -130,8 +130,9 @@ const TranscriptRequestForm = () => {
                     type="text"
                     className="form-control"
                     id="serviceFee"
-                    disabled
-                    value="Không có"
+                    {...register("amount", {
+                       
+                    })}
                 />
             </div>
 
