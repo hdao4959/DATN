@@ -51,6 +51,25 @@ const AddDegreeProgram = () => {
                                 <div className="row">
                                     <div className="form-group">
                                         <label htmlFor="first_year">
+                                            Khóa học
+                                            <span className="text-red-500 font-semibold ml-1 text-lg">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            {...register("course_number")}
+                                            placeholder="Nhập khóa học"
+                                        />
+                                        {/* {errors.first_year && (
+                                            <span className="text-danger">
+                                                {errors.first_year.message}
+                                            </span>
+                                        )} */}
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="first_year">
                                             Năm bắt đầu
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *

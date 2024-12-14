@@ -1,9 +1,11 @@
 import axios from "axios";
 const api = axios.create({
-    baseURL: "https://admin.feduvn.com/api/",
-    // baseURL: "http://localhost:8000/api",
+    // baseURL: "https://admin.feduvn.com/api/",
+    baseURL: "http://localhost:8000/api",
+
+
 });
-   
+
 api.interceptors.request.use(
     function (config) {
         console.log("Request Config:", config); // Kiểm tra toàn bộ config trước khi gửi
