@@ -80,7 +80,7 @@ class SessionController extends Controller
             $value_json = json_encode($value);
 
 
-            $cate_code = "TS".$request->session;
+            $cate_code = "SS0".$request->session;
             $cate_name = "Ca ".$request->session;
             $value = $value_json;
             $data = [
@@ -102,12 +102,10 @@ class SessionController extends Controller
         try {
             // Lấy bản ghi ca học cần cập nhật
             $session = $this->sessionRepository->getModel()->where('cate_code', $code)->first();
-
             // Kiểm tra xem ca học có tồn tại không
             if (!$session) {
                 return response()->json(["message" => "Ca học không tồn tại."], 404);
             }
-
             // Chuyển đổi thời gian bắt đầu và kết thúc từ request
             $timeStart = Carbon::parse($request->time_start);
             $timeEnd = Carbon::parse($request->time_end);

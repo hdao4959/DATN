@@ -250,7 +250,7 @@ const ShowGrades = () => {
                                         <table id="gradesTable" className="display table-striped"></table>
                                     </div>
                                     <button
-                                        className="btn btn-danger"
+                                        className="btn btn-danger ms-2"
                                         style={{ float: "right" }}
                                         onClick={() => navigate(-1)}
                                     >

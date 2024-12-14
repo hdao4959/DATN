@@ -8,6 +8,10 @@ import MajorList from "./pages/admin/Major/MajorList";
 import AddMajor from "./pages/admin/Major/AddMajor";
 import EditMajor from "./pages/admin/Major/EditMajor";
 import Signin from "./pages/admin/Auth/Signin";
+import ForgotPassword from "./pages/admin/Auth/ForgotPassword";
+import ResetPassword from "./pages/admin/Auth/ResetPassword";
+
+
 import ListSubject from "./pages/admin/Subject/ListSubject";
 import AddSubject from "./pages/admin/Subject/AddSubject";
 import EditSubject from "./pages/admin/Subject/EditSubject";
@@ -86,7 +90,7 @@ import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import RequesAcademicTranscript from "./pages/student/Service/RequestAcademicTranscript/page.jsx";
 import ServicesList from "./pages/student/Service/ServicesList.jsx";
 import ServiceList from "./pages/admin/Service/ListService.jsx"
-
+import StudentCourseHistory from "./pages/student/GradeHistory/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -98,8 +102,18 @@ function App() {
             path: "/signin",
             element: <Signin />,
         },
+        // quên mật khẩu
         {
-            path: "admin",
+            path: "/forgot-password",
+            element: <ForgotPassword />,
+        },
+        {
+            path: "/reset-password/:token/:email",
+            element: <ResetPassword />
+        },
+        {
+
+            path: "/admin",
             element: (
                 <CheckRole>
                     <Layout />
@@ -199,6 +213,7 @@ function App() {
                     path: "classrooms/view/:class_code/attendances",
                     element: <AttendanceManagement />,
                 },
+
 
                 {
                     path: "semesters",
@@ -354,7 +369,7 @@ function App() {
                     element: <ClassList />,
                 },
                 {
-                    path: "class/:class_code/students",
+                    path: "class/:class_code/detail",
                     element: <ClassroomStudents />,
                 },
                 {
@@ -422,6 +437,10 @@ function App() {
                 {
                     path: "grades",
                     element: <StudentGrades />,
+                },
+                {
+                    path: "grades-all",
+                    element: <StudentCourseHistory />,
                 },
                 {
                     path: "services",
@@ -493,8 +512,7 @@ function App() {
                 {
                     path: "wallet-balance",
                     element: <WalletBalance />,
-                },
-
+                },  
                 {
                     path: "debt",
                     element: <Debt />,

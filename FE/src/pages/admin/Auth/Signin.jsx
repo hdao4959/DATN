@@ -168,7 +168,7 @@ const Signin = () => {
                                         </div>
 
                                         <form onSubmit={handleSubmit(onSubmit)}>
-                                            {!isForgotPassword ? (
+                                           
                                                 <>
                                                     {/* Form Đăng nhập */}
                                                     <div className="form-outline mb-4">
@@ -239,154 +239,7 @@ const Signin = () => {
                                                         )}
                                                     </div>
                                                 </>
-                                            ) : (
-                                                <>
-                                                    {/* Form Quên mật khẩu */}
-                                                    <div className="form-outline mb-4">
-                                                        <label className="form-label">
-                                                            Email đăng ký
-                                                        </label>
-                                                        <label className="form-label text-danger">
-                                                            *
-                                                        </label>
-                                                        <input
-                                                            type="email"
-                                                            className="form-control"
-                                                            placeholder="Nhập email để lấy lại mật khẩu"
-                                                            {...register(
-                                                                "email",
-                                                                {
-                                                                    required:
-                                                                        "Vui lòng nhập email",
-                                                                    pattern: {
-                                                                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                                                                        message:
-                                                                            "Email không đúng định dạng",
-                                                                    },
-                                                                }
-                                                            )}
-                                                        />
-                                                        {errors.email && (
-                                                            <p className="text-danger">
-                                                                {
-                                                                    errors.email
-                                                                        .message
-                                                                }
-                                                            </p>
-                                                        )}
-                                                    </div>
 
-                                                    {/* Thêm trường số điện thoại */}
-                                                    <div className="form-outline mb-4">
-                                                        <label className="form-label">
-                                                            Số điện thoại
-                                                        </label>
-                                                        <label className="form-label text-danger">
-                                                            *
-                                                        </label>
-                                                        <input
-                                                            type="tel"
-                                                            className="form-control"
-                                                            placeholder="Nhập số điện thoại để lấy lại mật khẩu"
-                                                            {...register(
-                                                                "phone",
-                                                                {
-                                                                    required:
-                                                                        "Vui lòng nhập số điện thoại",
-                                                                    pattern: {
-                                                                        value: /^[0-9]{10,11}$/,
-                                                                        message:
-                                                                            "Số điện thoại không hợp lệ",
-                                                                    },
-                                                                }
-                                                            )}
-                                                        />
-                                                        {errors.phone && (
-                                                            <p className="text-danger">
-                                                                {
-                                                                    errors.phone
-                                                                        .message
-                                                                }
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                    {/* Trường Mật khẩu mới */}
-                                                    <div className="form-outline mb-4">
-                                                        <label className="form-label">
-                                                            Mật khẩu mới
-                                                        </label>
-                                                        <label className="form-label text-danger">
-                                                            *
-                                                        </label>
-                                                        <input
-                                                            type="password"
-                                                            className="form-control"
-                                                            placeholder="Nhập mật khẩu mới"
-                                                            {...register(
-                                                                "newPassword",
-                                                                {
-                                                                    required:
-                                                                        "Vui lòng nhập mật khẩu mới",
-                                                                    minLength: {
-                                                                        value: 6,
-                                                                        message:
-                                                                            "Mật khẩu phải có ít nhất 6 ký tự",
-                                                                    },
-                                                                }
-                                                            )}
-                                                        />
-                                                        {errors.newPassword && (
-                                                            <p className="text-danger">
-                                                                {
-                                                                    errors
-                                                                        .newPassword
-                                                                        .message
-                                                                }
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Trường Nhập lại mật khẩu mới */}
-                                                    <div className="form-outline mb-4">
-                                                        <label className="form-label">
-                                                            Nhập lại mật khẩu
-                                                            mới
-                                                        </label>
-                                                        <label className="form-label text-danger">
-                                                            *
-                                                        </label>
-                                                        <input
-                                                            type="password"
-                                                            className="form-control"
-                                                            placeholder="Nhập lại mật khẩu mới"
-                                                            {...register(
-                                                                "confirmPassword",
-                                                                {
-                                                                    required:
-                                                                        "Vui lòng nhập lại mật khẩu",
-                                                                    validate: (
-                                                                        value
-                                                                    ) =>
-                                                                        value ===
-                                                                            getValues(
-                                                                                "newPassword"
-                                                                            ) ||
-                                                                        "Mật khẩu không khớp",
-                                                                }
-                                                            )}
-                                                        />
-                                                        {errors.confirmPassword && (
-                                                            <p className="text-danger">
-                                                                {
-                                                                    errors
-                                                                        .confirmPassword
-                                                                        .message
-                                                                }
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </>
-                                            )}
 
                                             <div className="text-center pt-1 mb-5 pb-1 d-grid gap-2 col-7 mx-auto">
                                                 <button
@@ -396,22 +249,16 @@ const Signin = () => {
                                                         fontWeight: "600",
                                                     }}
                                                 >
-                                                    {isForgotPassword
-                                                        ? "Gửi yêu cầu"
-                                                        : "Đăng nhập"}
+                                                    
+                                                      
+                                                        Đăng nhập
                                                 </button>
-                                                <Link
-                                                    to="#"
-                                                    className="text-muted"
-                                                    onClick={() =>
-                                                        setIsForgotPassword(
-                                                            !isForgotPassword
-                                                        )
-                                                    }
-                                                >
-                                                    {isForgotPassword
-                                                        ? "Quay lại Đăng nhập"
-                                                        : "Quên mật khẩu?"}
+                                                <Link to={'/forgot-password'}
+    
+                                                    className="text-muted">
+                                                    
+                                                         Quên mật khẩu
+                                                     
                                                 </Link>
                                             </div>
                                         </form>

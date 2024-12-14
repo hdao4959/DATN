@@ -31,6 +31,28 @@ const ServicesList = () => {
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
 
+    // Hàm xử lý hủy dịch vụ
+    const handleCancel = (id) => {
+        setSelectedService(id);
+        onModalVisible(); // Hiển thị modal xác nhận
+    };
+
+    const confirmCancel = async () => {
+        try {
+            await api.delete(`/student/services/delete/${selectedService}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            toast.success("Hủy dịch vụ thành công");
+            onModalVisible(); // Đóng modal
+            refetch(); // Làm mới danh sách dịch vụ
+        } catch (error) {
+            toast.error("Có lỗi xảy ra khi hủy dịch vụ");
+        }
+    };
+
     // Chuyển đổi dữ liệu từ API thành định dạng DataTable
     const flattenServiceData = (data) => {
         return data.map((service, index) => ({
@@ -57,7 +79,6 @@ const ServicesList = () => {
                 lengthMenu: [10, 20, 50],
                 data: flattenServiceData(data),
                 columns: [
-                    { title: "Mã sinh viên", data: "code" },
                     { title: "Tên dịch vụ", data: "serviceName" },
                     {
                         title: "Trạng thái",
@@ -76,43 +97,43 @@ const ServicesList = () => {
                     {
                         title: "Lý do",
                         data: "reason",
-                        render: (data) => data ? data : "Không có lý do",
+                        render: (data) => (data ? data : "Không có lý do"),
                     },
                     {
                         title: "Ngày tạo",
                         data: "createdAt",
-                        render: (data) => data ? new Date(data).toLocaleString() : "Chưa có",
+                        render: (data) =>
+                            data ? new Date(data).toLocaleString() : "Chưa có",
                     },
                     {
                         title: "Hành động",
                         data: null,
                         render: (data, type, row) => {
-                            // Kiểm tra trạng thái và quyết định có vô hiệu hóa nút hủy hay không
-                            const disableCancel = row.status === "approved" || row.status === "rejected" ? "disabled" : "";
-                            const opacity = row.status === "approved" || row.status === "rejected" ? "opacity-50" : "";
-
-                            // Nếu trạng thái là pending, cho phép mở modal
-                            const onClickCancel = row.status === "pending" ? `handleCancel(${row.id})` : '';
+                            const disableCancel =
+                                row.status === "approved" || row.status === "rejected"
+                                    ? "disabled"
+                                    : "";
+                            const opacity =
+                                row.status === "approved" || row.status === "rejected"
+                                    ? "opacity-50"
+                                    : "";
 
                             return `
                                 <div class="d-flex justify-content-center">
-                                    <button class="fs-4 ${opacity}" ${disableCancel} onclick="${onClickCancel}">
-                                        <a href="" class="text-decoration-none">
-                                            <i class="fas fa-times-circle hover:text-red-100"></i>
-                                        </a>
+                                    <button class="delete-btn fs-4 ${opacity}" ${disableCancel}>
+                                        <i class="fas fa-times-circle hover:text-red-100"></i>
                                     </button>
                                 </div>`;
                         },
                         className: "text-center",
                     },
-
                     { title: "Thứ tự sắp xếp", data: "sortOrder", visible: false },
                 ],
-                order: [[6, "asc"]], // Sắp xếp theo thứ tự
+                order: [[5, "asc"]], // Sắp xếp theo thứ tự
                 createdRow: (row, rowData) => {
                     $(row)
                         .find(".delete-btn")
-                        .on("click", () => handleCancel(rowData.id));
+                        .on("click", () => handleCancel(rowData.id)); // Gọi handleCancel khi nhấn vào nút
                 },
                 language: {
                     paginate: {
@@ -134,11 +155,6 @@ const ServicesList = () => {
         };
     }, [data]);
 
-    const handleCancel = (id) => {
-        setSelectedService(id);
-        onModalVisible();
-    };
-
     if (isFetching && !data) return <Spinner />;
 
     return (
@@ -158,21 +174,7 @@ const ServicesList = () => {
                 description="Bạn có chắc chắn muốn hủy dịch vụ này?"
                 visible={modalOpen}
                 onVisible={onModalVisible}
-                onOk={() => {
-                    // Gọi API để hủy dịch vụ
-                    api.delete(`/student/services/${selectedService}`, {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            "Content-Type": "application/json",
-                        },
-                    }).then(() => {
-                        toast.success("Hủy dịch vụ thành công");
-                        onModalVisible();
-                        refetch();
-                    }).catch(() => {
-                        toast.error("Có lỗi xảy ra khi hủy dịch vụ");
-                    });
-                }}
+                onOk={confirmCancel}
                 closeTxt="Huỷ"
                 okTxt="Xác nhận"
             />

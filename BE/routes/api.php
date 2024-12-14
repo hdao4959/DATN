@@ -83,7 +83,30 @@ Route::controller(TeacherClassroomController::class)->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập
     Route::get('/user', function (Request $request) {
-        return response()->json($request->user());
+        try{
+        $user = User::with([
+        'course' => function($query){
+        $query->select('cate_code', 'cate_name', 'value');
+        }
+        , 'semester' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }
+        ,'major' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }, 
+        'narrow_major' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }
+        ])->where('user_code', $request->user()->user_code)
+        ->first();
+
+        return response()->json($user);
+    } catch(\Throwable $th){
+        return response()->json([
+            'status' => false,
+            'message' => 'Có lỗi không xác định'
+        ],500);
+    }
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -162,6 +185,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('pointheads', PointHeadController::class);
         // Route::apiResource('newsletters', NewsletterController::class);
         Route::apiResource('attendances', AttendanceController::class);
+        Route::put('/attendances/{class_code}', [AttendanceController::class, 'update']);
+
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::get('/majors/{major_code}/teachers', [MajorController::class, 'renderTeachersAvailable']);
         Route::put('/major/bulk-update-type', [MajorController::class, 'bulkUpdateType']);
@@ -184,14 +209,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('semesters', SemesterController::class);
         Route::apiResource('grades', GradesController::class);
         Route::get('grades', [GradesController::class, 'getByParam']);
-        Route::patch('grades/{id}', [GradesController::class, 'update']);
+        Route::put('grades/{id}', [GradesController::class, 'update']);
         Route::apiResource('schoolrooms', SchoolRoomController::class);
         Route::put('/schoolrooms/bulk-update-type', [SchoolRoomController::class, 'bulkUpdateType']);
         Route::post('updateActive/{id}', [CategoryController::class, 'updateActive']);
         Route::apiResource('pointheads', PointHeadController::class);
         Route::put('/pointheads/bulk-update-type', [PointHeadController::class, 'bulkUpdateType']);
         // Route::apiResource('newsletters', NewsletterController::class);
-        Route::apiResource('attendances', AttendanceController::class);
+        // Route::apiResource('attendances', AttendanceController::class);
         Route::apiResource('categoryNewsletters', CategoryNewsletter::class);
         Route::put('/newsletter/bulk-update-type', [CategoryNewsletter::class, 'bulkUpdateType']);
         Route::apiResource('fees', FeeController::class);
@@ -282,11 +307,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         // dịch vụ cung cấp bảng điểm
-
+        Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
         // dịch vụ thay đổi thông tin
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
-
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
+        Route::delete('services/delete/{id}',[ServiceController::class, 'cancelServiceByStudent']);
     });
 
     // Các route phục vụ cho form
@@ -303,11 +328,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-
 Route::apiResource('transaction', TransactionController::class);
 Route::apiResource('wallet', WalletController::class);
 Route::apiResource('feedback', FeedbackController::class);
-
 
 Route::get('send-email', [SendEmailController::class, 'sendMailFee']);
 Route::get('send-email2', [SendEmailController::class, 'sendMailFeeUser']);
@@ -327,17 +350,16 @@ Route::post('services/change-major/{user_code}',            [ServiceController::
 
 // cung cấp thẻ sinh viên
 Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
-Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
 
 Route::apiResource('fees', FeeController::class);
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
 Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
+Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost']);
+Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost']);
 
-Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost'])
-    ->name('forget.password.post');
 
-Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost'])
-    ->name('reset.password.post');
+
+
 
 
 

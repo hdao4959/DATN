@@ -6,19 +6,22 @@ import api from "../../../config/axios";
 import { useQuery } from "@tanstack/react-query";
 
 const StudentGrades = () => {
-    const [subjects, setSubjects] = useState([]);
     const [semesterCode, setSemesterCode] = useState("");
+    const [semesterCodeDefault, setSemesterCodeDefault] = useState("");
+    const [subjects, setSubjects] = useState([]);
     const [semesters, setSemesters] = useState([]);
 
-    const { isLoading: isLoadingClasses, refetch } = useQuery({
+    const { data, isLoading: isLoadingClasses, refetch } = useQuery({
         queryKey: ["LIST_CLASSES"],
         queryFn: async () => {
-            const res = await api.get(`/student/grades`, {
+            const response = await api.get("/student/grades", {
                 params: { search: semesterCode },
             });
-            setSubjects(res?.data?.scores || []);
-            setSemesters(res?.data?.semesters || []);
-            setSemesterCode(res?.data?.semesterCode || "");
+            setSubjects(response?.data?.scores || []);
+            setSemesters(response?.data?.semesters || []);
+            setSemesterCodeDefault(response?.data?.semesterCode || "");
+            console.log(response?.data);
+            return res?.data;
         },
     });
 
@@ -75,11 +78,11 @@ const StudentGrades = () => {
                         }}
                     >
                         <select
-                            value={semesterCode}
+                            value={semesterCodeDefault}
                             onChange={(e) => setSemesterCode(e.target.value)}
                             className="form-control"
                         >
-                            {semesters.map((sem) => (
+                            {semesters?.map((sem) => (
                                 <option
                                     key={sem.cate_code}
                                     value={sem.cate_code}
