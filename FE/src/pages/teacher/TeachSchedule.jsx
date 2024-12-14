@@ -232,7 +232,7 @@ const MySchedule = () => {
                 },
                 scrollX: true,
             });
-            $("#major-table tbody").on("click", ".attendances-link", function () {
+            $("#next-7-days tbody").on("click", ".attendances-link", function () {
                 const classCode = $(this).data("id");
                 const date = $(this).data("date");
                 navigate(`/teacher/class/${classCode}/attendances/${date}`);
