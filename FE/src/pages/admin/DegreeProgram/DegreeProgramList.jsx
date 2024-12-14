@@ -95,7 +95,7 @@ const DegreeProgramList = () => {
 
             $("#degree-program-table tbody").on("click", ".degree-program-link", function () {
                 const cate_code = $(this).data("id");
-                navigate(`/admin/degree-program/${cate_code}/edit`);
+                navigate(`/sup-admin/degree-program/${cate_code}/edit`);
             });
         }
 

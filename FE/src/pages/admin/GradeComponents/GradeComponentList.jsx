@@ -116,7 +116,7 @@ const GradeComponentList = () => {
                         .find('.fa-edit')
                         .on('click', function () {
                             const cate_code = $(this).data('id');
-                            navigate(`/admin/grade-components/${cate_code}/edit`);
+                            navigate(`/sup-admin/grade-components/${cate_code}/edit`);
                         });
 
                     $(row)

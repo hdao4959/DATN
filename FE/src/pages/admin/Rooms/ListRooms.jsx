@@ -267,7 +267,7 @@ const ClassRoomsList = () => {
                 const classCode = $(this).data("class_code");
                 console.log(classCode);
 
-                navigate(`/admin/classrooms/view/${classCode}/detail`);
+                navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
             });
             $("#classroomsTable tbody").on(
                 "click",
@@ -275,12 +275,12 @@ const ClassRoomsList = () => {
                 function () {
                     const classCode = $(this).data("class_code");
                     if ($(this).text() === "Xem điểm") {
-                        navigate(`/admin/classrooms/view/${classCode}/grades`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/grades`);
                     } else if ($(this).text() === "Chi tiết") {
-                        navigate(`/admin/classrooms/view/${classCode}/detail`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
                     } else if ($(this).text() === "Xem điểm danh") {
                         navigate(
-                            `/admin/classrooms/view/${classCode}/attendances`
+                            `/sup-admin/classrooms/view/${classCode}/attendances`
                         );
                     }
                 }

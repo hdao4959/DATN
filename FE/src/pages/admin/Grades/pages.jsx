@@ -217,7 +217,7 @@ const ShowGrades = () => {
 
             $("#gradesTable tbody").on("click", '[id^="view_user_"]', function () {
                 const user_code = $(this).data("id");
-                navigate(`/admin/students/${user_code}`);
+                navigate(`/sup-admin/students/${user_code}`);
             });
 
             return () => {

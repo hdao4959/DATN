@@ -96,7 +96,7 @@ const SessionList = () => {
             });
             $("#session-table tbody").on("click", ".session-link", function () {
                 const cate_code = $(this).data("id");
-                navigate(`/admin/sessions/${cate_code}/edit`);
+                navigate(`/sup-admin/sessions/${cate_code}/edit`);
             });
         }
 

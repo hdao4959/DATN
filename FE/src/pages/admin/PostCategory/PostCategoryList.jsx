@@ -140,7 +140,7 @@ const PostCategoryList = () => {
                         .find(".fa-edit")
                         .on("click", function () {
                             const cateCode = $(this).data("id");
-                            navigate(`/admin/post-category/${cateCode}/edit`);
+                            navigate(`/sup-admin/post-category/${cateCode}/edit`);
                         });
 
                     $(row)

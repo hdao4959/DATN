@@ -146,7 +146,7 @@ const ListAccount = () => {
                     $(row)
                         .find(".fa-edit")
                         .on("click", () => {
-                            navigate(`/admin/students/${data.user_code}`);
+                            navigate(`/sup-admin/students/${data.user_code}`);
                         });
                 },
             });

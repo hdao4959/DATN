@@ -147,7 +147,7 @@ const RoomSchoolList = () => {
 
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
-                        navigate(`/admin/schoolrooms/${classCode}/edit`);
+                        navigate(`/sup-admin/schoolrooms/${classCode}/edit`);
                     });
 
                     $(row).find('.toggleStatus').on('click', function () {

@@ -123,7 +123,7 @@ const ListTeacher = () => {
                     $(row)
                         .find(".fa-edit")
                         .on("click", () => {
-                            navigate(`/admin/teachers/${data.user_code}`);
+                            navigate(`/sup-admin/teachers/${data.user_code}`);
                         });
                 },
             });
