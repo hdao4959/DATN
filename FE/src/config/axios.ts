@@ -1,7 +1,7 @@
 import axios from "axios";
 const api = axios.create({
-    baseURL: "https://admin.feduvn.com/api/",
-    // baseURL: "http://localhost:8000/api",
+    // baseURL: "https://admin.feduvn.com/api/",
+    baseURL: "https://admin.feduvn.com/api",
 });
    
 api.interceptors.request.use(
@@ -17,9 +17,9 @@ api.interceptors.request.use(
             config.headers["Authorization"] = `Bearer ${accessToken}`;
         }
 
-        if (!config.baseURL || config.baseURL !== "https://admin.feduvn.com/api") {
-            config.baseURL = "https://admin.feduvn.com/api";
-        }
+        // if (!config.baseURL || config.baseURL !== "https://admin.feduvn.com/api") {
+        //     config.baseURL = "https://admin.feduvn.com/api";
+        // }
 
         if (csrfToken) {
             config.headers["X-CSRF-TOKEN"] = csrfToken;
