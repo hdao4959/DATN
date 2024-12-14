@@ -83,7 +83,30 @@ Route::controller(TeacherClassroomController::class)->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập
     Route::get('/user', function (Request $request) {
-        return response()->json($request->user());
+        try{
+        $user = User::with([
+        'course' => function($query){
+        $query->select('cate_code', 'cate_name', 'value');
+        }
+        , 'semester' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }
+        ,'major' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }, 
+        'narrow_major' => function($query){
+        $query->select('cate_code', 'cate_name');
+        }
+        ])->where('user_code', $request->user()->user_code)
+        ->first();
+
+        return response()->json($user);
+    } catch(\Throwable $th){
+        return response()->json([
+            'status' => false,
+            'message' => 'Có lỗi không xác định'
+        ],500);
+    }
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);

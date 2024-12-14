@@ -214,6 +214,7 @@ function App() {
                     element: <AttendanceManagement />,
                 },
 
+
                 {
                     path: "semesters",
                     element: <ListSemester />,
@@ -511,8 +512,7 @@ function App() {
                 {
                     path: "wallet-balance",
                     element: <WalletBalance />,
-                },
-
+                },  
                 {
                     path: "debt",
                     element: <Debt />,
