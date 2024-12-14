@@ -120,7 +120,7 @@ function App() {
             ),
             children: [
                 {
-                    path: "/",
+                    path: "",
                     element: <Dashboard />,
                 },
                 {
