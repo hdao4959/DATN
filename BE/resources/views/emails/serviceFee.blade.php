@@ -61,14 +61,12 @@
         <tr>
             <th>Tên dịch vụ</th>
             <th>Nội dung</th>
-            <th>Trạng thái</th>
             <th>Phí dịch vụ</th>
         </tr>
         <tr>
             <td> {{$data['service_name'] }}</td>
             <td>{{ $data['content'] }}</td>
-            <td>  {{ $data['status'] }}  </td>
-            <td>{{ $data['amount'] }}</td>
+            <td>{{ number_format($data['amount'], 0, ',', '.') }}</td>
         </tr>
     </table>
     {{-- <button class="btn btn-button"> --}}
