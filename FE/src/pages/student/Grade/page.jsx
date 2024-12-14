@@ -99,8 +99,18 @@ const StudentGrades = () => {
                     ) : (
                         subjects.map((subject, index) => {
                             const average = calculateAverage(subject.scores);
+                            const maxWeightScore = subject.scores.reduce((max, score) => {
+                                if ((score.weight || 0) > (max.weight || 0)) {
+                                    return score;
+                                }
+                                return max;
+                            }, { weight: 0, score: 0 });
+                        
+                            const maxWeightScoreValue = parseFloat(
+                                (typeof maxWeightScore.score === "string" ? maxWeightScore.score.replace(",", ".") : maxWeightScore.score) || 0
+                            );
                             const status =
-                                average < 5 ? (
+                                (average < 4 || maxWeightScoreValue < 5) ? (
                                     <strong className="text-red-400">
                                         Không đạt
                                     </strong>
@@ -176,7 +186,7 @@ const StudentGrades = () => {
                                                         <td colSpan={2}>
                                                             Trạng thái:{" "}
                                                             {status ||
-                                                                "Không xác định"}
+                                                                "0"}
                                                         </td>
                                                     </tr>
                                                 </tfoot>
