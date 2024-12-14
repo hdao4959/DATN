@@ -36,8 +36,6 @@ const ShowGrades = () => {
     }, [])
     const { mutate } = useMutation({
         mutationFn: async (data) => {
-            console.log(data);
-            
             await api.put(`/admin/grades/${classCode}`, data);
         },
         onSuccess: () => {
@@ -114,6 +112,7 @@ const ShowGrades = () => {
                                     "
                                 />
                             `;
+
                         },
                         className: "text-center",
                     })),
@@ -121,8 +120,7 @@ const ShowGrades = () => {
                         title: "Điểm Tổng",
                         data: "average_score",
                         className: "text-center",
-                        render: (data, row) => {
-                            console.log(data);
+                        render: (data) => {
                             const isBelowThreshold = parseFloat(data || 0) < 5;
                             data = parseFloat(
                                 (typeof data === 'string' ? data.replace(',', '.') : data) || 0
@@ -136,11 +134,24 @@ const ShowGrades = () => {
                     const averageScore = parseFloat(
                         (typeof data.average_score === "string" ? data.average_score.replace(",", ".") : data.average_score) || 0
                     );
-                    if (averageScore < 5) {
+                
+                    // Lọc điểm có trọng số lớn nhất
+                    const maxWeightScore = data.scores.reduce((max, score) => {
+                        if ((score.weight || 0) > (max.weight || 0)) {
+                            return score;
+                        }
+                        return max;
+                    }, { weight: 0, score: 0 });
+                
+                    const maxWeightScoreValue = parseFloat(
+                        (typeof maxWeightScore.score === "string" ? maxWeightScore.score.replace(",", ".") : maxWeightScore.score) || 0
+                    );
+                
+                    // Điều kiện bôi đỏ
+                    if (averageScore < 4 || maxWeightScoreValue < 5) {
                         $(row).css("background-color", "rgba(255, 0, 0, 0.1)");
                     }
                 },
-
                 scrollX: true,
                 scrollY: true,
             });
@@ -155,37 +166,47 @@ const ShowGrades = () => {
                 const rowIndex = $(this).data('index');
                 const examIndex = $(this).data('exam-index');
                 const newScore = parseFloat($(this).val()) || 0;
-
-                // Cập nhật điểm vào selectedGrade
+            
+                // Cập nhật điểm
                 selectedGrade.students[rowIndex].scores[examIndex].score = newScore;
-
-                // Tính lại điểm trung bình của sinh viên
+            
+                // Tính lại điểm trung bình
                 const totalWeight = selectedGrade.students[rowIndex].scores.reduce((sum, score) => sum + (score.weight || 0), 0);
                 const averageScore = selectedGrade.students[rowIndex].scores.reduce((sum, score) => {
                     const scoreValue = parseFloat(score?.score || 0);
                     return sum + (scoreValue * (score.weight / totalWeight));
                 }, 0).toFixed(2);
-
+            
                 selectedGrade.students[rowIndex].average_score = averageScore;
-
-                // Cập nhật điểm trung bình trong bảng
+            
+                // Lọc điểm có trọng số lớn nhất
+                const maxWeightScore = selectedGrade.students[rowIndex].scores.reduce((max, score) => {
+                    if ((score.weight || 0) > (max.weight || 0)) {
+                        return score;
+                    }
+                    return max;
+                }, { weight: 0, score: 0 });
+            
+                const maxWeightScoreValue = parseFloat(
+                    (typeof maxWeightScore.score === "string" ? maxWeightScore.score.replace(",", ".") : maxWeightScore.score) || 0
+                );
+            
+                // Cập nhật điểm trung bình và màu sắc trong bảng
                 const $row = $(`#gradesTable tbody tr:nth-child(${rowIndex + 1})`);
                 const $averageScoreCell = $row.find('td:last-child strong');
-
-                // Cập nhật giá trị ô `averageScore`
+            
                 $averageScoreCell.text(averageScore);
                 $row.css('background-color', '');
-                // Cập nhật màu cho ô và cả hàng
-                if (averageScore < 5) {
+            
+                // Điều kiện bôi đỏ
+                if (averageScore < 4 || maxWeightScoreValue < 5) {
                     $averageScoreCell.removeClass('text-success').addClass('text-danger');
                     $row.css('background-color', 'rgba(255, 0, 0, 0.1)');
                 } else {
                     $averageScoreCell.removeClass('text-danger').addClass('text-success');
-                    $row.removeClass('bg-danger'); // Thay đổi màu cho hàng
+                    $row.removeClass('bg-danger');
                 }
-
             });
-
 
             $('#gradesTable').on('change', '.note-input', function (event) {
                 const rowIndex = $(this).data('index');
