@@ -96,7 +96,7 @@ const MajorTable = ({ data = [], refetch }) => {
                         </td>
                         <td>
                             <div className="flex gap-x-2 items-center">
-                                <Link to={`/admin/major/${it.cate_code}/edit`}>
+                                <Link to={`/sup-admin/major/${it.cate_code}/edit`}>
                                     <i className="fas fa-edit"></i>
                                 </Link>
 

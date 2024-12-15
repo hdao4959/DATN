@@ -195,10 +195,22 @@ const EditSubject = () => {
                           {...register('major_code', { required: true })}
                         >
                           <option value="">Chọn chuyên ngành</option>
-                          {categories?.map(major => (
+                          {/* {categories?.map(major => (
                             <option key={major.cate_code} value={major.cate_code}>
                               {major.cate_name}
                             </option>
+                          ))} */}
+                          {categories?.map(major => (
+                            <>
+                              <option key={major.cate_code} value={major.cate_code}>
+                                {major.cate_name}
+                              </option>
+                              {major.childrens?.map(child => (
+                                <option key={child.cate_code} value={child.cate_code} className="ml-3">
+                                  {`-- ${child.cate_name}`}
+                                </option>
+                              ))}
+                            </>
                           ))}
                         </select>
                         {errors.major_code && <span className="text-danger">{errors.major_code.message}</span>}

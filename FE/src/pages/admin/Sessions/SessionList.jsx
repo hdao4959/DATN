@@ -67,9 +67,6 @@ const SessionList = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center whitespace-nowrap">
-                                <button class="fs-4 session-link" data-id="${row.cate_code}">
-                                    <i class='fas fa-edit hover:text-blue-500'></i>
-                                </button>
                                 <button class="delete-btn ml-2 fs-4">
                                     <i class="fas fa-trash hover:text-red-500"></i>
                                 </button>

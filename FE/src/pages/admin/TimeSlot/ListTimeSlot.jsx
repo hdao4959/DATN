@@ -105,7 +105,7 @@ const ListTimeslot = () => {
                         </div>
                         <div className="card-body">
                             <div className="mb-3 mt-2 flex items-center justify-between">
-                                <Link to={`/admin/timeslot/add`}>
+                                <Link to={`/sup-admin/timeslot/add`}>
                                     <button className="btn btn-success">
                                         <i className="fas fa-plus"></i> Thêm ca
                                         học

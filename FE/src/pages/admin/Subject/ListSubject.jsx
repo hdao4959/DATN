@@ -90,7 +90,7 @@ const SubjectsList = () => {
             render: (data, type, row) => {
               return `
               <div className="whitespace-nowrap">
-                  <button class='detail-link' data-link='/admin/subjects/${row.subject_code}/edit'>
+                  <button class='detail-link' data-link='/sup-admin/subjects/${row.subject_code}/edit'>
                       <i class='fas fa-edit hover:text-blue-500'></i>
                   </button>
                   <button class="delete-button ml-2" data-id="${row.subject_code}">
@@ -141,7 +141,7 @@ const SubjectsList = () => {
               ) : (
                 <>
                   <div className="mb-3 mt-2 flex items-center justify-between">
-                    <Link to={`/admin/subjects/add`}>
+                    <Link to={`/sup-admin/subjects/add`}>
                       <button className="btn btn-success">
                         <i className='fas fa-plus'> Thêm môn học</i>
                       </button>
