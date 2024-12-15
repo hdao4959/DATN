@@ -264,6 +264,17 @@ const StudentMenu = () => {
                                             <br />
                                         </NavLink>
                                     </li> */}
+                                    <li>
+                                        <NavLink
+                                            to="/student/services/yeu-cau-thay-doi-thong-tin"
+                                            className={`${styles.menuItem} group`}
+                                        >
+                                            <p className="sub-item">
+                                                Yêu cầu thay đổi thông tin
+                                            </p>{" "}
+                                            <br />
+                                        </NavLink>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
