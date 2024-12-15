@@ -18,44 +18,6 @@ const ShowAttendance = () => {
         queryFn: async () => {
             const response = await api.get(`/admin/attendances/${class_code}`);
             return response?.data;
-            // const attendanceDataI = [
-            //     {
-            //         student_code: "SV001",
-            //         full_name: "Nguyễn Văn A",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "present",
-            //         noted: "On time",
-            //     },
-            //     {
-            //         student_code: "SV002",
-            //         full_name: "Trần Thị B",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "absent",
-            //         noted: "Sick",
-            //     },
-            //     {
-            //         student_code: "SV003",
-            //         full_name: "Lê Minh C",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "present",
-            //         noted: "On time",
-            //     },
-            //     {
-            //         student_code: "SV001",
-            //         full_name: "Nguyễn Văn A",
-            //         date: "2024-11-02T00:00:00Z",
-            //         status: "absent",
-            //         noted: "Traveling",
-            //     },
-            //     {
-            //         student_code: "SV002",
-            //         full_name: "Trần Thị B",
-            //         date: "2024-11-02T00:00:00Z",
-            //         status: "present",
-            //         noted: "On time",
-            //     },
-            // ];
-            // return attendanceDataI;
         },
         onError: () => {
             toast.error("Không thể tải dữ liệu");
@@ -163,7 +125,14 @@ const ShowAttendance = () => {
 
                     })),
                 ],
-                scrollY: true,
+                scrollX: true,
+                autoWidth: true,
+                scrollCollapse: true,
+                scrollY: "100%", 
+                fixedHeader: true, // Cố định hàng tiêu đề
+                fixedColumns: {
+                    left: 3, // Cố định 3 cột đầu
+                },
             });
 
             // Lắng nghe sự kiện thay đổi trên input-status
@@ -182,7 +151,8 @@ const ShowAttendance = () => {
                         student_code: studentCode,
                         date,
                         status: newStatus,
-                        classCode: class_code,
+                        class_code: class_code,
+                        noted: '',
                     });
                     return updatedRecords;
                 });
