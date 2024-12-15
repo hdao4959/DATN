@@ -89,7 +89,10 @@ import ClassExams from "./pages/teacher/MyClass/ClassExams.jsx";
 import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import RequesAcademicTranscript from "./pages/student/Service/RequestAcademicTranscript/page.jsx";
 import ServicesList from "./pages/student/Service/ServicesList.jsx";
+
 import ServiceList from "./pages/admin/Service/ListService.jsx"
+import ServiceShow from "./pages/admin/Service/ServiceShow.jsx"
+
 import StudentCourseHistory from "./pages/student/GradeHistory/page.jsx";
 
 function App() {
@@ -341,6 +344,10 @@ function App() {
                 {
                     path: "services",
                     element: <ServiceList />,
+                },
+                {
+                    path: "services/:id",
+                    element: <ServiceShow/>,
                 }
             ],
         },

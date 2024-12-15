@@ -64,28 +64,35 @@ const ServiceList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.data.data.map((service, index) => (
-                                <tr key={service.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{service.service_name}</td>
-                                    <td>{service.student ? service.student.user_code : "Chưa có học sinh"}</td>
-                                    <td>{service.student ? service.student.full_name : "Chưa có học sinh"}</td>
-                                    <td className="text-center">
-                                        <span
-                                            className={`badge fs-5  ${
-                                                service.status === "pending" ? "bg-info" : "bg-success"
-                                            }`}
-                                        >
-                                            {service.status === "pending" ? "Đang xử lý" : "Hoàn thành"}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-sm btn-warning me-2">Xem</button>
-                                        <button className="btn btn-sm btn-danger">Xóa</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+                        {data.data.data.map((service, index) => (
+                            <tr key={service.id}>
+                                <td>{index + 1}</td>
+                                <td>{service.service_name}</td>
+                                <td>{service.student ? service.student.user_code : "Chưa có học sinh"}</td>
+                                <td>{service.student ? service.student.full_name : "Chưa có học sinh"}</td>
+                                <td className="text-center">
+                                    <span
+                                        className={`badge fs-5  ${
+                                            service.status === "pending" ? "bg-info" :
+                                            service.status === "paid" ? "bg-warning" :
+                                            service.status === "approved" ? "bg-success" :
+                                            service.status === "rejected" ? "bg-danger" : ""
+                                        }`}
+                                    >
+                                        {service.status === "pending" ? "Đang xử lý" :
+                                        service.status === "paid" ? "Đã thanh toán" :
+                                        service.status === "approved" ? "Đã duyệt" :
+                                        service.status === "rejected" ? "Đã từ chối" : ""}
+                                    </span>
+                                </td>
+                                <td>
+                                    <Link to={`/sup-admin/services/${service.id}`} className="btn btn-primary">
+                                        Xem 
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
                     </table>
                 </div>
             </div>
