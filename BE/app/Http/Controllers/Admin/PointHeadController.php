@@ -114,7 +114,7 @@ class PointHeadController extends Controller
      */
     public function update(UpdatePointHeadRequest $request, string $cate_code)
     {
-        DB::beginTransaction();
+        
         try {
             // Lấy ra cate_code và cate_name của cha
             $parent = Category::whereNull('parent_code')
@@ -122,9 +122,9 @@ class PointHeadController extends Controller
                                 ->select('cate_code', 'cate_name')
                                 ->get();
 
-            $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
+            $listPointHead = Category::where('cate_code', $cate_code)->first();
             if (!$listPointHead) {
-                DB::rollBack();
+                
 
                 return $this->handleInvalidId();
             } else {
@@ -139,7 +139,7 @@ class PointHeadController extends Controller
                 }
                 $params['image'] = $fileName;
                 $listPointHead->update($params);
-                DB::commit();
+                
 
                 return response()->json($listPointHead, 201);          
             }
@@ -154,11 +154,11 @@ class PointHeadController extends Controller
      */
     public function destroy(string $cate_code)
     {
-        DB::beginTransaction();
+        
         try {
-            $listPointHead = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
+            $listPointHead = Category::where('cate_code', $cate_code)->first();
             if (!$listPointHead) {
-                DB::rollBack();
+                
 
                 return $this->handleInvalidId();
             } else {
@@ -166,7 +166,7 @@ class PointHeadController extends Controller
                     Storage::disk('public')->delete($listPointHead->image);
                 }
                 $listPointHead->delete($listPointHead);
-                DB::commit();
+                
 
                 return response()->json([
                     'message' => 'Xoa thanh cong'
@@ -186,7 +186,7 @@ class PointHeadController extends Controller
             DB::transaction(function () use ($activies) {
                 foreach ($activies as $cate_code => $active) {
                     // Tìm category theo cate_code và áp dụng lock for update
-                    $category = Category::where('cate_code', $cate_code)->lockForUpdate()->first();
+                    $category = Category::where('cate_code', $cate_code)->first();
     
                     if ($category) {
                         $category->is_active = $active; // Sửa lại đúng field

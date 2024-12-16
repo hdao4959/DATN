@@ -399,14 +399,14 @@ class ScheduleController extends Controller
             }
 
             // Kiểm tra xem học sinh này hiện tại có học trong lớp học có mã lớp được gửi lên hay không?
-            DB::beginTransaction();
+            
 
             
             $classroom_current = Classroom::withCount('users')
                 ->whereHas('users', function ($query) use ($student_code, $class_code_current) {
                     $query->where('classroom_user.user_code', $student_code)
                         ->where('classrooms.class_code', $class_code_current);
-                })->lockForUpdate()->first();
+                })->first();
 
             // Kiểm tra sinh viên có đang học lớp học hiện không
             if (!$classroom_current) {
@@ -451,7 +451,7 @@ class ScheduleController extends Controller
                     }
                 ]
             )->where('class_code', $data['class_code_target'])
-                ->lockForUpdate()->first();
+                ->first();
 
             if (!$classroom_target) {
                 return response()->json([
@@ -523,7 +523,7 @@ class ScheduleController extends Controller
             Attendance::where([
                 'student_code' => $student_code,
                 'class_code' => $data['class_code_current']
-            ])->lockForUpdate()->delete();
+            ])->delete();
 
             $now = now();
             $data_insert_to_attendance_table = [];
@@ -551,13 +551,13 @@ class ScheduleController extends Controller
                 'to_class_code' => $classroom_target->class_code,
             ]);
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Đổi lịch học thành công!'
             ], 201);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }
