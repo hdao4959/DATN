@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const ClassExams = () => {
     const { class_code } = useParams();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const [studentsData, setStudentsData] = useState([]);
 
@@ -16,9 +17,28 @@ const ClassExams = () => {
             const response = await api.get(
                 `/teacher/classrooms/${class_code}/examdays`
             );
-            if (response.data?.students) {
-                setStudentsData(response.data.students);
+            const { students = [], exam_days = [] } = response.data;
+
+            const updatedStudents = [...students];
+            const totalStudents = updatedStudents.length;
+
+            if (exam_days.length > 0) {
+                if (totalStudents < 9) {
+                    updatedStudents.forEach((student) => {
+                        student.exam_day = exam_days[0].id;
+                    });
+                } else if (totalStudents < 27) {
+                    updatedStudents.forEach((student, index) => {
+                        student.exam_day = exam_days[index % 2].id;
+                    });
+                } else {
+                    updatedStudents.forEach((student, index) => {
+                        student.exam_day = exam_days[index % 3].id;
+                    });
+                }
             }
+
+            setStudentsData(updatedStudents);
             return response.data;
         },
     });
@@ -36,6 +56,7 @@ const ClassExams = () => {
         },
         onSuccess: (response) => {
             toast.success(response.data?.message || "Lưu thành công!");
+            queryClient.invalidateQueries(["examDays", class_code]);
         },
         onError: (err) => {
             toast.error(
