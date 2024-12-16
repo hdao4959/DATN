@@ -131,7 +131,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('teachers', TeacherController::class);
+        Route::post('teachers/updateActive/{userCode}', [TeacherController::class, 'updateActive']);
+
         Route::apiResource('students', StudentController::class);
+        Route::post('students/updateActive/{userCode}', [StudentController::class, 'updateActive']);
+
         Route::controller(StudentController::class)->group(function () {
             Route::post('import-students', 'importStudents');
             Route::get('export-students', 'exportStudents');

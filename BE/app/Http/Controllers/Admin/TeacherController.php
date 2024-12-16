@@ -241,4 +241,27 @@ class TeacherController extends Controller
             return $this->handleErrorNotDefine($th);
         }
     }
+
+    public function updateActive(string $userCode)
+    {
+        try {
+            $listTeacher = User::where('user_code', $userCode)->firstOrFail();
+            // dd(!$listTeacher->is_active);
+            $listTeacher->update([
+                'is_active' => !$listTeacher->is_active
+            ]);
+            $listTeacher->save();
+            return response()->json([
+                'message' => 'Cập nhật thành công',
+                'error' => false
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+            return response()->json([
+                'message' => 'Lỗi không xác định',
+                'error' => true
+            ], 500);
+        }
+    }
 }
