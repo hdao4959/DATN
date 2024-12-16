@@ -64,8 +64,7 @@ class ForgetPasswordController extends Controller
             'password' => 'required|confirmed|min:6',
         ]);
 
-        $password_reset = DB::table('password_reset_tokens')
-                ->where([
+        $password_reset = DB::table('password_reset_tokens')->where([
                     'email' => $request->email,
                     'token' => $request->token
                  ])->first();
@@ -74,8 +73,16 @@ class ForgetPasswordController extends Controller
             return response()->json(['message' => 'token không tồn tại hoặc hết hạn']);
         }
 
-        User::where('email',$request->email)->update(['password' => bcrypt($request->password)]);
-        return response()->json(['message' => 'Đổi mật khẩu thành công'], 200);
+        $userUpdate = User::where('email', $request->email)
+        ->update(['password' => bcrypt($request->password)]);
+
+         DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->delete();
+
+
+        return response()->json(['message' => 'Đổi mật khẩu thành công','data'=> $userUpdate], 200);
        }
        catch(\Throwable $th){
         return response()->json(['error' => $th->getMessage()]);

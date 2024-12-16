@@ -58,7 +58,7 @@ class SubjectController extends Controller
         } catch (\Throwable $th) {
             return $this->handleErrorNotDefine($th);
         }
-    }   
+    }
 
     public function store(StoreSubjectRequest $request)
     {

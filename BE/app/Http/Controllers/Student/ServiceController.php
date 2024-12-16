@@ -107,6 +107,7 @@ class ServiceController extends Controller
                     ->with('Subject')->get();
     return response()->json(['data' => $subject], 200);
   }
+  
 
   public function LearnAgain(Request $request)
   {

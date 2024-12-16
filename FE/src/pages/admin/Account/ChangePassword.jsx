@@ -54,7 +54,7 @@ const ChangePassword = () => {
         mutation.mutate({
             current_password: formData.current_password,
             new_password: formData.new_password,
-            new_password_confirmation: formData.new_password_confirmation, // Thêm trường này
+            new_password_confirmation: formData.new_password_confirmation,
         });
     };
 
@@ -65,7 +65,7 @@ const ChangePassword = () => {
                     <div className="card shadow">
                         <div className="card-body">
                             <h3 className="card-title text-center">Đổi mật khẩu</h3>
-                            {error && <div className="alert alert-danger">{error}</div>}
+                            {error && error !== "" && <div className="alert alert-danger">{error}</div>}
                             {success && (
                                 <div className="alert alert-success">{success}</div>
                             )}
@@ -123,3 +123,4 @@ const ChangePassword = () => {
 };
 
 export default ChangePassword;
+
