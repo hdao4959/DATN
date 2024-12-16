@@ -322,7 +322,7 @@ class ClassroomController extends Controller
                 'subject_code' => $subject->subject_code,
                 'is_pass' => false,
                 'status' => true
-            ])->toArray();
+            ])->pluck('student_code')->toArray();
             
             $student_codes_can_be_arrange = array_unique(array_merge($student_codes_paid, $student_codes_relearn));
             $students_can_be_arrange = User::whereNotIn('user_code', $student_codes_has_been_studied)
