@@ -177,7 +177,7 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, string $user_code)
     {
-        
+
         try {
 
             $student = User::where('user_code', $user_code)->first();
@@ -200,13 +200,11 @@ class StudentController extends Controller
 
             $student->update($data);
 
-            
             return response()->json([
                 'status' => true,
                 'message' => 'Cập nhật thông tin sinh viên thành công!'
             ], 200);
         } catch (\Throwable $th) {
-            
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -214,7 +212,7 @@ class StudentController extends Controller
 
     public function destroy(string $user_code)
     {
-        
+
         try {
 
 
@@ -224,11 +222,9 @@ class StudentController extends Controller
                 return $this->handleInvalidId();
             }
 
-
-
             $student->delete();
 
-            
+
             return response()->json(
                 [
                     'status' => true,
@@ -237,7 +233,7 @@ class StudentController extends Controller
                 200
             );
         } catch (\Throwable $th) {
-            
+
             return $this->handleErrorNotDefine($th);
         }
     }
