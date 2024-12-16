@@ -96,7 +96,7 @@ class StudentController extends Controller
 
     public function store(StoreStudentRequest $request)
     {
-        DB::beginTransaction();
+        
         try {
             $data = $request->validated();
             $newest_student_code = User::withTrashed()
@@ -109,13 +109,13 @@ class StudentController extends Controller
             $data['role'] = '3';
             User::create($data);
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Thêm mới sinh viên thành công!'
             ], 201);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -177,10 +177,10 @@ class StudentController extends Controller
 
     public function update(UpdateStudentRequest $request, string $user_code)
     {
-        DB::beginTransaction();
+        
         try {
 
-            $student = User::where('user_code', $user_code)->lockForUpdate()->first();
+            $student = User::where('user_code', $user_code)->first();
 
             if (!$student) {
                 return $this->handleInvalidId();
@@ -200,13 +200,13 @@ class StudentController extends Controller
 
             $student->update($data);
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Cập nhật thông tin sinh viên thành công!'
             ], 200);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -214,11 +214,11 @@ class StudentController extends Controller
 
     public function destroy(string $user_code)
     {
-        DB::beginTransaction();
+        
         try {
 
 
-            $student = User::where('user_code', $user_code)->lockForUpdate()->first();
+            $student = User::where('user_code', $user_code)->first();
 
             if (!$student) {
                 return $this->handleInvalidId();
@@ -228,7 +228,7 @@ class StudentController extends Controller
 
             $student->delete();
 
-            DB::commit();
+            
             return response()->json(
                 [
                     'status' => true,
@@ -237,7 +237,7 @@ class StudentController extends Controller
                 200
             );
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }
