@@ -94,7 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
         }
         ,'major' => function($query){
         $query->select('cate_code', 'cate_name');
-        }, 
+        },
         'narrow_major' => function($query){
         $query->select('cate_code', 'cate_name');
         }
@@ -305,7 +305,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('services/learn-again',    [ServiceController::class, "LearnAgain"]);
         Route::get('services/getListLearnAgain',    [ServiceController::class, "getListLearnAgain"]);
         Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
-
+        Route::post('change-password',[AuthController::class,'changePassword']);
 
         // dịch vụ cung cấp bảng điểm
         Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
@@ -313,6 +313,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
         Route::delete('services/delete/{id}',[ServiceController::class, 'cancelServiceByStudent']);
+
     });
 
     // Các route phục vụ cho form
@@ -359,7 +360,6 @@ Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswor
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost']);
 Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment']);
 Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo_payment']);
-
 Route::get('return-vnpay', [CheckoutController::class, 'vnpay_payment_return']);
 
 

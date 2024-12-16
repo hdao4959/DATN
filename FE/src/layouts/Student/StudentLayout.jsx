@@ -265,6 +265,13 @@ const StudentLayout = () => {
                                                 >
                                                     Hồ sơ cá nhân
                                                 </Link>
+                                                <Link
+                                                    to={`account/change-password`}
+                                                    className="dropdown-item"
+                                                    href="#"
+                                                >
+                                                    Đổi mật khẩu
+                                                </Link>
                                                 {/* <a
                                                     className="dropdown-item"
                                                     href="#"
