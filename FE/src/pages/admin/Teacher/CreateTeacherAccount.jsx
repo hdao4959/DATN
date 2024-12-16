@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ const CreateTeacherAccount = () => {
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const navigate = useNavigate();
 
     const { data, refetch } = useQuery({
         queryKey: ["LIST_MAJORS"],
@@ -25,7 +26,8 @@ const CreateTeacherAccount = () => {
             return api.post("/admin/teachers", data);
         },
         onSuccess: () => {
-            alert("Tạo tài khoản thành công!");
+            toast.success("Tạo tài khoản thành công!");
+            navigate("/sup-admin/teachers");
         },
         onError: (error) => {
             console.log(error);
@@ -136,15 +138,8 @@ const CreateTeacherAccount = () => {
                                                 type="password"
                                                 className="form-control"
                                                 placeholder="Nhập mật khẩu"
-                                                {...register("password", {
-                                                    required:
-                                                        "Vui lòng nhập mật khẩu",
-                                                    minLength: {
-                                                        value: 6,
-                                                        message:
-                                                            "Mật khẩu ít nhất 6 ký tự",
-                                                    },
-                                                })}
+                                                defaultValue={123456}
+                                                {...register("password")}
                                             />
                                             {errors.password && (
                                                 <p className="text-danger">
@@ -423,11 +418,6 @@ const CreateTeacherAccount = () => {
                                 </Link>
                             </div>
 
-                            {isError && (
-                                <p className="text-danger">
-                                    Đã xảy ra lỗi: {error.message}
-                                </p>
-                            )}
                             {isSuccess && (
                                 <p className="text-success">
                                     Tài khoản đã được tạo thành công!

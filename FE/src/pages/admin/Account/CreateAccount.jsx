@@ -40,7 +40,7 @@ const CreateAccount = () => {
             return api.post("/admin/students", data);
         },
         onSuccess: () => {
-            alert("Tạo tài khoản thành công!");
+            toast.success("Tạo tài khoản thành công !");
         },
         onError: (error) => {
             console.log(error);
@@ -186,15 +186,8 @@ const CreateAccount = () => {
                                                 type="password"
                                                 className="form-control"
                                                 placeholder="Nhập mật khẩu"
-                                                {...register("password", {
-                                                    required:
-                                                        "Vui lòng nhập mật khẩu",
-                                                    minLength: {
-                                                        value: 6,
-                                                        message:
-                                                            "Mật khẩu ít nhất 6 ký tự",
-                                                    },
-                                                })}
+                                                defaultValue={123456}
+                                                {...register("password")}
                                             />
                                             {errors.password && (
                                                 <p className="text-danger">
@@ -499,11 +492,6 @@ const CreateAccount = () => {
                                 </Link>
                             </div>
 
-                            {isError && (
-                                <p className="text-danger">
-                                    Đã xảy ra lỗi: {error.message}
-                                </p>
-                            )}
                             {isSuccess && (
                                 <p className="text-success">
                                     Tài khoản đã được tạo thành công!

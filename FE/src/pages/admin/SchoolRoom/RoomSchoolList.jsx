@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../../components/Spinner/Spinner";
-import 'datatables.net-dt/css/dataTables.dataTables.css';
-import $ from 'jquery';
-import 'datatables.net';
-import { useNavigate } from 'react-router-dom';
+import "datatables.net-dt/css/dataTables.dataTables.css";
+import $ from "jquery";
+import "datatables.net";
+import { useNavigate } from "react-router-dom";
 
 const RoomSchoolList = () => {
     const [modalOpen, setModalOpen] = useState(false); // Modal xóa phòng học
@@ -18,9 +18,14 @@ const RoomSchoolList = () => {
     const navigate = useNavigate();
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
-    const toggleConfirmationModal = () => setConfirmationModalOpen((prev) => !prev);
+    const toggleConfirmationModal = () =>
+        setConfirmationModalOpen((prev) => !prev);
 
-    const { data: roomSchool, refetch, isFetching } = useQuery({
+    const {
+        data: roomSchool,
+        refetch,
+        isFetching,
+    } = useQuery({
         queryKey: ["LIST_SCHOOLROOMS"],
         queryFn: async () => {
             const res = await api.get("/admin/schoolrooms");
@@ -28,7 +33,6 @@ const RoomSchoolList = () => {
         },
     });
 
-    // Mutation xóa phòng học
     const deleteMutation = useMutation({
         mutationFn: (cateCode) => api.delete(`/admin/schoolrooms/${cateCode}`),
         onSuccess: () => {
@@ -36,12 +40,11 @@ const RoomSchoolList = () => {
             onModalVisible();
             refetch();
         },
-        onError: () => {
-            toast.error("Có lỗi xảy ra khi xóa phòng học");
+        onError: (error) => {
+            toast.error(error.response?.data?.message);
         },
     });
 
-    // Mutation cập nhật trạng thái
     const updateStatusMutation = useMutation({
         mutationFn: (code) => api.post(`/admin/updateActive/${code}`),
         onSuccess: () => {
@@ -75,15 +78,19 @@ const RoomSchoolList = () => {
 
     useEffect(() => {
         if (roomSchool) {
-            $('#roomSchoolTable').DataTable({
+            $("#roomSchoolTable").DataTable({
                 data: roomSchool,
                 processing: true,
-                serverSide: true, 
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
                         const response = await api.get(`/admin/schoolrooms`, {
-                            params: { page, per_page: data.length, search: data.search.value || "", },
+                            params: {
+                                page,
+                                per_page: data.length,
+                                search: data.search.value || "",
+                            },
                         });
                         const result = response.data;
                         callback({
@@ -104,7 +111,7 @@ const RoomSchoolList = () => {
                     {
                         title: "Sinh viên",
                         className: "text-center",
-                        data: "value"
+                        data: "value",
                     },
                     {
                         title: "Trạng thái",
@@ -114,7 +121,7 @@ const RoomSchoolList = () => {
                             return data
                                 ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
                                 : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`;
-                        }
+                        },
                     },
                     {
                         title: "Hành động",
@@ -129,32 +136,43 @@ const RoomSchoolList = () => {
                                         id="delete_${row.cate_code}"></i>
                                 </div>
                             `;
-                        }
-                    }
+                        },
+                    },
                 ],
                 language: {
-                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
-                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
-                    search: 'Tìm kiếm:'
+                    paginate: { previous: "Trước", next: "Tiếp theo" },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
+                    search: "Tìm kiếm:",
                 },
                 destroy: true,
                 createdRow: (row, rowData) => {
-                    $(row).find('.fa-trash').on('click', function () {
-                        const classCode = $(this).data('id');
-                        handleDelete(classCode);
-                    });
+                    $(row)
+                        .find(".fa-trash")
+                        .on("click", function () {
+                            const classCode = $(this).data("id");
+                            handleDelete(classCode);
+                        });
 
-                    $(row).find('.fa-edit').on('click', function () {
-                        const classCode = $(this).data('id');
-                        navigate(`/sup-admin/schoolrooms/${classCode}/edit`);
-                    });
+                    $(row)
+                        .find(".fa-edit")
+                        .on("click", function () {
+                            const classCode = $(this).data("id");
+                            navigate(
+                                `/sup-admin/schoolrooms/${classCode}/edit`
+                            );
+                        });
 
-                    $(row).find('.toggleStatus').on('click', function () {
-                        const classCode = $(this).closest('tr').find('.fa-trash').data('id');
-                        handleUpdateStatus(classCode);
-                    });
-                }
+                    $(row)
+                        .find(".toggleStatus")
+                        .on("click", function () {
+                            const classCode = $(this)
+                                .closest("tr")
+                                .find(".fa-trash")
+                                .data("id");
+                            handleUpdateStatus(classCode);
+                        });
+                },
             });
         }
     }, [roomSchool]);
