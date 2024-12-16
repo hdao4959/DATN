@@ -278,4 +278,27 @@ class StudentController extends Controller
             return response()->json(['message' => $th->getMessage()]);
         }
     }
+
+    public function updateActive(string $userCode)
+    {
+        try {
+            $listStudent = User::where('user_code', $userCode)->firstOrFail();
+            // dd(!$listStudent->is_active);
+            $listStudent->update([
+                'is_active' => !$listStudent->is_active
+            ]);
+            $listStudent->save();
+            return response()->json([
+                'message' => 'Cập nhật thành công',
+                'error' => false
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error(__CLASS__ . '@' . __FUNCTION__, [$th]);
+
+            return response()->json([
+                'message' => 'Lỗi không xác định',
+                'error' => true
+            ], 500);
+        }
+    }
 }
