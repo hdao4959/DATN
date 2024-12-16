@@ -223,7 +223,7 @@ const ClassRoomsList = () => {
                         title: "Giảng viên",
                         data: null,
                         render: (data) =>
-                            `<a href='/admin/teachers/edit/${data.teacher_code}' class='text-dark'>
+                            `<a href='/sup-admin/teachers/edit/${data.teacher_code}' class='text-dark'>
                                 ${data.teacher_name}
                             </a>`,
                     },
@@ -232,7 +232,7 @@ const ClassRoomsList = () => {
                         data: null,
                         className: "text-center",
                         render: (data) =>
-                            `<a href='/admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
+                            `<a href='/sup-admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
                     },
                     {
                         title: "Ca học",

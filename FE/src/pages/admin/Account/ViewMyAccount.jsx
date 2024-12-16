@@ -206,7 +206,7 @@ const ViewMyAccount = () => {
                     </div>
                 </div>
             </form>
-            <div className=" d-flex justify-content-center align-items-center flex-column">
+            {/* <div className=" d-flex justify-content-center align-items-center flex-column">
                 <div className="card-body text-center">
                     <button
                         className="btn btn-primary mt-3"
@@ -216,7 +216,7 @@ const ViewMyAccount = () => {
                         Gửi hỗ trợ đổi thông tin
                     </button>
                 </div>
-            </div>
+            </div> */}
 
             {showModal && (
                 <div

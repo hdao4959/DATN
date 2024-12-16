@@ -485,16 +485,13 @@ const AdminLayout = () => {
                                                             href="/sup-admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
-                                                            View Profile
+                                                            Xem hồ sơ cá nhân
                                                         </a> */}
                                                         <Link
-                                                            to={
-                                                                `/admin/account` ||
-                                                                ""
-                                                            }
+                                                            to={`/sup-admin/account` || "" }
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
-                                                            View Profile
+                                                            Xem hồ sơ cá nhân
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -502,11 +499,11 @@ const AdminLayout = () => {
                                             <li>
                                                 <div className="dropdown-divider" />
                                                 <Link
-                                                    to={`/admin/account`}
+                                                    to={`/sup-admin/account`}
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
-                                                    My Profile
+                                                    Hồ sơ cá nhân
                                                 </Link>
                                                 {/* <a
                                                     className="dropdown-item"
