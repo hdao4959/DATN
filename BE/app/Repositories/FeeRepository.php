@@ -12,24 +12,41 @@ use App\Models\Category;
 use Illuminate\Database\QueryException;
 
 class FeeRepository implements FeeRepositoryInterface {
-    public function getAll($email = null ,$status = null){
-        $data =  Fee::query()->with(['user' => function($query){
-            $query->select('id', 'user_code', 'full_name', 'email', 'phone_number');
-        }]);
+    public function getAll($email = null, $status = null, $search = null)
+{
+    $data = Fee::query()->with(['user' => function ($query) {
+        $query->select('id', 'user_code', 'full_name', 'email', 'phone_number');
+    }]);
 
-        if($status){
-            $data->where('status',$status);
-        }
-
-        if($email){
-            $data->whereHas('user', function($query) use ($email) {
-                $query->where('email', 'like', '%' . $email.'%' );
-            });
-
-        }
-
-        return $data->paginate(20);
+    // Lọc theo status
+    if ($status) {
+        $data->where('status', $status);
     }
+
+    // Lọc theo email của user
+    if ($email) {
+        $data->whereHas('user', function ($query) use ($email) {
+            $query->where('email', 'like', '%' . $email . '%');
+        });
+    }
+
+    // Tìm kiếm chung
+    if ($search) {
+        $data->where(function ($query) use ($search) {
+            $query->orWhere('semester_code', 'like', '%' . $search . '%') // Học kỳ
+                ->orWhere('amount', $search) // Số tiền
+                ->orWhere('total_amount', $search) // Tổng tiền
+                ->orWhere('status', 'like', '%' . $search . '%') // Trạng thái
+                ->orWhereHas('user', function ($q) use ($search) {
+                    $q->where('user_code', 'like', '%' . $search . '%') // Mã user
+                      ->orWhere('email', 'like', '%' . $search . '%'); // Email
+                });
+        });
+    }
+
+    return $data->paginate(20);
+}
+
 
     public function createAll(){
 

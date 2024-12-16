@@ -63,7 +63,7 @@ const AddPost = () => {
         const formData = new FormData();
         formData.append("code", values.code);
         formData.append("title", values.title);
-        formData.append("tags", JSON.stringify(values.tags.map(tag => ({ tag_name: tag }))) || '');
+        // formData.append("tags", JSON.stringify(values.tags.map(tag => ({ tag_name: tag }))) || '');
         formData.append("content", content);
         formData.append("description", values.description);
         formData.append("type", values.type);
@@ -183,7 +183,7 @@ const AddPost = () => {
                                         )}
                                     </div> */}
 
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -210,7 +210,7 @@ const AddPost = () => {
                                                 {errors.tags.message}
                                             </span>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="form-group">
                                         <label htmlFor="image">

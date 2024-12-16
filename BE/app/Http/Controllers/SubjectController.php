@@ -106,6 +106,8 @@ class SubjectController extends Controller
     public function show(string $subject_code)
     {
         try {
+            $assessmentItems = DB::table('subject_assessment')->where('subject_code', $subject_code)->get();
+            // return $assessmentItems;
             $subject =  Subject::select('subject_code', 'subject_name', 'tuition', 're_study_fee', 'credit_number', 'total_sessions', 'description', 'major_code', 'is_active', 'semester_code')->with([
                 'semester' => function ($query) {
                     $query->select('cate_code', 'cate_name');
@@ -141,7 +143,8 @@ class SubjectController extends Controller
                         'semester_code' => $semester_info->cate_code,
                         'semester_name' => $semester_info->cate_name,
                         'major_code' => $major_info->cate_code,
-                        'major_name' => $major_info->cate_name
+                        'major_name' => $major_info->cate_name,
+                        'assessment_items' => $assessmentItems
                     ]
                 ],
                 200

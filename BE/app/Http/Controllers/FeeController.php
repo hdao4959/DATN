@@ -25,16 +25,20 @@ class FeeController extends Controller
 
 
     public function index(Request $request)
-    {
-        try {
-            $status = $request['status'];
-            $email  = $request['email'];
-            $data = $this->feeRepository->getAll($email, $status);
-            return response()->json($data);
-        } catch (Throwable $th) {
-            return response()->json(['message' => $th], 404);
-        }
+{
+    try {
+        $status = $request->input('status');
+        $email = $request->input('email');
+        $search = $request->input('search'); // Thêm điều kiện tìm kiếm
+
+        $data = $this->feeRepository->getAll($email, $status, $search);
+
+        return response()->json($data);
+    } catch (Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 404);
     }
+}
+
 
     /**
      * Show the form for creating a new resource.
