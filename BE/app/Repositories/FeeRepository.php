@@ -14,24 +14,24 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class FeeRepository implements FeeRepositoryInterface {
-    public function getAll($email = null, $status = null, $search = null)
+   public function getAll($email = null, $status = null, $search = null, $orderBy = 'created_at', $orderDirection = 'desc')
     {
         $data = Fee::query()->with(['user' => function ($query) {
             $query->select('id', 'user_code', 'full_name', 'email', 'phone_number');
         }]);
-
-        // Lọc theo status
-        if ($status) {
-            $data->where('status', $status);
-        }
-
-        // Lọc theo email của user
-        if ($email) {
-            $data->whereHas('user', function ($query) use ($email) {
-                $query->where('email', 'like', '%' . $email . '%');
-            });
-        }
-
+    
+            // Lọc theo status
+            if ($status) {
+                $data->where('status', $status);
+            }
+    
+            // Lọc theo email của user
+            if ($email) {
+                $data->whereHas('user', function ($query) use ($email) {
+                    $query->where('email', 'like', '%' . $email . '%');
+                });
+            }
+    
         // Tìm kiếm chung
         if ($search) {
             $data->where(function ($query) use ($search) {
@@ -45,8 +45,9 @@ class FeeRepository implements FeeRepositoryInterface {
                     });
             });
         }
-
-        return $data->paginate(20);
+        $data->orderBy($orderBy, $orderDirection);
+    
+            return $data->paginate(20);
     }
     // public function createAll(){
 
