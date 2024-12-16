@@ -67,9 +67,6 @@ const SessionList = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div class="d-flex justify-content-center whitespace-nowrap">
-                                <button class="fs-4 session-link" data-id="${row.cate_code}">
-                                    <i class='fas fa-edit hover:text-blue-500'></i>
-                                </button>
                                 <button class="delete-btn ml-2 fs-4">
                                     <i class="fas fa-trash hover:text-red-500"></i>
                                 </button>
@@ -96,7 +93,7 @@ const SessionList = () => {
             });
             $("#session-table tbody").on("click", ".session-link", function () {
                 const cate_code = $(this).data("id");
-                navigate(`/admin/sessions/${cate_code}/edit`);
+                navigate(`/sup-admin/sessions/${cate_code}/edit`);
             });
         }
 
@@ -110,7 +107,7 @@ const SessionList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/sessions/add">
+                <Link to="/sup-admin/sessions/add">
                     <button className="btn btn-primary">Thêm ca học</button>
                 </Link>
             </div>

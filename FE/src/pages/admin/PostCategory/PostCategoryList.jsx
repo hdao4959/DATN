@@ -140,7 +140,7 @@ const PostCategoryList = () => {
                         .find(".fa-edit")
                         .on("click", function () {
                             const cateCode = $(this).data("id");
-                            navigate(`/admin/post-category/${cateCode}/edit`);
+                            navigate(`/sup-admin/post-category/${cateCode}/edit`);
                         });
 
                     $(row)
@@ -165,7 +165,7 @@ const PostCategoryList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/post-category/add">
+                <Link to="/sup-admin/post-category/add">
                     <button className="btn btn-primary">
                         Thêm danh mục bài viết
                     </button>

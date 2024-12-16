@@ -95,7 +95,7 @@ const DegreeProgramList = () => {
 
             $("#degree-program-table tbody").on("click", ".degree-program-link", function () {
                 const cate_code = $(this).data("id");
-                navigate(`/admin/degree-program/${cate_code}/edit`);
+                navigate(`/sup-admin/degree-program/${cate_code}/edit`);
             });
         }
 
@@ -109,7 +109,7 @@ const DegreeProgramList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/degree-program/add">
+                <Link to="/sup-admin/degree-program/add">
                     <button className="btn btn-primary">Thêm khoá học</button>
                 </Link>
             </div>

@@ -147,8 +147,10 @@ const TranscriptRequestForm = () => {
                     type="text"
                     className="form-control"
                     id="serviceFee"
+
                     {...register("amount")}
                     disabled // Chỉ hiển thị, không cho phép người dùng sửa
+
                 />
             </div>
 

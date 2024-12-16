@@ -22,7 +22,7 @@ const EditDegreeProgram = () => {
         mutationFn: (data) => api.put(`/admin/course/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật khoá học thành công");
-            nav("/admin/degree-program");
+            nav("/sup-admin/degree-program");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -56,7 +56,7 @@ const EditDegreeProgram = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/degree-program">
+                <Link to="/sup-admin/degree-program">
                     <button className="btn btn-primary">DS khoá học</button>
                 </Link>
             </div>
@@ -169,7 +169,7 @@ const EditDegreeProgram = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/degree-program")}
+                                    onClick={() => nav("/sup-admin/degree-program")}
                                 >
                                     Hủy
                                 </button>

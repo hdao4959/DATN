@@ -41,12 +41,12 @@ const ServiceList = () => {
 
     return (
         <div className=" mt-4">
-                {/* <h1 className="mb-4">Danh sách dịch vụ</h1> */}
-                <div className="card">
+            {/* <h1 className="mb-4">Danh sách dịch vụ</h1> */}
+            <div className="card">
                 <div className="card-header">
                     <div className="d-flex justify-content-between align-items-center">
                         <h5 className="m-0">Quản lý dịch vụ</h5>
-                        {/* <Link to="/admin/services/add" className="btn btn-primary">
+                        {/* <Link to="/sup-admin/services/add" className="btn btn-primary">
                             Danh sách dịch vụ
                         </Link> */}
                     </div>
@@ -72,20 +72,27 @@ const ServiceList = () => {
                                     <td>{service.student ? service.student.full_name : "Chưa có học sinh"}</td>
                                     <td className="text-center">
                                         <span
-                                            className={`badge fs-5  ${
-                                                service.status === "pending" ? "bg-info" : "bg-success"
-                                            }`}
+                                            className={`badge fs-5  ${service.status === "pending" ? "bg-info" :
+                                                    service.status === "paid" ? "bg-warning" :
+                                                        service.status === "approved" ? "bg-success" :
+                                                            service.status === "rejected" ? "bg-danger" : ""
+                                                }`}
                                         >
-                                            {service.status === "pending" ? "Đang xử lý" : "Hoàn thành"}
+                                            {service.status === "pending" ? "Đang xử lý" :
+                                                service.status === "paid" ? "Đã thanh toán" :
+                                                    service.status === "approved" ? "Đã duyệt" :
+                                                        service.status === "rejected" ? "Đã từ chối" : ""}
                                         </span>
                                     </td>
                                     <td>
-                                        <button className="btn btn-sm btn-warning me-2">Xem</button>
-                                        <button className="btn btn-sm btn-danger">Xóa</button>
+                                        <Link to={`/sup-admin/services/${service.id}`} className="btn btn-primary">
+                                            Xem
+                                        </Link>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
                 </div>
             </div>

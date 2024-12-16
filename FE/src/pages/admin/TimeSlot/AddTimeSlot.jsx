@@ -45,7 +45,7 @@ const AddTimeslot = () => {
                 </div>
             </div>
             <div className="mb-6 mt-2">
-                <Link to="/admin/timeslot">
+                <Link to="/sup-admin/timeslot">
                     <button className="btn btn-primary">
                         <i className="fas fa-list"></i> Danh sách ca học
                     </button>

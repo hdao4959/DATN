@@ -85,7 +85,7 @@ const AddSubject = () => {
         </div>
       </div>
       <div className="mb-6 mt-2">
-        <Link to="/admin/subjects">
+        <Link to="/sup-admin/subjects">
           <button className="btn btn-primary">
             <i className='fas fa-list'> Danh sách môn học</i>
           </button>
@@ -192,9 +192,16 @@ const AddSubject = () => {
                         >
                           <option value="">Chọn chuyên ngành</option>
                           {categories?.map(major => (
-                            <option key={major.cate_code} value={major.cate_code}>
-                              {major.cate_name}
-                            </option>
+                            <>
+                              <option key={major.cate_code} value={major.cate_code}>
+                                {major.cate_name}
+                              </option>
+                              {major.childrens?.map(child => (
+                                <option key={child.cate_code} value={child.cate_code} className="ml-3">
+                                  {`-- ${child.cate_name}`}
+                                </option>
+                              ))}
+                            </>
                           ))}
                         </select>
                         {errors.major_code && <span className="text-danger">{errors.major_code.message}</span>}

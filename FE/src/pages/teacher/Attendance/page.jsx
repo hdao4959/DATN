@@ -16,51 +16,6 @@ const ShowAttendance = () => {
         queryFn: async () => {
             const response = await api.get(`/teacher/attendances/${class_code}`);
             return response?.data[0];
-            // const attendanceDataI = [
-            //     {
-            //         student_code: "SV001",
-            //         full_name: "Nguyễn Văn A",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "absent",
-            //         noted: "On time",
-            //     },
-            //     {
-            //         student_code: "SV002",
-            //         full_name: "Trần Thị B",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "absent",
-            //         noted: "Sick",
-            //     },
-            //     {
-            //         student_code: "SV003",
-            //         full_name: "Lê Minh C",
-            //         date: "2024-11-01T00:00:00Z",
-            //         status: "present",
-            //         noted: "On time",
-            //     },
-            //     {
-            //         student_code: "SV001",
-            //         full_name: "Nguyễn Văn A",
-            //         date: "2024-11-02T00:00:00Z",
-            //         status: "absent",
-            //         noted: "Traveling",
-            //     },
-            //     {
-            //         student_code: "SV001",
-            //         full_name: "Nguyễn Văn A",
-            //         date: "2024-11-03T00:00:00Z",
-            //         status: "absent",
-            //         noted: "Traveling",
-            //     },
-            //     {
-            //         student_code: "SV002",
-            //         full_name: "Trần Thị B",
-            //         date: "2024-11-02T00:00:00Z",
-            //         status: "present",
-            //         noted: "On time",
-            //     },
-            // ];
-            // return attendanceDataI;
         },
         onError: () => {
             toast.error("Không thể tải dữ liệu");
@@ -113,6 +68,14 @@ const ShowAttendance = () => {
                     (a, b) => new Date(a) - new Date(b)
                 )
                 : [];
+            const markedDates = sortedDates.map((date, index) => {
+                const isLastTwo = index >= sortedDates.length - 3; // Kiểm tra 2 ngày cuối
+                return {
+                    date,
+                    label: isLastTwo ? `<div>${formatDate(date)}<div class="badge bg-info mt-1">Ngày thi</div></div>` : formatDate(date),
+                };
+            });
+
             const tableData = Object.values(students);
 
             // Khởi tạo DataTable
@@ -136,8 +99,8 @@ const ShowAttendance = () => {
                     },
                     { title: "Mã SV", data: "student_code" },
                     { title: "Tên SV", data: "full_name" },
-                    ...sortedDates.map((date) => ({
-                        title: formatDate(date),
+                    ...markedDates?.map(({ date, label }) => ({
+                        title: label,
                         className: "text-center",
                         data: null,
                         render: (data, type, row) => {
@@ -163,7 +126,14 @@ const ShowAttendance = () => {
                         $(row).css("background-color", "rgba(255, 0, 0, 0.1)"); // Sắc đỏ nhạt
                     }
                 },
-                scrollY: true,
+                scrollX: true,
+                autoWidth: true,
+                scrollCollapse: true,
+                scrollY: "100%", 
+                fixedHeader: true, // Cố định hàng tiêu đề
+                fixedColumns: {
+                    left: 3, // Cố định 3 cột đầu
+                },
             });
         }
     }, [attendanceData]);

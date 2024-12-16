@@ -48,7 +48,7 @@ const EditSubject = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['LIST_SUBJECT']);
       toast.success("Chỉnh sửa môn học thành công!");
-      nav("/admin/subjects")
+      nav("/sup-admin/subjects")
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -82,7 +82,7 @@ const EditSubject = () => {
         </div>
       </div>
       <div className="mb-6 mt-2">
-        <Link to="/admin/subjects">
+        <Link to="/sup-admin/subjects">
           <button className="btn btn-primary">
             <i className='fas fa-list'></i> Danh sách môn học
           </button>
@@ -195,10 +195,22 @@ const EditSubject = () => {
                           {...register('major_code', { required: true })}
                         >
                           <option value="">Chọn chuyên ngành</option>
-                          {categories?.map(major => (
+                          {/* {categories?.map(major => (
                             <option key={major.cate_code} value={major.cate_code}>
                               {major.cate_name}
                             </option>
+                          ))} */}
+                          {categories?.map(major => (
+                            <>
+                              <option key={major.cate_code} value={major.cate_code}>
+                                {major.cate_name}
+                              </option>
+                              {major.childrens?.map(child => (
+                                <option key={child.cate_code} value={child.cate_code} className="ml-3">
+                                  {`-- ${child.cate_name}`}
+                                </option>
+                              ))}
+                            </>
                           ))}
                         </select>
                         {errors.major_code && <span className="text-danger">{errors.major_code.message}</span>}

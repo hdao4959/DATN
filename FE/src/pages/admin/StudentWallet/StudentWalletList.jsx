@@ -25,8 +25,8 @@ const StudentWalletList = () => {
     const updateStatusFeeMutation = useMutation({
         mutationFn: async (data) => {
             // Kiểm tra giá trị id và data
-            console.log("Mutation ID: ", data.id);
-            console.log("Mutation Data: ", data);
+            // console.log("Mutation ID: ", data.id);
+            // console.log("Mutation Data: ", data);
             await api.put(`/admin/fees/${data.id}`, data.data);
         },
         onSuccess: () => {
@@ -45,19 +45,34 @@ const StudentWalletList = () => {
         });
     };
 
-    console.log(wallets);
+    // console.log(wallets);
     useEffect(() => {
         if (wallets) {
             $('#walletsTable').DataTable({
                 data: wallets,
                 processing: true,
                 serverSide: true,
-                ajax: async (data, callback) => {
+               ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                
+                        // Xử lý order từ DataTables
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+                
+                        // Gọi API với các tham số
                         const response = await api.get(`/admin/fees`, {
-                            params: { page, per_page: data.length },
+                            params: {
+                                page,
+                                per_page: data.length,
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
+                            },
                         });
+                
+                        // Xử lý dữ liệu trả về từ API
                         const result = response.data;
                         callback({
                             draw: data.draw,
@@ -176,7 +191,7 @@ const StudentWalletList = () => {
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
                         console.log(classCode);
-                        navigate(`/admin/wallets/${classCode}/edit`);
+                        navigate(`/sup-admin/wallets/${classCode}/edit`);
                     });
 
                     $('#select_all').on('click', function () {

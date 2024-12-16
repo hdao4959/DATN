@@ -166,7 +166,7 @@ const EditMajor = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/student-wallet")}
+                                    onClick={() => nav("/sup-admin/student-wallet")}
                                 >
                                     Hủy
                                 </button>
