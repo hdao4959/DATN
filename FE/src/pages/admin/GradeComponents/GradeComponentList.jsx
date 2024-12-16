@@ -116,7 +116,7 @@ const GradeComponentList = () => {
                         .find('.fa-edit')
                         .on('click', function () {
                             const cate_code = $(this).data('id');
-                            navigate(`/admin/grade-components/${cate_code}/edit`);
+                            navigate(`/sup-admin/grade-components/${cate_code}/edit`);
                         });
 
                     $(row)
@@ -134,7 +134,7 @@ const GradeComponentList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/grade-components/add">
+                <Link to="/sup-admin/grade-components/add">
                     <button className="btn btn-primary">
                         Thêm điểm thành phần
                     </button>

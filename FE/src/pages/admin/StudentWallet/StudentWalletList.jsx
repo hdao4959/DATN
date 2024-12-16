@@ -176,7 +176,7 @@ const StudentWalletList = () => {
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
                         console.log(classCode);
-                        navigate(`/admin/wallets/${classCode}/edit`);
+                        navigate(`/sup-admin/wallets/${classCode}/edit`);
                     });
 
                     $('#select_all').on('click', function () {

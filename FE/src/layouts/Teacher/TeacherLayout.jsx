@@ -118,7 +118,7 @@ const TeacherLayout = () => {
                                                             }`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
-                                                            View Profile
+                                                            Xem hồ sơ cá nhân
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -131,7 +131,7 @@ const TeacherLayout = () => {
                                                     }`}
                                                     className="dropdown-item"
                                                 >
-                                                    My Profile
+                                                    Hồ sơ cá nhân
                                                 </Link>
                                                 {/* <a
                                                     className="dropdown-item"

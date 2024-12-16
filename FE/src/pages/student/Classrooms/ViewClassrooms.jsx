@@ -88,6 +88,7 @@ const ViewClassrooms = () => {
                                 <th>Phòng học</th>
                                 <th>Ca học</th>
                                 <th>Thời gian</th>
+                                <th>Ngày học</th>
                                 <th>Lịch học</th>
                             </tr>
                         </thead>
@@ -121,6 +122,10 @@ const ViewClassrooms = () => {
                                         classroom.value.end
                                             ? `${classroom.value.start} - ${classroom.value.end}`
                                             : "Không có thời gian"}
+                                    </td>
+                                    <td>
+                                        {classroom.type_day ||
+                                            "Không có ngày học"}
                                     </td>
                                     <td>
                                         <Link

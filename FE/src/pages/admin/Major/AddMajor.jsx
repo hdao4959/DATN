@@ -25,7 +25,7 @@ const AddMajor = () => {
         onSuccess: () => {
             toast.success("Thêm chuyên ngành thành công");
             reset();
-            nav("/admin/major");
+            nav("/sup-admin/major");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -54,7 +54,7 @@ const AddMajor = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/sup-admin/major">
                     <button className="btn btn-primary">DS chuyên ngành</button>
                 </Link>
             </div>
@@ -232,7 +232,7 @@ const AddMajor = () => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => nav("/admin/major")}
+                                    onClick={() => nav("/sup-admin/major")}
                                 >
                                     Hủy
                                 </button>

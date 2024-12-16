@@ -116,10 +116,10 @@ const ListAccount = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                            <a href="/admin/students/edit/${row.user_code}">
+                            <a href="/sup-admin/students/edit/${row.user_code}">
                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
             </a>
-                             <a href="/admin/students/${row.user_code}">
+                             <a href="/sup-admin/students/${row.user_code}">
                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
             </a>
                                 
@@ -146,7 +146,7 @@ const ListAccount = () => {
                     $(row)
                         .find(".fa-edit")
                         .on("click", () => {
-                            navigate(`/admin/students/${data.user_code}`);
+                            navigate(`/sup-admin/students/${data.user_code}`);
                         });
                 },
             });
@@ -158,7 +158,7 @@ const ListAccount = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/students/create">
+                <Link to="/sup-admin/students/create">
                     <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>

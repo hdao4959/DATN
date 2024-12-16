@@ -24,15 +24,16 @@ const Dashboard = () => {
                 new Chart(ctx1, {
                     type: "pie",
                     data: {
-                        labels: ["Pending", "Paid", "Unpaid"],
+                        labels: ["Đang chờ", "Đã thanh toán", "Chưa thanh toán"],
                         datasets: [
                             {
                                 label: "Status Fee",
                                 data: [pending, paid, unpaid],
                                 backgroundColor: [
-                                    "rgba(255, 206, 86, 0.6)",
-                                    "rgba(75, 192, 192, 0.6)",
-                                    "rgba(255, 99, 132, 0.6)",
+                                    "rgba(255, 255, 0, 0.6)", // Yellow
+                                    "rgba(26, 165, 8, 0.6)",   // Green
+                                    "rgba(255, 0, 0, 0.6)"    // Red
+
                                 ],
                                 borderColor: [
                                     "rgba(255, 206, 86, 1)",
@@ -61,7 +62,7 @@ const Dashboard = () => {
                 new Chart(ctx2, {
                     type: "pie",
                     data: {
-                        labels: ["Absent", "Present"],
+                        labels: ["Vắng mặt", "Có mặt"],
                         datasets: [
                             {
                                 label: "Status Attendance",
@@ -101,7 +102,7 @@ const Dashboard = () => {
                         labels,
                         datasets: [
                             {
-                                label: "Number of Students by Major",
+                                label: "Số lượng sinh viên trong chuyên ngành",
                                 data,
                                 backgroundColor: [
                                     "rgba(255, 206, 86, 0.6)",
@@ -133,6 +134,99 @@ const Dashboard = () => {
                         },
                     },
                 });
+                const ctx4 = document.getElementById("statisticsChart").getContext("2d");
+                new Chart(ctx4, {
+                    type: 'line',
+                    data: {
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        datasets: [{
+                            label: "Subscribers",
+                            borderColor: '#f3545d',
+                            pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+                            pointRadius: 0,
+                            backgroundColor: 'rgba(243, 84, 93, 0.4)',
+                            legendColor: '#f3545d',
+                            fill: true,
+                            borderWidth: 2,
+                            data: [154, 184, 175, 203, 210, 231, 240, 278, 252, 312, 320, 374]
+                        }, {
+                            label: "New Visitors",
+                            borderColor: '#fdaf4b',
+                            pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+                            pointRadius: 0,
+                            backgroundColor: 'rgba(253, 175, 75, 0.4)',
+                            legendColor: '#fdaf4b',
+                            fill: true,
+                            borderWidth: 2,
+                            data: [256, 230, 245, 287, 240, 250, 230, 295, 331, 431, 456, 521]
+                        }, {
+                            label: "Active Users",
+                            borderColor: '#177dff',
+                            pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+                            pointRadius: 0,
+                            backgroundColor: 'rgba(23, 125, 255, 0.4)',
+                            legendColor: '#177dff',
+                            fill: true,
+                            borderWidth: 2,
+                            data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 900]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        tooltips: {
+                            bodySpacing: 4,
+                            mode: "nearest",
+                            intersect: 0,
+                            position: "nearest",
+                            xPadding: 10,
+                            yPadding: 10,
+                            caretPadding: 10
+                        },
+                        layout: {
+                            padding: { left: 5, right: 5, top: 15, bottom: 15 }
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontStyle: "500",
+                                    beginAtZero: false,
+                                    maxTicksLimit: 5,
+                                    padding: 10
+                                },
+                                gridLines: {
+                                    drawTicks: false,
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                gridLines: {
+                                    zeroLineColor: "transparent"
+                                },
+                                ticks: {
+                                    padding: 10,
+                                    fontStyle: "500"
+                                }
+                            }]
+                        },
+                        legendCallback: function (chart) {
+                            var text = [];
+                            text.push('<ul class="' + chart.id + '-legend html-legend">');
+                            for (var i = 0; i < chart.data.datasets.length; i++) {
+                                text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
+                                if (chart.data.datasets[i].label) {
+                                    text.push(chart.data.datasets[i].label);
+                                }
+                                text.push('</li>');
+                            }
+                            text.push('</ul>');
+                            return text.join('');
+                        }
+                    }
+                });
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -146,19 +240,127 @@ const Dashboard = () => {
             <div className="container mt-5">
                 {/* <h3 className="fw-bold mb-3">Dashboard Charts</h3> */}
                 <div className="row">
-                    <div className="col-md-4">
-                        <h5 className="text-center">Trạng thái nộp học phí</h5>
-                        <canvas id="chart1"></canvas>
+                    {/* <div className="col-md-8">
+                        <div className="card card-round">
+                            <div className="card-header">
+                                <div className="card-head-row">
+                                    <div className="card-title">User Statistics</div>
+                                    <div className="card-tools">
+                                        <a href="#" className="btn btn-label-success btn-round btn-sm me-2">
+                                            <span className="btn-label">
+                                                <i className="fa fa-pencil"></i>
+                                            </span>
+                                            Export
+                                        </a>
+                                        <a href="#" className="btn btn-label-info btn-round btn-sm">
+                                            <span className="btn-label">
+                                                <i className="fa fa-print"></i>
+                                            </span>
+                                            Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body">
+                                <div className="chart-container" style={{ minHeight: '375px' }}>
+                                    <canvas id="statisticsChart"></canvas>
+                                </div>
+                                <div id="myChartLegend"></div>
+                            </div>
+                        </div>
                     </div>
                     <div className="col-md-4">
-                        <h5 className="text-center">
-                            Số lượng học sinh theo chuyên ngành
-                        </h5>
-                        <canvas id="chart3"></canvas>
+                        <div className="card card-primary card-round">
+                            <div className="card-header">
+                                <div className="card-head-row">
+                                    <div className="card-title">Daily Sales</div>
+                                    <div className="card-tools">
+                                        <div className="dropdown">
+                                            <button
+                                                className="btn btn-sm btn-label-light dropdown-toggle"
+                                                type="button"
+                                                id="dropdownMenuButton"
+                                                data-bs-toggle="dropdown"
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                            >
+                                                Export
+                                            </button>
+                                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a className="dropdown-item" href="#">Action</a>
+                                                <a className="dropdown-item" href="#">Another action</a>
+                                                <a className="dropdown-item" href="#">Something else here</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="card-category">March 25 - April 02</div>
+                            </div>
+                            <div className="card-body pb-0">
+                                <div className="mb-4 mt-2">
+                                    <h1>$4,578.58</h1>
+                                </div>
+                                <div className="pull-in">
+                                    <canvas id="dailySalesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card card-round">
+                            <div className="card-body pb-0">
+                                <div className="h1 fw-bold float-end text-primary">+5%</div>
+                                <h2 className="mb-2">17</h2>
+                                <p className="text-muted">Users online</p>
+                                <div className="pull-in sparkline-fix">
+                                    <div id="lineChart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> */}
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-header">
+                                <div className="card-title">Số lượng học sinh theo chuyên ngành</div>
+                            </div>
+                            <div className="card-body">
+                                <div className="chart-container">
+                                    <canvas
+                                        id="chart3"
+                                        style={{ height: "50%", width: "50%" }}
+                                    ></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="col-md-4">
-                        <h5 className="text-center">Trạng thái điểm danh</h5>
-                        <canvas id="chart2"></canvas>
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-header">
+                                <div className="card-title">Sinh viên đóng học phí</div>
+                            </div>
+                            <div className="card-body">
+                                <div className="chart-container">
+                                    <canvas
+                                        id="chart1"
+                                        style={{ height: "50%", width: "50%" }}
+                                    ></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-header">
+                                <div className="card-title">Điểm danh sinh viên</div>
+                            </div>
+                            <div className="card-body">
+                                <div className="chart-container">
+                                    <canvas
+                                        id="chart2"
+                                        style={{ height: "50%", width: "50%" }}
+                                    ></canvas>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {/* <div className="row mt-5">

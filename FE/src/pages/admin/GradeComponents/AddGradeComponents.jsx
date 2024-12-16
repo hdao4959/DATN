@@ -18,7 +18,7 @@ const AddGradeComponents = () => {
         mutationFn: (data) => api.post("/admin/pointheads", data),
         onSuccess: () => {
             toast.success("Thêm điểm thành phần thành công");
-            navigate("/admin/grade-components");
+            navigate("/sup-admin/grade-components");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -36,7 +36,7 @@ const AddGradeComponents = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/major">
+                <Link to="/sup-admin/major">
                     <button className="btn btn-primary">
                         DS điểm thành phần
                     </button>

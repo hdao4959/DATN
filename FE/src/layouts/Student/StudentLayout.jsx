@@ -242,16 +242,16 @@ const StudentLayout = () => {
                                                             {user.email}
                                                         </p>
                                                         {/* <a
-                                                            href="/admin/account/details/:user_code"
+                                                            href="/sup-admin/account/details/:user_code"
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
-                                                            View Profile
+                                                            Xem hồ sơ cá nhân
                                                         </a> */}
                                                         <Link
                                                             to={`account`}
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
-                                                            View Profile
+                                                            Xem hồ sơ cá nhân
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -263,7 +263,7 @@ const StudentLayout = () => {
                                                     className="dropdown-item"
                                                     href="#"
                                                 >
-                                                    My Profile
+                                                    Hồ sơ cá nhân
                                                 </Link>
                                                 {/* <a
                                                     className="dropdown-item"

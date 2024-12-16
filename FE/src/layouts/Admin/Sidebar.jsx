@@ -6,7 +6,7 @@
 //         <div className="sidebar" data-background-color="dark">
 //             <div className="sidebar-logo">
 //                 <div className="logo-header" data-background-color="dark">
-//                     <Link to={"/admin"} className="logo">
+//                     <Link to={"/sup-admin"} className="logo">
 //                         <img
 //                             src="https://admin.feduvn.com/storage/logo/logo3.2-white.png"
 //                             width={150}
@@ -265,19 +265,19 @@
 //                             </div>
 //                         </li>
 //                         <li className="nav-item">
-//                             <Link to="/admin/classrooms">
+//                             <Link to="/sup-admin/classrooms">
 //                                 <i className="fas fa-school" />
 //                                 <p>Classrooms</p>
 //                             </Link>
 //                         </li>
 //                         <li className="nav-item">
-//                             <Link to="/admin/grade-components">
+//                             <Link to="/sup-admin/grade-components">
 //                                 <i className="fas fa-th-list" />
 //                                 <p>Grade components</p>
 //                             </Link>
 //                         </li>
 //                         <li className="nav-item">
-//                             <Link to="/admin/account">
+//                             <Link to="/sup-admin/account">
 //                                 <i className="fas fa-user" />
 //                                 <p>Account Manager</p>
 //                                 <span className="badge badge-success">4</span>

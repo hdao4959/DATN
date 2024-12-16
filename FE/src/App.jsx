@@ -55,7 +55,6 @@ import ShowStudentAttendance from "./pages/student/Attendance/page.jsx";
 import StudentLayout from "./layouts/Student/StudentLayout.jsx";
 import StudentGrades from "./pages/student/Grade/page.jsx";
 import ShowGradesTeacher from "./pages/teacher/Grade/page.jsx";
-import StudentServices from "./pages/student/Service/page.jsx";
 import ReEnrollment from "./pages/student/Service/ReEnrollment/page.jsx";
 import FAQs from "./pages/student/Suport/Suport.jsx";
 import TeacherAddPost from "./pages/teacher/Post/AddPost";
@@ -89,8 +88,12 @@ import ClassExams from "./pages/teacher/MyClass/ClassExams.jsx";
 import ViewExamSchedule from "./pages/student/Schedules/ViewExamSchedule.jsx";
 import RequesAcademicTranscript from "./pages/student/Service/RequestAcademicTranscript/page.jsx";
 import ServicesList from "./pages/student/Service/ServicesList.jsx";
+
 import ServiceList from "./pages/admin/Service/ListService.jsx"
+import ServiceShow from "./pages/admin/Service/ServiceShow.jsx"
+
 import StudentCourseHistory from "./pages/student/GradeHistory/page.jsx";
+import UpdateInformationForm from "./pages/student/Service/RequestChangeInfo/page.jsx";
 
 function App() {
     const router = createBrowserRouter([
@@ -113,7 +116,7 @@ function App() {
         },
         {
 
-            path: "/admin",
+            path: "/sup-admin",
             element: (
                 <CheckRole>
                     <Layout />
@@ -341,6 +344,10 @@ function App() {
                 {
                     path: "services",
                     element: <ServiceList />,
+                },
+                {
+                    path: "services/:id",
+                    element: <ServiceShow/>,
                 }
             ],
         },
@@ -443,12 +450,12 @@ function App() {
                     element: <StudentCourseHistory />,
                 },
                 {
-                    path: "services",
-                    element: <StudentServices />,
-                },
-                {
                     path: "services/yeu-cau-cap-bang-diem",
                     element: <RequesAcademicTranscript />,
+                },
+                {
+                    path: "services/yeu-cau-thay-doi-thong-tin",
+                    element: <UpdateInformationForm />,
                 },
                 {
                     path: "services/list",
@@ -512,7 +519,7 @@ function App() {
                 {
                     path: "wallet-balance",
                     element: <WalletBalance />,
-                },  
+                },
                 {
                     path: "debt",
                     element: <Debt />,

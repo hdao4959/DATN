@@ -27,7 +27,7 @@ const Signin = () => {
 
             switch (user.role) {
                 case "0":
-                    navigate("/admin");
+                    navigate("/sup-admin");
                     break;
                 case "2":
                     navigate("/teacher");

@@ -58,7 +58,7 @@ const CreateAccount = () => {
     return (
         <>
             <div className="mb-6 mt-2">
-                <Link to="/admin/teachers">
+                <Link to="/sup-admin/teachers">
                     <button className="btn btn-primary">
                         Danh sách tài khoản
                     </button>
@@ -492,7 +492,7 @@ const CreateAccount = () => {
                                 >
                                     Quay lại danh sách
                                 </button> */}
-                                <Link to="/admin/students">
+                                <Link to="/sup-admin/students">
                                     <button className="btn btn-primary">
                                         Quay lại danh sách
                                     </button>

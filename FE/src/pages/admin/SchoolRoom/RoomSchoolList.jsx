@@ -147,7 +147,7 @@ const RoomSchoolList = () => {
 
                     $(row).find('.fa-edit').on('click', function () {
                         const classCode = $(this).data('id');
-                        navigate(`/admin/schoolrooms/${classCode}/edit`);
+                        navigate(`/sup-admin/schoolrooms/${classCode}/edit`);
                     });
 
                     $(row).find('.toggleStatus').on('click', function () {
@@ -164,7 +164,7 @@ const RoomSchoolList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/schoolrooms/add">
+                <Link to="/sup-admin/schoolrooms/add">
                     <button className="btn btn-primary">Thêm phòng học</button>
                 </Link>
             </div>

@@ -31,7 +31,7 @@ const DashboardCards = () => {
 
     return (
         <div>
-            <div className="row row-card-no-pd">
+            <div className="row">
                 <div className="col-12 col-sm-6 col-md-6 col-xl-3">
                     <div className="card" style={{ minHeight: "110px" }}>
                         <div className="card-body">
