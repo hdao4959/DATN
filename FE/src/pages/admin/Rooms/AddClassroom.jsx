@@ -219,7 +219,7 @@ const AddClassroom = () => {
                 }));
 
                 const roomsAndTeachersResponse = await api.post(
-                    "/sup-admin/classrooms/renderRoomsAndTeachers",
+                    "/admin/classrooms/renderRoomsAndTeachers",
                     {
                         session_code: updatedFormData.session_code,
                         major_code: updatedFormData.major_code,
@@ -251,7 +251,7 @@ const AddClassroom = () => {
                 setResForm1(res.data);
             } else if (currentStep === 2) {
                 const response = await api.post(
-                    "/sup-admin/classrooms/handleStep2",
+                    "/admin/classrooms/handleStep2",
                     {
                         course_code: formData.course_code,
                         subject_code: formData.subject_code,
