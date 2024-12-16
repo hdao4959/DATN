@@ -14,6 +14,8 @@ const UpdatePost = () => {
     const { id } = useParams();
 
     const [content, setContent] = useState();
+    const [classrooms, setClassrooms] = useState([]);
+    const [classroomsObject, setClassroomsObject] = useState([]);
 
     const {
         register,
@@ -32,6 +34,16 @@ const UpdatePost = () => {
         },
     });
 
+    const { data } = useQuery({
+        queryKey: ["CLASSROOMS"],
+        queryFn: async () => {
+            const res = await api.get("/teacher/classrooms");
+            const classCodes = res?.data?.map((classItem) => classItem.class_code);
+            setClassrooms(classCodes);
+            return res?.data ?? [];
+        },
+    });
+
     const { data: postDetail } = useQuery({
         queryKey: ["POST_DETAIL", id],
         queryFn: async () => {
@@ -43,10 +55,10 @@ const UpdatePost = () => {
 
     const { mutate } = useMutation({
         mutationKey: ["UPDATE_POST"],
-        mutationFn: (data) => api.post(`/teacher/newsletters/${id}`, data),
+        mutationFn: (data) => api.put(`/teacher/newsletters/${id}`, data),
         onSuccess: () => {
             toast.success("Cập nhật bài viết thành công");
-            navigate("/teacher/post");
+            // navigate("/teacher/post");
         },
         onError: (error) => {
             const msg = formatErrors(error);
@@ -54,13 +66,28 @@ const UpdatePost = () => {
         },
     });
 
+    const handleClassroomChange = (event) => {
+        const selectedClass = event.target.value;
+
+        // Kiểm tra xem lớp học đã được chọn hay chưa trước khi thêm vào state
+        if (selectedClass && !classroomsObject?.some(item => item.class_code === selectedClass)) {
+            setClassroomsObject((prevState) => [...(prevState || []), { class_code: selectedClass }]); // Thêm lớp học vào mảng
+        }
+    };
+    const handleRemoveClass = (classToRemove) => {
+        setClassroomsObject((prevState) =>
+            prevState.filter((classItem) => classItem !== classToRemove)
+        );
+    };
+
     useEffect(() => {
         if (postDetail) {
             // Xử lý tags
             const processedTags = Array.isArray(postDetail.tags)
                 ? postDetail.tags.map(tag => tag.tag_name)  // Nếu là mảng đối tượng, lấy `tag_name`
                 : postDetail.tags ? postDetail.tags.split(",") : [];  // Nếu là chuỗi, tách thành mảng
-
+            // setClassroomsObject(postDetail.notification_object);
+            
             // Xử lý notification_object
             const processedNotificationObject = () => {
                 if (Array.isArray(postDetail.notification_object)) {
@@ -97,22 +124,26 @@ const UpdatePost = () => {
             toast.error("Vui lòng nhập nội dung bài viết");
             return;
         }
-
+        // console.log(values.code);
+        
         const formData = new FormData();
         formData.append("code", values.code);
         formData.append("title", values.title);
-        formData.append("tags", values.tags.join(","));
+        // formData.append("tags", JSON.stringify(values.tags.map(tag => ({ tag_name: tag }))) || '');
         formData.append("content", content);
         formData.append("description", values.description);
         formData.append("type", values.type);
-        formData.append("notification_object", values.notification_object);
+        formData.append("notification_object", JSON.stringify(classroomsObject) || '');
+        // formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-        formData.append("_method", "PUT");
-
         if (values.image && values.image.length > 0) {
             formData.append("image", values.image[0]);
         }
-
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+        console.log(formData);
+        
         mutate(formData);
     };
 
@@ -166,6 +197,7 @@ const UpdatePost = () => {
                                         </label>
                                         <input
                                             type="text"
+                                            disabled
                                             className="form-control"
                                             {...register("code", {
                                                 required:
@@ -179,10 +211,7 @@ const UpdatePost = () => {
                                             </span>
                                         )}
                                     </div>
-
-
-
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label htmlFor="tags">
                                             Tags
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
@@ -209,7 +238,7 @@ const UpdatePost = () => {
                                                 {errors.tags.message}
                                             </span>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="form-group">
                                         <label htmlFor="image">
@@ -329,7 +358,7 @@ const UpdatePost = () => {
                                                 *
                                             </span>
                                         </label>
-                                        <input
+                                        {/* <input
                                             type="text"
                                             placeholder="Nhập đối tượng"
                                             className="form-control"
@@ -341,8 +370,49 @@ const UpdatePost = () => {
                                                         "Vui lòng nhập đối tượng",
                                                 }
                                             )}
-                                        />
-
+                                        /> */}
+                                        <div style={{ marginTop: "10px" }} className="form-control">
+                                            {classroomsObject?.length > 0 ? (
+                                                classroomsObject?.map((classItem, index) => (
+                                                    <span
+                                                        key={index}
+                                                        style={{
+                                                            display: "inline-block",
+                                                            marginRight: "10px",
+                                                            padding: "5px 10px",
+                                                            backgroundColor: "#e0e0e0",
+                                                            borderRadius: "15px",
+                                                            marginBottom: "10px",
+                                                        }}
+                                                    >
+                                                        {classItem.class_code || ''}{" "}
+                                                        <span
+                                                            style={{
+                                                                cursor: "pointer",
+                                                                marginLeft: "8px",
+                                                                color: "red",
+                                                                fontWeight: "bold",
+                                                            }}
+                                                            onClick={() => handleRemoveClass(classItem)} // Gọi hàm xóa lớp học khi nhấp vào "X"
+                                                        >
+                                                            X
+                                                        </span>
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <p>Chưa chọn đối tượng nào.</p>
+                                            )}
+                                        </div>
+                                        <div className="mt-1">
+                                            <select name="classroom" id="classroom-select" onChange={handleClassroomChange} disabled={false}>
+                                                <option value="">Chọn đối tượng</option> {/* Option mặc định */}
+                                                {classrooms?.map((classItem, index) => (
+                                                    <option key={index} value={classItem}>
+                                                        {classItem}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                         {errors.notification_object && (
                                             <span className="text-danger">
                                                 {

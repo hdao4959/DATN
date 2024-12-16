@@ -323,7 +323,7 @@ class ClassroomController extends Controller
     public function store(StoreClassroomRequest $request)
     {
 
-        DB::beginTransaction();
+        
         try {
             $data = $request->validated();
             $current_classcode = Classroom::where('class_code', 'LIKE', $data['course_code'] . '.' . $data['subject_code'] . "%")
@@ -416,13 +416,13 @@ class ClassroomController extends Controller
 
             Schedule::insert($data_to_insert_schedules_table);
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Tạo lớp thành công!'
             ], 201);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }
@@ -557,7 +557,7 @@ class ClassroomController extends Controller
 
     public function destroy(string $classCode)
     {
-        DB::beginTransaction();
+        
         try {
 
             $classroom = Classroom::with([
@@ -565,7 +565,7 @@ class ClassroomController extends Controller
                     $query->selectRaw('class_code, MAX(date) as max_date, MIN(date) as min_date')
                           ->groupBy('class_code');
                 }
-            ])->where('class_code', $classCode)->lockForUpdate()->first();
+            ])->where('class_code', $classCode)->first();
 
             if (!$classroom) {
                 return $this->handleInvalidId();
@@ -592,13 +592,13 @@ class ClassroomController extends Controller
             
             $classroom->delete();
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Xoá lớp học ' . $classroom->class_name . ' thành công!'
             ], 200);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return $this->handleErrorNotDefine($th);
         }
     }

@@ -17,6 +17,7 @@ import AddSubject from "./pages/admin/Subject/AddSubject";
 import EditSubject from "./pages/admin/Subject/EditSubject";
 import CreateAccount from "./pages/admin/Account/CreateAccount";
 import ViewMyAccount from "./pages/admin/Account/ViewMyAccount";
+import ChangePassword from "./pages/admin/Account/ChangePassword";
 import CheckRole from "./pages/admin/Auth/CheckRole";
 import ClassRoomsList from "./pages/admin/Rooms/ListRooms";
 import EditClassroom from "./pages/admin/Rooms/EditClassroom";
@@ -440,6 +441,10 @@ function App() {
                 {
                     path: "account",
                     element: <ViewMyAccount />,
+                },
+                {
+                    path: "account/change-password",
+                    element: <ChangePassword/>
                 },
                 {
                     path: "grades",
