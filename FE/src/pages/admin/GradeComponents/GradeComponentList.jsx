@@ -69,16 +69,16 @@ const GradeComponentList = () => {
                     { title: "Mã điểm", data: "cate_code" },
                     { title: "Tên điểm", data: "cate_name" },
                     { title: "Trọng số", data: "value" },
-                    {
-                        title: "Trạng thái",
-                        data: "is_active",
-                        className: "text-center",
-                        render: (data) => {
-                            return data
-                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
-                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
-                        },
-                    },
+                    // {
+                    //     title: "Trạng thái",
+                    //     data: "is_active",
+                    //     className: "text-center",
+                    //     render: (data) => {
+                    //         return data
+                    //             ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
+                    //             : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`;
+                    //     },
+                    // },
                     {
                         title: "Hành động",
                         data: null,

@@ -201,7 +201,7 @@ const AddClassroom = () => {
         ) {
             try {
                 const scheduleResponse = await api.post(
-                    "/sup-admin/classrooms/renderSchedules",
+                    "/admin/classrooms/renderSchedules",
                     {
                         course_code: updatedFormData.course_code,
                         subject_code: updatedFormData.subject_code,
