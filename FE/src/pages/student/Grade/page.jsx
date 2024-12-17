@@ -17,14 +17,18 @@ const StudentGrades = () => {
             const response = await api.get("/student/grades", {
                 params: { search: semesterCode },
             });
-            setSubjects(response?.data?.scores || []);
-            setSemesters(response?.data?.semesters || []);
-            setSemesterCodeDefault(response?.data?.semesterCode || "");
-            console.log(response?.data);
-            return res?.data;
+            return response?.data;
         },
+        enabled: !!semesterCode,
     });
 
+    useEffect(() => {
+        if (data) {
+            setSubjects(data?.scores || []);
+            setSemesters(data?.semesters || []);
+            setSemesterCodeDefault(data?.semesterCode || "");
+        }
+    }, [data]);
     useEffect(() => {
         refetch();
     }, [semesterCode]);
@@ -108,7 +112,7 @@ const StudentGrades = () => {
                                 }
                                 return max;
                             }, { weight: 0, score: 0 });
-                        
+
                             const maxWeightScoreValue = parseFloat(
                                 (typeof maxWeightScore.score === "string" ? maxWeightScore.score.replace(",", ".") : maxWeightScore.score) || 0
                             );
@@ -204,6 +208,11 @@ const StudentGrades = () => {
                             );
                         })
                     )}
+                    {console.log(subjects)
+                    }
+                    {(subjects.length == 0 && !isLoadingClasses) ? (
+                        <div className="loading-spinner text-center"> Chưa có dữ liệu..</div>
+                    ) : ('')}
                 </div>
             </div>
         </div>
