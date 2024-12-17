@@ -63,10 +63,26 @@ class ClassroomController extends Controller
     {
         try {
             $perPage = $request->input('per_page', 10);
-
+            $search = $request->search;
             // Lấy danh sách các lớp học
             $classrooms = Classroom::select(['class_code', 'class_name', 'user_code', 'subject_code'])
-                ->withCount('users')
+            ->when($search, function($query) use ($search){
+                $query->where('class_code', "LIKE", "%$search%")
+                ->orWhere('class_name', "LIKE", "%$search%")
+                ->orWhereHas('teacher', function($subQuery)  use ($search){
+                    $subQuery->where('full_name', "LIKE", "%$search%");
+                })
+                ->orWhereHas('subject', function($subQuery)  use ($search){
+                    $subQuery->where('subject_name', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('schedules.session', function($subQuery) use ($search){
+                    $subQuery->where('cate_name', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('schedules.room', function($subQuery) use ($search){
+                    $subQuery->where('cate_name', 'LIKE', "%$search%");
+                });
+            })
+            ->withCount('users')
                 ->with([
                     'teacher' => function ($query) {
                         $query->select('user_code', 'full_name')->withTrashed();
@@ -75,22 +91,30 @@ class ClassroomController extends Controller
                     'schedules:class_code,date,session_code,room_code',
                     'schedules.session:cate_code,cate_name,value',
                     'schedules.room:cate_code,cate_name'
-                ])->paginate($perPage);
+                ])
+                
+                ->paginate($perPage);
 
 
 
             // return response()->json($classrooms[0]);
 
-            $classrooms->getCollection()->transform(function ($classroom) {
+            $classrooms->getCollection()->transform(function ($classroom) use ($search) {
                 $subject_info = optional($classroom->subject);
                 $teacher_info = optional($classroom->teacher);
                 $schedule_first = optional($classroom->schedules->first()); // Lấy lịch học đầu tiên
                 $session_info = optional($schedule_first->session);
                 $room_info = optional($schedule_first->room);
+
+                $students_count = $classroom->users_count;
+
+                // if($search && !str_contains((string)$students_count, (string) $search)){
+                //     return null;
+                // }
                 return [
                     'class_code' => $classroom->class_code,
                     'class_name' => $classroom->class_name,
-                    'students_count' => $classroom->users_count,
+                    'students_count' => $students_count,
                     'subject_code' => $subject_info->subject_code,
                     'subject_name' => $subject_info->subject_name,
                     'teacher_code' => $teacher_info->user_code,
@@ -104,13 +128,12 @@ class ClassroomController extends Controller
             });
 
             // Kiểm tra nếu không có dữ liệu
-            if (empty($classrooms)) {
+            if ($classrooms->isEmpty()) {
                 return response()->json(
                     ['message' => "Không có lớp học nào!"],
                     204
                 );
             }   
-
             // Trả về danh sách lớp học
             return response()->json([
                 'status' => true,
