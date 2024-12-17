@@ -235,6 +235,10 @@ const ClassRoomsList = () => {
                             `<a href='/sup-admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
                     },
                     {
+                        title: "Phòng học",
+                        data: 'room_name',
+                    },
+                    {
                         title: "Ca học",
                         data: null,
                         render: (data) =>

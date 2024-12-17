@@ -129,7 +129,7 @@ class ClassroomController extends Controller
         try {
             $data = $request->validated();
             // Lấy ra danh sách các lớp học đã được tạo bởi môn học này + khoá học này
-            $classroom_codes = Classroom::where('class_code', 'LIKE', $data['course_code'] . '.' . $data['subject_code'] . '%')
+             $classroom_codes = Classroom::where('class_code', 'LIKE', $data['course_code'] . '.' . $data['subject_code'] . '%')
                 ->select('class_code')->pluck('class_code');
             // Lấy ra danh sách các học sinh đã được xếp lớp cho môn học này + khoá học này 
             $student_codes_has_been_arrange = ClassroomUser::whereIn('class_code', $classroom_codes)->pluck('user_code');
@@ -313,7 +313,7 @@ class ClassroomController extends Controller
 
             $student_codes_can_be_arrange  = [];
 // Lấy các sinh viên chưa từng học môn này và đã đóng tiền cho kỳ có môn học này
-            $student_codes_paid = Fee::where([
+             $student_codes_paid = Fee::where([
                 'status' => 'paid',
                 'semester_code' => $semester_code
             ])->pluck('user_code')->toArray();
@@ -322,7 +322,7 @@ class ClassroomController extends Controller
                 'subject_code' => $subject->subject_code,
                 'is_pass' => false,
                 'status' => true
-            ])->toArray();
+            ])->pluck('student_code')->toArray();
             
             $student_codes_can_be_arrange = array_unique(array_merge($student_codes_paid, $student_codes_relearn));
             $students_can_be_arrange = User::whereNotIn('user_code', $student_codes_has_been_studied)

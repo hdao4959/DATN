@@ -27,6 +27,8 @@ class FeeController extends Controller
     public function index(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input('search'); // Lấy từ khóa tìm kiếm từ request
             $status = $request->input('status');
             $email = $request->input('email');
             $search = $request->input('search'); 
@@ -34,7 +36,7 @@ class FeeController extends Controller
             $orderBy === 'user' ? ($orderBy = 'user_code') : $orderBy; 
             $orderDirection = $request->input('orderDirection', 'asc'); // Mặc định sắp xếp theo hướng 'asc'
     
-            $data = $this->feeRepository->getAll($email, $status, $search, $orderBy, $orderDirection);
+            $data = $this->feeRepository->getAll($email, $status, $search, $orderBy, $orderDirection,$perPage);
             
     
             return response()->json($data);
