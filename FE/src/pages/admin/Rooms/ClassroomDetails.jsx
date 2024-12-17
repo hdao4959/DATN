@@ -7,7 +7,6 @@ const ClassRoomDetails = () => {
     const { class_code } = useParams();
     const navigate = useNavigate();
 
-    // Fetch thông tin lớp học
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["CLASSROOM_DETAIL", class_code],
         queryFn: async () => {
@@ -23,7 +22,6 @@ const ClassRoomDetails = () => {
         },
     });
 
-    // Fetch lịch học
     const {
         data: scheduleData,
         isLoading: isLoadingSchedule,
