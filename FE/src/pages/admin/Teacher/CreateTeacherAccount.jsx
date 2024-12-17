@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ const CreateTeacherAccount = () => {
         formState: { errors },
     } = useForm();
     const navigate = useNavigate();
+    const [selectedParentMajor, setSelectedParentMajor] = useState("");
 
     const { data, refetch } = useQuery({
         queryKey: ["LIST_MAJORS"],
@@ -19,6 +20,17 @@ const CreateTeacherAccount = () => {
             const res = await api.get("/listParentMajorsForForm");
             return res.data;
         },
+    });
+
+    const { data: childMajors, refetch: fetchChildMajors } = useQuery({
+        queryKey: ["LIST_CHILD_MAJORS", selectedParentMajor],
+        queryFn: async () => {
+            const res = await api.get(
+                `/listChildrenMajorsForForm/${selectedParentMajor}`
+            );
+            return res.data;
+        },
+        enabled: !!selectedParentMajor,
     });
 
     const { mutate, isLoading, isError, isSuccess, error } = useMutation({
@@ -31,13 +43,16 @@ const CreateTeacherAccount = () => {
         },
         onError: (error) => {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra");
         },
     });
 
     const majors = data || [];
     console.log(majors);
-
+    const handleParentMajorChange = (e) => {
+        const parentMajorCode = e.target.value;
+        setSelectedParentMajor(parentMajorCode); // Update state for parent major
+    };
     const onSubmit = (data) => {
         mutate(data);
     };
@@ -359,6 +374,9 @@ const CreateTeacherAccount = () => {
                                                     required:
                                                         "Vui lòng chọn ngành học",
                                                 })}
+                                                onChange={
+                                                    handleParentMajorChange
+                                                }
                                             >
                                                 <option value="">
                                                     Chọn chuyên ngành
@@ -379,17 +397,36 @@ const CreateTeacherAccount = () => {
                                             )}
                                         </div>
                                     </div>
-
                                     <div className="col-md-6">
                                         <div className="form-group">
+                                            <label>Chuyên ngành con</label>
                                             <select
-                                                hidden
                                                 className="form-select"
-                                                {...register("is_active")}
-                                                defaultValue={"0"}
-                                            ></select>
+                                                {...register(
+                                                    "narrow_major_code"
+                                                )}
+                                                disabled={!selectedParentMajor}
+                                            >
+                                                <option value="">
+                                                    Chọn chuyên ngành con
+                                                </option>
+                                                {childMajors?.map((child) => (
+                                                    <option
+                                                        key={child.cate_code}
+                                                        value={child.cate_code}
+                                                    >
+                                                        {child.cate_name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
+
+                                    <input
+                                        type="hidden"
+                                        {...register("is_active")}
+                                        value={1}
+                                    />
                                 </div>
 
                                 {/* Dòng 8 */}

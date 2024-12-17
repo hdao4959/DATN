@@ -157,7 +157,7 @@ const TeacherAccountDetails = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Ngành học</label>
+                                    <label>Ngành dạy</label>
                                     <select
                                         className="form-select"
                                         defaultValue={
@@ -166,6 +166,21 @@ const TeacherAccountDetails = () => {
                                         disabled
                                     >
                                         <option>{user.major.cate_name}</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Chuyên ngành hẹp</label>
+                                    <select
+                                        className="form-select"
+                                        defaultValue={
+                                            user.narrow_major?.cate_name || ""
+                                        }
+                                        disabled
+                                    >
+                                        <option>
+                                            {user.narrow_major?.cate_name ||
+                                                "Chưa có"}
+                                        </option>
                                     </select>
                                 </div>
                                 <div className="form-group">

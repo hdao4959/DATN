@@ -45,9 +45,9 @@ const ListTeacher = () => {
         onModalVisible();
     };
 
-
     const updateStatusMutation = useMutation({
-        mutationFn: (user_code) => api.post(`/admin/teachers/updateActive/${user_code}`),
+        mutationFn: (user_code) =>
+            api.post(`/admin/teachers/updateActive/${user_code}`),
         onSuccess: () => {
             toast.success("Cập nhật trạng thái thành công");
             refetch();
@@ -74,8 +74,10 @@ const ListTeacher = () => {
                     try {
                         const page = data.start / data.length + 1;
                         const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
-                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
-                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+                        const orderColumnName =
+                            data.columns[orderColumnIndex]?.data ||
+                            "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; //
                         const response = await api.get(`/admin/teachers`, {
                             params: {
                                 page,
@@ -101,6 +103,16 @@ const ListTeacher = () => {
                     { title: "Mã giảng viên", data: "user_code" },
                     { title: "Họ và tên", data: "full_name" },
                     { title: "Email", data: "email" },
+                    {
+                        title: "Chuyên ngành",
+                        data: "major",
+                        render: (data) => data?.cate_name || "Chưa có",
+                    },
+                    {
+                        title: "Chuyên ngành hẹp",
+                        data: "narrow_major",
+                        render: (data) => data?.cate_name || "Chưa có",
+                    },
                     {
                         title: "Giới tính",
                         data: "sex",
@@ -172,7 +184,7 @@ const ListTeacher = () => {
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Teacher Management</h4>
+                    <h4 className="card-title">Danh sách giảng viên</h4>
                 </div>
                 <div className="card-body">
                     <div className="table-responsive">

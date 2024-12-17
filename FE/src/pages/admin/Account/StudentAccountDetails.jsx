@@ -161,6 +161,21 @@ const StudentAccountDetails = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
+                                    <label>Chuyên ngành hẹp</label>
+                                    <select
+                                        className="form-select"
+                                        defaultValue={
+                                            user.narrow_major?.cate_name || ""
+                                        }
+                                        disabled
+                                    >
+                                        <option>
+                                            {user.narrow_major?.cate_name ||
+                                                "Chưa có"}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
                                     <label>Trạng thái</label>
                                     <select
                                         className="form-select"
