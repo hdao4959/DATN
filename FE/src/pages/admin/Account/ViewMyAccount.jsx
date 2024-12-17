@@ -105,6 +105,16 @@ const ViewMyAccount = () => {
                                                             ?.cate_name || ""}
                                                     </p>
                                                 </div>
+                                                <div className="d-flex gap-4 justify-content-between mt-3">
+                                                    <p className="fw-bold fs-5 mb-0 text-nowrap">
+                                                        Chuyên ngành hẹp:
+                                                    </p>
+                                                    <p className="fs-5 mb-0">
+                                                        {user?.narrow_major
+                                                            ?.cate_name ||
+                                                            "Chưa có"}
+                                                    </p>
+                                                </div>
                                                 <hr />
                                                 <div className="d-flex gap-4 justify-content-between mt-3">
                                                     <p className="fw-bold fs-5 mb-0 text-nowrap">

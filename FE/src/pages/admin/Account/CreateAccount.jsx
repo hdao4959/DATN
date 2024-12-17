@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -12,7 +12,10 @@ const CreateAccount = () => {
         formState: { errors },
     } = useForm();
 
-    const { data, refetch } = useQuery({
+    const [selectedParentMajor, setSelectedParentMajor] = useState("");
+
+    // Fetch parent majors
+    const { data: majors } = useQuery({
         queryKey: ["LIST_MAJORS"],
         queryFn: async () => {
             const res = await api.get("/listParentMajorsForForm");
@@ -20,6 +23,7 @@ const CreateAccount = () => {
         },
     });
 
+    // Fetch semesters
     const { data: semesters } = useQuery({
         queryKey: ["LIST_SEMESTERS"],
         queryFn: async () => {
@@ -27,6 +31,8 @@ const CreateAccount = () => {
             return res.data;
         },
     });
+
+    // Fetch courses
     const { data: courses } = useQuery({
         queryKey: ["LIST_COURSES"],
         queryFn: async () => {
@@ -35,26 +41,38 @@ const CreateAccount = () => {
         },
     });
 
-    const { mutate, isLoading, isError, isSuccess, error } = useMutation({
-        mutationFn: (data) => {
-            return api.post("/admin/students", data);
+    const { data: childMajors, refetch: fetchChildMajors } = useQuery({
+        queryKey: ["LIST_CHILD_MAJORS", selectedParentMajor],
+        queryFn: async () => {
+            const res = await api.get(
+                `/listChildrenMajorsForForm/${selectedParentMajor}`
+            );
+            return res.data;
         },
-        onSuccess: () => {
-            toast.success("Tạo tài khoản thành công !");
-        },
-        onError: (error) => {
-            console.log(error);
-            toast.error(error.response.data.message);
-        },
+        enabled: !!selectedParentMajor,
     });
 
-    const majors = data || [];
-    const allSemesters = semesters || [];
-    const allCourses = courses || [];
+    const { mutate, isLoading, isSuccess } = useMutation({
+        mutationFn: (data) => api.post("/admin/students", data),
+        onSuccess: () => {
+            toast.success("Tạo tài khoản thành công !");
+            navigate("/sup-admin/students");
+        },
+        onError: (error) => {
+            toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+        },
+    });
 
     const onSubmit = (data) => {
         mutate(data);
     };
+
+    const handleParentMajorChange = (e) => {
+        const parentMajorCode = e.target.value;
+        setSelectedParentMajor(parentMajorCode); // Update state for parent major
+    };
+    const allCourses = courses || [];
+
     return (
         <>
             <div className="mb-6 mt-2">
@@ -380,14 +398,10 @@ const CreateAccount = () => {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Dòng 7 */}
                                 <div className="row">
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label htmlFor="exampleFormControlSelect1">
-                                                Kỳ học
-                                            </label>
+                                            <label>Kỳ học</label>
                                             <select
                                                 className="form-select"
                                                 {...register("semester_code", {
@@ -395,21 +409,19 @@ const CreateAccount = () => {
                                                         "Vui lòng chọn kỳ học",
                                                 })}
                                             >
-                                                <option value="">Kỳ học</option>
-                                                {allSemesters.map(
-                                                    (semester) => (
-                                                        <option
-                                                            key={
-                                                                semester.cate_code
-                                                            }
-                                                            value={
-                                                                semester.cate_code
-                                                            }
-                                                        >
-                                                            {semester.cate_name}
-                                                        </option>
-                                                    )
-                                                )}
+                                                <option value="">
+                                                    Chọn kỳ học
+                                                </option>
+                                                {semesters?.map((semester) => (
+                                                    <option
+                                                        key={semester.cate_code}
+                                                        value={
+                                                            semester.cate_code
+                                                        }
+                                                    >
+                                                        {semester.cate_name}
+                                                    </option>
+                                                ))}
                                             </select>
                                             {errors.semester_code && (
                                                 <p className="text-danger">
@@ -422,22 +434,24 @@ const CreateAccount = () => {
                                         </div>
                                     </div>
 
+                                    {/* Parent Major Selection */}
                                     <div className="col-md-6">
                                         <div className="form-group">
-                                            <label htmlFor="exampleFormControlSelect1">
-                                                Ngành học
-                                            </label>
+                                            <label>Ngành học</label>
                                             <select
                                                 className="form-select"
                                                 {...register("major_code", {
                                                     required:
                                                         "Vui lòng chọn ngành học",
                                                 })}
+                                                onChange={
+                                                    handleParentMajorChange
+                                                }
                                             >
                                                 <option value="">
                                                     Chọn ngành học
                                                 </option>
-                                                {majors.map((major) => (
+                                                {majors?.map((major) => (
                                                     <option
                                                         key={major.cate_code}
                                                         value={major.cate_code}
@@ -454,19 +468,37 @@ const CreateAccount = () => {
                                         </div>
                                     </div>
 
+                                    {/* Child Major Selection */}
                                     <div className="col-md-6">
                                         <div className="form-group">
+                                            <label>Chuyên ngành con</label>
                                             <select
-                                                hidden
                                                 className="form-select"
-                                                {...register("is_active")}
-                                                defaultValue={"0"}
-                                            ></select>
+                                                {...register(
+                                                    "narrow_major_code"
+                                                )}
+                                                disabled={!selectedParentMajor}
+                                            >
+                                                <option value="">
+                                                    Chọn chuyên ngành con
+                                                </option>
+                                                {childMajors?.map((child) => (
+                                                    <option
+                                                        key={child.cate_code}
+                                                        value={child.cate_code}
+                                                    >
+                                                        {child.cate_name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
+                                    <input
+                                        type="hidden"
+                                        {...register("is_active")}
+                                        value={1}
+                                    />
                                 </div>
-
-                                {/* Dòng 8 */}
                             </div>
 
                             <div className="card-action gap-x-3 flex">
@@ -479,14 +511,12 @@ const CreateAccount = () => {
                                         ? "Đang tạo tài khoản..."
                                         : "Thêm mới tài khoản"}
                                 </button>
-                                {/* <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                >
-                                    Quay lại danh sách
-                                </button> */}
+
                                 <Link to="/sup-admin/students">
-                                    <button className="btn btn-primary">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                    >
                                         Quay lại danh sách
                                     </button>
                                 </Link>
