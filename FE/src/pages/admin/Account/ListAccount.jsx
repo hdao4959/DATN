@@ -10,12 +10,15 @@ import $ from "jquery";
 import "datatables.net";
 
 const ListAccount = () => {
+
     const accessToken = getToken();
-    const navigate = useNavigate();
+    const [selectedUserCode, setSelectedUserCode] = useState();
     const [modalOpen, setModalOpen] = useState(false);
+    const [statusModalOpen, setStatusModalOpen] = useState(false);
     const [selectedGradeComponent, setSelectedGradeComponent] = useState();
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
+    const onStatusModalVisible = () => setStatusModalOpen((prev) => !prev);
 
     const { data, refetch } = useQuery({
         queryKey: ["LIST_ACCOUNT"],
@@ -43,6 +46,23 @@ const ListAccount = () => {
         setSelectedGradeComponent(user_code);
         onModalVisible();
     };
+    const updateStatusMutation = useMutation({
+        mutationFn: (user_code) => api.post(`/admin/students/updateActive/${user_code}`),
+        onSuccess: () => {
+            toast.success("Cập nhật trạng thái thành công");
+            refetch();
+            onStatusModalVisible();
+        },
+        onError: () => {
+            toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
+        },
+    });
+
+    // Hàm xử lý khi nhấn vào trạng thái
+    const handleUpdateStatus = (user_code) => {
+        setSelectedUserCode(user_code); // Lưu mã người dùng vào selectedUserCode
+        onStatusModalVisible(); // Hiển thị modal xác nhận
+    };
 
     useEffect(() => {
         if (users) {
@@ -50,14 +70,12 @@ const ListAccount = () => {
                 $("#usersTable").DataTable().destroy();
             }
 
-            // Khởi tạo DataTable
             $("#usersTable").DataTable({
                 data: users,
                 serverSide: true,
                 processing: true,
                 ajax: async (data, callback) => {
                     try {
-                        // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
                         const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
                         const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
@@ -65,7 +83,6 @@ const ListAccount = () => {
 
                         // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
-                            // params: { page, per_page: data.length },
                             params: {
                                 page,
                                 per_page: data.length,
@@ -75,10 +92,7 @@ const ListAccount = () => {
                             },
                         });
 
-                        // Dữ liệu trả về từ API
                         const result = response.data;
-
-                        // Gọi callback để DataTables hiển thị dữ liệu
                         callback({
                             draw: data.draw,
                             recordsTotal: result.total,
@@ -110,22 +124,21 @@ const ListAccount = () => {
                         className: "text-center",
                         render: (data) =>
                             data
-                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px;"></i>`
-                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px;"></i>`,
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`,
                     },
                     {
                         title: "Hành động",
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                            <a href="/admin/students/edit/${row.user_code}">
-               <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
-            </a>
-                             <a href="/admin/students/${row.user_code}">
-                <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
-            </a>
-                                
-                                <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
+                                <a href="/sup-admin/students/edit/${row.user_code}">
+                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;"></i>
+                                </a>
+                                <a href="/sup-admin/students/${row.user_code}">
+                                    <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
+                                </a>
+                                <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}"></i>
                             </div>
                         `,
                     },
@@ -140,16 +153,15 @@ const ListAccount = () => {
                 },
                 destroy: true,
                 createdRow: (row, data) => {
+                    // Xử lý khi nhấn biểu tượng thay đổi trạng thái
+                    $(row)
+                        .find(".toggleStatus")
+                        .on("click", () => handleUpdateStatus(data.user_code));
+
+                    // Xử lý xóa tài khoản
                     $(row)
                         .find(".fa-trash")
-                        .on("click", () => {
-                            handleDelete(data.user_code);
-                        });
-                    $(row)
-                        .find(".fa-edit")
-                        .on("click", () => {
-                            navigate(`/admin/students/${data.user_code}`);
-                        });
+                        .on("click", () => handleDelete(data.user_code));
                 },
             });
         }
@@ -184,6 +196,16 @@ const ListAccount = () => {
                 onVisible={onModalVisible}
                 onOk={() => mutate(selectedGradeComponent)}
             />
+            <Modal
+                title="Cập nhật trạng thái"
+                description="Bạn có chắc chắn muốn cập nhật trạng thái của tài khoản này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={statusModalOpen}
+                onVisible={onStatusModalVisible}
+                onOk={() => updateStatusMutation.mutate(selectedUserCode)} // Gọi mutation khi người dùng xác nhận
+            />
+
         </>
     );
 };
