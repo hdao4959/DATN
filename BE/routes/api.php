@@ -302,9 +302,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('newsletters/{cateCode}', [StudentNewsletterController::class, 'showCategory']);
         Route::apiResource('transaction', TransactionController::class);
         Route::get('getListDebt', [FeeController::class, 'getListDebt']);
+
         Route::post('services/learn-again',    [ServiceController::class, "LearnAgain"]);
         Route::get('services/getListLearnAgain',    [ServiceController::class, "getListLearnAgain"]);
         Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
+
         Route::post('change-password',[AuthController::class,'changePassword']);
 
         // dịch vụ cung cấp bảng điểm
@@ -313,7 +315,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
         Route::delete('services/delete/{id}',[ServiceController::class, 'cancelServiceByStudent']);
-
     });
 
     // Các route phục vụ cho form
@@ -345,23 +346,26 @@ Route::get('status-fee-all',    [DashboardController::class, 'getStatusFeesAll']
 Route::get('status-attendances', [DashboardController::class, 'getStatusAttendances']);
 
 // Admin
-Route::post('students/change-major/{id}', [StudentController::class, 'changeMajorStudent']);
 // Student
-
 Route::post('services/change-major/{user_code}',            [ServiceController::class, 'changeMajor']);
 
 // cung cấp thẻ sinh viên
 Route::post('services/register/dang-ky-cap-lai-the',        [ServiceController::class, 'provideStudentCard']);
 
 Route::apiResource('fees', FeeController::class);
+//momo học phí
 Route::get('momo-payment', [CheckoutController::class, 'momo_payment']);
+
+//momo học lại
 Route::get('total_momo/learn-again', [CheckoutLearnAgainController::class, 'momo_payment']);
+
+// quên mật khẩu
 Route::post('/forgot-password', [ForgetPasswordController::class, 'forgetPasswordPost']);
 Route::post('/reset-password', [ForgetPasswordController::class, 'resetPasswordPost']);
+
 Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment']);
 Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo_payment']);
 Route::get('return-vnpay', [CheckoutController::class, 'vnpay_payment_return']);
-
 
 
 Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo_payment']);
@@ -370,6 +374,7 @@ Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo
 // api dẫn đến trang thanh toán vnpay của dịch vụ
 Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment'])
     ->name('total_vnpay_service');
+    
 Route::get('return-vnpay/service', [CheckoutServiceController::class, 'vnpay_payment_return']);
 Route::get('failed-vnpay', [CheckoutServiceController::class, 'vnpay_payment_fail'])->name('payment.failed');
 Route::get('success-vnpay', [CheckoutServiceController::class, 'vnpay_payment_success'])->name('payment.success');

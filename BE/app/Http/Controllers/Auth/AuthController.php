@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
@@ -93,15 +94,10 @@ class AuthController extends Controller
 
     }
 
-    public function changePassword(Request $request)
+    public function changePassword(ChangePasswordRequest $request)
     {
         try {
-            // Validate input
-            $request->validate([
-                'current_password' => 'required',
-                'new_password' => 'required|min:8|confirmed',
-            ]);
-            // Lấy user hiện tại
+
             $user_code = $request->user()->user_code;
 
             $user = User::where('user_code', $user_code)->firstOrFail();

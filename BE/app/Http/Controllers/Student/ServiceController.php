@@ -107,7 +107,7 @@ class ServiceController extends Controller
                     ->with('Subject')->get();
     return response()->json(['data' => $subject], 200);
   }
-  
+
 
   public function LearnAgain(Request $request)
   {
@@ -127,7 +127,6 @@ class ServiceController extends Controller
 
       $service = Service::create($data);
       if ($service) {
-
       $redirectUrl = url("/send-email/learn-again/{$service->id}");
 
       // Gọi API gửi email
