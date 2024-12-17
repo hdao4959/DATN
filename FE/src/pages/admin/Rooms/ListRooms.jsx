@@ -17,8 +17,6 @@ const ClassRoomsList = () => {
 
     const [classrooms, setClassRooms] = useState([]);
     const [startDate, setStartDate] = useState("");
-    const [currentClassCode, setCurrentClassCode] = useState(null);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const { data, refetch, isLoading, isError, error } = useQuery({
         queryKey: ["LIST_ROOMS"],
@@ -81,7 +79,7 @@ const ClassRoomsList = () => {
                 if (res1.data.error) {
                     toast.error(
                         res1.data.message ||
-                        "Có lỗi xảy ra khi lấy thông tin lớp học."
+                            "Có lỗi xảy ra khi lấy thông tin lớp học."
                     );
                     throw new Error(
                         res1.data.message || "Lỗi lấy thông tin lớp học."
@@ -92,7 +90,7 @@ const ClassRoomsList = () => {
                 if (res2.data.error) {
                     toast.error(
                         res2.data.message ||
-                        "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
+                            "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
                     );
                     throw new Error(res2.data.message || "Lỗi thêm sinh viên.");
                 }
@@ -101,7 +99,7 @@ const ClassRoomsList = () => {
                 if (res3.data.error) {
                     toast.error(
                         res3.data.message ||
-                        "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
+                            "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
                     );
                     throw new Error(
                         res3.data.message || "Lỗi thêm giảng viên."
@@ -112,7 +110,7 @@ const ClassRoomsList = () => {
                 if (res4.data.error) {
                     toast.error(
                         res4.data.message ||
-                        "Có lỗi xảy ra khi tạo lịch học và lịch thi."
+                            "Có lỗi xảy ra khi tạo lịch học và lịch thi."
                     );
                     throw new Error(
                         res4.data.message || "Lỗi tạo lịch học và lịch thi."
@@ -123,7 +121,7 @@ const ClassRoomsList = () => {
                 if (res5.data.error) {
                     toast.error(
                         res5.data.message ||
-                        "Có lỗi xảy ra khi tạo danh sách điểm danh."
+                            "Có lỗi xảy ra khi tạo danh sách điểm danh."
                     );
                     throw new Error(
                         res5.data.message || "Lỗi tạo danh sách điểm danh."
@@ -155,7 +153,6 @@ const ClassRoomsList = () => {
             $("#classroomsTable").DataTable({
                 data: classrooms.map((cls) => ({
                     class_name: cls.class_name || "N/A",
-                    date_start: cls.date_start || "N/A",
                     class_code: cls.class_code || "N/A",
                     subject_name: cls.subject_name || "N/A",
                     teacher_code: cls.teacher_code || "N/A",
@@ -167,16 +164,26 @@ const ClassRoomsList = () => {
                         : { start: "", end: "" },
                 })),
                 processing: true,
-                serverSide: true,
+                serverSide: true, 
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                        // Xử lý order từ DataTables
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+
                         const response = await api.get(`/admin/classrooms`, {
-                            params: { page, per_page: data.length, search: data.search.value || "", },
+                            params: {
+                                page,
+                                per_page: data.length,
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
+                            },
                         });
                         const result = response?.data?.classrooms;
                         const dataI = result?.data?.map((cls) => ({
-                            date_start: cls.date_start || "N/A",
                             class_name: cls.class_name || "N/A",
                             class_code: cls.class_code || "N/A",
                             subject_name: cls.subject_name || "N/A",
@@ -209,10 +216,10 @@ const ClassRoomsList = () => {
                 columns: [
                     {
                         title: "Lớp học",
-                        data: null,
-                        render: (data) =>
-                            `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
-                                     ${data.class_name}
+                        data: 'class_name',
+                        render: (data, type, row) =>
+                            `<span class="viewDetail" data-class_code="${row.class_code}" style="margin-right: 5px;">
+                                     ${data}
                                 </span>`,
                     },
                     {
@@ -221,18 +228,18 @@ const ClassRoomsList = () => {
                     },
                     {
                         title: "Giảng viên",
-                        data: null,
-                        render: (data) =>
-                            `<a href='/sup-admin/teachers/edit/${data.teacher_code}' class='text-dark'>
-                                ${data.teacher_name}
+                        data: 'teacher_name',
+                        render: (data, type, row) =>
+                            `<a href='/admin/teachers/edit/${row.teacher_code}' class='text-dark'>
+                                ${data}
                             </a>`,
                     },
                     {
                         title: "Số sinh viên",
-                        data: null,
+                        data: 'students_count',
                         className: "text-center",
-                        render: (data) =>
-                            `<a href='/sup-admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
+                        render: (data, type, row) =>
+                            `${data}`,
                     },
                     {
                         title: "Phòng học",
@@ -240,13 +247,9 @@ const ClassRoomsList = () => {
                     },
                     {
                         title: "Ca học",
-                        data: null,
-                        render: (data) =>
-                            `${data.session_name} (${data.room_time.start} - ${data.room_time.end})`
-                    },
-                    {
-                        title: "Ngày bắt đầu",
-                        data: "date_start",
+                        data: 'session_name',
+                        render: (data, type, row) =>
+                            `${data} (${row.room_time.start} - ${row.room_time.end})`
                     },
                     {
                         title: "",
@@ -269,9 +272,7 @@ const ClassRoomsList = () => {
 
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
-                console.log(classCode);
-
-                navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
+                navigate(`/admin/classrooms/view/${classCode}/detail`);
             });
             $("#classroomsTable tbody").on(
                 "click",
@@ -279,12 +280,12 @@ const ClassRoomsList = () => {
                 function () {
                     const classCode = $(this).data("class_code");
                     if ($(this).text() === "Xem điểm") {
-                        navigate(`/sup-admin/classrooms/view/${classCode}/grades`);
+                        navigate(`/admin/classrooms/view/${classCode}/grades`);
                     } else if ($(this).text() === "Chi tiết") {
-                        navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
+                        navigate(`/admin/classrooms/view/${classCode}/detail`);
                     } else if ($(this).text() === "Xem điểm danh") {
                         navigate(
-                            `/sup-admin/classrooms/view/${classCode}/attendances`
+                            `/admin/classrooms/view/${classCode}/attendances`
                         );
                     }
                 }
@@ -295,7 +296,7 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/sup-admin/classrooms/add">
+                <Link to="/admin/classrooms/add">
                     <button className="btn btn-primary">Tạo lớp học mới</button>
                 </Link>
             </div>

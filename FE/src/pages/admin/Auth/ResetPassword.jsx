@@ -116,7 +116,13 @@ const ResetPassword = () => {
                                                 <input
                                                     type="password"
                                                     className="form-control"
-                                                    {...register("password", { required: "Vui lòng nhập mật khẩu" })}
+                                                    {...register("password", { 
+                                                        required: "Vui lòng nhập mật khẩu", 
+                                                        minLength: {
+                                                            value: 8,
+                                                            message: "Mật khẩu phải chứa ít nhất 8 ký tự"
+                                                        }
+                                                    })}
                                                 />
                                                 {errors.password && <p className="text-danger">{errors.password.message}</p>}
                                             </div>
@@ -127,11 +133,12 @@ const ResetPassword = () => {
                                                     className="form-control"
                                                     {...register("password_confirmation", { 
                                                         required: "Vui lòng xác nhận mật khẩu",
-                                                        validate: value => value === getValues("password") || "Mật khẩu không khớp" 
+                                                        validate: value => value === getValues("password") || "Mật khẩu không khớp"
                                                     })}
                                                 />
                                                 {errors.password_confirmation && <p className="text-danger">{errors.password_confirmation.message}</p>}
                                             </div>
+
                                             <button type="submit" className="btn btn-primary w-100">
                                                 Đặt lại mật khẩu
                                             </button>

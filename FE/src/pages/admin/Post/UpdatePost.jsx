@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -7,7 +7,6 @@ import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { formatErrors } from "../../../utils/formatErrors";
 import { useEffect, useState } from "react";
-import InputChip from "./InputChip";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
 const UpdatePost = () => {
@@ -19,7 +18,6 @@ const UpdatePost = () => {
         register,
         handleSubmit,
         formState: { errors },
-        control,
         reset,
     } = useForm();
     const navigate = useNavigate();
@@ -36,7 +34,6 @@ const UpdatePost = () => {
         queryKey: ["POST_DETAIL", id],
         queryFn: async () => {
             const res = await api.get(`/admin/newsletters/${id}`);
-
             return res.data?.[0];
         },
     });
@@ -53,49 +50,20 @@ const UpdatePost = () => {
             toast.error(msg || "Có lỗi xảy ra");
         },
     });
+
     useEffect(() => {
         if (postDetail) {
-            // Xử lý tags
-            const processedTags = Array.isArray(postDetail.tags)
-                ? postDetail.tags.map(tag => tag.tag_name)  // Nếu là mảng đối tượng, lấy `tag_name`
-                : postDetail.tags ? postDetail.tags.split(",") : [];  // Nếu là chuỗi, tách thành mảng
-
-            // Xử lý notification_object
-            const processedNotificationObject = () => {
-                if (Array.isArray(postDetail.notification_object)) {
-                    // Nếu là mảng đối tượng hợp lệ, trích xuất class_code và kết hợp thành chuỗi
-                    return postDetail.notification_object.map(item => item.class_code).join(", ");
-                } else if (!postDetail.notification_object || postDetail.notification_object === null) {
-                    // Nếu là null hoặc không có giá trị, trả về chuỗi rỗng
-                    return "";
-                } else {
-                    // Nếu là chuỗi bất kỳ (ví dụ: "sds", "abc123"), trả về chuỗi đó
-                    return postDetail.notification_object || "";
-                }
-            };
-
-            const notificationObject = processedNotificationObject();  // Lấy giá trị đã xử lý
-
-            // Reset form với các giá trị đã xử lý
             reset({
                 code: postDetail.code,
                 title: postDetail.title,
-                tags: processedTags,  // Gán tags đã xử lý
                 description: postDetail.description,
                 type: postDetail.type,
-                notification_object: notificationObject,  // Gán notification_object đã xử lý
                 cate_code: postDetail.cate_code,
             });
 
             setContent(postDetail.content);
         }
     }, [postDetail]);
-
-
-
-
-
-
 
     const onSubmit = (values) => {
         if (content === "<p><br></p>") {
@@ -104,13 +72,10 @@ const UpdatePost = () => {
         }
 
         const formData = new FormData();
-        formData.append("code", values.code);
         formData.append("title", values.title);
-        formData.append("tags", values.tags.join(","));
         formData.append("content", content);
         formData.append("description", values.description);
         formData.append("type", values.type);
-        formData.append("notification_object", values.notification_object);
         formData.append("cate_code", values.cate_code);
         formData.append("_method", "PUT");
 
@@ -161,9 +126,8 @@ const UpdatePost = () => {
                                             </span>
                                         )}
                                     </div>
-
                                     <div className="form-group">
-                                        <label htmlFor="code">
+                                        <label htmlFor="title">
                                             Mã bài viết
                                             <span className="text-red-500 font-semibold ml-1 text-lg">
                                                 *
@@ -172,74 +136,10 @@ const UpdatePost = () => {
                                         <input
                                             type="text"
                                             className="form-control"
-                                            {...register("code", {
-                                                required:
-                                                    "Mã bài viết là bắt buộc",
-                                            })}
-                                            placeholder="Nhập mã bài viết"
-                                        />
-                                        {errors.code && (
-                                            <span className="text-danger">
-                                                {errors.code.message}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* <div className="form-group">
-                                        <label htmlFor="value">
-                                            Vị trí sắp xếp
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            {...register("value", {
-                                                required:
-                                                    "Vị trí sắp xếp là bắt buộc",
-                                                min: {
-                                                    value: 0,
-                                                    message:
-                                                        "Giá trị không hợp lệ",
-                                                },
-                                            })}
-                                            placeholder="Nhập vị trí sắp xếp"
-                                        />
-                                        {errors.value && (
-                                            <span className="text-danger">
-                                                {errors.value.message}
-                                            </span>
-                                        )}
-                                    </div> */}
-
-                                    <div className="form-group">
-                                        <label htmlFor="tags">
-                                            Tags
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-
-                                        <Controller
-                                            name="tags"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <InputChip
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                />
-                                            )}
-                                            rules={{
-                                                required: "Vui lòng nhập tags",
-                                            }}
+                                            {...register("code")}
+                                            disabled
                                         />
 
-                                        {errors.tags && (
-                                            <span className="text-danger">
-                                                {errors.tags.message}
-                                            </span>
-                                        )}
                                     </div>
 
                                     <div className="form-group">
@@ -312,19 +212,6 @@ const UpdatePost = () => {
                                             </span>
                                         )}
                                     </div>
-
-                                    {/* <div className="form-group">
-                                        <label htmlFor="is_active">
-                                            Ngày hết hạn
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            name=""
-                                            className="form-control"
-                                            id=""
-                                        />
-                                    </div> */}
-
                                     <div className="form-group">
                                         <label htmlFor="cate_code">
                                             Danh mục
@@ -355,37 +242,6 @@ const UpdatePost = () => {
                                         {errors.cate_code && (
                                             <span className="text-danger">
                                                 {errors.cate_code.message}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="notification_object">
-                                            Đối tượng
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder="Nhập đối tượng"
-                                            className="form-control"
-                                            id="notification_object"
-                                            {...register(
-                                                "notification_object",
-                                                {
-                                                    required:
-                                                        "Vui lòng nhập đối tượng",
-                                                }
-                                            )}
-                                        />
-
-                                        {errors.notification_object && (
-                                            <span className="text-danger">
-                                                {
-                                                    errors.notification_object
-                                                        .message
-                                                }
                                             </span>
                                         )}
                                     </div>
