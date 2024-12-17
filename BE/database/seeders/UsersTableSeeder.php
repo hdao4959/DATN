@@ -16,11 +16,12 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $lastNames = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Vũ', 'Đặng', 'Bùi', 'Đỗ', 'Hồ'];
-        $middleNames = ['Văn', 'Thị', 'Hữu', 'Minh', 'Quang', 'Ngọc', 'Gia', 'Anh', 'Thanh', 'Tuấn'];
-        $firstNames = ['Hưng', 'Hạnh', 'Dũng', 'Trang', 'Hải', 'Linh', 'Tuấn', 'Lan', 'Thảo', 'Nam'];
+        $lastNames = ['Lý', 'Phan', 'Đoàn', 'Ngô', 'Bảo', 'Hà', 'Cao', 'Dương', 'Trịnh', 'Mai'];
+        $middleNames = ['Hồng', 'Kim', 'Tuệ', 'Thanh', 'Cẩm', 'Phương', 'Thùy', 'Vân', 'Lan', 'Minh'];
+        $firstNames = ['Sơn', 'Hoài', 'Khánh', 'Tú', 'Vũ', 'Nhung', 'Mai', 'Nhật', 'Mỹ', 'Quyên'];
 
-        for ($i = 201 ; $i < 300 ; $i++) {
+
+        for ($i = 305 ; $i < 400 ; $i++) {
             $fullName = $lastNames[array_rand($lastNames)] . ' '
                 . $middleNames[array_rand($middleNames)] . ' '
                 . $firstNames[array_rand($firstNames)];
@@ -43,7 +44,7 @@ class UsersTableSeeder extends Seeder
                 'major_code' => 'WEB',
                 'narrow_major_code' => ['FE', 'BE'][rand(0, 1)],
                 'semester_code' => 'S1',
-                'course_code' => 'K1',
+                'course_code' => 'K2',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
