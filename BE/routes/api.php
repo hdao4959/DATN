@@ -328,7 +328,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/listParentMajorsForForm', 'listParentMajorsForForm');
         Route::get('/listChildrenMajorsForForm/{parent_code}', 'listChildrenMajorsForForm');
         Route::get('/listSubjectsToMajorForForm/{major_code}',  'listSubjectsToMajorForForm');
-        Route::post('/subjects/{semester_code}/{major_code}', 'listSubjectsToSemesterAndMajorForForm');
+        Route::get('/subjects/{semester_code}/{major_code}', 'listSubjectsToSemesterAndMajorForForm');
         Route::get('/listSessionsForForm', 'listSessionsForForm');
         Route::get('/listRoomsForForm', 'listRoomsForForm');
         Route::get('/listSubjectsForForm', 'listSubjectsForForm');
