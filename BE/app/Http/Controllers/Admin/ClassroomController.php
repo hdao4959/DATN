@@ -67,6 +67,8 @@ class ClassroomController extends Controller
             $orderDirection = $request->input('orderDirection', 'asc');
     
             $classrooms = Classroom::select(['classrooms.class_code', 'classrooms.class_name', 'classrooms.user_code', 'classrooms.subject_code', 'classrooms.is_active'])
+            ->where('classrooms.is_active',true)
+
                 ->when($search, function($query) use ($search) {
                     $query->where('classrooms.class_code', "LIKE", "%$search%")
                         ->orWhere('classrooms.class_name', "LIKE", "%$search%")
