@@ -112,11 +112,11 @@ const ServicesList = () => {
                         data: null,
                         render: (data, type, row) => {
                             const disableCancel =
-                                row.status === "approved" || row.status === "rejected"
+                                row.status === "approved" || row.status === "rejected" || row.status === "paid"
                                     ? "disabled"
                                     : "";
                             const opacity =
-                                row.status === "approved" || row.status === "rejected"
+                                row.status === "approved" || row.status === "rejected" 
                                     ? "opacity-50"
                                     : "";
     
@@ -127,7 +127,7 @@ const ServicesList = () => {
                                     </button>
                             `;
     
-                            if (row.status === "pending") {
+                            if (row.status === "pending" && row.amount != 0) {
                                 actionButtons += `
                                     <a href="https://admin.feduvn.com/api/total_vnpay/service?id=${row.id}&user_code=${row.code}" class="pay-btn btn btn-success ${opacity}">
                                         Thanh toán
