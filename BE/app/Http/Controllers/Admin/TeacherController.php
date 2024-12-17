@@ -210,7 +210,6 @@ class TeacherController extends Controller
                 'message' => 'Chỉnh sửa thông tin giảng viên thành công!'
             ],200);
         } catch (\Throwable $th) {
-
             return $this->handleErrorNotDefine($th);
         }
     }
