@@ -121,6 +121,11 @@ const ListAccount = () => {
                         render: (data) => data?.cate_name || "",
                     },
                     {
+                        title: "Kỳ học",
+                        data: "semester",
+                        render: (data) => data?.cate_name || "",
+                    },
+                    {
                         title: "Trạng thái",
                         data: "is_active",
                         className: "text-center",
