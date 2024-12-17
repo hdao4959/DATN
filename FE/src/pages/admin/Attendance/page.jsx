@@ -67,6 +67,13 @@ const ShowAttendance = () => {
                     (a, b) => new Date(a) - new Date(b)
                 )
                 : [];
+            const markedDates = sortedDates.map((date, index) => {
+                const isLastTwo = index >= sortedDates.length - 3; // Kiểm tra 2 ngày cuối
+                return {
+                    date,
+                    label: isLastTwo ? `<div>${formatDate(date)}<div class="badge bg-info mt-1">Ngày thi</div></div>` : formatDate(date),
+                };
+            });
             const tableData = Object.values(students);
 
             const table = $("#attendanceTable").DataTable({
@@ -89,11 +96,13 @@ const ShowAttendance = () => {
                     },
                     { title: "Mã SV", data: "student_code" },
                     { title: "Tên SV", data: "full_name" },
-                    ...sortedDates.map((date) => ({
-                        title: formatDate(date),
+                    ...markedDates.map(({ date, label }) => ({
+                        title: label,
                         className: 'text-center',
                         data: null,
                         render: (data, type, row) => {
+                            console.log(label);
+                            
                             const attendance = row.attendance[date] || {};
 
                             if (!isEditing) {
@@ -128,7 +137,7 @@ const ShowAttendance = () => {
                 scrollX: true,
                 autoWidth: true,
                 scrollCollapse: true,
-                scrollY: "100%", 
+                scrollY: "100%",
                 fixedHeader: true, // Cố định hàng tiêu đề
                 fixedColumns: {
                     left: 3, // Cố định 3 cột đầu
