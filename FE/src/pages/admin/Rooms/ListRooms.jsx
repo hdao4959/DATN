@@ -230,7 +230,7 @@ const ClassRoomsList = () => {
                         title: "Giảng viên",
                         data: 'teacher_name',
                         render: (data, type, row) =>
-                            `<a href='/admin/teachers/edit/${row.teacher_code}' class='text-dark'>
+                            `<a href='/sup-admin/teachers/edit/${row.teacher_code}' class='text-dark'>
                                 ${data}
                             </a>`,
                     },
@@ -272,7 +272,7 @@ const ClassRoomsList = () => {
 
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
-                navigate(`/admin/classrooms/view/${classCode}/detail`);
+                navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
             });
             $("#classroomsTable tbody").on(
                 "click",
@@ -280,12 +280,12 @@ const ClassRoomsList = () => {
                 function () {
                     const classCode = $(this).data("class_code");
                     if ($(this).text() === "Xem điểm") {
-                        navigate(`/admin/classrooms/view/${classCode}/grades`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/grades`);
                     } else if ($(this).text() === "Chi tiết") {
-                        navigate(`/admin/classrooms/view/${classCode}/detail`);
+                        navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
                     } else if ($(this).text() === "Xem điểm danh") {
                         navigate(
-                            `/admin/classrooms/view/${classCode}/attendances`
+                            `/sup-admin/classrooms/view/${classCode}/attendances`
                         );
                     }
                 }
@@ -296,7 +296,7 @@ const ClassRoomsList = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/classrooms/add">
+                <Link to="/sup-admin/classrooms/add">
                     <button className="btn btn-primary">Tạo lớp học mới</button>
                 </Link>
             </div>
