@@ -46,11 +46,14 @@ const SubjectsList = () => {
                 data: subjects,
                 processing: true,
                 serverSide: true,
+                ordering: false,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
                         const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
-                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderColumnName =
+                            data.columns[orderColumnIndex]?.data ||
+                            "created_at"; // Tên cột dựa trên index
                         const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
                         const response = await api.get(`/admin/subjects`, {
                             params: {
@@ -81,7 +84,7 @@ const SubjectsList = () => {
                     { title: "Mã Môn", data: "subject_code" },
                     { title: "Tên Môn Học", data: "subject_name" },
 
-                    { title: "Chuyên ngành", data: "major_code" },
+                    { title: "Chuyên ngành", data: "major.cate_name" },
                     {
                         title: "Trạng thái",
                         data: "is_active",

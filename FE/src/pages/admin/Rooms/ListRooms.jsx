@@ -17,6 +17,8 @@ const ClassRoomsList = () => {
 
     const [classrooms, setClassRooms] = useState([]);
     const [startDate, setStartDate] = useState("");
+    const [currentClassCode, setCurrentClassCode] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const { data, refetch, isLoading, isError, error } = useQuery({
         queryKey: ["LIST_ROOMS"],
@@ -153,47 +155,40 @@ const ClassRoomsList = () => {
             $("#classroomsTable").DataTable({
                 data: classrooms.map((cls) => ({
                     class_name: cls.class_name || "N/A",
+                    date_start: cls.date_start || "N/A",
+                    type_day: cls.type_day || "N/A",
+                    is_active: cls.is_active || "N/A",
                     class_code: cls.class_code || "N/A",
                     subject_name: cls.subject_name || "N/A",
                     teacher_code: cls.teacher_code || "N/A",
                     teacher_name: cls.teacher_name || "N/A",
                     students_count: cls.students_count || 0,
                     session_name: cls.session_name || "Chưa xếp ca",
-                    room_time: cls.session_value
-                        ? JSON.parse(cls.session_value)
-                        : { start: "", end: "" },
                 })),
                 processing: true,
-                serverSide: true, 
+                serverSide: true,
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
-                        // Xử lý order từ DataTables
-                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
-                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
-                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
-
                         const response = await api.get(`/admin/classrooms`, {
                             params: {
                                 page,
                                 per_page: data.length,
-                                search: data.search.value,
-                                orderBy: orderColumnName,
-                                orderDirection: orderDirection,
+                                search: data.search.value || "",
                             },
                         });
                         const result = response?.data?.classrooms;
                         const dataI = result?.data?.map((cls) => ({
+                            date_start: cls.date_start || "N/A",
                             class_name: cls.class_name || "N/A",
+                            type_day: cls.type_day || "N/A",
                             class_code: cls.class_code || "N/A",
+                            is_active: cls.is_active || "N/A",
                             subject_name: cls.subject_name || "N/A",
                             teacher_code: cls.teacher_code || "N/A",
                             teacher_name: cls.teacher_name || "N/A",
                             students_count: cls.students_count || 0,
                             session_name: cls.session_name || "Chưa xếp ca",
-                            room_time: cls.session_value
-                                ? JSON.parse(cls.session_value)
-                                : { start: "", end: "" },
                         }));
                         callback({
                             draw: data.draw,
@@ -208,18 +203,18 @@ const ClassRoomsList = () => {
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 language: {
-                    paginate: { previous: 'Trước', next: 'Tiếp theo' },
-                    lengthMenu: 'Hiển thị _MENU_ mục mỗi trang',
-                    info: 'Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục',
+                    paginate: { previous: "Trước", next: "Tiếp theo" },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ _START_ đến _END_ trong _TOTAL_ mục",
                     search: "<i class='fas fa-search'> Tìm kiếm </i>",
                 },
                 columns: [
                     {
                         title: "Lớp học",
-                        data: 'class_name',
-                        render: (data, type, row) =>
-                            `<span class="viewDetail" data-class_code="${row.class_code}" style="margin-right: 5px;">
-                                     ${data}
+                        data: null,
+                        render: (data) =>
+                            `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
+                                     ${data.class_name}
                                 </span>`,
                     },
                     {
@@ -228,28 +223,32 @@ const ClassRoomsList = () => {
                     },
                     {
                         title: "Giảng viên",
-                        data: 'teacher_name',
-                        render: (data, type, row) =>
-                            `<span class="viewTeacher" data-teacher_code="${row.teacher_code}">
-                                     ${data}
-                                </span>`,
+                        data: null,
+                        render: (data) =>
+                            `<a href='/sup-admin/teachers/edit/${data.teacher_code}' class='text-dark'>
+                                ${data.teacher_name}
+                            </a>`,
                     },
                     {
                         title: "Số sinh viên",
-                        data: 'students_count',
+                        data: null,
                         className: "text-center",
-                        render: (data, type, row) =>
-                            `${data}`,
-                    },
-                    {
-                        title: "Phòng học",
-                        data: 'room_name',
+                        render: (data) =>
+                            `<a href='/sup-admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
                     },
                     {
                         title: "Ca học",
-                        data: 'session_name',
-                        render: (data, type, row) =>
-                            `${data} (${row.room_time.start} - ${row.room_time.end})`
+                        data: null,
+                        render: (data) => `${data.session_name} `,
+                    },
+                    {
+                        title: "Ngày học",
+                        data: null,
+                        render: (data) => `${data.type_day} `,
+                    },
+                    {
+                        title: "Ngày bắt đầu",
+                        data: "date_start",
                     },
                     {
                         title: "",
@@ -272,11 +271,9 @@ const ClassRoomsList = () => {
 
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
+                console.log(classCode);
+
                 navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
-            });
-            $("#classroomsTable tbody").on("click", ".viewTeacher", function () {
-                const teacher_code = $(this).data("teacher_code");
-                navigate(`/sup-admin/teachers/edit/${teacher_code}`);
             });
             $("#classroomsTable tbody").on(
                 "click",
@@ -284,9 +281,13 @@ const ClassRoomsList = () => {
                 function () {
                     const classCode = $(this).data("class_code");
                     if ($(this).text() === "Xem điểm") {
-                        navigate(`/sup-admin/classrooms/view/${classCode}/grades`);
+                        navigate(
+                            `/sup-admin/classrooms/view/${classCode}/grades`
+                        );
                     } else if ($(this).text() === "Chi tiết") {
-                        navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
+                        navigate(
+                            `/sup-admin/classrooms/view/${classCode}/detail`
+                        );
                     } else if ($(this).text() === "Xem điểm danh") {
                         navigate(
                             `/sup-admin/classrooms/view/${classCode}/attendances`
