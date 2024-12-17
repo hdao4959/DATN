@@ -102,6 +102,45 @@ const PostList = () => {
                 pageLength: 10,
                 lengthMenu: [10, 20, 50],
                 data: flattenPostData(data),
+                processing: true,
+                serverSide: true,
+                ajax: async (data, callback) => {
+                    try {
+                        const page = data.start / data.length + 1;
+                        // Xử lý order từ DataTables
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+
+                        const response = await api.get(`/admin/newsletters`, {
+                            params: {
+                                page,
+                                per_page: data.length,
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
+                            },
+                        });
+                        const result = response?.data?.newsletter ?? [];
+                        const dataI = result?.data?.map((post, index) => ({
+                            id: post.id,
+                            code: post.code,
+                            title: post.title,
+                            image: post.image,
+                            is_active: post.is_active,
+                            author: post.full_name,
+                            sortOrder: index,
+                        }));
+                        callback({
+                            draw: data.draw,
+                            recordsTotal: result.total,
+                            recordsFiltered: result.total,
+                            data: dataI,
+                        });
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                },
                 columns: [
                     { title: "Mã bài viết", data: "code" },
                     { title: "Tiêu đề", data: "title" },
