@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import api from "../../../../config/axios";
 import { toast } from "react-toastify";
+
 import { useNavigate } from "react-router-dom";
+
 
 const UpdateInformationForm = () => {
 
@@ -26,11 +28,11 @@ const UpdateInformationForm = () => {
         },
         onError: (error) => {
             if (error.response?.status === 409) {
-                alert("Yêu cầu thay đổi thông tin đã tồn tại. Vui lòng chờ xử lý trước khi gửi yêu cầu mới.");
+                toast.warning("Yêu cầu thay đổi thông tin đã tồn tại. Vui lòng chờ xử lý trước khi gửi yêu cầu mới.");
             } else {
                 const errorMessage =
                     error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật thông tin!";
-                alert(errorMessage);
+                toast.error(errorMessage);
             }
         },
     });
@@ -64,7 +66,7 @@ const UpdateInformationForm = () => {
             ]);
             setSelectedOption(""); // Reset option sau khi thêm
         } else {
-            alert("Thông tin đã được thêm hoặc không hợp lệ.");
+            toast.warning("Thông tin đã được thêm hoặc không hợp lệ.");
         }
     };
 
@@ -83,7 +85,9 @@ const UpdateInformationForm = () => {
 
     const handleSubmit = () => {
         if (infoList.length === 0) {
-            toast.success("Không có thông tin nào để cập nhật.");
+
+            toast.warning("Không có thông tin nào để cập nhật.");
+
             return;
         }
 
@@ -91,7 +95,24 @@ const UpdateInformationForm = () => {
         const payload = {};
         for (const item of infoList) {
             if (!item.newInfo) {
-                alert(`Vui lòng nhập thông tin mới cho "${item.option}".`);
+                if (item.option === 'full_name') {
+                    toast.error('Vui lòng nhập họ và tên.');
+                }
+                else if (item.option === 'sex') {
+                    toast.error('Vui lòng nhập giới tính.');
+                }
+                else if (item.option === 'date_of_birth') {
+                    toast.error('Vui lòng nhập ngày sinh.');
+                }
+                else if (item.option === 'address') {
+                    toast.error('Vui lòng nhập địa chỉ.');
+                }
+                else if (item.option === 'citizen_card_number') {
+                    toast.error('Vui lòng nhập số chứng minh nhân dân.');
+                } 
+                else {
+                    toast.error(`Vui lòng nhập thông tin mới cho ${item.option}.`);
+                }
                 return;
             }
             payload[item.option] = item.newInfo;

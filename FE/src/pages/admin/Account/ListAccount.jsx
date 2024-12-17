@@ -126,6 +126,16 @@ const ListAccount = () => {
                         render: (data) => data?.cate_name || "",
                     },
                     {
+                        title: "Chuyên ngành",
+                        data: "major",
+                        render: (data) => data?.cate_name || "Chưa có",
+                    },
+                    {
+                        title: "Chuyên ngành hẹp",
+                        data: "narrow_major",
+                        render: (data) => data?.cate_name || "Chưa có",
+                    },
+                    {
                         title: "Trạng thái",
                         data: "is_active",
                         className: "text-center",
