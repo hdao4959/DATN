@@ -1389,6 +1389,7 @@ class CategoryController extends Controller
 
     public function addStudent()
     {
+        $now = Carbon::now();
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
         $majors = $this->getListByMajor();
         $classroomStudentCounts = DB::table('classroom_user')
@@ -1425,6 +1426,7 @@ class CategoryController extends Controller
                                 $batchInsertData[] = [
                                     'class_code' => $classRoom->class_code,
                                     'user_code' => $student['user_code'],
+                                    'created_at' => $now,
                                 ];
 
                                 // Cập nhật số lượng sinh viên hiện tại
