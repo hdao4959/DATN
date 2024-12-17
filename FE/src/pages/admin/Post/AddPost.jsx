@@ -50,16 +50,16 @@ const AddPost = () => {
         }
 
         const formData = new FormData();
-        formData.append("code", values.code);
+        // formData.append("code", values.code);
         formData.append("title", values.title);
-        formData.append("tags", values.tags.join(","));
+        // formData.append("tags", values.tags.join(","));
         formData.append("content", content);
         formData.append("description", values.description);
         formData.append("type", values.type);
         formData.append("notification_object", values.notification_object);
         formData.append("user_code", user.user_code);
         formData.append("cate_code", values.cate_code);
-         if (values.image && values.image.length > 0) {
+        if (values.image && values.image.length > 0) {
             formData.append("image", values.image[0]);
         }
 
@@ -104,87 +104,6 @@ const AddPost = () => {
                                             </span>
                                         )}
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="code">
-                                            Mã bài viết
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            {...register("code", {
-                                                required:
-                                                    "Mã bài viết là bắt buộc",
-                                            })}
-                                            placeholder="Nhập mã bài viết"
-                                        />
-                                        {errors.code && (
-                                            <span className="text-danger">
-                                                {errors.code.message}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* <div className="form-group">
-                                        <label htmlFor="value">
-                                            Vị trí sắp xếp
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            {...register("value", {
-                                                required:
-                                                    "Vị trí sắp xếp là bắt buộc",
-                                                min: {
-                                                    value: 0,
-                                                    message:
-                                                        "Giá trị không hợp lệ",
-                                                },
-                                            })}
-                                            placeholder="Nhập vị trí sắp xếp"
-                                        />
-                                        {errors.value && (
-                                            <span className="text-danger">
-                                                {errors.value.message}
-                                            </span>
-                                        )}
-                                    </div> */}
-
-                                    <div className="form-group">
-                                        <label htmlFor="tags">
-                                            Tags
-                                            <span className="text-red-500 font-semibold ml-1 text-lg">
-                                                *
-                                            </span>
-                                        </label>
-
-                                        <Controller
-                                            name="tags"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <InputChip
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                />
-                                            )}
-                                            rules={{
-                                                required: "Vui lòng nhập tags",
-                                            }}
-                                        />
-
-                                        {errors.tags && (
-                                            <span className="text-danger">
-                                                {errors.tags.message}
-                                            </span>
-                                        )}
-                                    </div>
-
                                     <div className="form-group">
                                         <label htmlFor="image">
                                             Ảnh bìa
@@ -244,19 +163,6 @@ const AddPost = () => {
                                             </span>
                                         )}
                                     </div>
-
-                                    {/* <div className="form-group">
-                                        <label htmlFor="is_active">
-                                            Ngày hết hạn
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            name=""
-                                            className="form-control"
-                                            id=""
-                                        />
-                                    </div> */}
-
                                     <div className="form-group">
                                         <label htmlFor="cate_code">
                                             Danh mục
