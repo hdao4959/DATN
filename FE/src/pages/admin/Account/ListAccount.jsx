@@ -59,17 +59,19 @@ const ListAccount = () => {
                     try {
                         // Tính toán số trang dựa trên DataTables truyền vào
                         const page = data.start / data.length + 1;
-                        const searchValue = data.search.value;
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
 
                         // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
                             // params: { page, per_page: data.length },
                             params: {
-                                page: page, // Trang hiện tại
-                                per_page: data.length, // Số bản ghi mỗi trang
-                                search: data.search.value || "", // Từ khóa tìm kiếm
-                                // order_column: data.order[0].column, // Cột được sắp xếp
-                                // order_dir: data.order[0].dir, // Hướng sắp xếp
+                                page,
+                                per_page: data.length,
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
                             },
                         });
 
@@ -116,10 +118,10 @@ const ListAccount = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                            <a href="/sup-admin/students/edit/${row.user_code}">
+                            <a href="/admin/students/edit/${row.user_code}">
                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
             </a>
-                             <a href="/sup-admin/students/${row.user_code}">
+                             <a href="/admin/students/${row.user_code}">
                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
             </a>
                                 
@@ -146,7 +148,7 @@ const ListAccount = () => {
                     $(row)
                         .find(".fa-edit")
                         .on("click", () => {
-                            navigate(`/sup-admin/students/${data.user_code}`);
+                            navigate(`/admin/students/${data.user_code}`);
                         });
                 },
             });
@@ -158,7 +160,7 @@ const ListAccount = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/sup-admin/students/create">
+                <Link to="/admin/students/create">
                     <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>
