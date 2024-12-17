@@ -105,6 +105,12 @@ const StudentGrades = () => {
                         </div>
                     ) : (
                         subjects.map((subject, index) => {
+                            {
+                                if ($.fn.DataTable.isDataTable(`#gradesTable${index}`)) {
+                                    $(`#gradesTable${index}`).DataTable().destroy();
+                                } else {
+
+                               
                             const average = calculateAverage(subject.scores);
                             const maxWeightScore = subject.scores.reduce((max, score) => {
                                 if ((score.weight || 0) > (max.weight || 0)) {
@@ -206,6 +212,9 @@ const StudentGrades = () => {
                                     </div>
                                 </div>
                             );
+                        }
+                
+                    }
                         })
                     )}
                     {console.log(subjects)
