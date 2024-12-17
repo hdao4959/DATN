@@ -21,7 +21,20 @@ const ServiceList = () => {
         // Sử dụng jQuery để khởi tạo DataTable sau khi dữ liệu đã được tải
         if (data && data.data && Array.isArray(data.data.data)) {
             $(document).ready(function () {
-                $("#serviceTable").DataTable(); // Khởi tạo DataTable trên bảng với id là 'serviceTable'
+                $("#serviceTable").DataTable({
+                    pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        previous: "Trước",
+                        next: "Tiếp theo",
+                    },
+                    lengthMenu: "Hiển thị _MENU_ mục mỗi trang",
+                    info: "Hiển thị từ <strong>_START_</strong> đến <strong>_END_</strong> trong <strong>_TOTAL_</strong> mục",
+                    search: "Tìm kiếm:",
+                },
+                destroy: true
+                }); // Khởi tạo DataTable trên bảng với id là 'serviceTable'
             });
         }
     }, [data]); // Chạy lại mỗi khi dữ liệu thay đổi
