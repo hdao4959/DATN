@@ -72,7 +72,7 @@ const ServicesList = () => {
             if ($.fn.dataTable.isDataTable("#service-table")) {
                 $("#service-table").DataTable().clear().destroy();
             }
-
+    
             // Khởi tạo DataTable
             $("#service-table").DataTable({
                 pageLength: 10,
@@ -88,6 +88,8 @@ const ServicesList = () => {
                                 return `<span class="text-green-500">Đã xác nhận</span>`;
                             } else if (data === "rejected") {
                                 return `<span class="text-red-500">Đã từ chối</span>`;
+                            } else if (data === "paid"){
+                                return `<span class="text-blue  -500">Đã thanh toán</span>`;
                             }
                             return `<span class="text-yellow-500">Đang chờ</span>`;
                         },
@@ -117,13 +119,24 @@ const ServicesList = () => {
                                 row.status === "approved" || row.status === "rejected"
                                     ? "opacity-50"
                                     : "";
-
-                            return `
+    
+                            let actionButtons = `
                                 <div class="d-flex justify-content-center">
-                                    <button class="delete-btn fs-4 ${opacity}" ${disableCancel}>
-                                        <i class="fas fa-times-circle hover:text-red-100"></i>
+                                    <button class="delete-btn btn btn-danger ${opacity}" ${disableCancel}>
+                                        Hủy
                                     </button>
-                                </div>`;
+                            `;
+    
+                            if (row.status === "pending") {
+                                actionButtons += `
+                                    <a href="https://admin.feduvn.com/api/total_vnpay/service?id=${row.id}&user_code=${row.code}" class="pay-btn btn btn-success ${opacity}">
+                                        Thanh toán
+                                    </a>
+                                `;
+                            }
+    
+                            actionButtons += `</div>`;
+                            return actionButtons;
                         },
                         className: "text-center",
                     },
@@ -134,6 +147,9 @@ const ServicesList = () => {
                     $(row)
                         .find(".delete-btn")
                         .on("click", () => handleCancel(rowData.id)); // Gọi handleCancel khi nhấn vào nút
+                    $(row)
+                        .find(".pay-btn")
+                        .on("click", () => handlePayment(rowData.id)); // Gọi handlePayment khi nhấn vào nút thanh toán
                 },
                 language: {
                     paginate: {
@@ -147,13 +163,14 @@ const ServicesList = () => {
                 scrollX: true,
             });
         }
-
+    
         return () => {
             if ($.fn.dataTable.isDataTable("#service-table")) {
                 $("#service-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
+    
 
     if (isFetching && !data) return <Spinner />;
 

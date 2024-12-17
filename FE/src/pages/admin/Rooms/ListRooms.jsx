@@ -230,9 +230,9 @@ const ClassRoomsList = () => {
                         title: "Giảng viên",
                         data: 'teacher_name',
                         render: (data, type, row) =>
-                            `<a href='/sup-admin/teachers/edit/${row.teacher_code}' class='text-dark'>
-                                ${data}
-                            </a>`,
+                            `<span class="viewTeacher" data-teacher_code="${row.teacher_code}">
+                                     ${data}
+                                </span>`,
                     },
                     {
                         title: "Số sinh viên",
@@ -273,6 +273,10 @@ const ClassRoomsList = () => {
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
                 navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
+            });
+            $("#classroomsTable tbody").on("click", ".viewTeacher", function () {
+                const teacher_code = $(this).data("teacher_code");
+                navigate(`/sup-admin/teachers/edit/${teacher_code}`);
             });
             $("#classroomsTable tbody").on(
                 "click",
