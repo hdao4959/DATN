@@ -34,12 +34,12 @@ class DashboardController extends Controller
     public function getStudentCountByMajor() {
         try{
             $data = User::with('major')->select('major_code',  DB::raw('COUNT(*) as total'))
-            ->where('role', 3)        
+            ->where('role', '3')
             ->groupBy('major_code')
                     ->get()
                     ->map(function ($item) {
                         return [
-                            'major_name' => $item->major->cate_name ?? 'Unknown', // Lấy tên major, nếu không có thì trả về 'Unknown'
+                            'major_name' => $item->major->cate_name ?? 'Unknown',
                             'total' => $item->total,
                         ];
                     });

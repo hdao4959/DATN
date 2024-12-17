@@ -53,29 +53,19 @@ const ListSemester = () => {
                         data: null,
                         render: (data, type, row, meta) => meta.row + 1,
                     },
-                    { title: "Tên Học Kỳ", data: "name" },
+                    { title: "Tên Học Kỳ", data: "cate_name" },
                     {
-                        title: "Ngày Bắt Đầu",
-                        data: "start_date",
-                        render: (data) => new Date(data).toLocaleDateString(),
+                        title: "Giá trị",
+                        data: "value"
                     },
+                    
                     {
-                        title: "Ngày Kết Thúc",
-                        data: "end_date",
-                        render: (data) => new Date(data).toLocaleDateString(),
-                    },
-                    {
-                        title: "Action",
+                        title: "Hành động",
                         data: null,
                         render: (data, type, row) => {
                             return `
                             <div className="whitespace-nowrap">
-                                <button>
-                                  <a href="/sup-admin/semesters/${row.id}/edit">
-                                    <i class='fas fa-edit hover:text-blue-500'></i>
-                                  </a>
-                                </button>
-                                <button class="delete-button ml-2" data-id="${row.id}">
+                                <button class="delete-button ml-2"  data-id="${row.id}">
                                   <i class='fas fa-trash hover:text-red-500'></i>
                                 </button>
                             </div>`;

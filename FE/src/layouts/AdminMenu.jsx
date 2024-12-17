@@ -210,6 +210,33 @@ const AdminMenu = () => {
                     </ul>
                 </div>
             </li>
+            <li className="nav-item">
+                <a data-bs-toggle="collapse" href="#term-management">
+                    <i className="fas fa-users" />
+                    <p>Quản lý kỳ học</p>
+                    <span className="caret" />
+                </a>
+                <div className="collapse" id="term-management">
+                    <ul className="nav nav-collapse">
+                        <li>
+                            <NavLink
+                                to="/sup-admin/semesters"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Danh sách kỳ học</p>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/sup-admin/semesters/add"
+                                className={`${styles.menuItem} group`}
+                            >
+                                <p className="sub-item">Thêm mới kỳ học</p>
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             <li className="nav-section">
                 <span className="sidebar-mini-icon">
                     <i className="fa fa-ellipsis-h" />
