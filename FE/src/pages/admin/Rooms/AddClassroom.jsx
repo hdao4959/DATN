@@ -89,10 +89,10 @@ const AddClassroom = () => {
         }
     };
 
-    const fetchSubjects = async (majorCode) => {
+    const fetchSubjects = async (semesterCode, majorCode) => {
         try {
             const response = await api.get(
-                `/listSubjectsToMajorForForm/${majorCode}`
+                `/subjects/${semesterCode}/${majorCode}`
             );
             setSubjects(response.data);
         } catch (error) {
@@ -100,9 +100,9 @@ const AddClassroom = () => {
                 error.response?.data?.message ||
                     "Không thể tải danh sách môn học."
             );
+            setSubjects([]);
         }
     };
-
     const fetchSessions = async () => {
         try {
             const response = await api.get(`/listSessionsForForm`);
@@ -170,22 +170,40 @@ const AddClassroom = () => {
             );
         }
     };
-    // Handle changes in form fields
+
     const handleChange = (e, field) => {
         const value = e.target.value;
         setFormData((prev) => ({ ...prev, [field]: value }));
 
         if (field === "major_code") {
-            setFormData((prev) => ({ ...prev, major_sub_code: "" }));
+            setFormData((prev) => ({
+                ...prev,
+                major_sub_code: "",
+                subject_code: "",
+            }));
             fetchChildrenMajors(value);
-            fetchSubjects(value);
         }
 
         if (field === "major_sub_code") {
-            fetchSubjects(value);
+            setFormData((prev) => ({ ...prev, subject_code: "" }));
+        }
+
+        if (
+            field === "semester_code" ||
+            field === "major_code" ||
+            field === "major_sub_code"
+        ) {
+            const { semester_code, major_code, major_sub_code } = {
+                ...formData,
+                [field]: value,
+            };
+
+            const effectiveMajorCode = major_sub_code || major_code;
+            if (semester_code && effectiveMajorCode) {
+                fetchSubjects(semester_code, effectiveMajorCode);
+            }
         }
     };
-
     const handleForm2Change = async (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -394,12 +412,14 @@ const AddClassroom = () => {
                             </select>
                         </div>
                     )}
+
                     <div className="mb-3">
                         <label className="form-label">Môn học</label>
                         <select
                             className="form-select"
                             value={formData.subject_code}
                             onChange={(e) => handleChange(e, "subject_code")}
+                            disabled={subjects.length === 0}
                         >
                             <option disabled value="">
                                 Chọn môn học
@@ -534,7 +554,8 @@ const AddClassroom = () => {
                                     key={room.cate_code}
                                     value={room.cate_code}
                                 >
-                                    {room.cate_name}
+                                    {room.cate_name} - {`Sức chứa:`}{" "}
+                                    {room.value}
                                 </option>
                             ))}
                         </select>

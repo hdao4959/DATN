@@ -1,21 +1,84 @@
 import React, { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import api from "../../../../config/axios";
 
 const UpdateInformationForm = () => {
-    const [selectedOption, setSelectedOption] = useState(""); // Lưu trạng thái option được chọn
-    const [oldInfo, setOldInfo] = useState(""); // Giá trị thông tin cũ
-    const [newInfo, setNewInfo] = useState(""); // Giá trị thông tin mới
+    const [selectedOption, setSelectedOption] = useState(""); // Option đã chọn
+    const [infoList, setInfoList] = useState([]); // Danh sách thông tin cần cập nhật
 
-    // Xử lý khi thay đổi option
+    // Gọi API để lấy thông tin cũ
+    const { data: studentInfo, isLoading, isError } = useQuery({
+        queryKey: ["studentInfo"],
+        queryFn: () => api.get("/student/get-info").then((res) => res.data.data), // Trích xuất data từ response
+    });
+
+    // Gọi API để cập nhật thông tin
+    const mutation = useMutation({
+        mutationFn: (payload) =>
+            api.post("/student/services/register/dang-ky-thay-doi-thong-tin", payload),
+        onSuccess: () => {
+            alert("Đăng ký thay đổi thông tin thành công!");
+            setInfoList([]); // Reset danh sách sau khi cập nhật thành công
+        },
+        onError: () => {
+            alert("Đã xảy ra lỗi khi cập nhật thông tin!");
+        },
+    });
+
+    if (isLoading) return <div>Đang tải thông tin...</div>;
+    if (isError) return <div>Không thể tải thông tin sinh viên. Vui lòng thử lại sau.</div>;
+
+    // Xử lý khi chọn loại thông tin
     const handleOptionChange = (e) => {
-        const value = e.target.value;
-        setSelectedOption(value);
+        setSelectedOption(e.target.value);
+    };
 
-        // Giả lập thông tin cũ (tùy vào option được chọn)
-        if (value === "name") setOldInfo("Nguyễn Văn A");
-        if (value === "gender") setOldInfo("Nam");
-        if (value === "dob") setOldInfo("01/01/2000");
-        if (value === "address") setOldInfo("123 Đường ABC, TP.HCM");
-        if (value === "idCard") setOldInfo("012345678901");
+    // Xử lý khi click "Add"
+    const handleAddInfo = () => {
+        if (selectedOption && !infoList.find((item) => item.option === selectedOption)) {
+            const oldInfoMap = {
+                full_name: studentInfo.full_name,
+                sex: studentInfo.sex,
+                date_of_birth: studentInfo.date_of_birth,
+                address: studentInfo.address,
+                citizen_card_number: studentInfo.citizen_card_number,
+            };
+
+            setInfoList([
+                ...infoList,
+                { option: selectedOption, oldInfo: oldInfoMap[selectedOption], newInfo: "" },
+            ]);
+            setSelectedOption(""); // Reset option sau khi thêm
+        }
+    };
+
+    // Xử lý khi thay đổi thông tin mới
+    const handleNewInfoChange = (index, value) => {
+        const updatedList = [...infoList];
+        updatedList[index].newInfo = value;
+        setInfoList(updatedList);
+    };
+
+    // Xử lý khi click "Cancel"
+    const handleCancel = (index) => {
+        const updatedList = infoList.filter((_, i) => i !== index);
+        setInfoList(updatedList);
+    };
+
+    // Xử lý khi click "Submit"
+    const handleSubmit = () => {
+        if (infoList.length === 0) {
+            alert("Không có thông tin nào để cập nhật.");
+            return;
+        }
+
+        // Tạo payload từ infoList
+        const payload = infoList.map((item) => ({
+            field: item.option,
+            newValue: item.newInfo,
+        }));
+
+        mutation.mutate(payload); // Gọi API để cập nhật
     };
 
     return (
@@ -24,92 +87,78 @@ const UpdateInformationForm = () => {
                 <div className="card-body">
                     <h5 className="card-title mb-4">Cập nhật thông tin</h5>
 
-                    {/* Select để chọn loại thông tin */}
-                    <div className="mb-3">
-                        <label htmlFor="infoSelect" className="form-label">Chọn thông tin cần cập nhật</label>
-                        <select
-                            className="form-select"
-                            id="infoSelect"
-                            onChange={handleOptionChange}
-                            value={selectedOption}
-                        >
-                            <option value="">Chọn thông tin</option>
-                            <option value="name">Họ và tên</option>
-                            <option value="gender">Giới tính</option>
-                            <option value="dob">Ngày sinh</option>
-                            <option value="address">Địa chỉ</option>
-                            <option value="idCard">Số căn cước công dân</option>
-                        </select>
+                    {/* Chọn loại thông tin */}
+                    <div className="mb-3 d-flex align-items-end">
+                        <div className="flex-grow-1 me-2">
+                            <label htmlFor="infoSelect" className="form-label">Chọn thông tin cần cập nhật</label>
+                            <select
+                                className="form-select"
+                                id="infoSelect"
+                                onChange={handleOptionChange}
+                                value={selectedOption}
+                            >
+                                <option value="">Chọn thông tin</option>
+                                <option value="full_name">Họ và tên</option>
+                                <option value="sex">Giới tính</option>
+                                <option value="date_of_birth">Ngày sinh</option>
+                                <option value="address">Địa chỉ</option>
+                                <option value="citizen_card_number">Số căn cước công dân</option>
+                            </select>
+                        </div>
+                        <button type="button" className="btn btn-warning" onClick={handleAddInfo}>
+                            Add
+                        </button>
                     </div>
 
-                    {/* Hiển thị input nếu đã chọn option */}
-                    {selectedOption && (
-                        <div className="row mb-3">
+                    {/* Danh sách thông tin cần cập nhật */}
+                    {infoList.map((item, index) => (
+                        <div key={index} className="row mb-3 align-items-end">
                             {/* Thông tin cũ */}
-                            <div className="col-md-6">
-                                <label htmlFor="oldInfo" className="form-label">Thông tin cũ</label>
+                            <div className="col-md-5">
+                                <label className="form-label">Thông tin cũ</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    id="oldInfo"
-                                    value={oldInfo}
-                                    readOnly // Chỉ đọc
+                                    value={item.oldInfo || ""}
+                                    readOnly
                                 />
                             </div>
 
                             {/* Thông tin mới */}
-                            <div className="col-md-6">
-                                <label htmlFor="newInfo" className="form-label">Thông tin mới</label>
+                            <div className="col-md-5">
+                                <label className="form-label">Thông tin mới</label>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    id="newInfo"
-                                    value={newInfo}
-                                    onChange={(e) => setNewInfo(e.target.value)} // Cập nhật thông tin mới
+                                    value={item.newInfo}
+                                    onChange={(e) => handleNewInfoChange(index, e.target.value)}
                                     placeholder="Nhập thông tin mới"
                                 />
                             </div>
+
+                            {/* Nút Cancel */}
+                            <div className="col-md-2 d-flex justify-content-end">
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={() => handleCancel(index)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
-                    )}
-
-                    {/* Ghi chú */}
-                    <div className="mb-3">
-                        <label htmlFor="note" className="form-label">Ghi chú</label>
-                        <textarea
-                            className="form-control"
-                            id="note"
-                            rows="3"
-                            placeholder="Nhập ghi chú"
-                        ></textarea>
-                        <small className="text-muted d-block text-end">0 / 500 ký tự</small>
-                    </div>
-
-                    {/* Phí dịch vụ */}
-                    <div className="mb-3">
-                        <label htmlFor="serviceFee" className="form-label">Phí dịch vụ</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="serviceFee"
-                            placeholder="0"
-                            disabled
-                        />
-                    </div>
-
-                    {/* Tài liệu đính kèm */}
-                    <div className="mb-3">
-                        <label htmlFor="attachedFile" className="form-label">Tài liệu đính kèm</label>
-                        <input
-                            type="file"
-                            className="form-control"
-                            id="attachedFile"
-                        />
-                        <small className="text-muted">Chưa có tệp nào được chọn</small>
-                    </div>
+                    ))}
 
                     {/* Nút Submit */}
                     <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary">Submit</button>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSubmit}
+                            disabled={mutation.isLoading}
+                        >
+                            {mutation.isLoading ? "Đang cập nhật..." : "Submit"}
+                        </button>
                     </div>
                 </div>
             </div>

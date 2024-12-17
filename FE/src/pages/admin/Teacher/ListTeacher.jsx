@@ -11,9 +11,12 @@ import "datatables.net";
 const ListTeacher = () => {
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedUserCode, setSelectedUserCode] = useState();
+    const [statusModalOpen, setStatusModalOpen] = useState(false);
     const [selectedTeacher, setSelectedTeacher] = useState();
 
     const onModalVisible = () => setModalOpen((prev) => !prev);
+    const onStatusModalVisible = () => setStatusModalOpen((prev) => !prev);
 
     const { data, refetch } = useQuery({
         queryKey: ["LIST_TEACHER"],
@@ -42,6 +45,21 @@ const ListTeacher = () => {
         onModalVisible();
     };
 
+
+    const updateStatusMutation = useMutation({
+        mutationFn: (user_code) => api.post(`/admin/teachers/updateActive/${user_code}`),
+        onSuccess: () => {
+            toast.success("Cập nhật trạng thái thành công");
+            refetch();
+            onStatusModalVisible();
+        },
+    });
+
+    // Hàm xử lý khi nhấn vào trạng thái
+    const handleUpdateStatus = (user_code) => {
+        setSelectedUserCode(user_code); // Lưu mã người dùng vào selectedUserCode
+        onStatusModalVisible(); // Hiển thị modal xác nhận
+    };
     useEffect(() => {
         if (teachers) {
             if ($.fn.DataTable.isDataTable("#teachersTable")) {
@@ -94,8 +112,8 @@ const ListTeacher = () => {
                         className: "text-center",
                         render: (data) =>
                             data
-                                ? `<i class="fas fa-check-circle" style="color: green; font-size: 20px;"></i>`
-                                : `<i class="fas fa-times-circle" style="color: red; font-size: 20px;"></i>`,
+                                ? `<i class="fas fa-check-circle toggleStatus" style="color: green; font-size: 20px; cursor: pointer;"></i>`
+                                : `<i class="fas fa-times-circle toggleStatus" style="color: red; font-size: 20px; cursor: pointer;"></i>`,
                     },
                     {
                         title: "Hành động",
@@ -134,6 +152,9 @@ const ListTeacher = () => {
                         .on("click", () => {
                             navigate(`/sup-admin/teachers/${data.user_code}`);
                         });
+                    $(row)
+                        .find(".toggleStatus")
+                        .on("click", () => handleUpdateStatus(data.user_code));
                 },
             });
         }
@@ -167,6 +188,15 @@ const ListTeacher = () => {
                 visible={modalOpen}
                 onVisible={onModalVisible}
                 onOk={() => mutate(selectedTeacher)}
+            />
+            <Modal
+                title="Cập nhật trạng thái"
+                description="Bạn có chắc chắn muốn cập nhật trạng thái của tài khoản này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={statusModalOpen}
+                onVisible={onStatusModalVisible}
+                onOk={() => updateStatusMutation.mutate(selectedUserCode)} // Gọi mutation khi người dùng xác nhận
             />
         </>
     );

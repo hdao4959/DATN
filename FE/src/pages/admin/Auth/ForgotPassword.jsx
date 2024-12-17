@@ -16,8 +16,8 @@ const ForgotPassword = () => {
             const response = await api.post("/forgot-password", data);
             toast.success(response.data.message);
         } catch (error) {
-            if (error.response && error.response.status === 404) {
-                toast.error("Email không tồn tại.");
+            if (error.response && error.response.status === 422) {
+                toast.error("Email không tồn tại hoặc không hợp lệ.");
             } else {
                 toast.error("Đã có lỗi xảy ra, vui lòng thử lại.");
             }

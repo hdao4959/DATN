@@ -1,35 +1,41 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 
 const ClassRoomDetails = () => {
     const { class_code } = useParams();
+    const navigate = useNavigate();
 
+    // Fetch thông tin lớp học
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["CLASSROOM_DETAIL", class_code],
         queryFn: async () => {
-            const res = await api.get(`/admin/classrooms/${class_code}`);
-            if (res.data?.status === false) {
-                throw new Error(res.data.message);
+            try {
+                const res = await api.get(`/admin/classrooms/${class_code}`);
+                if (!res.data || res.data.status === false) {
+                    throw new Error(res.data?.message);
+                }
+                return res.data;
+            } catch (err) {
+                throw new Error("Lớp học không tồn tại.");
             }
-            return res.data;
         },
     });
 
+    // Fetch lịch học
     const {
         data: scheduleData,
         isLoading: isLoadingSchedule,
         isError: isScheduleError,
-        error: scheduleError,
     } = useQuery({
         queryKey: ["CLASSROOM_SCHEDULE", class_code],
         queryFn: async () => {
             const res = await api.get(
                 `/admin/classrooms/${class_code}/schedules`
             );
-            if (res.data?.status === false) {
-                throw new Error(res.data.message);
+            if (!res.data || res.data.status === false) {
+                throw new Error(res.data?.message || "Lịch học không tồn tại.");
             }
             return res.data;
         },
@@ -46,30 +52,28 @@ const ClassRoomDetails = () => {
     }
 
     if (isError) {
-        const errorMessage =
-            error.response?.data?.message || "Lỗi khi tải thông tin lớp học";
+        const errorMessage = error?.message || "Lỗi khi tải thông tin lớp học.";
         toast.error(errorMessage);
-        return <div className="text-danger">{errorMessage}</div>;
+        return (
+            <div className="text-danger">
+                {errorMessage}
+                <button
+                    className="btn btn-primary ms-2"
+                    onClick={() => navigate("/sup-admin/classrooms")}
+                >
+                    Quay lại danh sách lớp học
+                </button>
+            </div>
+        );
     }
 
     if (isScheduleError) {
-        const errorMessage =
-            scheduleError.response?.data?.message || "Lỗi khi tải lịch học";
-        toast.error(errorMessage);
-        return <div className="text-danger">{errorMessage}</div>;
+        toast.error("Không thể tải lịch học.");
     }
 
     const classroom = data?.classroom || {};
     const schedules = scheduleData || [];
     const students = classroom?.students || [];
-
-    if (!classroom || Object.keys(classroom).length === 0) {
-        return <div className="text-danger">Không có thông tin lớp học</div>;
-    }
-
-    if (students.length === 0) {
-        return <div className="text-danger">Không có sinh viên trong lớp</div>;
-    }
 
     return (
         <>
@@ -107,23 +111,8 @@ const ClassRoomDetails = () => {
                             {classroom?.teacher_name || "Chưa cập nhật"}
                         </div>
                         <div className="col-md-4">
-                            <strong>Mã giảng viên:</strong>{" "}
-                            {classroom?.teacher_code || "Chưa cập nhật"}
-                        </div>
-                    </div>
-
-                    <div className="row mb-3">
-                        <div className="col-md-4">
                             <strong>Email giảng viên:</strong>{" "}
                             {classroom?.teacher_email || "Chưa cập nhật"}
-                        </div>
-                        <div className="col-md-4">
-                            <strong>Số điện thoại giảng viên:</strong>{" "}
-                            {classroom?.teacher_phone_number || "Chưa cập nhật"}
-                        </div>
-                        <div className="col-md-4">
-                            <strong>Mô tả:</strong>{" "}
-                            {classroom?.description || "Không có"}
                         </div>
                     </div>
                 </div>
@@ -133,32 +122,36 @@ const ClassRoomDetails = () => {
                 <div className="card-header">
                     <h4>Danh Sách Sinh Viên</h4>
                 </div>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Mã sinh viên</th>
-                            <th>Tên sinh viên</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.map((student, index) => (
-                            <tr key={index}>
-                                <td>{student?.user_code || "N/A"}</td>
-                                <td>{student?.full_name || "N/A"}</td>
-                                <td>{student?.email || "N/A"}</td>
-                                <td>{student?.phone_number || "N/A"}</td>
-                                <td>
-                                    {student?.is_active
-                                        ? "Hoạt động"
-                                        : "Không hoạt động"}
-                                </td>
+                {students.length > 0 ? (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Mã sinh viên</th>
+                                <th>Tên sinh viên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Trạng thái</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {students.map((student, index) => (
+                                <tr key={index}>
+                                    <td>{student?.user_code || "N/A"}</td>
+                                    <td>{student?.full_name || "N/A"}</td>
+                                    <td>{student?.email || "N/A"}</td>
+                                    <td>{student?.phone_number || "N/A"}</td>
+                                    <td>
+                                        {student?.is_active
+                                            ? "Hoạt động"
+                                            : "Không hoạt động"}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p className="text-danger">Không có sinh viên trong lớp</p>
+                )}
             </div>
 
             <div className="card">
@@ -213,7 +206,7 @@ const ClassRoomDetails = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <p className="card-footer text-danger">Không có lịch học</p>
+                    <p className="text-danger">Không có lịch học</p>
                 )}
             </div>
         </>
