@@ -10,7 +10,6 @@ import $ from "jquery";
 import "datatables.net";
 
 const ListAccount = () => {
-
     const accessToken = getToken();
     const [selectedUserCode, setSelectedUserCode] = useState();
     const [modalOpen, setModalOpen] = useState(false);
@@ -47,7 +46,8 @@ const ListAccount = () => {
         onModalVisible();
     };
     const updateStatusMutation = useMutation({
-        mutationFn: (user_code) => api.post(`/admin/students/updateActive/${user_code}`),
+        mutationFn: (user_code) =>
+            api.post(`/admin/students/updateActive/${user_code}`),
         onSuccess: () => {
             toast.success("Cập nhật trạng thái thành công");
             refetch();
@@ -77,9 +77,11 @@ const ListAccount = () => {
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
-                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
-                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
-                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+                        const orderColumnIndex = data.order[0]?.column;
+                        const orderColumnName =
+                            data.columns[orderColumnIndex]?.data ||
+                            "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc";
 
                         // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
@@ -172,7 +174,7 @@ const ListAccount = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/admin/students/create">
+                <Link to="/sup-admin/students/create">
                     <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>
@@ -205,7 +207,6 @@ const ListAccount = () => {
                 onVisible={onStatusModalVisible}
                 onOk={() => updateStatusMutation.mutate(selectedUserCode)} // Gọi mutation khi người dùng xác nhận
             />
-
         </>
     );
 };

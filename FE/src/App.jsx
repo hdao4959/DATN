@@ -231,6 +231,7 @@ function App() {
                     path: "semesters/:id/edit",
                     element: <EditSemester />,
                 },
+
                 {
                     path: "timeslot",
                     element: <ListTimeslot />,
