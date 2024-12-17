@@ -59,12 +59,60 @@ const ServicesList = () => {
             id: service.id,
             code: service.user_code,
             serviceName: service.service_name,
-            amount: service.amount,
+            amount: new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+            }).format(service.amount), // Định dạng tiền sang VND
             status: service.status,
             reason: service.reason,
             createdAt: service.created_at,
             sortOrder: index,
         }));
+    };
+    const openPaymentPopup = (id) => {
+        const popup = window.open(
+            "",
+            "Thanh toán",
+            "width=500,height=400,scrollbars=no,resizable=no"
+        );
+
+        // Nội dung HTML trong popup
+        popup.document.write(`
+            <html>
+                <head>
+                    <title>Chọn phương thức thanh toán</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif; 
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            height: 100vh; 
+                            margin: 0;
+                            text-align: center;
+                        }
+                        button {
+                            margin: 10px; 
+                            padding: 10px 20px; 
+                            font-size: 16px;
+                            cursor: pointer;
+                            border: none;
+                            border-radius: 5px;
+                        }
+                        .momo-btn { background-color: #ff0080; color: white; }
+                        .vnpay-btn { background-color: #007bff; color: white; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Chọn phương thức thanh toán</h2>
+                    <button class="momo-btn" onclick="window.location.href='https://admin.feduvn.com/api/total_vnpay/service?id=${id}&method=momo'">Thanh toán bằng Momo</button>
+                    <button class="vnpay-btn" onclick="window.location.href='https://admin.feduvn.com/api/total_vnpay/service?id=${id}&method=vnpay'">Thanh toán bằng VNPay</button>
+                </body>
+            </html>
+        `);
+
+        popup.document.close();
     };
 
     useEffect(() => {
@@ -72,7 +120,7 @@ const ServicesList = () => {
             if ($.fn.dataTable.isDataTable("#service-table")) {
                 $("#service-table").DataTable().clear().destroy();
             }
-    
+
             // Khởi tạo DataTable
             $("#service-table").DataTable({
                 pageLength: 10,
@@ -88,7 +136,7 @@ const ServicesList = () => {
                                 return `<span class="text-green-500">Đã xác nhận</span>`;
                             } else if (data === "rejected") {
                                 return `<span class="text-red-500">Đã từ chối</span>`;
-                            } else if (data === "paid"){
+                            } else if (data === "paid") {
                                 return `<span class="text-blue  -500">Đã thanh toán</span>`;
                             }
                             return `<span class="text-yellow-500">Đang chờ</span>`;
@@ -119,22 +167,22 @@ const ServicesList = () => {
                                 row.status === "approved" || row.status === "rejected"
                                     ? "opacity-50"
                                     : "";
-    
+
                             let actionButtons = `
                                 <div class="d-flex justify-content-center">
                                     <button class="delete-btn btn btn-danger ${opacity}" ${disableCancel}>
                                         Hủy
                                     </button>
                             `;
-    
+
                             if (row.status === "pending") {
                                 actionButtons += `
-                                    <a href="https://admin.feduvn.com/api/total_vnpay/service?id=${row.id}&user_code=${row.code}" class="pay-btn btn btn-success ${opacity}">
+                                    <a  class="pay-btn btn btn-success ${opacity} ml-3">
                                         Thanh toán
                                     </a>
                                 `;
                             }
-    
+
                             actionButtons += `</div>`;
                             return actionButtons;
                         },
@@ -149,7 +197,7 @@ const ServicesList = () => {
                         .on("click", () => handleCancel(rowData.id)); // Gọi handleCancel khi nhấn vào nút
                     $(row)
                         .find(".pay-btn")
-                        .on("click", () => handlePayment(rowData.id)); // Gọi handlePayment khi nhấn vào nút thanh toán
+                        .on("click", () => openPaymentPopup(rowData.id)); // Gọi handlePayment khi nhấn vào nút thanh toán
                 },
                 language: {
                     paginate: {
@@ -163,14 +211,14 @@ const ServicesList = () => {
                 scrollX: true,
             });
         }
-    
+
         return () => {
             if ($.fn.dataTable.isDataTable("#service-table")) {
                 $("#service-table").DataTable().clear().destroy();
             }
         };
     }, [data]);
-    
+
 
     if (isFetching && !data) return <Spinner />;
 
