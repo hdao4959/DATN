@@ -27,8 +27,8 @@ class UpdateSemesterCommand extends Command
      */
     public function handle()
     {
-        $students = User::where('role', '3')->where('is_active',true) 
-            ->select('semester_code', 'user_code')
+        $students = User::where('role', '3')->where('is_active', true)
+            ->select('semester_code', 'user_code','id')
             ->get();
         foreach ($students as $student) {
             $currentSemester = DB::table('categories')
@@ -38,9 +38,10 @@ class UpdateSemesterCommand extends Command
 
             if ($currentSemester) {
                 $nextSemester = DB::table('categories')
-                    ->where('value', $currentSemester->value + 1)
+                    ->where('value', intval($currentSemester->value) + 1) // Chuyển chuỗi thành số nguyên
                     ->select('cate_code')
                     ->first();
+
 
                 if ($nextSemester) {
                     $student->semester_code = $nextSemester->cate_code;
@@ -48,7 +49,7 @@ class UpdateSemesterCommand extends Command
                 } else {
                     $hasIncompleteScores = DB::table('scores')
                         ->where('student_code', $student->user_code)
-                        ->where('status', false) 
+                        ->where('status', false)
                         ->exists();
 
                     if (!$hasIncompleteScores) {
