@@ -88,7 +88,7 @@ class ServiceController extends Controller
       if ($request->has('status') && $request['status']) {
         $data->where('status', $request['status']);
       }
-
+      $data->orderBy('created_at', 'desc');
       // Paginate the results and return the paginated response
       $services = $data->paginate(25);
 
