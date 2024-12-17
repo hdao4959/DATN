@@ -158,6 +158,7 @@ const ClassRoomsList = () => {
                     date_start: cls.date_start || "N/A",
                     type_day: cls.type_day || "N/A",
                     is_active: cls.is_active || "N/A",
+                    room_name: cls.room_name || "N/A",
                     class_code: cls.class_code || "N/A",
                     subject_name: cls.subject_name || "N/A",
                     teacher_code: cls.teacher_code || "N/A",
@@ -180,6 +181,7 @@ const ClassRoomsList = () => {
                         const result = response?.data?.classrooms;
                         const dataI = result?.data?.map((cls) => ({
                             date_start: cls.date_start || "N/A",
+                            room_name: cls.room_name || "N/A",
                             class_name: cls.class_name || "N/A",
                             type_day: cls.type_day || "N/A",
                             class_code: cls.class_code || "N/A",
@@ -249,6 +251,10 @@ const ClassRoomsList = () => {
                     {
                         title: "Ngày bắt đầu",
                         data: "date_start",
+                    },
+                    {
+                        title: "Phòng",
+                        data: "room_name",
                     },
                     {
                         title: "",
