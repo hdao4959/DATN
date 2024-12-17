@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import api from "../../../../config/axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const UpdateInformationForm = () => {
+
     const [selectedOption, setSelectedOption] = useState(""); // Option đã chọn
     const [infoList, setInfoList] = useState([]); // Danh sách thông tin cần cập nhật
-
+    const nav = useNavigate();
     // Gọi API để lấy thông tin cũ
     const { data: studentInfo, isLoading, isError } = useQuery({
         queryKey: ["studentInfo"],
@@ -17,8 +20,9 @@ const UpdateInformationForm = () => {
         mutationFn: (payload) =>
             api.post("/student/services/register/dang-ky-thay-doi-thong-tin", payload),
         onSuccess: () => {
-            alert("Đăng ký thay đổi thông tin thành công!");
+            toast.success("Đăng ký thay đổi thông tin thành công!");
             setInfoList([]); // Reset danh sách sau khi cập nhật thành công
+            nav("/student/services/list")
         },
         onError: (error) => {
             if (error.response?.status === 409) {
@@ -77,10 +81,9 @@ const UpdateInformationForm = () => {
         setInfoList(updatedList);
     };
 
-    // Xử lý khi click "Submit"
     const handleSubmit = () => {
         if (infoList.length === 0) {
-            alert("Không có thông tin nào để cập nhật.");
+            toast.success("Không có thông tin nào để cập nhật.");
             return;
         }
 
@@ -141,16 +144,18 @@ const UpdateInformationForm = () => {
                             </div>
 
                             {/* Thông tin mới */}
+                            {/* Thông tin mới */}
                             <div className="col-md-5">
                                 <label className="form-label">Thông tin mới</label>
                                 <input
-                                    type="text"
+                                    type={item.option === "date_of_birth" ? "date" : "text"} // Hiển thị Date Picker
                                     className="form-control"
                                     value={item.newInfo}
                                     onChange={(e) => handleNewInfoChange(index, e.target.value)}
                                     placeholder="Nhập thông tin mới"
                                 />
                             </div>
+
 
                             {/* Nút Cancel */}
                             <div className="col-md-2 d-flex justify-content-end">
