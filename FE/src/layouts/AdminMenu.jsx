@@ -383,14 +383,7 @@ const AdminMenu = () => {
                                 <p className="sub-item">Danh sách dịch vụ sinh viên</p>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink
-                                to="/sup-admin/services/add"
-                                className={`${styles.menuItem} group`}
-                            >
-                                <p className="sub-item">Thêm mới dịch vụ</p>
-                            </NavLink>
-                        </li>
+                       
                     </ul>
                 </div>
             </li>

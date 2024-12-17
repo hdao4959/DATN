@@ -20,8 +20,14 @@ const UpdateInformationForm = () => {
             alert("Đăng ký thay đổi thông tin thành công!");
             setInfoList([]); // Reset danh sách sau khi cập nhật thành công
         },
-        onError: () => {
-            alert("Đã xảy ra lỗi khi cập nhật thông tin!");
+        onError: (error) => {
+            if (error.response?.status === 409) {
+                alert("Yêu cầu thay đổi thông tin đã tồn tại. Vui lòng chờ xử lý trước khi gửi yêu cầu mới.");
+            } else {
+                const errorMessage =
+                    error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật thông tin!";
+                alert(errorMessage);
+            }
         },
     });
 
@@ -35,7 +41,11 @@ const UpdateInformationForm = () => {
 
     // Xử lý khi click "Add"
     const handleAddInfo = () => {
-        if (selectedOption && !infoList.find((item) => item.option === selectedOption)) {
+        if (
+            selectedOption &&
+            !infoList.find((item) => item.option === selectedOption) &&
+            studentInfo[selectedOption]
+        ) {
             const oldInfoMap = {
                 full_name: studentInfo.full_name,
                 sex: studentInfo.sex,
@@ -49,6 +59,8 @@ const UpdateInformationForm = () => {
                 { option: selectedOption, oldInfo: oldInfoMap[selectedOption], newInfo: "" },
             ]);
             setSelectedOption(""); // Reset option sau khi thêm
+        } else {
+            alert("Thông tin đã được thêm hoặc không hợp lệ.");
         }
     };
 
@@ -72,11 +84,15 @@ const UpdateInformationForm = () => {
             return;
         }
 
-        // Tạo payload từ infoList
-        const payload = infoList.map((item) => ({
-            field: item.option,
-            newValue: item.newInfo,
-        }));
+        // Tạo payload
+        const payload = {};
+        for (const item of infoList) {
+            if (!item.newInfo) {
+                alert(`Vui lòng nhập thông tin mới cho "${item.option}".`);
+                return;
+            }
+            payload[item.option] = item.newInfo;
+        }
 
         mutation.mutate(payload); // Gọi API để cập nhật
     };
