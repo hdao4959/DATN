@@ -45,8 +45,8 @@ class SubjectController extends Controller
                 ->when($search, function ($query, $search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('subject_code', 'like', "%{$search}%")
-                        ->orWhere('subject_name', 'like', "%{$search}%")
-                        ->orWhere('major_code', 'like', "%{$search}%");
+                            ->orWhere('subject_name', 'like', "%{$search}%")
+                            ->orWhere('major_code', 'like', "%{$search}%");
                     });
                 })
                 ->paginate($perPage);
@@ -60,14 +60,17 @@ class SubjectController extends Controller
         }
     }
 
-    public function store(StoreSubjectRequest $request)
+    public function store(Request $request)
     {
         try {
             // Lấy mã môn học mới nhất và tạo subject_code mới
             $newestSubjectCode = Subject::withTrashed()
-                ->where('major_code', 'LIKE', $request['major_code'])
-                ->selectRaw("MAX(CAST(SUBSTRING(subject_code, 4) AS UNSIGNED)) as max_number")
+                ->where('major_code', $request['major_code'])
+                ->where('subject_code', 'LIKE', $request['major_code'] . '%')
+                ->selectRaw(" (CAST(SUBSTRING(subject_code, LENGTH(?) + 1) AS UNSIGNED)) as max_number", [$request['major_code']])
                 ->value('max_number');
+
+            // return response()->json($newestSubjectCode, 500);
             $nextNumber = $newestSubjectCode ? $newestSubjectCode + 1 : 1;
 
             $newSubjectCode = $request['major_code'] . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
@@ -157,10 +160,10 @@ class SubjectController extends Controller
     public function update(UpdateSubjectRequest $request, string $subject_code)
     {
         try {
-            DB::beginTransaction();
+            
             $data = $request->validated();
 
-            $subject = Subject::where('subject_code', $subject_code)->lockForUpdate()->first();
+            $subject = Subject::where('subject_code', $subject_code)->first();
 
             if (!$subject) {
                 return response()->json([
@@ -181,7 +184,7 @@ class SubjectController extends Controller
 
             $subject->update($data);
 
-            DB::commit();
+            
 
             return response()->json([
                 'status' => true,
@@ -195,8 +198,8 @@ class SubjectController extends Controller
     public function destroy(string $subject_code)
     {
         try {
-            DB::beginTransaction();
-            $subject = Subject::where('subject_code', $subject_code)->lockForUpdate()->first();
+            
+            $subject = Subject::where('subject_code', $subject_code)->first();
 
             if (!$subject) {
                 return response()->json([
@@ -216,13 +219,13 @@ class SubjectController extends Controller
 
             $subject->delete();
 
-            DB::commit();
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Xóa môn học thành công'
             ], 200);
         } catch (\Throwable $th) {
-            DB::rollback();
+            
             return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 400);
         }
     }

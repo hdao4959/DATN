@@ -84,30 +84,31 @@ Route::controller(TeacherClassroomController::class)->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Lấy thông tin tài khoản đang đăng  nhập
     Route::get('/user', function (Request $request) {
-        try{
-        $user = User::with([
-        'course' => function($query){
-        $query->select('cate_code', 'cate_name', 'value');
-        }
-        , 'semester' => function($query){
-        $query->select('cate_code', 'cate_name');
-        }
-        ,'major' => function($query){
-        $query->select('cate_code', 'cate_name');
-        },
-        'narrow_major' => function($query){
-        $query->select('cate_code', 'cate_name');
-        }
-        ])->where('user_code', $request->user()->user_code)
-        ->first();
+        try {
+            $user = User::with([
+                'course' => function ($query) {
+                    $query->select('cate_code', 'cate_name', 'value');
+                },
+                'semester' => function ($query) {
+                    $query->select('cate_code', 'cate_name');
+                },
+                'major' => function ($query) {
+                    $query->select('cate_code', 'cate_name');
+                },
+                'narrow_major' => function ($query) {
+                    $query->select('cate_code', 'cate_name');
+                }
+            ])->where('user_code', $request->user()->user_code)
+                ->first();
 
-        return response()->json($user);
-    } catch(\Throwable $th){
-        return response()->json([
-            'status' => false,
-            'message' => 'Có lỗi không xác định'
-        ],500);
-    }
+
+            return response()->json($user);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Có lỗi không xác định'
+            ], 500);
+        }
     });
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -131,7 +132,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
         Route::apiResource('teachers', TeacherController::class);
+        Route::post('teachers/updateActive/{userCode}', [TeacherController::class, 'updateActive']);
+
         Route::apiResource('students', StudentController::class);
+        Route::post('students/updateActive/{userCode}', [StudentController::class, 'updateActive']);
+
         Route::controller(StudentController::class)->group(function () {
             Route::post('import-students', 'importStudents');
             Route::get('export-students', 'exportStudents');
@@ -307,14 +312,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('services/getListLearnAgain',    [ServiceController::class, "getListLearnAgain"]);
         Route::post('send-email/learn-again/{id}',  [SendEmailController::class, 'sendMailLearnAgain']);
 
-        Route::post('change-password',[AuthController::class,'changePassword']);
+
+        Route::post('change-password', [AuthController::class, 'changePassword']);
+
+        Route::get('get-info', [ServiceController::class, 'StudentsInfoOld']);
 
         // dịch vụ cung cấp bảng điểm
         Route::post('services/register/dang-ky-cap-bang-diem',      [ServiceController::class, 'provideScoreboard']);
         // dịch vụ thay đổi thông tin
         Route::post('services/register/dang-ky-thay-doi-thong-tin', [ServiceController::class, 'ChangeInfo']);
         Route::get('services',      [ServiceController::class, 'getAllServicesByStudent']);
+
         Route::delete('services/delete/{id}',[ServiceController::class, 'cancelServiceByStudent']);
+
+
     });
 
     // Các route phục vụ cho form
@@ -325,6 +336,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/listParentMajorsForForm', 'listParentMajorsForForm');
         Route::get('/listChildrenMajorsForForm/{parent_code}', 'listChildrenMajorsForForm');
         Route::get('/listSubjectsToMajorForForm/{major_code}',  'listSubjectsToMajorForForm');
+        Route::post('/subjects/{semester_code}/{major_code}', 'listSubjectsToSemesterAndMajorForForm');
         Route::get('/listSessionsForForm', 'listSessionsForForm');
         Route::get('/listRoomsForForm', 'listRoomsForForm');
         Route::get('/listSubjectsForForm', 'listSubjectsForForm');
@@ -374,9 +386,7 @@ Route::get('total_momo/service',        [CheckoutServiceController::class, 'momo
 // api dẫn đến trang thanh toán vnpay của dịch vụ
 Route::get('total_vnpay/service', [CheckoutServiceController::class, 'vnpay_payment'])
     ->name('total_vnpay_service');
-    
+
 Route::get('return-vnpay/service', [CheckoutServiceController::class, 'vnpay_payment_return']);
 Route::get('failed-vnpay', [CheckoutServiceController::class, 'vnpay_payment_fail'])->name('payment.failed');
 Route::get('success-vnpay', [CheckoutServiceController::class, 'vnpay_payment_success'])->name('payment.success');
-
-
