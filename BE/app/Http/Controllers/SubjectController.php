@@ -35,6 +35,8 @@ class SubjectController extends Controller
         try {
             $perPage = $request->input('per_page', 10);
             $search = $request->input('search'); // Lấy từ khóa tìm kiếm từ request
+            $orderBy = $request->input('orderBy', 'created_at'); 
+            $orderDirection = $request->input('orderDirection', 'asc'); 
 
             $subjects = Subject::select('subject_code', 'subject_name', 'major_code', 'is_active')
                 ->with([
@@ -49,6 +51,7 @@ class SubjectController extends Controller
                             ->orWhere('major_code', 'like', "%{$search}%");
                     });
                 })
+                ->orderBy($orderBy, $orderDirection)
                 ->paginate($perPage);
 
             return response()->json([
@@ -64,11 +67,18 @@ class SubjectController extends Controller
     {
         try {
             // Lấy mã môn học mới nhất và tạo subject_code mới
+            // $newestSubjectCode = Subject::withTrashed()
+            //     ->where('major_code', $request['major_code'])
+            //     ->where('subject_code', 'LIKE', $request['major_code'] . '%')
+            //     ->selectRaw(" (CAST(SUBSTRING(subject_code, LENGTH(?) + 1) AS UNSIGNED)) as max_number", [$request['major_code']])
+            //     ->value('max_number');
+
             $newestSubjectCode = Subject::withTrashed()
                 ->where('major_code', $request['major_code'])
                 ->where('subject_code', 'LIKE', $request['major_code'] . '%')
-                ->selectRaw(" (CAST(SUBSTRING(subject_code, LENGTH(?) + 1) AS UNSIGNED)) as max_number", [$request['major_code']])
+                ->selectRaw("MAX(CAST(SUBSTRING(subject_code, LENGTH(?) + 1) AS UNSIGNED)) as max_number", [$request['major_code']])
                 ->value('max_number');
+
 
             // return response()->json($newestSubjectCode, 500);
             $nextNumber = $newestSubjectCode ? $newestSubjectCode + 1 : 1;
@@ -160,7 +170,7 @@ class SubjectController extends Controller
     public function update(UpdateSubjectRequest $request, string $subject_code)
     {
         try {
-            
+
             $data = $request->validated();
 
             $subject = Subject::where('subject_code', $subject_code)->first();
@@ -184,7 +194,7 @@ class SubjectController extends Controller
 
             $subject->update($data);
 
-            
+
 
             return response()->json([
                 'status' => true,
@@ -198,7 +208,7 @@ class SubjectController extends Controller
     public function destroy(string $subject_code)
     {
         try {
-            
+
             $subject = Subject::where('subject_code', $subject_code)->first();
 
             if (!$subject) {
@@ -219,13 +229,13 @@ class SubjectController extends Controller
 
             $subject->delete();
 
-            
+
             return response()->json([
                 'status' => true,
                 'message' => 'Xóa môn học thành công'
             ], 200);
         } catch (\Throwable $th) {
-            
+
             return response()->json(['message' => 'Đã có lỗi xảy ra: ' . $th->getMessage()], 400);
         }
     }

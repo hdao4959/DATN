@@ -205,8 +205,17 @@ const MySchedule = () => {
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
                         const response = await api.get(`/teacher/schedules`, {
-                            params: { page, per_page: data.length },
+                            params: {
+                                page,
+                                per_page: data.length,
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
+                            },
                         });
                         const result = response.data;
                         callback({

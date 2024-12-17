@@ -77,11 +77,18 @@ const ListAccount = () => {
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
+                        const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
+                        const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
+                        const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp xếp: asc hoặc desc
+
+                        // Gửi request đến API với các tham số phù hợp
                         const response = await api.get(`/admin/students`, {
                             params: {
-                                page: page,
+                                page,
                                 per_page: data.length,
-                                search: data.search.value || "",
+                                search: data.search.value,
+                                orderBy: orderColumnName,
+                                orderDirection: orderDirection,
                             },
                         });
 
@@ -165,7 +172,7 @@ const ListAccount = () => {
     return (
         <>
             <div className="mb-3 mt-2 flex items-center justify-between">
-                <Link to="/sup-admin/students/create">
+                <Link to="/admin/students/create">
                     <button className="btn btn-primary">Thêm tài khoản</button>
                 </Link>
             </div>

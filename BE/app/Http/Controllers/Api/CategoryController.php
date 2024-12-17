@@ -1389,7 +1389,7 @@ class CategoryController extends Controller
     public function addStudent()
     {
         $classRooms = $this->getClassrooms(); // Lấy danh sách lớp học
-        return $majors = $this->getListByMajor();
+        $majors = $this->getListByMajor();
         $classroomStudentCounts = DB::table('classroom_user')
             ->select('class_code', DB::raw('COUNT(*) as current_count'))
             ->groupBy('class_code')
@@ -1550,13 +1550,18 @@ class CategoryController extends Controller
             $teachers = DB::table('users')
                 ->where('role', "2") // Giả sử role = 2 là giảng viên
                 ->where('is_active', 1)
-                ->select('user_code', 'major_code')
+                ->select('user_code', 'major_code','narrow_major_code')
                 ->get();
 
             // return $schedules;
-            if ($teachers->isEmpty() || $schedules->isEmpty()) {
+            if ($teachers->isEmpty()) {
                 return response()->json([
-                    'message' => 'Không có giảng viên hoặc lịch học cần xếp.',
+                    'message' => 'Không có giảng viên.',
+                ], 400);
+            }
+            if ( $schedules->isEmpty()) {
+                return response()->json([
+                    'message' => 'Không có lịch học cần xếp.',
                 ], 400);
             }
 
@@ -1564,7 +1569,7 @@ class CategoryController extends Controller
             foreach ($schedules as $schedule) {
                 foreach ($teachers as $teacher) {
                     // Kiểm tra giảng viên có chuyên ngành phù hợp với môn học
-                    if ($schedule->major_code !== $teacher->major_code) {
+                    if ($schedule->major_code !== $teacher->major_code && $schedule->major_code !== $teacher->narrow_major_code) {
                         continue; // Nếu không khớp chuyên ngành, bỏ qua giảng viên này
                     }
 
@@ -1712,7 +1717,7 @@ class CategoryController extends Controller
 
     public function getListClassByRoomAndSession(Request $request)
     {
-        try {
+        // try {
             $startDate = Carbon::parse($request->input('startDate')); // Ngày bắt đầu từ request
             $startDates = []; // Mảng chứa các ngày cần lấy
             DB::table('classrooms')
@@ -1784,12 +1789,12 @@ class CategoryController extends Controller
                 'count' => count($createdClassrooms),
                 'startDates' => $startDates
             ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'error' => false,
-                'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động',
-            ], 400);
-        }
+        // } catch (\Throwable $th) {
+        //     return response()->json([
+        //         'error' => false,
+        //         'message' => 'Có lỗi xảy ra. Tạm dừng tạo lớp tự động',
+        //     ], 400);
+        // }
     }
 
     // public function getStudentsInSameClassOrSession($sessionCode)
