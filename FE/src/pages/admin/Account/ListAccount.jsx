@@ -154,7 +154,7 @@ const ListAccount = () => {
                                 <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;"></i>
                                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}"></i>
-                            </div>git 
+                            </div>
                         `,
                     },
                 ],
