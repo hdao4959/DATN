@@ -228,9 +228,9 @@ const ViewSchedules = () => {
                                     <td>
                                         {schedule.date
                                             ? // new Date(
-                                              schedule.date
+                                            schedule.date
                                             : //   ).toLocaleDateString()
-                                              "Không xác định"}{" "}
+                                            "Không xác định"}{" "}
                                         {/* Kiểm tra nếu date không có */}
                                     </td>
                                     <td>{schedule.class_code || "N/A"}</td>{" "}
@@ -247,17 +247,15 @@ const ViewSchedules = () => {
                                     {/* Kiểm tra nếu session_code không có */}
                                     <td>
                                         {schedule.session_value
-                                            ? `${
-                                                  JSON.parse(
-                                                      schedule.session_value
-                                                  ).start
-                                              }` +
-                                              " - " +
-                                              `${
-                                                  JSON.parse(
-                                                      schedule.session_value
-                                                  ).end
-                                              }`
+                                            ? `${JSON.parse(
+                                                schedule.session_value
+                                            ).start
+                                            }` +
+                                            " - " +
+                                            `${JSON.parse(
+                                                schedule.session_value
+                                            ).end
+                                            }`
                                             : "Không có thông tin"}
                                     </td>
                                 </tr>
