@@ -27,6 +27,7 @@ const EditTeacherAccount = () => {
             return res.data;
         },
     });
+    const [childMajors, setChildMajors] = useState([]);
 
     const [formData, setFormData] = useState({
         full_name: "",
@@ -40,6 +41,7 @@ const EditTeacherAccount = () => {
         place_of_grant: "",
         nation: "",
         major_code: "",
+        narrow_major_code: "",
     });
 
     useEffect(() => {
@@ -56,11 +58,31 @@ const EditTeacherAccount = () => {
                 place_of_grant: user.place_of_grant || "",
                 nation: user.nation || "",
                 major_code: user.major?.cate_code || "",
+                narrow_major_code: user.narrow_major?.cate_code || "",
             });
         }
     }, [user]);
 
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const fetchChildMajors = async () => {
+            if (formData.major_code) {
+                try {
+                    const res = await api.get(
+                        `/listChildrenMajorsForForm/${formData.major_code}`
+                    );
+                    setChildMajors(res.data);
+                } catch (error) {
+                    toast.error("Lỗi khi lấy chuyên ngành hẹp");
+                }
+            } else {
+                setChildMajors([]);
+            }
+        };
+
+        fetchChildMajors();
+    }, [formData.major_code]);
 
     const { mutate } = useMutation({
         mutationFn: async (updatedData) => {
@@ -234,6 +256,7 @@ const EditTeacherAccount = () => {
                             value={formData.major_code}
                             onChange={handleChange}
                         >
+                            <option value="">Chọn chuyên ngành</option>
                             {majors?.map((major) => (
                                 <option
                                     key={major.cate_code}
@@ -242,6 +265,36 @@ const EditTeacherAccount = () => {
                                     {major.cate_name}
                                 </option>
                             ))}
+                        </select>
+                    </div>
+                    <div className="col-md-6 form-group">
+                        <label>Chuyên ngành hẹp</label>
+                        <select
+                            className="form-select"
+                            name="narrow_major_code"
+                            value={formData.narrow_major_code}
+                            onChange={handleChange}
+                        >
+                            <option value="">Chọn chuyên ngành hẹp</option>
+                            {childMajors?.map((childMajor) => (
+                                <option
+                                    key={childMajor.cate_code}
+                                    value={childMajor.cate_code}
+                                >
+                                    {childMajor.cate_name}
+                                </option>
+                            ))}
+                            {formData.narrow_major_code &&
+                                !childMajors.some(
+                                    (childMajor) =>
+                                        childMajor.cate_code ===
+                                        formData.narrow_major_code
+                                ) && (
+                                    <option value={formData.narrow_major_code}>
+                                        {user?.narrow_major?.cate_name ||
+                                            "Chuyên ngành hẹp hiện tại"}
+                                    </option>
+                                )}
                         </select>
                     </div>
                 </div>
