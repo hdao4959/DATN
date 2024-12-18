@@ -202,7 +202,7 @@ const ViewSchedules = () => {
 
             <div className="card">
                 <div className="card-header">
-                    <h4 className="card-title">Lịch học sắp tới</h4>
+                    <h4 className="card-title">Lịch học</h4>
                 </div>
                 <div className="card-body">
                     <table

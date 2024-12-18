@@ -69,7 +69,7 @@ const TranscriptRequestForm = () => {
             {/* Số lượng bảng điểm */}
             <div className="mb-3">
                 <label htmlFor="numTranscript" className="form-label mt-4">Số lượng bảng điểm</label>
-                <input
+                <input min={1}
                     type="number"
                     className="form-control"
                     id="numTranscript"
