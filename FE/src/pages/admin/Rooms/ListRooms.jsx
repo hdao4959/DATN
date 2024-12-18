@@ -92,7 +92,7 @@ const ClassRoomsList = () => {
                 if (res1.data.error) {
                     toast.error(
                         res1.data.message ||
-                        "Có lỗi xảy ra khi lấy thông tin lớp học."
+                            "Có lỗi xảy ra khi lấy thông tin lớp học."
                     );
                     throw new Error(
                         res1.data.message || "Lỗi lấy thông tin lớp học."
@@ -103,7 +103,7 @@ const ClassRoomsList = () => {
                 if (res2.data.error) {
                     toast.error(
                         res2.data.message ||
-                        "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
+                            "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
                     );
                     throw new Error(res2.data.message || "Lỗi thêm sinh viên.");
                 }
@@ -112,7 +112,7 @@ const ClassRoomsList = () => {
                 if (res3.data.error) {
                     toast.error(
                         res3.data.message ||
-                        "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
+                            "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
                     );
                     throw new Error(
                         res3.data.message || "Lỗi thêm giảng viên."
@@ -123,7 +123,7 @@ const ClassRoomsList = () => {
                 if (res4.data.error) {
                     toast.error(
                         res4.data.message ||
-                        "Có lỗi xảy ra khi tạo lịch học và lịch thi."
+                            "Có lỗi xảy ra khi tạo lịch học và lịch thi."
                     );
                     throw new Error(
                         res4.data.message || "Lỗi tạo lịch học và lịch thi."
@@ -134,7 +134,7 @@ const ClassRoomsList = () => {
                 if (res5.data.error) {
                     toast.error(
                         res5.data.message ||
-                        "Có lỗi xảy ra khi tạo danh sách điểm danh."
+                            "Có lỗi xảy ra khi tạo danh sách điểm danh."
                     );
                     throw new Error(
                         res5.data.message || "Lỗi tạo danh sách điểm danh."
@@ -201,9 +201,6 @@ const ClassRoomsList = () => {
                 ajax: async (data, callback) => {
                     try {
                         const page = data.start / data.length + 1;
-                        // const orderColumnIndex = data.order[0]?.column; // Lấy index cột sắp xếp
-                        // const orderColumnName = data.columns[orderColumnIndex]?.data || "created_at"; // Tên cột dựa trên index
-                        // const orderDirection = data.order[0]?.dir || "desc"; // Hướng sắp
                         const response = await api.get(`/admin/classrooms`, {
                             params: {
                                 page,
@@ -249,7 +246,7 @@ const ClassRoomsList = () => {
                     {
                         title: "Lớp học",
                         data: null,
-                       render: (data) =>
+                        render: (data) =>
                             `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
                                      ${data.class_name}
                                 </span>`,
@@ -276,15 +273,17 @@ const ClassRoomsList = () => {
                     {
                         title: "Ca học",
                         data: null,
-                        render: (data) => `${data.session_name} - Phòng ${data.room_name} `,
+                        render: (data) =>
+                            `${data.session_name} - Phòng ${data.room_name} `,
                     },
                     {
                         title: "Trạng thái",
                         data: "is_active",
                         render: (data) =>
-                            `<i class="fas toggleStatus  ${data == 1
-                                ? "fa-check-circle text-green-500 toggleStatus"
-                                : "fa-ban text-red-500 toggleStatus"
+                            `<i class="fas toggleStatus  ${
+                                data == 1
+                                    ? "fa-check-circle text-green-500 toggleStatus"
+                                    : "fa-ban text-red-500 toggleStatus"
                             }" style="font-size: 20px;"></i>`,
                         className: "text-center",
                     },
@@ -323,7 +322,9 @@ const ClassRoomsList = () => {
                     $(row)
                         .find(".toggleStatus")
                         .on("click", () => handleUpdateStatus(data.class_code));
-                }
+                },
+
+                ordering: false,
             });
 
             $("#classroomsTable tbody").on("click", ".delete-btn", function () {
@@ -331,17 +332,20 @@ const ClassRoomsList = () => {
                 confirmDeleteClass(classCode);
             });
 
-
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
                 console.log(classCode);
 
                 navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
             });
-            $("#classroomsTable tbody").on("click", ".viewTeacher", function () {
-                const teacher_code = $(this).data("teacher-code");
-                navigate(`/sup-admin/teachers/${teacher_code}`);
-            });
+            $("#classroomsTable tbody").on(
+                "click",
+                ".viewTeacher",
+                function () {
+                    const teacher_code = $(this).data("teacher-code");
+                    navigate(`/sup-admin/teachers/${teacher_code}`);
+                }
+            );
             $("#classroomsTable tbody").on(
                 "click",
                 "[data-class_code]",
@@ -426,7 +430,6 @@ const ClassRoomsList = () => {
                 onOk={() => updateStatusMutation.mutate(selectedClassCode)} // Gọi mutation khi người dùng xác nhận
             />
         </>
-
     );
 };
 
