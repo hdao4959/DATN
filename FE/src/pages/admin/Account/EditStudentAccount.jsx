@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const EditStudentAccount = () => {
     const { user_code } = useParams();
     const navigate = useNavigate();
+    const [childMajors, setChildMajors] = useState([]);
 
     const {
         data: user,
@@ -55,10 +56,10 @@ const EditStudentAccount = () => {
         issue_date: "",
         place_of_grant: "",
         nation: "",
-        major_code: "", // For selecting major
-        semester_code: "", // For selecting semester
+        major_code: "",
+        semester_code: "",
         course_code: "",
-        // updated_at: "",
+        narrow_major_code: "",
     });
 
     useEffect(() => {
@@ -74,15 +75,33 @@ const EditStudentAccount = () => {
                 issue_date: user.issue_date || "",
                 place_of_grant: user.place_of_grant || "",
                 nation: user.nation || "",
-                // updated_at: user.updated_at || "",
                 major_code: user.major?.cate_code || "",
                 semester_code: user.semester?.cate_code || "",
                 course_code: user.course?.cate_code || "",
+                narrow_major_code: user.narrow_major?.cate_code || "",
             });
         }
     }, [user]);
 
     const queryClient = useQueryClient();
+    useEffect(() => {
+        const fetchChildMajors = async () => {
+            if (formData.major_code) {
+                try {
+                    const res = await api.get(
+                        `/listChildrenMajorsForForm/${formData.major_code}`
+                    );
+                    setChildMajors(res.data);
+                } catch (error) {
+                    toast.error("Lỗi khi lấy chuyên ngành hẹp");
+                }
+            } else {
+                setChildMajors([]);
+            }
+        };
+
+        fetchChildMajors();
+    }, [formData.major_code]);
     const { mutate } = useMutation({
         mutationFn: async (updatedData) => {
             const response = await api.patch(
@@ -93,7 +112,7 @@ const EditStudentAccount = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(["user", user_code]);
-            toast.success("Cập nhật thông tin sinh viên thành công !");
+            toast.success("Cập nhật thông tin giảng viên thành công !");
         },
         onError: (error) => {
             console.error("Error updating user data", error);
@@ -257,6 +276,7 @@ const EditStudentAccount = () => {
                             value={formData.major_code}
                             onChange={handleChange}
                         >
+                            <option value="">Chọn chuyên ngành</option>
                             {majors?.map((major) => (
                                 <option
                                     key={major.cate_code}
@@ -268,21 +288,33 @@ const EditStudentAccount = () => {
                         </select>
                     </div>
                     <div className="col-md-6 form-group">
-                        <label>Kỳ học</label>
+                        <label>Chuyên ngành hẹp</label>
                         <select
                             className="form-select"
-                            name="semester_code"
-                            value={formData.semester_code}
+                            name="narrow_major_code"
+                            value={formData.narrow_major_code}
                             onChange={handleChange}
                         >
-                            {semesters?.map((semester) => (
+                            <option value="">Chọn chuyên ngành hẹp</option>
+                            {childMajors?.map((childMajor) => (
                                 <option
-                                    key={semester.cate_code}
-                                    value={semester.cate_code}
+                                    key={childMajor.cate_code}
+                                    value={childMajor.cate_code}
                                 >
-                                    {semester.cate_name}
+                                    {childMajor.cate_name}
                                 </option>
                             ))}
+                            {formData.narrow_major_code &&
+                                !childMajors.some(
+                                    (childMajor) =>
+                                        childMajor.cate_code ===
+                                        formData.narrow_major_code
+                                ) && (
+                                    <option value={formData.narrow_major_code}>
+                                        {user?.narrow_major?.cate_name ||
+                                            "Chuyên ngành hẹp hiện tại"}
+                                    </option>
+                                )}
                         </select>
                     </div>
                 </div>
