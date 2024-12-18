@@ -137,7 +137,7 @@ const ServicesList = () => {
                             } else if (data === "rejected") {
                                 return `<span class="text-red-500">Đã từ chối</span>`;
                             } else if (data === "paid") {
-                                return `<span class="text-blue  -500">Đã thanh toán</span>`;
+                                return `<span class="text-blue-500">Đã thanh toán</span>`;
                             }
                             return `<span class="text-yellow-500">Đang chờ</span>`;
                         },
