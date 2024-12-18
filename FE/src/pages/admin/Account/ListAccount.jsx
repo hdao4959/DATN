@@ -179,10 +179,16 @@ const ListAccount = () => {
                         .on("click", () => handleDelete(data.user_code));
                     $(row)
                         .find(".fa-edit")
-                        .on("click", () => navigate(`/sup-admin/students/edit/${data.user_code}`));
+                        .on("click", () =>
+                            navigate(
+                                `/sup-admin/students/edit/${data.user_code}`
+                            )
+                        );
                     $(row)
                         .find(".fa-eye")
-                        .on("click", () => navigate(`/sup-admin/students/${data.user_code}`));
+                        .on("click", () =>
+                            navigate(`/sup-admin/students/${data.user_code}`)
+                        );
                 },
             });
         }
