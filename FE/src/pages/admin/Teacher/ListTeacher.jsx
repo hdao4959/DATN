@@ -133,13 +133,13 @@ const ListTeacher = () => {
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
 
-                            <a href="/sup-admin/teachers/edit/${row.user_code}">
+                            <span>
                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;" data-id="${row.user_code}" id="edit_${row.user_code}"></i>
-            </a>
+            </span>
                             
-                             <a href="/sup-admin/teachers/${row.user_code}">
+                             <span>
                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
-            </a>
+            </span>
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}" id="delete_${row.user_code}"></i>
                             </div>
                         `,
@@ -161,6 +161,13 @@ const ListTeacher = () => {
                         });
                     $(row)
                         .find(".fa-edit")
+                        .on("click", () => {
+                            navigate(
+                                `/sup-admin/teachers/edit/${data.user_code}`
+                            );
+                        });
+                    $(row)
+                        .find(".fa-eye")
                         .on("click", () => {
                             navigate(`/sup-admin/teachers/${data.user_code}`);
                         });

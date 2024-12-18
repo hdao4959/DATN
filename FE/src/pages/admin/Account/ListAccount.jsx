@@ -16,6 +16,8 @@ const ListAccount = () => {
     const [statusModalOpen, setStatusModalOpen] = useState(false);
     const [selectedGradeComponent, setSelectedGradeComponent] = useState();
 
+    const navigate = useNavigate();
+
     const onModalVisible = () => setModalOpen((prev) => !prev);
     const onStatusModalVisible = () => setStatusModalOpen((prev) => !prev);
 
@@ -149,12 +151,8 @@ const ListAccount = () => {
                         data: null,
                         render: (data, type, row) => `
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px">
-                                <a href="/sup-admin/students/edit/${row.user_code}">
-                                    <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;"></i>
-                                </a>
-                                <a href="/sup-admin/students/${row.user_code}">
-                                    <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
-                                </a>
+                                <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;"></i>
+                                <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}"></i>
                             </div>
                         `,
@@ -179,6 +177,12 @@ const ListAccount = () => {
                     $(row)
                         .find(".fa-trash")
                         .on("click", () => handleDelete(data.user_code));
+                    $(row)
+                        .find(".fa-edit")
+                        .on("click", () => navigate(`/sup-admin/students/edit/${data.user_code}`));
+                    $(row)
+                        .find(".fa-eye")
+                        .on("click", () => navigate(`/sup-admin/students/${data.user_code}`));
                 },
             });
         }
