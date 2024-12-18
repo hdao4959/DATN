@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../config/axios";
 import { getToken } from "../../../utils/getToken";
 import "datatables.net-dt/css/dataTables.dataTables.css";
+import Modal from "../../../components/Modal/Modal";
 import $ from "jquery";
 import "datatables.net";
 import { toast } from "react-toastify";
@@ -13,6 +14,12 @@ const ClassRoomsList = () => {
     const queryClient = useQueryClient();
     const accessToken = getToken();
     const navigate = useNavigate();
+
+    const [selectedClassCode, setSelectedClassCode] = useState();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [statusModalOpen, setStatusModalOpen] = useState(false);
+
+    const onStatusModalVisible = () => setStatusModalOpen((prev) => !prev);
 
     const [classrooms, setClassRooms] = useState([]);
     const [startDate, setStartDate] = useState("");
@@ -154,6 +161,25 @@ const ClassRoomsList = () => {
         autoSchedule();
     };
 
+    const updateStatusMutation = useMutation({
+        mutationFn: (class_code) =>
+            api.post(`/admin/classrooms/updateActive/${class_code}`),
+        onSuccess: () => {
+            toast.success("Cập nhật trạng thái thành công");
+            refetch();
+            onStatusModalVisible();
+        },
+        onError: () => {
+            toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
+        },
+    });
+
+    // Hàm xử lý khi nhấn vào trạng thái
+    const handleUpdateStatus = (class_code) => {
+        setSelectedClassCode(class_code); // Lưu mã người dùng vào selectedUserCode
+        onStatusModalVisible(); // Hiển thị modal xác nhận
+    };
+
     useEffect(() => {
         if (classrooms.length > 0) {
             $("#classroomsTable").DataTable({
@@ -256,9 +282,9 @@ const ClassRoomsList = () => {
                         title: "Trạng thái",
                         data: "is_active",
                         render: (data) =>
-                            `<i class="fas ${data == 1
-                                ? "fa-check-circle text-green-500"
-                                : "fa-ban text-red-500"
+                            `<i class="fas toggleStatus  ${data == 1
+                                ? "fa-check-circle text-green-500 toggleStatus"
+                                : "fa-ban text-red-500 toggleStatus"
                             }" style="font-size: 20px;"></i>`,
                         className: "text-center",
                     },
@@ -292,11 +318,19 @@ const ClassRoomsList = () => {
                     },
                 ],
                 destroy: true,
+                createdRow: (row, data) => {
+                    // Xử lý khi nhấn biểu tượng thay đổi trạng thái
+                    $(row)
+                        .find(".toggleStatus")
+                        .on("click", () => handleUpdateStatus(data.class_code));
+                }
             });
+
             $("#classroomsTable tbody").on("click", ".delete-btn", function () {
                 const classCode = $(this).data("class_code");
                 confirmDeleteClass(classCode);
             });
+
 
             $("#classroomsTable tbody").on("click", ".viewDetail", function () {
                 const classCode = $(this).data("class_code");
@@ -382,7 +416,17 @@ const ClassRoomsList = () => {
                     </div>
                 </div>
             </div>
+            <Modal
+                title="Cập nhật trạng thái"
+                description="Bạn có chắc chắn muốn cập nhật trạng thái của tài khoản này?"
+                closeTxt="Huỷ"
+                okTxt="Xác nhận"
+                visible={statusModalOpen}
+                onVisible={onStatusModalVisible}
+                onOk={() => updateStatusMutation.mutate(selectedClassCode)} // Gọi mutation khi người dùng xác nhận
+            />
         </>
+
     );
 };
 
