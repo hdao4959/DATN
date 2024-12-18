@@ -58,14 +58,14 @@ const ListSemester = () => {
                         title: "Giá trị",
                         data: "value"
                     },
-                    
+
                     {
                         title: "Hành động",
                         data: null,
                         render: (data, type, row) => {
                             return `
                             <div className="whitespace-nowrap">
-                                <button class="delete-button ml-2"  data-id="${row.id}">
+                                <button class="delete-button ml-2"  data-id="${row.cate_code}">
                                   <i class='fas fa-trash hover:text-red-500'></i>
                                 </button>
                             </div>`;

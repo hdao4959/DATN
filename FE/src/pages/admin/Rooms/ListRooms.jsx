@@ -8,7 +8,6 @@ import $ from "jquery";
 import "datatables.net";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import Modal from "../../../components/Modal/Modal";
 
 const ClassRoomsList = () => {
     const queryClient = useQueryClient();
@@ -17,8 +16,6 @@ const ClassRoomsList = () => {
 
     const [classrooms, setClassRooms] = useState([]);
     const [startDate, setStartDate] = useState("");
-    const [currentClassCode, setCurrentClassCode] = useState(null);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const { data, refetch, isLoading, isError, error } = useQuery({
         queryKey: ["LIST_ROOMS"],
@@ -37,7 +34,14 @@ const ClassRoomsList = () => {
             return res.data.classrooms.data;
         },
     });
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const year = date.getFullYear();
 
+        return `${day}/${month}/${year}`;
+    }
     useEffect(() => {
         setClassRooms(data || []);
     }, [data]);
@@ -81,7 +85,7 @@ const ClassRoomsList = () => {
                 if (res1.data.error) {
                     toast.error(
                         res1.data.message ||
-                            "Có lỗi xảy ra khi lấy thông tin lớp học."
+                        "Có lỗi xảy ra khi lấy thông tin lớp học."
                     );
                     throw new Error(
                         res1.data.message || "Lỗi lấy thông tin lớp học."
@@ -92,7 +96,7 @@ const ClassRoomsList = () => {
                 if (res2.data.error) {
                     toast.error(
                         res2.data.message ||
-                            "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
+                        "Có lỗi xảy ra khi thêm sinh viên vào lớp học."
                     );
                     throw new Error(res2.data.message || "Lỗi thêm sinh viên.");
                 }
@@ -101,7 +105,7 @@ const ClassRoomsList = () => {
                 if (res3.data.error) {
                     toast.error(
                         res3.data.message ||
-                            "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
+                        "Có lỗi xảy ra khi thêm giảng viên vào lớp học."
                     );
                     throw new Error(
                         res3.data.message || "Lỗi thêm giảng viên."
@@ -112,7 +116,7 @@ const ClassRoomsList = () => {
                 if (res4.data.error) {
                     toast.error(
                         res4.data.message ||
-                            "Có lỗi xảy ra khi tạo lịch học và lịch thi."
+                        "Có lỗi xảy ra khi tạo lịch học và lịch thi."
                     );
                     throw new Error(
                         res4.data.message || "Lỗi tạo lịch học và lịch thi."
@@ -123,7 +127,7 @@ const ClassRoomsList = () => {
                 if (res5.data.error) {
                     toast.error(
                         res5.data.message ||
-                            "Có lỗi xảy ra khi tạo danh sách điểm danh."
+                        "Có lỗi xảy ra khi tạo danh sách điểm danh."
                     );
                     throw new Error(
                         res5.data.message || "Lỗi tạo danh sách điểm danh."
@@ -246,7 +250,17 @@ const ClassRoomsList = () => {
                     {
                         title: "Ca học",
                         data: null,
-                        render: (data) => `${data.session_name} `,
+                        render: (data) => `${data.session_name} - Phòng ${data.room_name} `,
+                    },
+                    {
+                        title: "Trạng thái",
+                        data: "is_active",
+                        render: (data) =>
+                            `<i class="fas ${data == 1
+                                ? "fa-check-circle text-green-500"
+                                : "fa-ban text-red-500"
+                            }" style="font-size: 20px;"></i>`,
+                        className: "text-center",
                     },
                     {
                         title: "Ngày học",
@@ -256,11 +270,15 @@ const ClassRoomsList = () => {
                     {
                         title: "Ngày bắt đầu",
                         data: "date_start",
+                        render: function (data) {
+                            return formatDate(data);
+                        },
                     },
-                    {
-                        title: "Phòng",
-                        data: "room_name",
-                    },
+
+                    // {
+                    //     title: "Phòng",
+                    //     data: "room_name",
+                    // },
                     {
                         title: "",
                         className: "text-center",
