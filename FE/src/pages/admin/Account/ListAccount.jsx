@@ -154,7 +154,7 @@ const ListAccount = () => {
                                 <i class="fas fa-edit" style="cursor: pointer; font-size: 20px;"></i>
                                 <i class="fas fa-eye" style="cursor: pointer; font-size: 20px;"></i>
                                 <i class="fas fa-trash" style="cursor: pointer; color: red; font-size: 20px;" data-id="${row.user_code}"></i>
-                            </div>
+                            </div>git 
                         `,
                     },
                 ],
@@ -179,10 +179,16 @@ const ListAccount = () => {
                         .on("click", () => handleDelete(data.user_code));
                     $(row)
                         .find(".fa-edit")
-                        .on("click", () => navigate(`/sup-admin/students/edit/${data.user_code}`));
+                        .on("click", () =>
+                            navigate(
+                                `/sup-admin/students/edit/${data.user_code}`
+                            )
+                        );
                     $(row)
                         .find(".fa-eye")
-                        .on("click", () => navigate(`/sup-admin/students/${data.user_code}`));
+                        .on("click", () =>
+                            navigate(`/sup-admin/students/${data.user_code}`)
+                        );
                 },
             });
         }

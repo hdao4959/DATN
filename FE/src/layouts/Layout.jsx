@@ -444,14 +444,13 @@ const AdminLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={
-                                                    user?.avatar ||
-                                                    "https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
-                                                }
-                                                alt="..."
-                                                className="avatar-img rounded-circle"
+                                                src="https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                width="100"
+                                                alt="User Avatar"
+                                                className="rounded-circle"
                                             />
                                         </div>
+
                                         <span className="profile-username">
                                             <span className="op-7">Hi, </span>
                                             <span className="fw-bold">
@@ -488,7 +487,10 @@ const AdminLayout = () => {
                                                             Xem hồ sơ cá nhân
                                                         </a> */}
                                                         <Link
-                                                            to={`/sup-admin/account` || "" }
+                                                            to={
+                                                                `/sup-admin/account` ||
+                                                                ""
+                                                            }
                                                             className="btn btn-xs btn-secondary btn-sm"
                                                         >
                                                             Xem hồ sơ cá nhân

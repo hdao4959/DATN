@@ -73,12 +73,10 @@ const TeacherLayout = () => {
                                     >
                                         <div className="avatar-sm">
                                             <img
-                                                src={
-                                                    user?.avatar ||
-                                                    "/assets/img/default-avatar.png"
-                                                }
-                                                alt="..."
-                                                className="avatar-img rounded-circle"
+                                                src="https://phongreviews.com/wp-content/uploads/2022/11/avatar-facebook-mac-dinh-8.jpg"
+                                                width="100"
+                                                alt="User Avatar"
+                                                className="rounded-circle"
                                             />
                                         </div>
                                         <span className="profile-username">
