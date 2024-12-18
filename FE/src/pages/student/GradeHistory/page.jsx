@@ -142,7 +142,7 @@ const StudentCourseHistory = () => {
                                 <strong>Số tín chỉ đã học:</strong> {earnedCredits || 0} / {totalCredits || 0}
                             </div>
                             <div>
-                                <strong>Điểm trung bình:</strong> {studentHistory?.averageScore?.toFixed(2) || 0.00}
+                                <strong>Điểm trung bình:</strong> {studentHistory?.averageScore || 0.00}
                             </div>
                         </div>
                         <table
