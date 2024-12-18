@@ -2,12 +2,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import api from "../../../config/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddSemester = () => {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -23,6 +24,7 @@ const AddSemester = () => {
             queryClient.invalidateQueries(["LIST_SEMESTER"]);
             toast.success("Thêm kỳ học thành công!");
             reset();
+            navigate("/sup-admin/semesters")
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -33,7 +35,7 @@ const AddSemester = () => {
         const requestData = {
             value: data.value,
             cate_name: data.cate_name,
-          
+
         };
         mutate(requestData);
     };
