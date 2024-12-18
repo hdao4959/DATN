@@ -103,7 +103,7 @@ const StudentCourseHistory = () => {
                                                             : "text-success"
                                                 }
                                             >
-                                                <strong>{subject.score !== null ? subject.score?.toFixed(1) : "N/A"}</strong>
+                                                <strong>{subject.score !== null ? subject.score : "N/A"}</strong>
                                             </td>
                                             <td>{subject.semester_name}</td>
                                             <td>

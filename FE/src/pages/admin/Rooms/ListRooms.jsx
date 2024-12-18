@@ -223,7 +223,7 @@ const ClassRoomsList = () => {
                     {
                         title: "Lớp học",
                         data: null,
-                        render: (data) =>
+                       render: (data) =>
                             `<span class="viewDetail" data-class_code="${data.class_code}" style="margin-right: 5px;">
                                      ${data.class_name}
                                 </span>`,
@@ -236,16 +236,16 @@ const ClassRoomsList = () => {
                         title: "Giảng viên",
                         data: null,
                         render: (data) =>
-                            `<a href='/sup-admin/teachers/edit/${data.teacher_code}' class='text-dark'>
+                            `<span class='text-dark viewTeacher' data-teacher-code='${data.teacher_code}'>
                                 ${data.teacher_name}
-                            </a>`,
+                            </span>`,
                     },
                     {
                         title: "Số sinh viên",
                         data: null,
                         className: "text-center",
                         render: (data) =>
-                            `<a href='/sup-admin/classrooms/view/${data.class_code}/detail' class='text-dark'>${data.students_count}<a>`,
+                            `<span class='text-dark viewDetail' data-class_code="${data.class_code}">${data.students_count}<span>`,
                     },
                     {
                         title: "Ca học",
@@ -303,6 +303,10 @@ const ClassRoomsList = () => {
                 console.log(classCode);
 
                 navigate(`/sup-admin/classrooms/view/${classCode}/detail`);
+            });
+            $("#classroomsTable tbody").on("click", ".viewTeacher", function () {
+                const teacher_code = $(this).data("teacher-code");
+                navigate(`/sup-admin/teachers/${teacher_code}`);
             });
             $("#classroomsTable tbody").on(
                 "click",
