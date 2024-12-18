@@ -59,10 +59,14 @@ const UpdateInformationForm = () => {
                 address: studentInfo.address,
                 citizen_card_number: studentInfo.citizen_card_number,
             };
-
+    
             setInfoList([
                 ...infoList,
-                { option: selectedOption, oldInfo: oldInfoMap[selectedOption], newInfo: "" },
+                {
+                    option: selectedOption,
+                    oldInfo: oldInfoMap[selectedOption] || "",
+                    newInfo: "",
+                },
             ]);
             setSelectedOption(""); // Reset option sau khi thêm
         } else {
@@ -115,6 +119,7 @@ const UpdateInformationForm = () => {
                 }
                 return;
             }
+            payload[`${item.option}_old`] = item.oldInfo; // Thông tin cũ
             payload[item.option] = item.newInfo;
         }
 
@@ -153,6 +158,11 @@ const UpdateInformationForm = () => {
                     {/* Danh sách thông tin cần cập nhật */}
                     {infoList.map((item, index) => (
                         <div key={index} className="row mb-3 align-items-end">
+                            {/* Tên thông tin */}
+                            <div className="col-md-12 mb-2">
+                                <strong>{`Đang cập nhật: ${item.option}`}</strong>
+                            </div>
+
                             {/* Thông tin cũ */}
                             <div className="col-md-5">
                                 <label className="form-label">Thông tin cũ</label>
@@ -165,18 +175,16 @@ const UpdateInformationForm = () => {
                             </div>
 
                             {/* Thông tin mới */}
-                            {/* Thông tin mới */}
                             <div className="col-md-5">
                                 <label className="form-label">Thông tin mới</label>
                                 <input
-                                    type={item.option === "date_of_birth" ? "date" : "text"} // Hiển thị Date Picker
+                                    type={item.option === "date_of_birth" ? "date" : "text"} // Date Picker nếu là ngày sinh
                                     className="form-control"
                                     value={item.newInfo}
                                     onChange={(e) => handleNewInfoChange(index, e.target.value)}
                                     placeholder="Nhập thông tin mới"
                                 />
                             </div>
-
 
                             {/* Nút Cancel */}
                             <div className="col-md-2 d-flex justify-content-end">
@@ -190,6 +198,7 @@ const UpdateInformationForm = () => {
                             </div>
                         </div>
                     ))}
+
 
                     {/* Nút Submit */}
                     <div className="d-flex justify-content-end">
